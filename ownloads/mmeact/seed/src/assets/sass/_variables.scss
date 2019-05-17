@@ -1,0 +1,65 @@
+/* This is the first Global Styles And Variable File */
+
+/* Base URL */
+
+// Position Variables
+
+$abs : absolute;
+
+/* Font Vars */
+
+$base-font: 'Open Sans', sans-serif;
+
+/* /. Image Path */
+
+
+$imgpath : ('../images/');
+
+/* Color Vars */
+
+$bgcolor        : #F5F5F5;
+$pink           : #f53091;
+$white 			: #ffffff;
+$black 			: #000000;
+$headcolor      : #4A4A4A;
+$logocolor      : #616161; 
+$active         : #A8A8A8; 
+$bgcolor		: #F5F5F5;
+$bordercolor	: #979797;
+$box-shadow		: 0 2px 4px 0 rgba(0,0,0,0.50);
+$darkGray       :#4F4F4F;
+$lightGray      :#EEEEEE;
+$md-gray        :#717171;
+$form-color     : #EFEFEF;
+$weight:600;
+
+/* /.Color Vars */
+
+/* Spacing Vars */
+
+$marginAutoLR	: 0 auto;
+$no-margin		: 0;
+$m-10			: 10px;
+$m-20			: 20px;
+
+/* /.Spacing Vars */
+
+
+// Responsive media querties
+
+// Mobile devices (landscape and potrait)
+
+$xs : 767px;
+$sm : 991px;
+
+// Tablet (landscape and potrait)
+
+$tablandscape : 1024px;
+$tabpotrait : 768px;
+
+
+$potrait : 767px;
+
+// Mobile small deices
+
+$sm : 420px;

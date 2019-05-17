@@ -1,0 +1,509 @@
+ // Media queries
+@media only screen and (max-width : 1280px) {
+    .landing-banner-section {
+        .shape-block .common-anime{
+            &.shape-2 {
+                right: 0;
+                bottom: -17%;
+            }
+        }
+    }
+}
+
+ @media only screen and (max-width : 1024px){
+    .banner-Section .banner-text h2{
+        font-size: 40px;
+    }
+    .common-anime{
+        animation:none !important;
+        -webkit-animation:none !important;
+    }
+    .banner-Section .shape-block .common-anime{
+        display: none;
+    }
+
+    .landing-banner-section .shape-block .common-anime.shape-1 {
+        top: 2%;
+        left: auto;
+        right: 5%;
+    }
+    .content-wrapper {
+        padding-left: 0 !important;
+    }
+    .childhood-section {
+        .earlychildood{
+            padding: 30px !important;
+        }
+        .flex-wrapper .earlychildood h2{
+                font-size: 22px;
+        }
+     }
+
+     .landing-banner-section .shape-block .common-anime.shape-1{
+        top: 2%;
+        left: 0;
+        right: auto;
+     }
+     .owl-carousel-section {
+        padding-top: 50px;
+    }
+    .landing-banner-section .owl-nav.disabled > button > span{
+        position: static;
+        margin-left: 13px;
+    }
+    .landing-banner-section .owl-nav.disabled{
+        position: absolute;
+        top: -53px;
+        right: 0;
+    }
+    .childhood-section .flex-wrapper .content-wrapper:before{
+        position: static;
+    }
+    .childhood-section .childhoodcontent{
+        max-width: 100%;
+        min-width: 0;
+        min-height: 150px;
+        padding: 40px;
+    }
+}
+
+@media only screen and (max-width : 991px){
+    
+    .header-section .inner-navbar {
+        padding: 32px 0 3px 50px;
+    }
+    .questionWrapper{
+        .label-text {
+            font-size: 16px !important;
+        }
+    }
+    .childhood-professional-section {
+        .course-wrapper {
+            padding: 30px 0 60px;
+            .course-wrapper-block {
+                .courseheader {
+                    h2 {
+                        min-height: 75px;
+                    }
+                }
+                .courseContent {
+                    min-height: 300px;
+                    padding: 20px 25px;
+                }
+            }
+        }
+    }
+
+    .footer-section{
+        .mail-box {
+            padding-bottom: 15px;
+        }
+    }
+}
+
+@media only screen and (max-width : 820px) {
+    
+    .childhood-professional-section {
+        .course-wrapper {
+            &.p-t-40,
+            .p-t-40 {
+                padding-top: 15px!important;
+            }
+            .course-wrapper-block {
+                .courseheader {
+                    h2 {
+                        min-height: 0;
+                    }
+                }
+                .courseContent {
+                    min-height: 180px;
+                    padding: 20px 25px;
+                }
+                .courseimage {
+                    text-align: center;
+                    min-height: 0;
+                }
+            }
+            .full-width {
+                width: 100%;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width : 767px) {
+    
+    .navbar-brand { 
+        img {
+            max-height: 64px;
+        }
+    }
+
+    .parent-landing-banner{
+        .parent-middle-banner{
+            padding: 20px 0 0;
+        }
+    }
+
+    .top-header{
+        .toggle-icon {
+            .btn{
+                top:30px;
+            }
+        }
+    }
+
+    .header-section{
+        display: none;
+    }
+
+    .childhoodLanding{
+        & .mobile-heading{
+            h2{
+                font-size: 18px;
+            }
+        }
+        .course-wrapper-block{
+            
+            &{
+                min-height: 0 !important;
+            }
+
+            .courseheader {
+                &{
+                    padding: 20px;
+                }
+                h2{
+                    font-size: 18px;
+                }
+            }
+        }
+    }
+   
+    .contact-us-section {
+
+        .responsive-address-head {
+            padding: 20px 10px 10px 50px !important;
+            background-color: $white;
+            position: relative;
+
+            & h4:before{
+                    left: 15px !important;
+                    top: 17px;
+                    background-size: 20px;
+                }
+            }
+
+        
+
+        .contact-us-wrapper{
+            .contact{
+                padding-bottom: 30px;
+            }
+            .icon-image{
+                padding-bottom: 10px !important;
+            }
+            .responsive-address .icon-image {
+                display: none;
+            }
+            .responsive-address {
+                padding-left: 0 !important;
+                margin-left: -15px;
+                max-width: 200px;
+            }
+          
+        }
+        .contact-us-section #g-recaptcha {
+            padding-left: 0;
+        }
+    }
+    
+    .overview-section {
+        .sections-wrapper {
+            padding-top: 0!important;
+        }
+        .overview-block{
+            .topic-bloic{
+                li{
+                    width: 100%;
+                    float: none;
+                    padding-bottom: 40px;
+                }
+            }
+        }
+        .assesmnet-block{
+            min-height: 250px;
+        }
+        .content {
+            padding-top: 15px;
+        }
+        .program-buttons{
+            padding-top: 50px;
+            li{
+                padding-right: 0;
+                margin-bottom: 0px;
+                &+li {
+                    padding-top: 50px;
+                }
+                display: block;
+                & .btn{
+                    border: 1px solid $lightGray;
+                }
+            }
+        }
+    }
+    
+    .coyright-text {
+        text-align: left;
+    }
+
+    .childhood-section .flex-wrapper{
+        display: block;
+    }
+
+    .childhood-section .flex-wrapper .earlychildood{
+        width: 100%;
+    }
+
+    .childhood-section .flex-wrapper .earlychildood{
+        min-height: 0;
+    }
+   
+    .childhood-section .flex-wrapper .earlychildood h2{
+        font-size: 25px;
+    }
+
+    .address-block {
+        max-width: 200px;
+        padding-bottom: 10px;
+    }
+
+    .footer-section {
+        padding: 0;
+        >div{
+            padding: 30px !important;
+        }
+        .subscription-form{
+            padding-top: 25px;
+            .btn {
+                top: 25px;
+            }
+        }
+        .copyright-text {
+            &.text-right {
+                text-align: left
+            }
+            p {
+                padding: 0;
+            }
+        }
+        .footer-left-wrapper {
+            .p-t-30 {
+                padding-top: 10px!important;
+            }
+        }
+        .footer-right-wrapper {
+            padding: 30px 0;
+        }
+    }
+
+
+    .user .dropdown-toggle {
+        text-align: right;
+    }
+    
+    .nav .user .dropdown-menu {
+        position: static !important;
+    }
+    
+    .landing-banner-section .banner-head h2{
+        background-color: transparent;
+        padding: 0;
+    }
+    
+    .owl-carousel-section .owl-dots {
+        position: absolute;
+        top: -10px;
+        padding: 30px 0;
+    }
+    
+    .owl-carousel-section .owl-dots button > span {
+        width: 10px;
+        height: 10px;
+        display: inline-block;
+        background-color:$white;
+        margin-right: 17px;
+        border-radius: 50%;
+    }
+
+    .block-wraper {
+        padding-top: 60px;
+    }
+
+    .landing-banner-wrapper .logo {
+        display: none;
+    }
+
+    .landing-banner-section .shape-block .common-anime.shape-2{
+        right: -8%;
+        bottom: -9%;
+    }
+
+    .bottom-footer{
+        padding: 30px 0;    
+    }
+
+    .banner-Section{
+        min-height: 83vh;
+    }
+
+    .landing-banner .flex-wrapper .earlychildood{
+        min-height: 0;
+    }
+
+    .landing-banner-section .banner-head h2{
+        font-size: 22px;
+    }
+
+    .professional-Block{
+        position: static !important;
+    }
+
+    .question-block{
+        .set-space {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        .questionWrapper {
+            background-color: $white;
+            min-height: 250px;
+            padding-bottom: 60px;
+            .desc-text {
+                padding-bottom: 20px;
+            }
+            &.summary-block {
+                padding-bottom:30px;
+                .desc-text,
+                .set-block-space {
+                    padding-left: 0px;
+                    padding-right: 0px;
+                    &.bg-Gray {
+                        background-color:$white;
+                    }
+                    &.summary-list {
+                        padding-top:0px;
+                        padding-bottom:0px;
+                        li {
+                            padding-bottom: 20px;
+                        }
+                    }
+                    .bg-white {
+                        border:1px solid #cccccc;
+                    }
+                    .d-flex {
+                        display: block;
+                        text-align: center
+                    }
+                    .heading{
+                        &.x-lg {
+                            font-size: 40px;
+                            padding:10px 0 20px;
+                        }
+                    }
+                }
+            }
+            .static-box {
+                img {
+                    height: 110px;
+                }
+            }
+        }
+    }
+
+    .mobile-heading {
+        padding: 20px;
+    }
+
+    .accept-condition {
+        > div {
+            padding-left: 0!important;
+        }
+    } 
+    .contact-us-section {
+        #g-recaptcha {
+            padding-left: 0px;
+        }
+    }
+    .static-content {
+        h4 {
+            padding-bottom: 12px;
+            padding-top: 5px;
+        }
+        h4.declaration{
+            padding-left: 42px;
+        }
+    }
+    .childhood-professional-section {
+        .childhoodprofeesional-block{
+            padding: 00px 0 20px;
+            display: block;
+            &.d-flex {
+                >div {
+                    max-width: 100%;
+                }
+            }
+        }
+    }
+
+    .mobile-animated-icon {
+        .animated-icon{
+            display: block !important;
+        }
+        .shape-block-listing{
+            .common-anime{
+                display: none;
+            }
+            .shape-3{
+                display: block;
+                top: 80%;
+                left: -7%;
+                max-width: 140px;
+            }
+            .shape-4{
+                display: block;
+                top: 17%;
+                right: -5%;
+            }
+            .shape-7{
+                display: block;
+                top: 84%;
+                right: 0%;
+            }
+        }
+    }
+
+}
+
+@media only screen and (max-width : 580px){
+    
+    .mobile-heading {
+        h2 {
+            max-width: 200px;
+        }
+    }
+    
+    .pdf-link {
+        padding-top: 25px;
+        padding-bottom: 25px;
+        a {
+            span {
+                display: inline-block;
+                max-width: 150px;
+                word-break: break-word;
+                vertical-align: middle;
+            }
+        }
+    }
+}
+
+

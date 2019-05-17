@@ -1,0 +1,2 @@
+Object is a copy of the class. Instance is a variable that holds the memory address of the object. 
+You can also have multiple objects of the same class and then multiple instances of each of those objects.

@@ -1,0 +1,32 @@
+RewriteEngine on
+
+DirectoryIndex disabled
+
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+#RewriteCond %{HTTP:UPGRADE} ^WebSocket$ [NC]
+#RewriteCond %{HTTP:CONNECTION} ^Upgrade$ [NC]
+#RewriteRule .* ws://gossip.fpage.in%{REQUEST_URI} [P]
+
+RewriteCond %{HTTP:UPGRADE} ^WebSocket$ [NC]
+RewriteCond %{HTTP:CONNECTION} ^Upgrade$ [NC]
+RewriteRule .* ws://127.0.0.1:8484%{REQUEST_URI} [P]
+
+#RewriteRule ^$ http://gossip.fpage.in:8484/ [P,L]
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule ^(.*)$ http://gossip.fpage.in:8484/$1 [P,L]
+
+RewriteRule ^$ http://127.0.0.1:8484/ [P,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ http://127.0.0.1:8484/$1 [P,L]
+
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php56” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddType application/x-httpd-ea-php56___lsphp .php .php5 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

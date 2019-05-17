@@ -1,0 +1,823 @@
+
+// Home page Banner section SCSS start
+
+.wrapper{
+    overflow: hidden;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.banner-Section {
+   
+    & {
+        min-height: 100vh;
+        position: relative;
+        background-image: url( $imgpath + 'homeBanner.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center bottom;
+        padding: 70px 0;
+        overflow: hidden;
+    }
+    .landing-banner-wrapper {
+        .banner-text {
+            max-width: 550px;
+            padding-top: 100px;
+        }
+    }
+    .banner-text{
+        h2{
+            font-size: 60px;
+            color: $white;
+            max-width: 540px;
+            padding-bottom: 30px;
+            font-weight: 400;
+        }
+        .find-out-more{
+            padding: 20px 0;
+        }
+    }   
+    .shape-block{
+         .common-anime {
+             position: $abs;
+            -webkit-animation: jump  2s infinite cubic-bezier(0.46, 0.03, 0.52, 0.96);
+            -moz-animation: jump  2s infinite cubic-bezier(0.46, 0.03, 0.52, 0.96);
+            -ms-animation: jump  2s infinite cubic-bezier(0.46, 0.03, 0.52, 0.96);
+            animation: jump  2s infinite cubic-bezier(0.46, 0.03, 0.52, 0.96);
+        }
+        .shape-1{
+            top: 48%;
+            left: 2%;
+            animation-delay: 0.35s !important;
+        }
+       .shape-2{
+            top: 14%;
+            right: 27%;
+            animation-delay: .07s!important;
+        }
+       .shape-3{
+        top: 72%;
+        left: 34%;
+            animation-delay: .25s!important;
+        }
+       .shape-4{
+            top: 74%;
+            left: 7%;
+            animation-delay: .40s!important;
+        }
+       .shape-5 {
+            top: 9%;
+            left: 5%;
+            animation-delay: .55s!important;
+        }    
+        .shape-6 {
+            top: 8%;
+            left: 4%;        
+            animation-delay: .70s!important;
+        }
+        .shape-7 {
+            top: 59%;
+            right: 13%;
+            animation-delay: .85s!important;
+        }
+        .shape-8 {
+            top: 12%;
+            right: -17%;
+            animation-delay: 1s!important;
+        }
+    }
+}   
+
+// Home section css
+
+// Resposnvie header css
+
+.top-header{
+    .toggle-icon {
+        .btn{
+            background-color: transparent;
+            width: 50px;
+            height: 50px;
+            min-height: 0;
+            min-width: 0;
+            border-radius: 0;
+            position: absolute;
+            right: 13px;
+            box-shadow: none;
+            top: 41px;
+            outline: 0;
+                & span{
+                    display: block;
+                    width: 31px;
+                    height: 3px;
+                    background-color: #000000;
+                    margin-bottom: 10px;
+                }
+        }
+    }
+    .sidebar-block {
+        position: fixed;
+        z-index: 999;
+        background-color: #F5F5F5;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        display: none;
+        overflow: auto;
+        padding: 70px;
+    }    
+    .menu-list {
+        padding-top: 30px;
+    }
+    .menu-list ul > li {
+        font-size: 20px;
+        padding: 15px 0;
+        border-bottom: 1px solid #946868;
+        font-weight: 600;
+        color: #4F4F4F;
+        margin: 0 -20px;
+        padding-left: 20px;
+
+        & a{
+            color: #4F4F4F;
+        }
+    }    
+    button.cross-link span {
+        height: 4px;
+        width: 30px;
+        background: #000000;
+        display: block;
+        margin-bottom: 7px;
+        transform: rotate(50deg);
+        position: absolute;
+        top: 48px;
+        right: 42px;
+    }
+    
+    button.cross-link {
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    button.cross-link span:last-child {
+        transform: rotate(133deg);
+        -webkit-transform: rotate(133deg);
+        -moz-transform: rotate(133deg);
+        -ms-transform: rotate(133deg);
+        -o-transform: rotate(133deg);
+}
+}
+
+// Header section css start
+
+.header-section{
+    .navbar {
+        &{
+            background-color: transparent;
+            border-color: transparent;
+            margin-bottom: 0;
+        }
+    }
+    .navbar-brand{
+        height: auto;
+    }
+    .inner-navbar{
+            .prof-link{
+                padding-right: 80px;
+            }
+            &{
+                padding: 32px 0 3px 195px;
+            }
+            li{
+                a{
+                    font-size: 14px;
+                    text-transform: uppercase;
+                    color:#4A4A4A !important;     
+                    font-weight: 600;
+                }
+            }   
+        
+    }
+}
+
+// carousel section css
+
+.landing-banner-section {
+    &{
+        background-color: #1F354F;
+        padding: 80px 0;
+        position: relative;
+    }
+
+    .banner-head{
+        h2{
+            color: #ffffff;
+            background-color: #F53091;
+            display: inline-block;
+            padding: 5px 15px 8px 20px;
+        }
+        &{
+            padding-bottom: 20px;
+        }
+    }
+    .news-content{
+        h3{
+            color:$white;
+            font-size: 24px;
+            padding: 20px 0;
+        }
+        .slot-available{
+            padding-top: 40px;
+            color: $white;
+        
+            & h4{
+                max-width: 175px;
+                line-height: 28px;
+            }
+            & li{
+                font-size: 16px;
+                line-height: 28px;
+            }
+        }
+    }
+    .shape-block .common-anime{
+        position: $abs;
+        -webkit-animation: jump  2s infinite cubic-bezier(0.46, 0.03, 0.52, 0.96);
+        -moz-animation: jump  2s infinite cubic-bezier(0.46, 0.03, 0.52, 0.96);
+        -ms-animation: jump  2s infinite cubic-bezier(0.46, 0.03, 0.52, 0.96);
+        animation: jump  2s infinite cubic-bezier(0.46, 0.03, 0.52, 0.96);
+        &.shape-1{
+            top: 13%;
+            left: 2%;
+        }
+        &.shape-2{
+            right: 3%;
+            bottom: 5%;
+            animation-delay: 0.54s !important;
+        }
+    }
+    .owl-nav.disabled {
+        display: block !important;
+        height: 0;
+    }
+    button.owl-dot.active span {
+        background: #EF2C8C;
+    }
+
+    button.owl-prev:focus, button.owl-next:focus {
+        outline: 0;
+        box-shadow: none;
+    }
+
+    button.owl-dot:focus{
+        outline: 0;
+        border: 0;
+    }
+    
+    .owl-nav.disabled > button > span {
+        width: 30px;
+        height: 30px;
+        display: block;
+        position: absolute;
+        background-repeat: no-repeat;
+    }
+    
+    .owl-nav.disabled > .owl-prev > span {
+        top: 91px;
+        left: -90px;
+        background-image: url( $imgpath + 'owlleft.png');
+    }
+    
+    .owl-nav.disabled > .owl-next > span {
+        right: -90px;
+        top: 91px;
+        background-image: url( $imgpath + 'owlright.png');
+    }
+}
+
+// childhoosection scss
+
+.childhood-section{
+    &{
+        position: relative;
+        color: #ffffff;
+    }
+    .childhoodcontent{
+        max-width: 520px;
+        border-radius: 30px;
+        background-color: #F53091;
+        min-height: 274px;
+        min-width: 510px;
+        position: relative;
+        box-shadow: 2px 2px 4px #4a4141;
+        margin: 0 auto;
+        @extend %flexbox;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .flex-wrapper{
+        @extend %flexbox;
+
+        .earlychildood{
+            min-height: 500px;
+            background-color: #4C81C3;
+            width: 50%;
+            @extend %flexbox;
+            justify-content: center;
+            align-items: center;
+            h2{
+                font-size: 36px;
+            }
+            a:focus,
+            a:hover {
+                text-decoration: none;
+                color:$white;
+            }
+        }
+        .yourchildhood{
+            background-image: url( $imgpath + 'parentBg.png');
+        }
+        .content-wrapper {
+            padding-left: 73px;
+            position: relative;
+        }
+        .content-wrapper:before {
+            content: '';
+            position: $abs;
+            width: 66px;
+            height: 65px;
+            background-image: url( $imgpath + 'childhood.png');
+            left: 0px;
+            top: 13px;
+            background-repeat: no-repeat;
+        }       
+        .parent-wrapper:before{
+            background-image: url( $imgpath + 'parenting.png');
+        }
+    }
+}
+
+// Bottom logo
+
+.logo-wrapper{
+    padding: 30px 0;    
+
+    .bottom-logo li {
+        width: 165px;
+        height: 60px;
+        background-image: url( $imgpath + 'bottom-logo.png');
+        margin: 0 auto;
+        display: inline-block;
+        background-repeat: no-repeat;
+        background-size: cover;
+        &+li {
+            margin-left: 20px;
+        }
+    }
+    .bottom-logo  .newlogo{
+        background-image: url( $imgpath + 'bottom-logo2.png');
+        background-position: center;
+        background-size: contain;
+    }
+}
+
+// Footer section cs start
+
+.footer-section{
+    padding: 60px 0 0;
+    background-color: #4A4A4A;
+    color:$white;
+    .container {
+        max-width: 1216px;
+    }
+    .subscription-form{
+        max-width: 420px;
+        position: relative;
+
+        .form-control{
+            border-radius: 0;
+            box-shadow: none;
+            height: 48px;
+            padding-right: 60px;
+            background-color:$white !important;
+        }
+        .btn{
+            position: $abs;
+            border-radius: 0;
+            min-width: 0;
+            background-image: url( $imgpath + 'subsarrow.png');
+            width: 50px;
+            height: 48px;
+            min-height: 0;
+            background-repeat: no-repeat;
+            right: 0px;
+            background-position: center;
+            top: 0;
+            right: 0px;
+            box-shadow: none;
+        }
+    }
+    .footer-list{
+        ul{
+            li{
+                text-transform: uppercase;
+                font-size: 15px;
+                padding-bottom: 10px;
+                a:hover{
+                    color: $white;
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+    .bottom-footer{
+        border-top: 1px solid $white;
+        padding: 20px 0;
+    }
+    .footer-left-wrapper{
+        padding-bottom: 13px;
+    }
+    .footer-right-wrapper {
+        padding-bottom: 30px;
+    }
+    .mail-box {
+        position: relative;
+        padding-left: 38px;
+        .mail-icon:before {
+            content: '';
+            width: 30px;
+            height: 30px;
+            background-image: url( $imgpath + 'email.png');
+            position: absolute;
+            display: inline-block;
+            left: 0px;
+            top: -5px;
+            background-repeat: no-repeat;
+            background-position: center
+        }
+    }
+    .checkboxBtn .termscondition {
+        color: $white;
+        border-bottom: 2px solid $white;
+    }
+    .address-block {
+        padding-right: 20px;
+        p {
+            font-weight: 700;
+            font-size: 14px;
+        }
+    }
+    .copyright-text {
+        p {
+            font-size: 12px;
+            padding: 5px 0;
+        }
+    }
+}
+
+
+//    Landin banner css
+
+.landing-banner{
+    .flex-wrapper{
+        .earlychildood{
+            min-height: 700px;
+            background-color: transparent;
+            background-image: url( $imgpath + 'childrenrole.png');
+        }
+        .yourchildhood{
+            background-image: url( $imgpath + 'parentrole.png');
+        }
+    }
+}
+
+// Childhood section
+
+
+
+.childhood-professional-section{
+    background-color: $bgcolor;
+    .banner-image{
+        background-image: url( $imgpath + 'courseBanner.png');
+    }
+    .mobile-heading {
+        h2{
+            font-size: 16px;
+        }
+        
+    }
+
+    .course-wrapper{
+        padding: 90px 0;
+        position: relative;
+
+        .commonspace{
+            padding: 40px;
+        }
+        .course-wrapper-block{
+            border: 1px solid #DFDFDF;
+            box-shadow: 2px 2px 4px #cabfbf;
+            border-radius: 5px;
+            line-height: 26px;
+            margin-bottom: 16px;
+            background-color: #ffffff;
+
+            .courseheader {
+                h2{
+                    color :#4A4A4A;
+                    min-height: 100px;
+                }
+            }
+            .courseimage {
+                min-height: 160px
+            }
+            .courseContent {
+                min-height: 392px;
+            }
+
+        }
+    }
+    .childhoodprofeesional-block{
+        padding: 30px 0 40px;
+        &.d-flex {
+            >div {
+                max-width: 50%;
+                width: 100%;
+            }
+        }
+    }
+}
+
+
+// Parents Landing page
+
+.parent-landing-banner{
+    .banner-image{
+        background-image: url( $imgpath + 'parent-college-landing.png');
+    }
+    .parent-middle-banner{
+        padding-bottom: 60px;
+    }
+}
+
+// Hide Buttton globally
+
+
+// Overview section 
+
+.overview-section {
+    padding-bottom: 50px;
+    .sections-wrapper {
+        padding: 10px 0 100px;
+    }
+    .overview-block {
+        background-color: $white;
+        padding: 30px;
+    }
+    .overview-heading {
+        padding-bottom: 20px;
+    }
+    .mentor {
+        padding: 5px 0 20px;
+    }
+    .topic-bloic {
+        li {
+            width: 33.3%;
+            float: left;
+            text-align: center;
+        }
+    }
+    .content {
+        max-width: 190px;
+        margin: 0 auto;
+        padding-top: 30px;
+    }
+    .topic-head {
+        padding: 20px 0 0 0;
+        color: #4A4A4A;
+    }
+    .topic-bloic{
+        padding-top: 40px;
+    }
+    .note{
+        padding: 30px 0;
+        display: block;
+    }
+    .assesmnet-block{
+        min-height: 320px;
+        padding: 30px;
+      
+
+        & h3{
+            padding-bottom: 30px;
+        }
+
+        .blockContent{
+            h3
+            {
+                font-size: 18px;
+            }
+            p{
+                color: #717171;
+            }
+        }
+
+        .blockWrapper{
+            position: relative;
+            padding-left: 109px;
+        }
+        
+        .blockImage{
+            position: $abs;
+            width: 100px;
+            left: 0;
+            height: 100px;
+            top: 0;
+        }
+    }
+    .program-buttons{
+        text-align: center;
+        padding-top: 70px;
+
+        li {
+
+            display: inline-block;
+            padding-right: 50px;
+
+            & .btn{
+                background-color: #ffffff;
+                padding: 25px 0;
+                border: 1px solid $pink;
+                &:hover, &:focus{
+                    color: $white;
+                    @include border-radius(24px);
+                    background-color: $pink;
+                }
+            }
+
+        }
+    }   
+}
+
+.Q-A-banner {
+    .banner-image{
+        background-image: url( $imgpath + 'q-a-banner.png');
+    }
+    .heading {
+        padding-top: 40px;
+    }
+}
+
+
+// Question Block   
+.pdf-link {
+    padding-top:35px;
+    padding-bottom: 35px;
+}
+.question-block{
+    padding: 0 0 40px;
+    background-color: #f5f5f5;
+    .set-space {
+        padding-left: 60px;
+        padding-right: 60px;
+    }
+    .questionWrapper {
+        background-color: $white;
+        min-height: 700px;
+        padding-top:30px;
+        padding-bottom: 30px;
+        .desc-text {
+            padding-bottom: 40px;
+        }
+        a:hover {
+            text-decoration: none;
+        }
+        &.summary-block {
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom:60px;
+
+            .desc-text,
+            .set-block-space {
+                padding-left: 40px;
+                padding-right: 40px;
+                &.summary-list {
+                    padding-top:60px;
+                    padding-bottom:60px;
+                    li {
+                        padding-bottom: 30px;
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+// Landing Parent Overview
+
+.college-overview{
+
+    .schedule-time {
+            li{
+                font-weight: 700;
+                line-height: 26px;
+            }
+    }
+
+    .assesment-block{
+        min-height: 420px;
+    }
+    & .common-height {
+        min-height: 40px;
+    }
+    .address {
+        max-width: 200px;
+    }
+}
+
+// Contact Us styling
+
+.contact-us-section{
+
+    .contactus-section{
+
+        .banner-image{
+             background-image: url( $imgpath + 'contact-banner.png');
+        }
+
+    }
+
+    .form-wrapper-box {
+        margin-top: 35px;
+    }
+
+    .icon-image:before {
+        content: '';
+        width: 42px;
+        height: 60px;
+        background-image: url( $imgpath + 'location.png');
+        position: absolute;
+        left: 0;
+        background-repeat: no-repeat;
+    }
+    .contact:before{
+        background-image: url( $imgpath + 'fb-contact.png');
+    }
+    .admin-block:before{
+        background-image: url( $imgpath + 'admin.png');
+    }
+    
+    & .map-info{
+        .common-block{
+            padding-left: 45px;
+            p{
+                max-width: 300px;
+            }
+        }
+    
+    }
+
+    .accept-condition{
+        .checkboxBtn {
+            
+            input[type="checkbox"]:checked + label > span{
+                background-color: #f63091;
+            }
+            label {
+                span{
+                    background-color: #EFEFEF;
+                    top: 0;
+                 }
+                 a{
+                     color: $black;
+                     &:hover{
+                         text-decoration: none;
+                     }
+                 }
+            }
+        }
+        .detail-link{
+            max-width: 400px;
+            display: block;
+            padding: 30px 0;
+        }
+    }
+    .submit-button{
+        padding-left: 42px;
+        .btn{
+            min-width: 0;
+            padding: 10px 25px;
+        }
+    }
+    #g-recaptcha {
+        padding-left: 42px;
+    }
+}   
+.question-pages {
+	.overview-section {
+		min-height: 1450px;
+	}
+}

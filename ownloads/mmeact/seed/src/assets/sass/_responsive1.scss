@@ -1,0 +1,381 @@
+@media only screen and (max-width : 1024px) {
+    .sections-wrapper {
+        padding: 30px 0 60px;
+    }
+}
+@media only screen and (max-width :991px) {
+    p {
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .heading {
+        &.x-lg {
+            font-size:32px;
+        }
+        &.lg {
+            font-size:28px;
+        }
+        &.md {
+            font-size:18px;
+        }
+        &.main {
+            padding-bottom:20px;
+        }
+    }
+    .h2, h2 {
+        font-size: 22px;
+    }
+    .banner-image {
+        min-height: 360px;
+    }
+    .desc-text {
+        p + p {
+            padding-top: 20px;
+        }
+    }
+    .about-blocks {
+        padding: 30px 0;
+    }
+    .static-list {
+        h4 {
+            padding-bottom:20px;
+        }
+    }
+    .tabing-blocks {
+        padding: 30px;
+        &.md {
+            padding: 30px 30px 15px;
+        }
+        &.space-none {
+            padding: 30px 0 0;
+            .tab-content {
+                &.set-space {
+                    padding: 0 15px;
+                    margin-bottom: 20px;
+                }
+                &.set-space-around{
+                    padding: 0px 15px 0px;
+                }
+            }
+        }
+        .p-t-40 {
+            padding-top: 20px!important;
+        }
+        .tab-content {
+            &+.tab-content {
+                padding-top: 20px;
+            }
+            .inline-list {
+                >li{
+                    padding:0 10px 20px;
+                }
+            }
+            .list-decs{
+                min-height: auto;
+            }
+            .desc-text {
+                padding-bottom: 20px;
+            }
+            &.parallel-block {
+                display: block;
+                >div{
+                    width: 100%;
+                }
+                .desc-block.p-l-20 {
+                    padding-left:0!important;
+                    padding-top:20px;  
+                }
+            }
+        }
+        .overview-list {
+            display: block;
+            text-align: center;
+            .image-block {
+                margin:0 auto 20px;
+            }
+            .desc-text {
+                p {
+                    font-size: 16px;
+                }
+            }
+            
+        }
+        .assesment-block {
+            padding: 20px;
+        }
+        .RRT__container {
+            .RRT__tab {
+                border-left-width:0!important;
+                background-color:#E9318B;
+                color:#fff;
+                position: relative;
+                &.tab-head {
+                    margin-top:10px; 
+                }
+                &:focus {
+                    border-radius: 0;
+                }
+                &:after {
+                    content: '';
+                    height: 10px;
+                    width: 10px;
+                    border: 2px solid #fff;
+                    display: block;
+                    position: absolute;
+                    top: 14px;
+                    right: 25px;
+                    border-bottom: 0;
+                    border-left: 0;
+                    @include transform(rotate(45deg));
+                    @include transition(all, .2s, ease-in-out);
+                } 
+            }
+            .RRT__tab[aria-expanded="true"]{
+                &:after {
+                    @include transform(rotate(135deg));
+                    @include transition(all, .2s, ease-in-out);
+                }
+            }
+            .RRT__tab--selected {
+                border-radius:0;
+            }
+            .RRT__panel {
+                border-top: 0px solid#E9318B;
+            }
+        }
+    }
+    .youtube-link {
+        max-width: 400px;
+        min-height: 200px;
+        margin-bottom: 0;
+    }
+}
+
+@media only screen and (max-width : 829px) {
+    
+    .tabing-section {
+        .RRT__container {
+            .RRT__tab {
+                border-left-width:0!important;
+                background-color:#E9318B;
+                color:#fff;
+                position: relative;
+                &.tab-head {
+                    margin-top:10px; 
+                }
+                &:focus {
+                    border-radius: 0;
+                }
+                &:after {
+                    content: '';
+                    height: 10px;
+                    width: 10px;
+                    border: 2px solid #fff;
+                    display: block;
+                    position: absolute;
+                    top: 14px;
+                    right: 25px;
+                    border-bottom: 0;
+                    border-left: 0;
+                    @include transform(rotate(45deg));
+                    @include transition(all, .2s, ease-in-out);
+                } 
+            }
+            .RRT__tab[aria-expanded="true"]{
+                &:after {
+                    @include transform(rotate(135deg));
+                    @include transition(all, .2s, ease-in-out);
+                }
+            }
+            .RRT__tab--selected {
+                border-radius:0;
+            }
+            .RRT__panel {
+                border-top: 0px solid#E9318B;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width : 767px){
+    .heading {
+        &.x-lg {
+            font-size:24px;
+        }
+        &.lg {
+            font-size:22px;
+        }
+        &.md {
+            font-size:16px;
+        }
+    }
+    .h2, h2 {
+        font-size: 18px;
+    }
+    .pd-xs-0 {
+        padding: 0;
+    }
+    .m-t-20-xs {
+        margin-top: 20px;
+    }
+    .m-t-30-xs {
+        margin-top: 30px;
+    }
+    .list-p-b-40 {
+        > li + li {
+            padding-top: 20px;
+        }
+    }
+    .show-in-xs {
+        display: block;
+        .pd-30 {
+            padding: 20px;
+        }
+    }
+    .label-text {
+        &.md {
+            font-size: 20px;
+        }
+    }
+    .sections-wrapper {
+        padding: 20px 0 40px;
+        &.terms-page {
+            padding: 0 0 40px;
+        }
+    }
+    .banner-image {
+        min-height: 260px;
+    }
+    .static-list {
+        &.p-l-30 {
+            padding-left: 0!important;
+        }
+    }
+    .tabing-section {
+        .container {
+            padding: 0;
+        }
+    }
+    .tabing-blocks {
+        .tab-content {
+            .inline-list {
+                margin-left: 0;
+                margin-right: 0;
+                >li{
+                    padding:0 0px 20px;
+                }
+            }
+            .desc-text {
+                padding-bottom: 20px;
+            }
+            &.parallel-block {
+                display: block;
+                >div{
+                    width: 100%;
+                }
+                .desc-block.p-l-20 {
+                    padding-left:0!important;
+                    padding-top:20px;  
+                }
+            }
+            .p-r-30 {
+                padding-right: 0!important;
+            } 
+            .p-l-30 {
+                padding-left: 0!important;
+            }
+        }
+    }
+    .list-33 {
+        >li {
+            width: 50%;
+        }
+    }
+    .list-50 {
+        >li {
+            width: 100%;
+        }
+    }
+    .static-content {
+        &.space-around {
+            padding: 30px;
+        }
+        p {
+            line-height: 20px;
+        }
+        .bullet-list {
+            li {
+                line-height: 20px;
+            }
+        }
+        .p-t-30 {
+            padding-top: 15px!important;
+        }
+        .p-b-30 {
+            padding-bottom: 15px!important;
+        }
+    }
+    .career-page {
+        >div {
+            background-color: $white;
+        }
+    }
+    .accordion-section {
+        padding-top:30px;
+        .panel-group {
+            .panel-default {
+                >.panel-heading {
+                    .panel-title  {
+                        a {
+                            display: block;
+                            padding: 15px 30px;
+                            font-size: 16px;
+                        }
+                    }
+                }
+            }
+            .panel-body {
+                padding: 0;
+            }
+        }
+    }
+    
+    .down-arrow {
+        a:after {
+            right: 25px;
+        }
+    }
+}
+
+@media only screen and (max-width : 580px){
+    .heading {
+        &.x-lg {
+            font-size:20px;
+        }
+        &.lg {
+            font-size:18px;
+        }
+        &.md {
+            font-size:16px;
+        }
+    }
+    .banner-image {
+        min-height: 200px;
+    }
+    .list-33 {
+        >li {
+            width: 100%;
+        }
+    }
+    .logo-wrapper{
+        padding: 15px 0;
+        .bottom-logo li {
+            width: 140px;
+          
+        }
+    }
+    .sidebar-block{
+        overflow: hidden !important;
+    } 
+    
+}

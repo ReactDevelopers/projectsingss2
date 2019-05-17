@@ -1,0 +1,3 @@
+https://medium.freecodecamp.org/learn-webpack-for-react-a36d4cac5060
+https://itnext.io/how-to-package-your-react-component-for-distribution-via-npm-d32d4bf71b4f
+https://medium.com/@alexmngn/why-react-developers-should-modularize-their-applications-d26d381854c1

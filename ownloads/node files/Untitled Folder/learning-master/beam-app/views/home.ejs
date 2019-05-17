@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+        <meta charset="utf-8">
+        <title><%= APP_NAME %></title>
+        <link rel="stylesheet" media="screen" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" />
+        <link rel="stylesheet" media="screen" href="./css/map.css" />
+        <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <form id="mapFilters" method="POST" action="">
+            <div class="row">
+                <div class="form-group col-md-2">
+                    <input class="form-control number" type="number" name="count" placeholder="Enter #Scooters" value="<%= (query.count) ? query.count : DEFAULT_LIMIT %>">
+                </div>
+                <div class="form-group col-md-2">
+                    <input class="form-control number" type="number" name="range" placeholder="Enter Range." value="<%= (query.range) ? query.range : MAP_RADIUS %>">
+                </div>
+                <div class="form-group col-md-2">
+                    <input class="form-control number" type="text" name="latitude" placeholder="Enter Latitide" value="<%= (query.latitude) ? query.latitude : 1.351376 %>">
+                </div>
+                <div class="form-group col-md-2">
+                    <input class="form-control number" type="text" name="longitude" placeholder="Enter Longitude" value="<%= (query.longitude) ? query.longitude : 103.805181 %>">
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="fetch-all" class="col-md-6">Fetch All</label>
+                    <input id="fetch-all" class="form-control col-md-2 btn" type="checkbox" name="fetchAll" value="yes">
+                </div>
+                <div class="form-group col-md-1">
+                    <button class="form-control btn btn-success" type="submit">Go</button> 
+                </div>
+                <div class="form-group col-md-1">
+                    <button class="form-control btn btn-danger clear-form" type="button">Clear</button> 
+                </div>
+            </div>
+        </form>
+
+        <div id="map"></div>
+
+        <script type="text/javascript">
+
+            var map, geocoder, infowindow, defaultPos, queryString;
+            var markers = [];
+            var drawnMarkers = [];
+            var processing = false;
+
+            $(document).ready(function(e){
+                /** Setting default lat-lng*/
+                defaultPos = { 
+                    lat: queryStringValue('latitude') ? parseFloat(queryStringValue('latitude')) : parseFloat('<%= SINGAPORE_LAT %>'), 
+                    lng: queryStringValue('longitude') ? parseFloat(queryStringValue('longitude')) : parseFloat('<%= SINGAPORE_LNG %>') 
+                };
+
+                /** Setting default filters*/
+                defautFilter = {
+                    count: queryStringValue('count') ? queryStringValue('count') : parseInt('<%= DEFAULT_LIMIT %>'), 
+                    range: queryStringValue('range') ? queryStringValue('range') : parseInt('<%= MAP_RADIUS %>')
+                }
+                
+                /** Setting the query string which will hold the default filters*/
+                $.query.SET('count',defautFilter.count)
+                    .SET('range',defautFilter.range)
+                    .SET('latitude',defaultPos.lat)
+                    .SET('longitude',defaultPos.lng)
+                    .REMOVE('fetchAll');
+
+                /** Setting default global querystring*/
+                queryString = $.query.toString();
+
+                /** Fetching default data */
+                fetchScooters();
+            });
+
+            /** Map callback function */
+            function initAutocomplete() {
+                geocoder = new google.maps.Geocoder();
+                infowindow = new google.maps.InfoWindow();
+
+                map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 13,
+                    mapTypeId: 'roadmap'
+                });
+
+
+                if(typeof map === 'object') {
+                    /** Code for geeting the current location and setting the marker */
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            var pos = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+
+                            infowindow.setPosition(pos);
+                            infowindow.setContent('Current Location');
+                            infowindow.open(map);
+                            map.setCenter(pos);
+                        }, function() {
+                            handleLocationError(true, infowindow, map.getCenter());
+                        });
+                    } else {
+                        // Browser doesn't support Geolocation
+                        handleLocationError(false, infowindow, map.getCenter());
+                    }
+
+                    /** Listening map events on which data will be fetched*/
+                    map.addListener('idle', function(e) {
+                        setLatLong(map);
+                    });
+
+                    map.addListener('click', function(e) {
+                        setLatLong(map);
+                    });
+
+                    map.addListener('dragend', function(e) {
+                        setLatLong(map);
+                        setRange(map);
+                    });
+                }
+            }
+
+            function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+                if(typeof map === 'object') {
+                    map.setCenter(defaultPos);
+                }
+            }
+
+            /** Handling map filters submission*/
+            $(document).on('submit','#mapFilters',function(e){
+                e.preventDefault();
+
+                $.each($(this).serializeArray(),function(i,v){
+                    $.query.SET(v.name,v.value);
+                });
+
+                queryString = $.query.toString();
+
+                if(typeof map === 'object') {
+
+                    /** On submit clear all markers*/
+                    deleteMarkers();
+                    $('form button').attr('disabled',true);
+                    processing = false;
+                    fetchScooters();
+                }
+            })
+
+
+            function fetchScooters(data) {
+                
+                setQueryString('form');
+                
+                if(!processing) {
+                    processing = true;
+                    var data = {};
+                    var scooters;
+                    if(drawnMarkers.length > 0){
+                        data.notin = drawnMarkers;
+                    }
+
+                    if(queryStringValue('fetchAll')){
+                        data.fetchAll = 'yes';
+                    }
+
+                    axios({
+                        method: 'POST',
+                        url: "<%= NODE_URL %>scooters"+queryString,
+                        data: data
+                    })
+                    .then(function (resp) {
+
+                        var i;
+                        
+                        scooters = resp.data.data;
+                        
+                        $.each(scooters,function(i,v){ 
+                            if($.inArray(v.id, drawnMarkers) === -1) {
+                                
+                                /**maitaining the fetched data ids*/
+                                drawnMarkers.push(v.id);
+                                
+                                marker = new google.maps.Marker({
+                                    position: new google.maps.LatLng(v.latitude, v.longitude),
+                                    icon: {
+                                        url: '<%= NODE_URL %>images/marker.png',
+                                        scaledSize: new google.maps.Size(20, 20),
+                                        origin: new google.maps.Point(0,0),
+                                        anchor: new google.maps.Point(0, 0)
+                                    },
+                                    map: map
+                                });
+
+                                google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                                    return function() {
+                                        infowindow.setContent(
+                                            '<ul>'+
+                                            '<li>NAME: '+v.name+'</li>'+
+                                            '<li>S. CODE: '+v.serialCode+'</li>'+
+                                            '<li>BATTERY: '+v.battery+'%</li>'+
+                                            '</ul>'
+                                            );
+                                        infowindow.open(map, marker);
+                                    }
+                                })(marker, i));
+
+                                markers.push(marker);
+                            }
+                        });
+                    })
+                    .then(function(resp){
+                        if(scooters.length > 0){
+                            processing = false;
+                            if(!queryStringValue('fetchAll')){
+                                queryString = $.query.toString();
+                            }
+                            $('form button').attr('disabled',false);
+
+                        }
+                    })
+                    .catch(function (resp) {
+                        console.log(resp);
+                        $('form button').attr('disabled',false);
+                    });
+                }
+            }
+
+        </script>
+        <script src="./js/jquery.query-object.js"></script>
+        <script src="./js/app.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=<%= map_key %>&libraries=places&callback=initAutocomplete" async defer></script>
+
+    </body>
+
+</html>
