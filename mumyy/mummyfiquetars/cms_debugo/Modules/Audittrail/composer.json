@@ -1,0 +1,33 @@
+{
+	"name": "rml-cms/audittrail-module",
+	"description": "",
+    "type": "asgard-module",
+    "require": {
+        "php": ">=5.4",
+        "composer/installers": "~1.0",
+        "rml-cms/core-module": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "orchestra/testbench": "~3.1"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Audittrail\\": ".",
+            "Modules\\": "Modules/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+	"authors": [
+		{
+			"name": "Rainmaker Labs",
+			"email": "centroid@rainmaker-labs.com"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Modules\\Audittrail\\": ""
+		}
+	}
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Category",
+    "alias": "category",
+    "description": "",
+    "version": "v0.1",
+    "keywords": [],
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\Category\\Providers\\CategoryServiceProvider",
+        "Modules\\Category\\Providers\\RouteServiceProvider"
+    ],
+    "aliases":{
+        "CategoryService" : "Modules\\Category\\Facades\\CategoryServiceFacade"
+    },
+    "files": [
+        
+    ]
+}

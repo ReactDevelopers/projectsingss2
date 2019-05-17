@@ -1,0 +1,38 @@
+<div class="box-body">
+    <div class="box-body">
+        <div class='form-group<?php echo e($errors->has("{$lang}.title") ? ' has-error' : ''); ?>'>
+            <?php echo Form::label("{$lang}[title]", trans('page::pages.form.title')); ?>
+
+            <?php $old = $page->hasTranslation($lang) ? $page->translate($lang)->title : '' ?>
+            <?php echo Form::text("{$lang}[title]", old("{$lang}.title", $old), ['class' => 'form-control', 'data-slug' => 'source', 'placeholder' => trans('page::pages.form.title')]); ?>
+
+            <?php echo $errors->first("{$lang}.title", '<span class="help-block">:message</span>'); ?>
+
+        </div>
+        <div class='<?php echo e($errors->has("{$lang}.body") ? ' has-error' : ''); ?>'>
+            <?php echo Form::label("{$lang}[body]", trans('page::pages.form.body')); ?>
+
+            <?php $old = $page->hasTranslation($lang) ? $page->translate($lang)->body : '' ?>
+            <textarea class="ckeditor" name="<?php echo e($lang); ?>[body]" rows="20" cols="80">
+                <?php echo old("$lang.body", $old); ?>
+
+            </textarea>
+            <?php echo $errors->first("{$lang}.body", '<span class="help-block">:message</span>'); ?>
+
+        </div>
+        <div class="form-group<?php echo e($errors->has("medias_single") ? ' has-error' : ''); ?>">
+            <?php echo $__env->make('media::admin.fields.file-link', [
+                'entityClass' => 'Modules\\\\Page\\\\Entities\\\\PageTranslation',
+                'entityId' => $page->pageTranslation->id,
+                'zone' => 'background'
+            ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+            <?php echo $errors->first("medias_single", '<span class="help-block">:message</span>'); ?>
+
+        </div>
+        <?php if (config('asgard.page.config.partials.translatable.edit') !== []): ?>
+            <?php foreach (config('asgard.page.config.partials.translatable.edit') as $partial): ?>
+                <?php echo $__env->make($partial, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+</div>

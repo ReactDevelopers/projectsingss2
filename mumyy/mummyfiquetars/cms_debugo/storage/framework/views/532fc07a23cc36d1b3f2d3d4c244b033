@@ -1,0 +1,19 @@
+<div class="form-group">
+    <label for="<?php echo e($settingName); ?>"><?php echo e(trans($moduleInfo['description'])); ?></label>
+    <select multiple class="locales" name="<?php echo e($settingName); ?>[]" id="<?php echo e($settingName); ?>">
+        <?php foreach ($locales as $id => $locale): ?>
+        <option value="<?php echo e($id); ?>" <?php echo e(isset($dbSettings[$settingName]) && isset(array_flip(json_decode($dbSettings[$settingName]->plainValue))[$id]) ? 'selected' : ''); ?>>
+            <?php echo e(array_get($locale, 'name')); ?>
+
+        </option>
+        <?php endforeach; ?>
+    </select>
+</div>
+<script>
+    $( document ).ready(function() {
+        $('.locales').selectize({
+            delimiter: ',',
+            plugins: ['remove_button']
+        });
+    });
+</script>

@@ -1,0 +1,40 @@
+<div class="box-body">
+	<div class='form-group<?php echo e($errors->has("name") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("name", trans('category::categories.form.name')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text("name", Input::old('name'), ['class' => "form-control", 'placeholder' => trans('category::categories.form.name')] ); ?>
+
+	    <?php echo $errors->first("name", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("description") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("description", trans('category::categories.form.description')); ?>
+
+	    <?php echo Form::textarea("description", Input::old('description'), ['class' => "form-control", 'rows' => 5, 'placeholder' => trans('category::categories.form.description')]); ?>
+
+	    <?php echo $errors->first("description", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+<!-- 	<div class='form-group<?php echo e($errors->has("sorts") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("sorts", trans('category::categories.form.sort')); ?>
+
+	    <?php echo Form::text('sorts', Input::old('sorts'), ['class' => 'form-control', 'placeholder' => trans('category::categories.form.sort')]); ?>
+
+	    <?php echo $errors->first("sorts", '<span class="help-block">:message</span>'); ?>
+
+	</div> -->
+	<div class='form-group<?php echo e($errors->has("status") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("status", trans('category::categories.form.status')); ?>
+
+	    <?php echo Form::select("status", Config('asgard.category.config.status'), old("adv_id"), ['class' => "form-control"]); ?>
+
+	    <?php echo $errors->first("status", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class="form-group <?php echo e($errors->has("medias_single") ? ' has-error' : ''); ?>">
+		<?php echo $__env->make('media::admin.fields.new-file-link-single', [
+		    'zone' => 'image'
+		], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+		<?php echo $errors->first("medias_single", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+</div>

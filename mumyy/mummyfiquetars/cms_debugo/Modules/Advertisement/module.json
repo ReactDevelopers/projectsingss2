@@ -1,0 +1,17 @@
+{
+    "name": "Advertisement",
+    "alias": "advertisement",
+    "description": "",
+    "version": "v0.1",
+    "keywords": [],
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\Advertisement\\Providers\\AdvertisementServiceProvider",
+        "Modules\\Advertisement\\Providers\\RouteServiceProvider"
+    ],
+    "aliases":{},
+    "files": [
+        
+    ]
+}

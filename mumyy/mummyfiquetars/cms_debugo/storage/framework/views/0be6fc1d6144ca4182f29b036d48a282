@@ -1,0 +1,7 @@
+<script>
+    var Asgard = {
+        backendUrl: '<?php echo e(config('asgard.core.core.admin-prefix')); ?>',
+        mediaGridCkEditor : '<?php echo e(route('media.grid.ckeditor')); ?>',
+        dropzonePostUrl: '<?php echo e(route('api.media.store')); ?>'
+    };
+</script>

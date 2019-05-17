@@ -1,0 +1,1 @@
+<small class="badge pull-right <?php echo e($badge->getClass()); ?>"><?php echo e($badge->getValue()); ?></small>

@@ -1,0 +1,117 @@
+<?php $__env->startSection('content-header'); ?>
+    <h1>
+        <?php echo e(trans('page::pages.title.edit page')); ?>
+
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(URL::route('dashboard.index')); ?>"><i class="fa fa-dashboard"></i> <?php echo e(trans('core::core.breadcrumb.home')); ?></a></li>
+        <li><a href="<?php echo e(URL::route('admin.page.page.index')); ?>"><?php echo e(trans('page::pages.title.pages')); ?></a></li>
+        <li class="active"><?php echo e(trans('page::pages.title.edit page')); ?></li>
+    </ol>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('styles'); ?>
+    <style>
+        .checkbox label {
+            padding-left: 0;
+        }
+    </style>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <?php echo Form::open(['route' => ['admin.page.page.update', $page->id], 'method' => 'put']); ?>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <?php echo $__env->make('partials.form-tab-headers', ['fields' => ['title', 'body']], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                <div class="tab-content">
+                    <?php $i = 0; ?>
+                    <?php foreach (LaravelLocalization::getSupportedLocales() as $locale => $language): ?>
+                    <?php ++$i; ?>
+                    <div class="tab-pane <?php echo e(App::getLocale() == $locale ? 'active' : ''); ?>" id="tab_<?php echo e($i); ?>">
+                        <?php echo $__env->make('page::admin.partials.custom-edit-fields', ['lang' => $locale], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                    </div>
+                    <?php endforeach; ?>
+                    <?php if (config('asgard.page.config.partials.normal.edit') !== []): ?>
+                        <?php foreach (config('asgard.page.config.partials.normal.edit') as $partial): ?>
+                            <?php echo $__env->make($partial, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+
+                    <div class="box-footer">
+                        <?php echo Form::hidden('previousUrl', $previousUrl); ?>
+
+                        <button type="submit" class="btn btn-primary btn-flat" name="button" value="index" >
+                            <?php echo e(trans('core::core.button.update')); ?>
+
+                        </button>
+                        <a class="btn btn-danger pull-right btn-flat" href="<?php echo e(URL::route('admin.page.page.index')); ?>"><i class="fa fa-times"></i> <?php echo e(trans('core::core.button.cancel')); ?></a>
+                    </div>
+                </div>
+            </div> <?php /* end nav-tabs-custom */ ?>
+        </div>
+        <?php /* <div class="col-md-2">
+            <div class="box box-primary">
+                <div class="box-body">
+                    <div class="checkbox<?php echo e($errors->has('is_home') ? ' has-error' : ''); ?>">
+                        <input type="hidden" name="is_home" value="0">
+                        <label for="is_home">
+                            <input id="is_home"
+                                   name="is_home"
+                                   type="checkbox"
+                                   class="flat-blue"
+                                    <?php echo e(isset($page->is_home) && (bool)$page->is_home == true ? 'checked' : ''); ?>
+
+                                   value="1" />
+                            <?php echo e(trans('page::pages.form.is homepage')); ?>
+
+                            <?php echo $errors->first('is_home', '<span class="help-block">:message</span>'); ?>
+
+                        </label>
+                    </div>
+                    <hr/>
+                    <div class='form-group<?php echo e($errors->has("template") ? ' has-error' : ''); ?>'>
+                        <?php echo Form::label("template", trans('page::pages.form.template')); ?>
+
+                        <?php echo Form::select("template", $all_templates, old("template", $page->template), ['class' => "form-control", 'placeholder' => trans('page::pages.form.template')]); ?>
+
+                        <?php echo $errors->first("template", '<span class="help-block">:message</span>'); ?>
+
+                    </div>
+                </div>
+            </div>
+        </div> */ ?>
+    </div>
+
+    <?php echo Form::close(); ?>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('footer'); ?>
+    <!-- <a data-toggle="modal" data-target="#keyboardShortcutsModal"><i class="fa fa-keyboard-o"></i></a> &nbsp; -->
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('shortcuts'); ?>
+    <dl class="dl-horizontal">
+        <dt><code>b</code></dt>
+        <dd><?php echo e(trans('page::pages.navigation.back to index')); ?></dd>
+    </dl>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('scripts'); ?>
+    <script>
+        $( document ).ready(function() {
+            $(document).keypressAction({
+                actions: [
+                    { key: 'b', route: "<?= route('admin.page.page.index') ?>" }
+                ]
+            });
+            $('input[type="checkbox"].flat-blue, input[type="radio"].flat-blue').iCheck({
+                checkboxClass: 'icheckbox_flat-blue',
+                radioClass: 'iradio_flat-blue'
+            });
+        });
+    </script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

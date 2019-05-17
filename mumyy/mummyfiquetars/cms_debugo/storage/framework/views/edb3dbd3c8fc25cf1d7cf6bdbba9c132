@@ -1,0 +1,316 @@
+<div class="box-body">
+    <div class='form-group<?php echo e($errors->has("first_name") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("first_name", trans('vendor::vendors.form.name')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text("first_name", Input::old('first_name', $vendor->first_name), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.name')] ); ?>
+
+	    <?php echo $errors->first("first_name", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<?php /*
+	<div class='form-group<?php echo e($errors->has("last_name") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("last_name", trans('customer::customers.form.last name')); ?>
+
+	    <?php echo Form::text("last_name", Input::old('last_name', $vendor->last_name), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.last name')] ); ?>
+
+	    <?php echo $errors->first("last_name", '<span class="help-block">:message</span>'); ?>
+
+	</div> 
+	*/ ?>
+	<div class='form-group<?php echo e($errors->has("email") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("email", trans('vendor::vendors.form.email')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text("email", Input::old('email', str_replace('@', '&#64;', $vendor->email)), ['class' => "form-control", 'readonly', 'placeholder' => trans('vendor::vendors.form.email')] ); ?>
+
+	    <?php echo $errors->first("email", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+<!-- 	<div class='form-group<?php echo e($errors->has("phone") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("phone", trans('vendor::vendors.form.phone')); ?>
+
+	    <?php echo Form::text("phone", Input::old('phone', $vendor->phone), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.phone')] ); ?>
+
+	    <?php echo $errors->first("phone", '<span class="help-block">:message</span>'); ?>
+
+	</div> -->
+	<div class='form-group<?php echo e($errors->has("password") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("password", trans('vendor::vendors.form.password')); ?>
+
+	    <?php echo Form::password("password", ['class' => "form-control", 'placeholder' => '**********' ]); ?>
+
+	    <?php echo $errors->first("password", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("status") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("status", trans('vendor::vendors.form.status')); ?>:
+	    <?php echo Form::select("status", Config('asgard.vendor.config.status'), old("status", $vendor->status), ['class' => "form-control"]); ?>
+
+	    <?php echo Form::hidden('id', Input::old('id', $vendor->id), ['class' => 'form-control']); ?>
+
+	    <?php echo $errors->first("status", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class="form-group<?php echo e($errors->has("medias_single") ? ' has-error' : ''); ?>">
+		<?php echo $__env->make('media::admin.fields.file-link', [
+		    'entityClass' => 'Modules\\\\Vendor\\\\Entities\\\\VendorProfile',
+		    'entityId' => $vendor->vendorProfile->id,
+		    'zone' => 'image'
+		], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+		<?php echo $errors->first("medias_single", '<span class="help-block">:message</span>'); ?>
+
+	</div>  
+	</div>
+	<div class='form-group<?php echo e($errors->has("website") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("website", trans('vendor::vendors.form.website')); ?>
+
+	    <?php echo Form::text("website", Input::old('website', $vendor->vendorProfile->website), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.website')] ); ?>
+
+	    <?php echo $errors->first("website", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class="row">
+		<div class="col-sm-6">
+			<div class='form-group<?php echo e($errors->has("category_id") ? ' has-error' : ''); ?>'>
+			    <?php echo Form::label("category_id", trans('vendor::vendors.form.business category')); ?> <span class="text-danger">*</span>
+			    <?php echo Form::select("category_id", ["" => ""] + $categories, old('category_id', $vendorCategory ? $vendorCategory->category_id : ''), ['class' => "form-control js-example-basic-single", 'id' => 'category'] ); ?>
+
+			    <?php echo $errors->first("category_id", '<span class="help-block">:message</span>'); ?>
+
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<div class='form-group<?php echo e($errors->has("sub_category_id") ? ' has-error' : ''); ?>'>
+			    <?php echo Form::label("sub_category_id", trans('vendor::vendors.form.business sub category')); ?>
+
+			    <?php echo Form::select("sub_category_id", ["" => ""] + $subCategories, old('sub_category_id', $vendorCategory ? $vendorCategory->sub_category_id : ''), ['class' => "form-control js-example-basic-single", 'id' => 'sub_category'] ); ?>
+
+			    <?php echo $errors->first("sub_category_id", '<span class="help-block">:message</span>'); ?>
+
+			</div>
+		</div>
+	</div>
+	<div class='form-group<?php echo e($errors->has("business_name") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("business_name", trans('vendor::vendors.form.business name')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text("business_name", Input::old('business_name', $vendor->vendorProfile->business_name), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.business name')] ); ?>
+
+	    <?php echo $errors->first("business_name", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("about") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("about", trans('vendor::vendors.form.business about')); ?>
+
+	    <?php echo Form::textarea("about", Input::old('about', $vendor->vendorProfile->about), ['class' => "form-control", 'rows' => '3', 'placeholder' => trans('vendor::vendors.form.business about')] ); ?>
+
+	    <?php echo $errors->first("about", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+		<div class='form-group<?php echo e($errors->has("business_address") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("business_address", trans('vendor::vendors.form.business address')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::textarea("business_address", Input::old('business_address', $vendor->vendorProfile->business_address), ['class' => "form-control", 'rows' => '3', 'placeholder' => trans('vendor::vendors.form.business address')] ); ?>
+
+	    <?php echo $errors->first("business_address", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+<?php /* 	<div class="row">
+		<div class="col-sm-6">
+			<div class='form-group<?php echo e($errors->has("country_id") ? ' has-error' : ''); ?>'>
+			    <?php echo Form::label("country_id", trans('vendor::vendors.form.country')); ?> <span class="text-danger">*</span>
+			    <?php echo Form::select("country_id", $countriesArr, old('country_id', $location && $location->country_id ? $location->country_id : 196), ['class' => "form-control", 'id' => 'country'] ); ?>
+
+			    <?php echo $errors->first("country_id", '<span class="help-block">:message</span>'); ?>
+
+			</div>
+		</div> */ ?>
+		<?php /* <div class="col-sm-4">
+			<div class='form-group<?php echo e($errors->has("states_id") ? ' has-error' : ''); ?>'>
+			    <?php echo Form::label("states_id", trans('vendor::vendors.form.state')); ?> <span class="text-danger">*</span>
+			    <?php echo Form::select("states_id", $states, old('states_id', $location ? $location->states_id : ''), ['class' => "form-control js-example-basic-single", 'id' => 'state', 'onchange' => 'fetch_city(this.value);'] ); ?>
+
+			    <?php echo $errors->first("states_id", '<span class="help-block">:message</span>'); ?>
+
+			</div>
+		</div>
+		*/ ?>
+<?php /* 		<div class="col-sm-6">
+			<div class='form-group<?php echo e($errors->has("city_id") ? ' has-error' : ''); ?>'>
+			    <?php echo Form::label("city_id", trans('vendor::vendors.form.city')); ?>
+
+			    <?php echo Form::select("city_id", $citiesArr, old('city_id', $location ? $location->city_id : ''), ['class' => "form-control",  'id' => 'city']); ?>
+
+			    <?php echo $errors->first("city_id", '<span class="help-block">:message</span>'); ?>
+
+			</div>
+		</div>
+	</div> */ ?>
+	
+<?php /* 	<div class='form-group<?php echo e($errors->has("zip_code") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("zip_code", trans('vendor::vendors.form.zipcode')); ?>
+
+	    <?php echo Form::text("zip_code", Input::old('zip_code', $location->zip_code ? $location->zip_code : ($vendor->vendorProfile ? $vendor->vendorProfile->zip_code : '')), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.zipcode'), 'id' => "vendor-zipcode"] ); ?>
+
+	    <?php echo $errors->first("zip_code", '<span class="help-block">:message</span>'); ?> 
+	</div> */ ?>
+
+	<?php if(0): ?>
+	<?php if(count($vendorPhones)):?>
+		<div id="phone-number-container">
+			<?php foreach($vendorPhones as $k=>$item):?>
+				<?php if($k == 0):?>
+					<div class="row">
+						<div class="col-sm-2">
+							<div class='form-group<?php echo e($errors->has("business_code") ? ' has-error' : ''); ?>'>
+							    <?php echo Form::label("business_code", trans('vendor::vendors.form.business phone code')); ?>
+
+							    <?php echo Form::select("business_code", $vendorPhonecodes, old('business_code', $location ? $location->country->phonecode : ""),['class' => "form-control", 'id' => "vendor-phonecode" ] ); ?>
+
+							    <?php echo $errors->first("business_code", '<span class="help-block">:message</span>'); ?>
+
+							</div>
+						</div>
+						<div class="col-sm-8">
+							<div class='form-group'>
+							    <?php echo Form::label("business_phone", trans('vendor::vendors.form.business phone number')); ?>
+
+							    <input type="number" name="business_phone[]" class="form-control" id="vendor-business-phone" placeholder="<?php echo e(trans('vendor::vendors.form.business phone number')); ?>" value="<?php echo e($item->phone_number); ?>">
+							</div>
+						</div>
+						<div class="col-sm-2">
+							<div class='form-group' style="padding-top: 30px;">
+								<a href="#" id="link-add-phone_number" class="link-add-phone_number">Add new number</a>
+							</div>
+						</div>
+					</div>
+				<?php else:?>
+					<div class="row new-phone-number">
+						<div class="col-sm-2">
+							
+						</div>
+						<div class="col-sm-8">
+							<div class='form-group'>
+							    <input type="number" name="business_phone[]" class="form-control" id="vendor-business-phone" placeholder="<?php echo e(trans('vendor::vendors.form.business phone number')); ?>" value="<?php echo e($item->phone_number); ?>">
+							</div>
+						</div>
+						<div class="col-sm-2">
+							<div class="form-group" style="padding-top: 5px;">
+								<a href="javascript:avoid(0)" id="link-remove-phone_number" class="link-remove-phone_number">Remove</a>
+							</div>
+						</div>
+					</div>
+				<?php endif?>
+			<?php endforeach?>
+			<div id="append-phone_number"></div>
+		</div>
+	<?php else:?>
+		<div id="phone-number-container">
+			<div class="row">
+				<div class="col-sm-2">
+					<div class='form-group<?php echo e($errors->has("business_code") ? ' has-error' : ''); ?>'>
+					    <?php echo Form::label("business_code", trans('vendor::vendors.form.business phone code')); ?>
+
+					    <?php echo Form::select("business_code", $vendorPhonecodes, old('business_code', $location ? $location->country->phonecode : ""),['class' => "form-control", 'id' => "vendor-phonecode" ] ); ?>
+
+					    <?php echo $errors->first("business_code", '<span class="help-block">:message</span>'); ?>
+
+					</div>
+				</div>
+				<div class="col-sm-8">
+					<div class='form-group'>
+					    <?php echo Form::label("business_phone", trans('vendor::vendors.form.business phone number')); ?>
+
+					    <input type="number" name="business_phone[]" class="form-control" id="vendor-business-phone" placeholder="<?php echo e(trans('vendor::vendors.form.business phone number')); ?>">
+					</div>
+				</div>
+				<div class="col-sm-2">
+					<div class='form-group' style="padding-top: 30px;">
+						<a href="#" id="link-add-phone_number" class="link-add-phone_number">Add new number</a>
+					</div>
+				</div>
+			</div>
+			<div id="append-phone_number"></div>
+		</div>
+	<?php endif?>
+	<?php endif; ?>
+
+	<?php /*
+	<div class="row">
+		<div class="col-sm-2">
+		</div>
+		<div class="col-sm-8">
+			<div class='form-group<?php echo e($errors->has("business_phone") ? ' has-error' : ''); ?>'>
+			    <?php echo Form::text("business_phone", Input::old('business_phone', $location ? $location->business_phone : "" ), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.business phone number'), 'id' => "vendor-business-phone"] ); ?>
+
+			    <?php echo $errors->first("business_phone", '<span class="help-block">:message</span>'); ?>
+
+			</div>
+		</div>
+		<div class="col-sm-2">
+			<div class='form-group' style="padding-top: 5px;">
+				<a>Remove</a>
+			</div>
+		</div>
+	</div>
+	*/ ?>
+<?php /* 	<div class='form-group<?php echo e($errors->has("business_phone2") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("business_phone2", trans('vendor::vendors.form.business phone number 2')); ?>
+
+	    <?php echo Form::text("business_phone2", Input::old('business_phone2', $vendor->vendorProfile->business_phone2), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.business phone number 2')] ); ?>
+
+	    <?php echo $errors->first("business_phone2", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+		<div class='form-group<?php echo e($errors->has("business_phone3") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("business_phone3", trans('vendor::vendors.form.business phone number 3')); ?>
+
+	    <?php echo Form::text("business_phone3", Input::old('business_phone3', $vendor->vendorProfile->business_phone3), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.business phone number 3')] ); ?>
+
+	    <?php echo $errors->first("business_phone3", '<span class="help-block">:message</span>'); ?>
+
+	</div> */ ?>
+	<div class='form-group<?php echo e($errors->has("social_media_link_facebook") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("social_media_link_facebook", trans('vendor::vendors.form.social media facebook')); ?>
+
+	    <?php echo Form::text("social_media_link_facebook", Input::old('social_media_link_facebook', $vendor->vendorProfile->getVendorSocial('facebook')), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.social media facebook')] ); ?>
+
+	    <?php echo $errors->first("social_media_link_facebook", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("social_media_link_twitter") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("social_media_link_twitter", trans('vendor::vendors.form.social media twitter')); ?>
+
+	    <?php echo Form::text("social_media_link_twitter", Input::old('social_media_link_twitter', $vendor->vendorProfile->getVendorSocial('twitter')), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.social media twitter')] ); ?>
+
+	    <?php echo $errors->first("social_media_link_twitter", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("social_media_link_instagram") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("social_media_link_instagram", trans('vendor::vendors.form.social media instagram')); ?>
+
+	    <?php echo Form::text("social_media_link_instagram", Input::old('social_media_link_instagram', $vendor->vendorProfile->getVendorSocial('instagram')), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.social media instagram')] ); ?>
+
+	    <?php echo $errors->first("social_media_link_instagram", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("social_media_link_pinterest") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("social_media_link_pinterest", trans('vendor::vendors.form.social media pinterest')); ?>
+
+	    <?php echo Form::text("social_media_link_pinterest", Input::old('social_media_link_pinterest', $vendor->vendorProfile->getVendorSocial('pinterest')), ['class' => "form-control", 'placeholder' => trans('vendor::vendors.form.social media pinterest')] ); ?>
+
+	    <?php echo $errors->first("social_media_link_pinterest", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+</div>
+
+<?php $__env->startSection('custom-styles'); ?>
+<style>
+input[type="password"]::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: black;
+}
+input[type="password"]::-moz-placeholder { /* Firefox 19+ */
+  color: black;
+}
+input[type="password"]:-ms-input-placeholder { /* IE 10+ */
+  color: black;
+}
+input[type="password"]:-moz-placeholder { /* Firefox 18- */
+  color: black;
+}
+</style>
+<?php $__env->stopSection(); ?>

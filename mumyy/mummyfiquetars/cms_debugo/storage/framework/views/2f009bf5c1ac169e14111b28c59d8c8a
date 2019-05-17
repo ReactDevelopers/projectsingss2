@@ -1,0 +1,102 @@
+<?php $__env->startSection('content-header'); ?>
+    <h1>
+        <?php echo e(trans('report::reviews.title.detail review')); ?>
+
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(route('dashboard.index')); ?>"><i class="fa fa-dashboard"></i> <?php echo e(trans('core::core.breadcrumb.home')); ?></a></li>
+        <li><a href="<?php echo e(route('admin.report.review.index')); ?>"><?php echo e(trans('report::reviews.title.reviews')); ?></a></li>
+        <li class="active"><?php echo e(trans('report::reviews.title.edit review')); ?></li>
+    </ol>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('styles'); ?>
+    <?php echo Theme::script('js/vendor/ckeditor/ckeditor.js'); ?>
+
+<?php $__env->stopSection(); ?>
+<?php
+    $reportReviewTitle = ['Scams','Inappropriate Language','Spamming Advertisements/Links','Others'];
+    $review_reason = [
+        'contains_offensive_content' => 'Contains Offensive Content',
+        'contains_copyright_violation' => 'Contains Copyright Violation',
+        'contains_adult_content' => 'Contains Adult Content',
+        'invades_my_privacy' => 'Invades My Privacy',
+    ];
+    $title = '';
+    if($review->reason)
+    {
+        $title = $review_reason[$review->reason];
+    }
+    $content = $review->content;
+    foreach ($reportReviewTitle as $keyTitleReport => $valueTitleReport) {
+        if(is_numeric(strpos($review->content, $valueTitleReport )))
+        {
+            $result = explode ( $valueTitleReport , $review->content);
+            $title = $valueTitleReport;
+            $content1 = str_replace( '/n', '', $result[1] );
+            $content2 = str_replace( 'Optional("', '', $content1 );
+            $content = str_replace( '")', '', $content2 );
+        }
+    }
+?>
+<?php $__env->startSection('content'); ?>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <?php echo $__env->make('partials.form-tab-headers', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                <div class="tab-content">
+                    <div class="box-body">
+                        <div class='form-group<?php echo e($errors->has("title") ? ' has-error' : ''); ?>'>
+                            <?php echo Form::label("Title", trans('Title')); ?>
+
+                            <?php echo Form::text("Title", Input::old('content',$title), ['class' => "form-control",'readonly' => "readonly", 'rows' => 10, 'placeholder' => trans('Title')]); ?>
+
+                        </div>
+                       <div class='form-group<?php echo e($errors->has("description") ? ' has-error' : ''); ?>'>
+                            <?php echo Form::label("Content", trans('Content')); ?>
+
+                            <?php echo Form::textarea("Content", Input::old('content',$content), ['class' => "form-control",'readonly' => "readonly", 'rows' => 10, 'placeholder' => trans('Content')]); ?>
+
+                        </div>
+                    </div>
+
+                    <div class="box-footer">
+                        <a class="btn btn-primary btn-flat" href="<?php echo e(route('admin.report.review.index')); ?>"><?php echo e(trans('core::core.button.back')); ?></a>
+                    </div>
+                </div>
+            </div> <?php /* end nav-tabs-custom */ ?>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('footer'); ?>
+    <a data-toggle="modal" data-target="#keyboardShortcutsModal"><i class="fa fa-keyboard-o"></i></a> &nbsp;
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('shortcuts'); ?>
+    <dl class="dl-horizontal">
+        <dt><code>b</code></dt>
+        <dd><?php echo e(trans('core::core.back to index')); ?></dd>
+    </dl>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('scripts'); ?>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            $(document).keypressAction({
+                actions: [
+                    { key: 'b', route: "<?= route('admin.report.review.index') ?>" }
+                ]
+            });
+        });
+    </script>
+    <script>
+        $( document ).ready(function() {
+            $('input[type="checkbox"].flat-blue, input[type="radio"].flat-blue').iCheck({
+                checkboxClass: 'icheckbox_flat-blue',
+                radioClass: 'iradio_flat-blue'
+            });
+        });
+    </script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

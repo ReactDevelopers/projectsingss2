@@ -1,0 +1,73 @@
+<!-- Header Navbar: style can be found in header.less -->
+<nav class="navbar navbar-static-top" role="navigation">
+    <!-- Sidebar toggle button-->
+    <a href="#" class="navbar-btn sidebar-toggle" data-toggle="offcanvas" role="button" style="margin: 0;">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </a>
+
+    <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+            <?php if (is_module_enabled('Notification')): ?>
+            <?php echo $__env->make('notification::partials.notifications', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+            <?php endif; ?>
+            <li><a href="<?php echo e(URL::to('/')); ?>" target="_blank"><i class="fa fa-eye"></i> <?php echo e(trans('core::core.general.view website')); ?></a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-flag"></i>
+                    <span>
+                        <?php echo e(LaravelLocalization::getCurrentLocaleName()); ?>
+
+                        <i class="caret"></i>
+                    </span>
+                </a>
+                <ul class="dropdown-menu language-menu">
+                    <?php foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties): ?>
+                        <li class="<?php echo e(App::getLocale() == $localeCode ? 'active' : ''); ?>">
+                            <a rel="alternate" lang="<?php echo e($localeCode); ?>" href="<?php echo e(LaravelLocalization::getLocalizedURL($localeCode)); ?>">
+                                <?php echo $properties['native']; ?>
+
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </li>
+            <!-- User Account: style can be found in dropdown.less -->
+            <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="glyphicon glyphicon-user"></i>
+                    <span>
+                        <?php if ($user->present()->fullname() != ' '): ?>
+                            <?= $user->present()->fullName(); ?>
+                        <?php else: ?>
+                            <em><?php echo e(trans('core::core.general.complete your profile')); ?>.</em>
+                        <?php endif; ?>
+                        <i class="caret"></i>
+                    </span>
+                </a>
+                <ul class="dropdown-menu">
+                    <!-- User image -->
+                    <li class="user-header bg-light-blue">
+                        <img src="<?php echo e($user->present()->gravatar()); ?>" class="img-circle" alt="User Image" />
+                        <p>
+                            <?php if ($user->present()->fullname() != ' '): ?>
+                                <?= $user->present()->fullname(); ?>
+                            <?php else: ?>
+                                <em><?php echo e(trans('core::core.general.complete your profile')); ?>.</em>
+                            <?php endif; ?>
+                        </p>
+                    </li>
+                    <!-- Menu Footer-->
+                    <li class="user-footer">
+                        <a href="<?php echo e(URL::route('logout')); ?>" class="btn btn-default btn-flat">
+                            <?php echo e(trans('core::core.general.sign out')); ?>
+
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>

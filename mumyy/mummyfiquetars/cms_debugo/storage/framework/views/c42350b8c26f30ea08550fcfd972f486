@@ -1,0 +1,89 @@
+<?php $__env->startSection('content-header'); ?>
+<h1>
+    <?php echo e(trans('media::media.title.edit media')); ?> <small><?php echo e($file->filename); ?></small>
+</h1>
+<ol class="breadcrumb">
+    <li><a href="<?php echo e(URL::route('dashboard.index')); ?>"><i class="fa fa-dashboard"></i> <?php echo e(trans('core::core.breadcrumb.home')); ?></a></li>
+    <li><a href="<?php echo e(URL::route('admin.media.media.index')); ?>"><?php echo e(trans('media::media.title.media')); ?></a></li>
+    <li class="active"><?php echo e(trans('media::media.title.edit media')); ?></li>
+</ol>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+<?php echo Form::open(['route' => ['admin.media.media.update', $file->id], 'method' => 'put']); ?>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="nav-tabs-custom">
+            <?php echo $__env->make('partials.form-tab-headers', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+            <div class="tab-content">
+                <?php $i = 0; ?>
+                <?php foreach (LaravelLocalization::getSupportedLocales() as $locale => $language): ?>
+                    <?php ++$i; ?>
+                    <div class="tab-pane <?php echo e(App::getLocale() == $locale ? 'active' : ''); ?>" id="tab_<?php echo e($i); ?>">
+                        <?php echo $__env->make('media::admin.partials.edit-fields', ['lang' => $locale], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                    </div>
+                <?php endforeach; ?>
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-primary btn-flat"><?php echo e(trans('core::core.button.update')); ?></button>
+                    <button class="btn btn-default btn-flat" name="button" type="reset"><?php echo e(trans('core::core.button.reset')); ?></button>
+                    <a class="btn btn-danger pull-right btn-flat" href="<?php echo e(URL::route('admin.media.media.index')); ?>"><i class="fa fa-times"></i> <?php echo e(trans('core::core.button.cancel')); ?></a>
+                </div>
+            </div>
+        </div> <?php /* end nav-tabs-custom */ ?>
+    </div>
+    <div class="col-md-4">
+        <?php if ($file->isImage()): ?>
+            <img src="<?php echo e($file->path); ?>" alt="" style="width: 100%;"/>
+        <?php else: ?>
+            <i class="fa fa-file" style="font-size: 50px;"></i>
+        <?php endif; ?>
+    </div>
+</div>
+
+
+<?php if ($file->isImage()): ?>
+<div class="row">
+    <div class="col-md-12">
+        <h3>Thumbnails</h3>
+
+        <ul class="list-unstyled">
+            <?php foreach ($thumbnails as $thumbnail): ?>
+                <li style="float:left; margin-right: 10px">
+                    <img src="<?php echo e(Imagy::getThumbnail($file->path, $thumbnail->name())); ?>" alt=""/>
+                    <p class="text-muted" style="text-align: center"><?php echo e($thumbnail->name()); ?> (<?php echo e($thumbnail->size()); ?>)</p>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+</div>
+<?php endif; ?>
+<?php echo Form::close(); ?>
+
+<?php $__env->stopSection(); ?>
+
+
+<?php $__env->startSection('footer'); ?>
+    <!-- <a data-toggle="modal" data-target="#keyboardShortcutsModal"><i class="fa fa-keyboard-o"></i></a> &nbsp; -->
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('shortcuts'); ?>
+    <dl class="dl-horizontal">
+        <dt><code>b</code></dt>
+        <dd><?php echo e(trans('core::core.back to index', ['name' => 'media'])); ?></dd>
+    </dl>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('scripts'); ?>
+    <script>
+        $( document ).ready(function() {
+            $(document).keypressAction({
+                actions: [
+                    { key: 'b', route: "<?= route('admin.media.media.index') ?>" }
+                ]
+            });
+        });
+    </script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
