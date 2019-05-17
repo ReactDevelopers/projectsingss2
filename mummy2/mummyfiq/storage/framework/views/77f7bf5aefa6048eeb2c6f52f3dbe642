@@ -1,0 +1,41 @@
+<div class="box-body">
+	<div class='form-group<?php echo e($errors->has("name") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("name", trans('category::subcategories.form.name')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text("name", Input::old('name'), ['class' => "form-control", 'placeholder' => trans('category::subcategories.form.name')] ); ?>
+
+	    <?php echo $errors->first("name", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("description") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("description", trans('category::subcategories.form.description')); ?>
+
+	    <?php echo Form::textarea("description", Input::old('description'), ['class' => "form-control", 'rows' => 5, 'placeholder' => trans('category::subcategories.form.description')]); ?>
+
+	    <?php echo $errors->first("description", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+<?php /* 	<div class='form-group<?php echo e($errors->has("category_id") ? ' has-error' : ''); ?>'> 
+	    <?php echo Form::label("category_id", trans('category::subcategories.form.parent category')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::select("category_id", $categories, old("category_id"), ['class' => "form-control"]); ?>
+
+	    <?php echo $errors->first("category_id", '<span class="help-block">:message</span>'); ?>
+
+	</div> */ ?>
+<!-- 	<div class='form-group<?php echo e($errors->has("sorts") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("sorts", trans('category::subcategories.form.sort')); ?>
+
+	    <?php echo Form::text('sorts', Input::old('sorts'), ['class' => 'form-control', 'placeholder' => trans('category::subcategories.form.sort')]); ?>
+
+	    <?php echo $errors->first("sorts", '<span class="help-block">:message</span>'); ?>
+
+	</div> -->
+	<div class='form-group<?php echo e($errors->has("status") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("status", trans('category::subcategories.form.status')); ?>
+
+	    <?php echo Form::select("status", Config('asgard.category.config.status'), old("adv_id"), ['class' => "form-control"]); ?>
+
+	    <?php echo $errors->first("status", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+</div>
+</div>

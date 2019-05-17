@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="<?php echo e(LaravelLocalization::setLocale()); ?>">
+    <meta charset="UTF-8">
+    <?php $__env->startSection('meta'); ?>
+        <meta name="description" content="<?php echo e(Setting::get('core::site-description')); ?>" />
+    <?php echo $__env->yieldSection(); ?>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+        <?php $__env->startSection('title'); ?><?php echo e(Setting::get('core::site-name')); ?><?php echo $__env->yieldSection(); ?>
+    </title>
+    <link rel="shortcut icon" href="<?php echo e(Theme::url('favicon.ico')); ?>">
+
+    <?php echo Theme::style('css/main.css'); ?>
+
+</head>
+<body>
+
+<?php echo $__env->make('partials.navigation', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+
+<div class="container">
+    <?php echo $__env->yieldContent('content'); ?>
+</div>
+<?php echo $__env->make('partials.footer', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+
+<?php echo Theme::script('js/all.js'); ?>
+
+<?php echo $__env->yieldContent('scripts'); ?>
+
+<?php if (Setting::has('core::google-analytics')): ?>
+    <?php echo Setting::get('core::google-analytics'); ?>
+
+<?php endif; ?>
+</body>
+</html>

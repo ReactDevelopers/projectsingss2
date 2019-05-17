@@ -1,0 +1,17 @@
+{
+    "name": "PriceRange",
+    "alias": "pricerange",
+    "description": "",
+    "version": "v0.1",
+    "keywords": [],
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\PriceRange\\Providers\\PriceRangeServiceProvider",
+        "Modules\\PriceRange\\Providers\\RouteServiceProvider"
+    ],
+    "aliases":{},
+    "files": [
+        
+    ]
+}

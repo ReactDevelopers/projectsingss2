@@ -1,0 +1,66 @@
+<div class="box-body">
+	<div class='form-group<?php echo e($errors->has("title") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("title", trans('advertisement::advertisements.form.title')); ?> <span id="span-required" class="text-danger">*</span>
+	    <?php echo Form::text('title', Input::old('title'), ['class' => 'form-control', 'placeholder' => trans('advertisement::advertisements.form.title')]); ?>
+
+	    <?php echo $errors->first("title", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("description") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("description", trans('advertisement::advertisements.form.description')); ?>
+
+	    <?php echo Form::textarea('description', Input::old('description'), ['class' => 'form-control', 'rows' => '3', 'placeholder' => trans('advertisement::advertisements.form.description')]); ?>
+
+	    <?php echo $errors->first("description", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class="form-group <?php echo e($errors->has("medias_single") ? ' has-error' : ''); ?>">
+		<?php echo $__env->make('media::admin.fields.new-file-link-single', [
+		    'zone' => 'image'
+		], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+		<?php echo $errors->first("medias_single", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("adv_id") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("adv_id", trans('advertisement::advertisements.form.type')); ?>
+
+	    <?php echo Form::select("adv_id", $types, old("adv_id"), ['class' => "form-control"]); ?>
+
+	    <?php echo $errors->first("adv_id", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("link") ? ' has-error' : ''); ?>' id="adv-link">
+	    <?php echo Form::label("link", trans('advertisement::advertisements.form.link')); ?> <span id="span-required" class="text-danger">*</span>
+	    <?php echo Form::text('link', Input::old('link'), ['class' => 'form-control', 'placeholder' => trans('advertisement::advertisements.form.link')]); ?>
+
+	    <?php echo $errors->first("link", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("by") ? ' has-error' : ''); ?>' id="adv-by">
+	    <?php echo Form::label("by", trans('advertisement::advertisements.form.by')); ?> <span id="span-required" class="text-danger">*</span>
+	    <?php echo Form::text('by', Input::old('by'), ['class' => 'form-control', 'placeholder' => trans('advertisement::advertisements.form.by')]); ?>
+
+	    <?php echo $errors->first("by", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<?php /*  	
+	<div class='form-group<?php echo e($errors->has("sorts") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("sorts", trans('advertisement::advertisements.form.sort')); ?>
+
+	    <?php echo Form::text('sorts', Input::old('sorts'), ['class' => 'form-control', 'placeholder' => trans('advertisement::advertisements.form.sort')]); ?>
+
+	    <?php echo $errors->first("sorts", '<span class="help-block">:message</span>'); ?>
+
+	</div> 
+	*/ ?>
+	<div class='form-group<?php echo e($errors->has("status") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("status", trans('advertisement::advertisements.form.status')); ?>
+
+	    <?php echo Form::select("status", Config('asgard.advertisement.config.status'), old("adv_id"), ['class' => "form-control"]); ?>
+
+	    <?php echo $errors->first("status", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+</div>
+
+

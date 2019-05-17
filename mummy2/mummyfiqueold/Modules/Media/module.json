@@ -1,0 +1,20 @@
+{
+    "name": "Media",
+    "alias": "media",
+    "description": "A media library, used throughout the CMS.",
+    "keywords": [],
+    "version": "1.26.0",
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\Media\\Providers\\MediaServiceProvider",
+        "Modules\\Media\\Providers\\RouteServiceProvider",
+        "Modules\\Media\\Image\\ImageServiceProvider",
+        "Intervention\\Image\\ImageServiceProvider"
+    ],
+    "aliases": {
+        "Image": "Intervention\\Image\\Facades\\Image",
+        "Imagy": "Modules\\Media\\Image\\Facade\\Imagy"
+    },
+    "files": []
+}

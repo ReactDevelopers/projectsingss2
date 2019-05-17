@@ -1,0 +1,21 @@
+<div class='form-group<?php echo e($errors->has("{$lang}[title]") ? ' has-error' : ''); ?>'>
+    <?php echo Form::label("{$lang}[title]", trans('menu::menu.form.title')); ?>
+
+    <?php echo Form::text("{$lang}[title]", old("$lang.title"), ['class' => 'form-control', 'placeholder' => trans('menu::menu.form.title')]); ?>
+
+    <?php echo $errors->first("{$lang}[title]", '<span class="help-block">:message</span>'); ?>
+
+</div>
+<div class="checkbox">
+    <label for="<?php echo e($lang); ?>[status]">
+        <input id="<?php echo e($lang); ?>[status]"
+                name="<?php echo e($lang); ?>[status]"
+                type="checkbox"
+                class="flat-blue"
+                <?php echo e((is_null(old("$lang.status"))) ?: 'checked'); ?>
+
+                value="1" />
+        <?php echo e(trans('menu::menu.form.status')); ?>
+
+    </label>
+</div>

@@ -1,0 +1,137 @@
+<div class="box-body">
+    <div class='form-group<?php echo e($errors->has("title") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("title", trans('banner::banners.form.title')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text("title", Input::old('title', $banner->title), ['class' => "form-control", 'placeholder' => trans('banner::banners.form.title')] ); ?>
+
+	    <?php echo $errors->first("title", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+
+	<?php echo e($banner->id); ?>
+
+	<div class="form-group<?php echo e($errors->has("medias_single") ? ' has-error' : ''); ?>">
+		<?php echo $__env->make('media::admin.fields.file-link', [
+		    'entityClass' => 'Modules\\\\Banner\\\\Entities\\\\Banner',
+		    'entityId' => $banner->id,
+		    'zone' => 'image'
+		], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+		<?php echo $errors->first("medias_single", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	
+	<div class='form-group<?php echo e($errors->has("status") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("status", trans('banner::banners.form.status')); ?>:
+	    <?php echo Form::select("status", Config('asgard.banner.config.status'), old("status", $banner->status), ['class' => "form-control"]); ?>
+
+	    <?php echo $errors->first("status", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("type") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("type", trans('banner::banners.form.type')); ?>:
+	    <?php echo Form::select("type", Config('asgard.banner.config.type'), old("type", $banner->type), ['class' => "form-control status"]); ?>
+
+	    <?php echo $errors->first("type", '<span class="help-block">:message</span>'); ?>
+
+	    <input type="text" name="oldtype" id="oldtype" value="<?php echo e($banner->type); ?>">
+	</div>
+
+	<div id="external_link">
+		<div class='form-group<?php echo e($errors->has("link") ? ' has-error' : ''); ?>'>
+		    <?php echo Form::label("link", trans('banner::banners.form.link')); ?> <span class="text-danger">*</span>
+		    <?php echo Form::text("link", Input::old('link', $banner->link), ['class' => "form-control", 'placeholder' => trans('banner::banners.form.link')] ); ?>
+
+		    <?php echo $errors->first("link", '<span class="help-block">:message</span>'); ?>
+
+		</div>
+	</div>
+
+	<div id="predefined_filters">
+		<div class='form-group<?php echo e($errors->has("country") ? ' has-error' : ''); ?>'>
+			<?php echo Form::label("country", trans('banner::banners.form.country')); ?>
+
+			<select multiple id="country" class='form-control country' name="country[]">
+		        <?php foreach($countriesArr as $k => $country): ?>
+				<?php
+				if(old('country'))
+				$value = old('country');
+				else
+				$value = $bco;
+				?>
+		        <option value="<?php echo $k; ?>" <?php echo e((collect($value)->contains($k)) ? 'selected':''); ?> ><?php echo $country; ?></option>
+		        <?php endforeach; ?>
+		    </select>
+		    <?php echo $errors->first("country", '<span class="help-block">:message</span>'); ?>
+
+		</div>
+
+		<div class='form-group<?php echo e($errors->has("category") ? ' has-error' : ''); ?>'>
+			<?php echo Form::label("category", trans('banner::banners.form.category')); ?>
+
+			<select multiple id="category" class='form-control category' name="category[]">
+		        <?php foreach($categoryArr as $k => $category): ?>
+		        <?php
+				if(old('category'))
+				$value = old('category');
+				else
+				$value = $cat;
+				?>
+		        <option value="<?php echo $k; ?>" <?php echo e((collect($value)->contains($k)) ? 'selected':''); ?> ><?php echo $category; ?></option>
+		        <?php endforeach; ?>
+		    </select>
+		    <?php echo $errors->first("category", '<span class="help-block">:message</span>'); ?>
+
+		</div>
+
+		<div class='form-group<?php echo e($errors->has("vendor") ? ' has-error' : ''); ?>'>
+			<?php echo Form::label("vendor", trans('banner::banners.form.vendor')); ?>
+
+			<select multiple id="vendor" class='form-control vendor' name="vendor[]">
+		        <?php foreach($vendorArr as $k => $vendor): ?>
+		        <?php
+				if(old('vendor'))
+				$value = old('vendor');
+				else
+				$value = $bv;
+				?>
+		        <option value="<?php echo $k; ?>" <?php echo e((collect($value)->contains($k)) ? 'selected':''); ?> ><?php echo $vendor; ?></option>
+		        <?php endforeach; ?>
+		    </select>
+		    <?php echo $errors->first("vendor", '<span class="help-block">:message</span>'); ?>
+
+		</div>
+
+		<div class='form-group  input_fields_wrap <?php echo e($errors->has("keywords") ? ' has-error' : ''); ?>'>
+			<?php echo Form::label("keywords", trans('banner::banners.form.keywords')); ?>
+
+		    <button class="add_field_button btn btn-info">Add More Fields</button>
+		    <div style="margin-top: 5px;">
+			    <?php
+			    $i=0;
+			    ?>
+			    <?php foreach($bk as $param): ?>
+			    	<?php if($i==0) { ?>
+			    	<input class="form-control col-sm-6" type="text" name="keywords[<?php echo e($i); ?>]" value="<?php echo e($param); ?>">
+			    	<?php } if($i>=1) { ?>
+			    	<input class="form-control col-sm-6" type="text" name="keywords[<?php echo e($i); ?>]" value="<?php echo e($param); ?>">
+			    	<a href="javascript:void(0);" class="remove_field">Remove</a></div>
+			    	<?php } ?>
+			    	<?php
+			    	$i++;
+			    	?>
+			    <?php endforeach; ?>
+			    <?php echo $errors->first("keywords", '<span class="help-block">:message</span>'); ?>
+
+			</div>
+		</div>
+
+		<?php /*<div class='form-group  input_fields_wrap <?php echo e($errors->has("keywords") ? ' has-error' : ''); ?>'>
+			<?php echo Form::label("keywords", trans('banner::banners.form.keywords')); ?>
+
+		    <button class="add_field_button btn btn-info">Add More Fields</button>
+		    <div style="margin-top: 5px;overflow: hidden;"><input class="form-control col-sm-6" type="text" name="keywords[]" value=""></div>
+		    <?php echo $errors->first("keywords", '<span class="help-block">:message</span>'); ?>
+
+		</div>*/ ?>
+	</div>
+
+</div>

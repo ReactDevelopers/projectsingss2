@@ -1,0 +1,17 @@
+{
+    "name": "Review",
+    "alias": "review",
+    "description": "",
+    "version": "v0.1",
+    "keywords": [],
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\Review\\Providers\\ReviewServiceProvider",
+        "Modules\\Review\\Providers\\RouteServiceProvider"
+    ],
+    "aliases":{},
+    "files": [
+        
+    ]
+}

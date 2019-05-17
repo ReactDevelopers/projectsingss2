@@ -1,0 +1,67 @@
+<div class="box-body">
+    <div class='form-group<?php echo e($errors->has("first_name") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("first_name", trans('customer::customers.form.name')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text("first_name", Input::old('first_name', $customer->first_name ? trim($customer->first_name . ' ' . $customer->last_name) : $customer->name), ['class' => "form-control", 'placeholder' => trans('customer::customers.form.name')] ); ?>
+
+	    <?php echo $errors->first("first_name", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<?php /*
+	<div class='form-group<?php echo e($errors->has("last_name") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("last_name", trans('customer::customers.form.last name')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text("last_name", Input::old('last_name', $customer->last_name), ['class' => "form-control", 'placeholder' => trans('customer::customers.form.last name')] ); ?>
+
+	    <?php echo $errors->first("last_name", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	*/ ?>
+	<div class='form-group<?php echo e($errors->has("email") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("email", trans('customer::customers.form.email')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text("email", Input::old('email', str_replace('@', '&#64;', $customer->email)), ['class' => "form-control", 'readonly', 'placeholder' => trans('customer::customers.form.email')] ); ?>
+
+	    <?php echo $errors->first("email", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("password") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("password", trans('customer::customers.form.password')); ?>
+
+	    <?php echo Form::password("password", ['class' => "form-control", 'placeholder' => '**********'] ); ?>
+
+	    <?php echo $errors->first("password", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("phone") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("phone", trans('customer::customers.form.phone')); ?>
+
+	    <?php echo Form::text("phone", Input::old('phone', $phone ? $phone->phone_number : ""), ['class' => "form-control", 'placeholder' => trans('customer::customers.form.phone')] ); ?>
+
+	    <?php echo $errors->first("phone", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("status") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("status", trans('customer::customers.form.status')); ?>
+
+	    <?php echo Form::select("status", Config('asgard.customer.config.status'), old("status", $customer->status), ['class' => "form-control"]); ?>
+
+	    <?php echo Form::hidden('id', Input::old('id', $customer->id), ['class' => 'form-control']); ?>
+
+	    <?php echo $errors->first("status", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+</div>
+<?php $__env->startSection('custom-styles'); ?>
+<style>
+input[type="password"]::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: black;
+}
+input[type="password"]::-moz-placeholder { /* Firefox 19+ */
+  color: black;
+}
+input[type="password"]:-ms-input-placeholder { /* IE 10+ */
+  color: black;
+}
+input[type="password"]:-moz-placeholder { /* Firefox 18- */
+  color: black;
+}
+</style>
+<?php $__env->stopSection(); ?>

@@ -1,0 +1,39 @@
+<table>
+	<thead>
+		<tr>
+			<th>Customer Name</th>
+			<th>Customer Email</th>
+			<th>Vendor</th>
+			<th>Category</th>
+			<th>Sub Category</th>
+			<th>Title</th>
+			<th>Content</th>
+			<th>Status</th>
+			<th>Created Date Time</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php if(count($comments) > 0): ?>
+			<?php foreach($comments as $key => $comment): ?>
+			<?php $customer = \Modules\User\Entities\User::find($comment->user_id);
+                  $customerEmail = '';
+                  if(isset($customer) && !empty($customer))
+                  {
+                      $customerEmail = $customer->email;
+                  }
+             ?>
+				<tr>
+					<td><?php echo e(Modules\Vendor\Entities\Vendor::find($comment->user_id)?Modules\Vendor\Entities\Vendor::find($comment->user_id)->first_name : ''); ?></td>
+					<td><?php echo e($customerEmail); ?></td>
+					<td><?php echo e(Modules\Vendor\Entities\Vendor::find($comment->vendor_id) ? Modules\Vendor\Entities\Vendor::find($comment->vendor_id)->vendorProfile->business_name : ''); ?></td>
+					<td><?php echo e($comment->reviewer_category); ?></td>
+					<td></td>
+					<td><?php echo e($comment->title); ?></td>
+					<td><?php echo e($comment->content); ?></td>
+					<td><?php echo e($comment->status ? 'Active' : 'InActive'); ?></td>
+					<td><?php echo e($comment->created_at && $comment->created_at != \Carbon\Carbon::create(0, 0, 0, 0) ? \Carbon\Carbon::parse($comment->created_at)->format('d/m/Y H:i:s') : null); ?></td>
+				</tr>
+			<?php endforeach; ?>
+		<?php endif; ?>
+	</tbody>
+</table>

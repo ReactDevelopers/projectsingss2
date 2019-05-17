@@ -1,0 +1,8 @@
+<div class='form-group<?php echo e($errors->has('name') ? ' has-error' : ''); ?>'>
+    <?php echo Form::label('name', trans('menu::menu.form.name')); ?>
+
+    <?php echo Form::text('name', Input::old('name'), ['class' => 'form-control', 'placeholder' => trans('menu::menu.form.name')]); ?>
+
+    <?php echo $errors->first('Name', '<span class="help-block">:message</span>'); ?>
+
+</div>

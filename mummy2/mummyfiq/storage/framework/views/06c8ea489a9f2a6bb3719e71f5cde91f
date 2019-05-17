@@ -1,0 +1,32 @@
+<table>
+	<thead>
+		<tr>
+			<th>Vendor</th>
+			<th>Category</th>
+			<th>Sub Category</th>
+			<th>City</th>
+			<th>Title</th>
+			<th>Description</th>
+			<th>Photography</th>
+			<th>Created Date Time</th>
+			<th>Updated Date Time</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php if(count($portfolios) > 0): ?>
+			<?php foreach($portfolios as $key => $portfolio): ?>
+				<tr>
+					<td><?php echo e($portfolio->vendor ? $portfolio->vendor->getVendorBusinessName() : ""); ?></td>
+					<td><?php echo e($portfolio->category ? $portfolio->category->name : ""); ?></td>
+					<td><?php echo e($portfolio->subCategory ? $portfolio->subCategory->name : ""); ?></td>
+					<td><?php echo e($portfolio->city); ?></td>
+					<td><?php echo e($portfolio->title); ?></td>
+					<td><?php echo e($portfolio->description); ?></td>
+					<td><?php echo e($portfolio->photography); ?></td>
+					<td><?php echo e($portfolio->created_at && $portfolio->created_at != \Carbon\Carbon::create(0, 0, 0, 0) ? \Carbon\Carbon::parse($portfolio->created_at)->format('d/m/Y H:i:s') : null); ?></td>
+					<td><?php echo e($portfolio->updated_at && $portfolio->updated_at != \Carbon\Carbon::create(0, 0, 0, 0) ? \Carbon\Carbon::parse($portfolio->updated_at)->format('d/m/Y H:i:s') : null); ?></td>
+				</tr>
+			<?php endforeach; ?>
+		<?php endif; ?>
+	</tbody>
+</table>

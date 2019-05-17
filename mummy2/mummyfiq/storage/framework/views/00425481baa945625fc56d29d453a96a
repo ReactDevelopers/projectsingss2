@@ -1,0 +1,27 @@
+<li class="<?php if($active): ?>active <?php endif; ?> <?php if($item->hasItems()): ?> treeview <?php endif; ?> clearfix">
+    <a href="<?php echo e($item->getUrl()); ?>" <?php if(count($appends) > 0): ?>class="hasAppend"<?php endif; ?>>
+        <i class="<?php echo e($item->getIcon()); ?>"></i>
+        <span><?php echo e($item->getName()); ?></span>
+
+        <?php foreach($badges as $badge): ?>
+            <?php echo $badge; ?>
+
+        <?php endforeach; ?>
+
+        <?php if($item->hasItems()): ?><i class="<?php echo e($item->getToggleIcon()); ?> pull-right"></i><?php endif; ?>
+    </a>
+
+    <?php foreach($appends as $append): ?>
+        <?php echo $append; ?>
+
+    <?php endforeach; ?>
+
+    <?php if(count($items) > 0): ?>
+        <ul class="treeview-menu">
+            <?php foreach($items as $item): ?>
+                <?php echo $item; ?>
+
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</li>

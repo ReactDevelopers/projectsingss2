@@ -1,0 +1,265 @@
+<?php $__env->startSection('content-header'); ?>
+    <h1>
+        <?php echo e(trans('category::subcategories.title.subcategories')); ?>
+
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(route('dashboard.index')); ?>"><i class="fa fa-dashboard"></i> <?php echo e(trans('core::core.breadcrumb.home')); ?></a></li>
+        <li class="active"><?php echo e(trans('category::subcategories.title.subcategories')); ?></li>
+    </ol>
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('styles'); ?>
+    <?php echo Theme::style('css/custom/custom.css'); ?>
+
+<?php $__env->stopSection(); ?>
+<?php
+    $current_url                    = Request::url();
+    $query_url                      = $_SERVER['QUERY_STRING'];
+?>
+<?php $__env->startSection('content'); ?>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="btn-group pull-right" style="margin: 0 15px 15px 0;">
+                    <a href="<?php echo e(route('admin.category.subcategory.create')); ?>" class="btn btn-primary btn-flat" style="padding: 4px 10px;">
+                        <i class="fa fa-pencil"></i> <?php echo e(trans('category::subcategories.button.create subcategory')); ?>
+
+                    </a>
+                </div>
+            </div>
+            <div class="box box-primary">
+                <div class="box-header">
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <?php /* <div class="row">
+                    <table border="0" cellspacing="5" cellpadding="5" margin="10px" style="margin-bottom: 10px; margin-right: 15px;float: right;">
+                        <tbody><tr>
+                                <td><?php echo e(trans('category::categories.title.categories')); ?>:&nbsp;</td>
+                                <td>
+                                    <?php echo Form::select("category_id", $categories, old("category_id"), ['class' => "form-control form-search-parent-category", 'id' => "category_id",  'name' => "category_id"]); ?>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>    
+                    </div> */ ?>
+                    <?php echo Form::open(array('url' => Request::fullUrl(), 'method'=>"GET", 'name' => "form_searchResult", 'id' => "form_searchResult") ); ?>
+
+                    <div class="row">
+                        <div class="col-sm-6 col-md-6">
+                            <div style="white-space:nowrap;" id="dataTables_length">
+                                <label>
+                                <span>Show</span> <select style="display:inline-block; font-weight: normal;" name="limit" aria-controls="DataTables_Table_0" class="form-control input-sm">
+                                        <option value="10" <?php if($limit == 10): ?> selected <?php endif; ?>>10</option>
+                                        <option value="25" <?php if($limit == 25): ?> selected <?php endif; ?>>25</option>
+                                        <option value="50" <?php if($limit == 50): ?> selected <?php endif; ?>>50</option>
+                                        <option value="100" <?php if($limit == 100): ?> selected <?php endif; ?>>100</option>
+                                    </select> <span>entries</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-6">
+                            <div style="white-space:nowrap; text-align: right;">
+                                <label>
+                                    <span>Search: </span><input style="display: inline-block; font-weight: normal;" type="text" name="keyword" value="<?php echo e(isset($keyword) ? $keyword : ""); ?>" class="form-control-right" placeholder="">
+                                    <button type="submit" class="form-control btn-primary" style="width: auto; display: inline-block;">Search</button>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="data-table table table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th>
+                                <a class="header-table" href="<?php echo e(get_url_query($current_url, $query_url, ['order_field' => 'id', 'sort' => $order_field == "id" ? ($sort == "DESC" ? "ASC" : "DESC") : "DESC"])); ?>" >
+                                    <?php echo e(trans('core::core.table.id')); ?>
+
+                                    <?php if($order_field == 'id'): ?>
+                                        <?php if($sort == 'DESC'): ?>
+                                            <span class="fa fa-sort-amount-desc span-header-table"></span>
+                                        <?php else: ?>
+                                            <span class="fa fa-sort-amount-asc span-header-table"></span>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <span class="fa fa-sort span-header-table"></span>
+                                    <?php endif; ?>
+                                </a>
+                            </th>
+                            <th>
+                                <a class="header-table" href="<?php echo e(get_url_query($current_url, $query_url, ['order_field' => 'name', 'sort' => $order_field == "name" ? ($sort == "DESC" ? "ASC" : "DESC") : "DESC"])); ?>" >
+                                    <?php echo e(trans('core::core.table.name')); ?>
+
+                                    <?php if($order_field == 'name'): ?>
+                                        <?php if($sort == 'DESC'): ?>
+                                            <span class="fa fa-sort-amount-desc span-header-table"></span>
+                                        <?php else: ?>
+                                            <span class="fa fa-sort-amount-asc span-header-table"></span>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <span class="fa fa-sort span-header-table"></span>
+                                    <?php endif; ?>
+                                </a>
+                            </th>
+                            <?php /* <th><?php echo e(trans('category::subcategories.table.parent category')); ?></th> */ ?>
+                            <th data-sortable="false"><?php echo e(trans('core::core.table.actions')); ?></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php if (isset($subcategories)): ?>
+                        <?php foreach ($subcategories as $item): ?>
+                        <tr>
+                            <td><?php echo e($item->id); ?></td>
+                            <td><?php echo e($item->name); ?></td>
+                            <?php /* <td><?php echo e($item->category->name); ?></td> */ ?>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="<?php echo e(route('admin.category.subcategory.edit', [$item->id])); ?>" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>
+                                    <button type="button" class="btn btn-danger btn-flat" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="<?php echo e(route('admin.category.subcategory.destroy', [$item->id])); ?>"><i class="fa fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th><?php echo e(trans('core::core.table.id')); ?></th>
+                            <th><?php echo e(trans('core::core.table.name')); ?></th>
+                            <?php /* <th><?php echo e(trans('category::subcategories.table.parent category')); ?></th> */ ?>
+                            <th data-sortable="false"><?php echo e(trans('core::core.table.actions')); ?></th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                    <!-- /.box-body -->
+                    <div class="row">
+                        <div class="col-sm-5" style="margin-top: 15px;"> 
+                            <span>Showing <?php echo e($start); ?> to <?php echo e($offset); ?> of <?php echo e($count); ?> entries</span>
+                        </div>
+                        <div class="col-sm-7" style="text-align: right">
+                            <?php echo $subcategories->appends(['limit' => $limit, 'keyword' => $keyword, 'page' => $page])->render(); ?>
+
+                        </div>
+                    </div>
+                    <?php echo Form::close(); ?>
+
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </div>
+    <?php echo $__env->make('core::partials.delete-modal', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('footer'); ?>
+    <!-- <a data-toggle="modal" data-target="#keyboardShortcutsModal"><i class="fa fa-keyboard-o"></i></a> &nbsp; -->
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('shortcuts'); ?>
+    <dl class="dl-horizontal">
+        <dt><code>c</code></dt>
+        <dd><?php echo e(trans('category::subcategories.title.create subcategory')); ?></dd>
+    </dl>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('custom-styles'); ?>
+    <style>
+    td.cell-image{
+        overflow: auto;
+        width: 250px !important;
+        height: 100px !important;
+        display: block;
+    }
+    .span-header-table{
+        float: right;
+        color: grey;
+        margin-top: 3px;
+    }
+    a { 
+        color: black; 
+    } 
+    a:hover { 
+        color: black; 
+    } 
+    a:selected { 
+        color: black; 
+    } 
+    </style>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('scripts'); ?>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            $(document).keypressAction({
+                actions: [
+                    { key: 'c', route: "<?= route('admin.category.subcategory.create') ?>" }
+                ]
+            });
+        });
+    </script>
+    <?php $locale = locale(); ?>
+    <script type="text/javascript">
+        $(function () {
+            $('#dataTables_length').change(function(){   
+                var url_string = window.location.href;
+                var url = new URL(url_string);
+                // var limit = url.searchParams.get("limit");
+                var page = url.searchParams.get("page");
+                //var keyword = url.searchParams.get("keyword");
+
+                if(page){
+                    $('#form_searchResult').append('<input type="hidden" name="page" value="'+page+'">');
+                }
+                //if(keyword){
+                //    $('#form_searchResult').append('<input type="hidden" name="keyword" value="'+keyword+'">');
+                //}
+
+                $('#form_searchResult').submit();
+            });
+
+            $('.data-table1').dataTable({
+                "search": {
+                    "smart": false
+                },
+                "paginate": true,
+                "lengthChange": true,
+                "filter": true,
+                "sort": true,
+                "info": true,
+                "autoWidth": true,
+                "order": [[ 0, "desc" ]],
+                "language": {
+                    "url": '<?php echo Module::asset("core:js/vendor/datatables/{$locale}.json") ?>'
+                }
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        /* Custom filtering function which will search data in column four between two values */
+        /*$.fn.dataTable.ext.search.push(
+            function( settings, data, dataIndex ) {
+                var category_id = ( $('#category_id').val());
+                var category = ( data[2] ) ; // use data for the category column
+                console.log(category_id, category);
+                if(category_id == 'All'){
+                    return true;
+                }
+                if ( category_id ==  category)
+                {
+                    return true;
+                }
+                return false;
+            }
+        );
+         $(document).ready(function() {
+            var table = $('.data-table').DataTable();
+            $(".form-search-parent-category").select2();
+            // Event listener to the two range filtering inputs to redraw on input
+            $('#category_id').change( function() {
+                table.draw();
+            } );
+        } );*/
+    </script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

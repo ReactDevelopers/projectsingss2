@@ -1,0 +1,20 @@
+<?php
+
+return [
+    'title' => [
+        '$PLURAL_LOWERCASE_CLASS_NAME$' => '$CLASS_NAME$',
+        'create $LOWERCASE_CLASS_NAME$' => 'Create a $LOWERCASE_CLASS_NAME$',
+        'edit $LOWERCASE_CLASS_NAME$' => 'Edit a $LOWERCASE_CLASS_NAME$',
+    ],
+    'button' => [
+        'create $LOWERCASE_CLASS_NAME$' => 'Create a $LOWERCASE_CLASS_NAME$',
+    ],
+    'table' => [
+    ],
+    'form' => [
+    ],
+    'messages' => [
+    ],
+    'validation' => [
+    ],
+];

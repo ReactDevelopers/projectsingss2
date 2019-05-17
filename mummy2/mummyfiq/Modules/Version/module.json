@@ -1,0 +1,17 @@
+{
+    "name": "Version",
+    "alias": "version",
+    "description": "",
+    "version": "v0.1",
+    "keywords": [],
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\Version\\Providers\\VersionServiceProvider",
+        "Modules\\Version\\Providers\\RouteServiceProvider"
+    ],
+    "aliases":{},
+    "files": [
+        
+    ]
+}

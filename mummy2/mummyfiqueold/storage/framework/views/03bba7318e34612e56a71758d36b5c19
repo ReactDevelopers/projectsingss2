@@ -1,0 +1,132 @@
+<?php $__env->startSection('content-header'); ?>
+    <h1>
+        <?php echo e(trans('page::pages.title.pages')); ?>
+
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(URL::route('dashboard.index')); ?>"><i class="fa fa-dashboard"></i> <?php echo e(trans('core::core.breadcrumb.home')); ?></a></li>
+        <li class="active"><?php echo e(trans('page::pages.title.pages')); ?></li>
+    </ol>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="btn-group pull-right" style="margin: 0 15px 15px 0;">
+                    <a href="<?php echo e(URL::route('admin.page.page.create')); ?>" class="btn btn-primary btn-flat" style="padding: 4px 10px;">
+                        <i class="fa fa-pencil"></i> <?php echo e(trans('page::pages.button.create page')); ?>
+
+                    </a>
+                </div>
+            </div>
+            <div class="box box-primary">
+                <div class="box-header">
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table class="data-table table table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th><?php echo e(trans('page::pages.table.name')); ?></th>
+                            <th><?php echo e(trans('page::pages.table.slug')); ?></th>
+                            <th><?php echo e(trans('core::core.table.created at')); ?></th>
+                            <th data-sortable="false"><?php echo e(trans('core::core.table.actions')); ?></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php if (isset($pages)): ?>
+                        <?php foreach ($pages as $page): ?>
+                        <tr>
+                            <td>
+                                <a href="<?php echo e(URL::route('admin.page.page.edit', [$page->id])); ?>">
+                                    <?php echo e($page->id); ?>
+
+                                </a>
+                            </td>
+                            <td>
+                                <a href="<?php echo e(URL::route('admin.page.page.edit', [$page->id])); ?>">
+                                    <?php echo e($page->title); ?>
+
+                                </a>
+                            </td>
+                            <td>
+                                <a href="<?php echo e(URL::route('admin.page.page.edit', [$page->id])); ?>">
+                                    <?php echo e($page->slug); ?>
+
+                                </a>
+                            </td>
+                            <td>
+                                <a href="<?php echo e(URL::route('admin.page.page.edit', [$page->id])); ?>">
+                                    <?php echo e($page->created_at); ?>
+
+                                </a>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="<?php echo e(URL::route('admin.page.page.edit', [$page->id])); ?>" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>
+                                    <button data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="<?php echo e(route('admin.page.page.destroy', [$page->id])); ?>" class="btn btn-danger btn-flat"><i class="fa fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th><?php echo e(trans('page::pages.table.name')); ?></th>
+                            <th><?php echo e(trans('page::pages.table.slug')); ?></th>
+                            <th><?php echo e(trans('core::core.table.created at')); ?></th>
+                            <th><?php echo e(trans('core::core.table.actions')); ?></th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </div>
+    <?php echo $__env->make('core::partials.delete-modal', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('footer'); ?>
+    <a data-toggle="modal" data-target="#keyboardShortcutsModal"><i class="fa fa-keyboard-o"></i></a> &nbsp;
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('shortcuts'); ?>
+    <dl class="dl-horizontal">
+        <dt><code>c</code></dt>
+        <dd><?php echo e(trans('page::pages.title.create page')); ?></dd>
+    </dl>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('scripts'); ?>
+    <?php $locale = App::getLocale(); ?>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            $(document).keypressAction({
+                actions: [
+                    { key: 'c', route: "<?= route('admin.page.page.create') ?>" }
+                ]
+            });
+        });
+        $(function () {
+            $('.data-table').dataTable({
+                "paginate": true,
+                "lengthChange": true,
+                "filter": true,
+                "sort": true,
+                "info": true,
+                "autoWidth": true,
+                "order": [[ 0, "desc" ]],
+                "language": {
+                    "url": '<?php echo Module::asset("core:js/vendor/datatables/{$locale}.json") ?>'
+                }
+            });
+        });
+    </script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

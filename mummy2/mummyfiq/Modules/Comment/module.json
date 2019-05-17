@@ -1,0 +1,17 @@
+{
+    "name": "Comment",
+    "alias": "comment",
+    "description": "",
+    "version": "v0.1",
+    "keywords": [],
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\Comment\\Providers\\CommentServiceProvider",
+        "Modules\\Comment\\Providers\\RouteServiceProvider"
+    ],
+    "aliases":{},
+    "files": [
+        
+    ]
+}

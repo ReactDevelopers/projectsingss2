@@ -1,0 +1,39 @@
+<?php $__env->startSection('title'); ?>
+    <?php echo e(trans('user::auth.reset password')); ?> | @parent
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <div class="login-logo">
+        <a href="<?php echo e(url('/')); ?>"><?php echo e(setting('core::site-name')); ?></a>
+    </div>
+    <!-- /.login-logo -->
+    <div class="login-box-body">
+        <p class="login-box-msg"><?php echo e(trans('user::auth.to reset password complete this form')); ?></p>
+        <?php echo $__env->make('flash::message', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+
+        <?php echo Form::open(['route' => 'reset.post']); ?>
+
+            <div class="form-group has-feedback <?php echo e($errors->has('email') ? ' has-error' : ''); ?>">
+                <input type="email" class="form-control" autofocus
+                       name="email" placeholder="<?php echo e(trans('user::auth.email')); ?>" value="<?php echo e(old('email')); ?>">
+                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                <?php echo $errors->first('email', '<span class="help-block">:message</span>'); ?>
+
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <button type="submit" class="btn btn-primary btn-block btn-flat pull-right">
+                        <?php echo e(trans('user::auth.reset password')); ?>
+
+                    </button>
+                </div>
+            </div>
+        <?php echo Form::close(); ?>
+
+
+        <a href="<?php echo e(route('login')); ?>" class="text-center"><?php echo e(trans('user::auth.I remembered my password')); ?></a>
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.account', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

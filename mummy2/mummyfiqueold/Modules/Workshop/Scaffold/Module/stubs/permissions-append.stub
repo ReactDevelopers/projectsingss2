@@ -1,0 +1,9 @@
+    '$LOWERCASE_MODULE_NAME$.$PLURAL_LOWERCASE_CLASS_NAME$' => [
+        'index',
+        'create',
+        'store',
+        'edit',
+        'update',
+        'destroy',
+    ],
+// append

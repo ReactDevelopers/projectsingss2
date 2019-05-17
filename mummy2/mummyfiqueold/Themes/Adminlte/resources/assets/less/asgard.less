@@ -1,0 +1,34 @@
+@import "Asgard/vars";
+@import "Asgard/notifications";
+@import "mixins";
+@import "footer";
+
+@import "skins/blue.less";
+
+// For the appended elements
+.sidebar-menu .append {
+  margin-top: -44px;
+}
+.sidebar-menu .treeview-menu .append {
+  margin-top: -30px;
+}
+.skin-blue .sidebar-menu .append:hover,
+.skin-blue .sidebar-menu > li.active > a.append {
+  color: #fff;
+  background: none;
+  border: 0;
+}
+
+// Dark border under the logo area
+.skin-blue .main-header .logo {
+  border-bottom: 1px solid #202227;
+}
+
+// Correctly aligning the checkbox labels
+.checkbox label {
+  padding-left: 0;
+}
+.checkbox label div {
+  margin-right: 5px;
+  margin-top: -2px;
+}

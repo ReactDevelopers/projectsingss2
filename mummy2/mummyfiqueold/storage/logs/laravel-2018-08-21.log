@@ -1,0 +1,545 @@
+[2018-08-21 14:40:20] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:40:21] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:44:12] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:44:12] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:44:12] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:44:12] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:44:13] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:44:13] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:44:13] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:44:13] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:49:26] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:49:26] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:49:27] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:49:27] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:49:27] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:49:27] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:49:28] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:49:28] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:49:28] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:49:28] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:49:28] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:49:28] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:49:28] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:49:28] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:49:28] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:49:28] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:49:29] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:49:29] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:49:29] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:49:29] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:49:29] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:49:29] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 14:57:12] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Core/Providers/AsgardServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Core\\Pr...')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(146): spl_autoload_call('Modules\\Core\\Pr...')
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(114): Illuminate\Foundation\ProviderRepository->createProvider('Modules\\Core\\Pr...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(60): Illuminate\Foundation\ProviderRepository->compileManifest(Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#13 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#14 {main}  
+[2018-08-21 14:57:12] production.ERROR: ReflectionException: Class encrypter does not exist in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:741
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(741): ReflectionClass->__construct('encrypter')
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('encrypter', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('encrypter', Array)
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('encrypter')
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Illuminate\\Cook...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Illuminate\\Cook...', Array)
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Illuminate\\Cook...')
+#9 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#10 {main}  
+[2018-08-21 15:03:08] production.ERROR: ErrorException: include(/var/www/html/mummyfique/vendor/composer/../../Modules/Translation/Providers/TranslationServiceProvider.php): failed to open stream: No such file or directory in /var/www/html/mummyfique/vendor/composer/ClassLoader.php:444
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/var/ww...', '/var/www/html/m...', 444, Array)
+#1 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(444): include()
+#2 /var/www/html/mummyfique/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile('/var/www/html/m...')
+#3 [internal function]: Composer\Autoload\ClassLoader->loadClass('Modules\\Transla...')
+#4 [internal function]: spl_autoload_call('Modules\\Transla...')
+#5 /var/www/html/mummyfique/Modules/Core/Providers/AsgardServiceProvider.php(13): class_exists('Modules\\Transla...')
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(531): Modules\Core\Providers\AsgardServiceProvider->register()
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php(74): Illuminate\Foundation\Application->register(Object(Modules\Core\Providers\AsgardServiceProvider))
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(507): Illuminate\Foundation\ProviderRepository->load(Array)
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterProviders.php(17): Illuminate\Foundation\Application->registerConfiguredProviders()
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(203): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(222): Illuminate\Foundation\Application->bootstrapWith(Array)
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(117): Illuminate\Foundation\Http\Kernel->bootstrap()
+#13 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(87): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#14 /var/www/html/mummyfique/public/index.php(52): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#15 {main}  
+[2018-08-21 15:03:08] production.ERROR: Illuminate\Contracts\Container\BindingResolutionException: Target [Maatwebsite\Sidebar\Infrastructure\SidebarResolver] is not instantiable. in /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php:749
+Stack trace:
+#0 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Maatwebsite\\Sid...', Array)
+#1 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Maatwebsite\\Sid...', Array)
+#2 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('Maatwebsite\\Sid...')
+#3 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#4 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#5 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Maatwebsite\\Sid...', Array)
+#6 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Maatwebsite\\Sid...', Array)
+#7 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(842): Illuminate\Foundation\Application->make('Maatwebsite\\Sid...')
+#8 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): Illuminate\Container\Container->resolveClass(Object(ReflectionParameter))
+#9 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(775): Illuminate\Container\Container->getDependencies(Array, Array)
+#10 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Container/Container.php(631): Illuminate\Container\Container->build('Maatwebsite\\Sid...', Array)
+#11 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(674): Illuminate\Container\Container->make('Maatwebsite\\Sid...', Array)
+#12 /var/www/html/mummyfique/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\Foundation\Application->make('Maatwebsite\\Sid...')
+#13 /var/www/html/mummyfique/public/index.php(57): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
+#14 {main}  

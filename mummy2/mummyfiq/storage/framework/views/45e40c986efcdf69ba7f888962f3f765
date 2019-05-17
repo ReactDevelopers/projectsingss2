@@ -1,0 +1,134 @@
+<div class="box-body">
+	<div class='form-group<?php echo e($errors->has("title") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("title", trans('banner::banners.form.title')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text("title", Input::old('title'), ['class' => "form-control", 'placeholder' => trans('banner::banners.form.title')] ); ?>
+
+	    <?php echo $errors->first("title", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	
+	<div class="form-group <?php echo e($errors->has("medias_single") ? ' has-error' : ''); ?>">
+		<?php echo $__env->make('media::admin.fields.new-file-link-single', [
+		    'zone' => 'image'
+		], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+		<?php echo $errors->first("medias_single", '<span class="help-block">:message</span>'); ?>
+
+		<i>Image size upto 2 mb max & dimensions (1120*500).</i>
+	</div>
+
+	<div class='form-group<?php echo e($errors->has("status") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("status", trans('banner::banners.form.status')); ?>
+
+	    <?php echo Form::select("status", Config('asgard.banner.config.status'), old("adv_id"), ['class' => "form-control"]); ?>
+
+	    <?php echo $errors->first("status", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+
+	<div class='form-group<?php echo e($errors->has("type") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("type", trans('banner::banners.form.type')); ?>
+
+	    <?php echo Form::select("type", Config('asgard.banner.config.type'), old("adv_id"), ['class' => "form-control status "]); ?>
+
+	    <?php echo $errors->first("type", '<span class="help-block">:message</span>'); ?>
+
+	    <input type="hidden" id="oldstatus" name="oldstatus" value="<?php echo e(old('type')); ?>">
+	</div>
+
+
+	<div id="external_link">
+		<div class='form-group<?php echo e($errors->has("link") ? ' has-error' : ''); ?>'>
+		    <?php echo Form::label("link", trans('banner::banners.form.link')); ?> <span class="text-danger">*</span>
+		    <?php echo Form::text("link", Input::old('link'), ['class' => "form-control", 'placeholder' => trans('banner::banners.form.link')] ); ?>
+
+		    <?php echo $errors->first("link", '<span class="help-block">:message</span>'); ?>
+
+		</div>
+	</div>
+
+	<div id="predefined_filters">
+		<div class='form-group<?php echo e($errors->has("country") ? ' has-error' : ''); ?>'>
+			<?php echo Form::label("country", trans('banner::banners.form.country')); ?> <span class="text-danger">*</span>
+			<!-- <input type="checkbox" id="countrycheckbox" name="countrycheckbox" <?php echo e(old('countrycheckbox') ? 'checked' : ''); ?>>Select All -->
+			<select multiple id="country" class='form-control country' name="country[]">
+		        <?php foreach($countriesArr as $k => $country): ?>
+		        <option value="<?php echo $k; ?>" <?php echo e((collect(old('country'))->contains($k)) ? 'selected':''); ?> ><?php echo $country; ?></option>
+		        <?php endforeach; ?>
+		    </select>
+		    <?php echo $errors->first("country", '<span class="help-block">:message</span>'); ?>
+
+		</div>
+
+		<div class='form-group<?php echo e($errors->has("category") ? ' has-error' : ''); ?>'>
+			<?php echo Form::label("category", trans('banner::banners.form.category')); ?> <span class="text-danger">*</span>
+			<!-- <input type="checkbox" id="catcheckbox" name="catcheckbox" <?php echo e(old('catcheckbox') ? 'checked' : ''); ?>>Select All -->
+			<select multiple id="category" class='form-control category' name="category[]">
+		        <?php foreach($categoryArr as $k => $category): ?>
+		        <option value="<?php echo $k; ?>" <?php echo e((collect(old('category'))->contains($k)) ? 'selected':''); ?> ><?php echo $category; ?></option>
+		        <?php endforeach; ?>
+		    </select>
+		    <?php echo $errors->first("category", '<span class="help-block">:message</span>'); ?>
+
+		</div>
+
+		<div class='form-group<?php echo e($errors->has("subcategory") ? ' has-error' : ''); ?>'>
+			<?php echo Form::label("category", trans('banner::banners.form.subcategory')); ?> 
+			<!-- <span class="text-danger">*</span> -->
+			<!-- <input type="checkbox" name="subcatcheckbox" id="subcatcheckbox" <?php echo e(old('subcatcheckbox') ? 'checked' : ''); ?> >Select All -->
+			<select multiple id="subcategory" class='form-control subcategory' name="subcategory[]">
+		        <?php foreach($subcategoryArr as $k => $subcategory): ?>
+		        <option value="<?php echo $k; ?>" <?php echo e((collect(old('subcategory'))->contains($k)) ? 'selected':''); ?> ><?php echo $subcategory; ?></option>
+		        <?php endforeach; ?>
+		    </select>
+		    <?php echo $errors->first("subcategory", '<span class="help-block">:message</span>'); ?>
+
+		</div>
+
+		<div class='form-group<?php echo e($errors->has("vendor") ? ' has-error' : ''); ?>'>
+			<?php echo Form::label("vendor", trans('banner::banners.form.vendor')); ?> <span class="text-danger">*</span>
+			<!-- <input type="checkbox" name="vendorcheckbox" id="vendorcheckbox" <?php echo e(old('vendorcheckbox') ? 'checked' : ''); ?>>Select All -->
+			<select multiple id="vendor" class='form-control vendor' name="vendor[]">
+		        <?php foreach($vendorArr as $k => $vendor): ?>
+		        <option value="">All Selected</option>
+		        <option value="<?php echo $k; ?>" <?php echo e((collect(old('vendor'))->contains($k)) ? 'selected':''); ?> ><?php echo $vendor; ?></option>
+		        <?php endforeach; ?>
+		    </select>
+		    <?php echo $errors->first("vendor", '<span class="help-block">:message</span>'); ?>
+
+		</div>
+
+		<div class='form-group<?php echo e($errors->has("excludevendor") ? ' has-error' : ''); ?>'>
+			<?php echo Form::label("excludevendor", trans('banner::banners.form.excludevendor')); ?> <span class="text-danger">*</span>
+			<!-- <input type="checkbox" name="vendorcheckbox" id="vendorcheckbox" <?php echo e(old('vendorcheckbox') ? 'checked' : ''); ?>>Select All -->
+			<select multiple id="excludevendor" class='form-control excludevendor' name="excludevendor[]">
+		        <?php foreach($vendorArr as $k => $vendor): ?>
+		        <option value="">All Selected</option>
+		        <option value="<?php echo $k; ?>" <?php echo e((collect(old('vendor'))->contains($k)) ? 'selected':''); ?> ><?php echo $vendor; ?></option>
+		        <?php endforeach; ?>
+		    </select>
+		    <?php echo $errors->first("excludevendor", '<span class="help-block">:message</span>'); ?>
+
+		</div>
+
+		<?php $selected_keywords = old('keywords'); ?>
+
+		<div class='form-group  input_fields_wrap <?php echo e($errors->has("keywords") ? ' has-error' : ''); ?>'>
+			<?php echo Form::label("keywords", trans('banner::banners.form.keywords')); ?> 
+			<!-- <span class="text-danger">*</span> -->
+			<i>Max 5 Fields</i>
+		    <button class="add_field_button btn btn-info">Add More Fields</button>
+
+		    <?php if(empty($selected_keywords)) {?>
+		    		<div style="margin-top: 5px;overflow: hidden;"><input class="form-control col-sm-6" type="text" name="keywords[]" value=""></div>
+			<?php } else {
+				  foreach((array) $selected_keywords as $index => $key){?>
+				  		<div style="margin-top: 5px;overflow: hidden;"><input class="form-control col-sm-6" type="text" name="keywords[]" value="<?php echo e($key); ?>"><?php if($index>0) { ?><a href="javascript:void(0);" class="remove_field">Remove</a><?php } ?></div>
+			<?php } }?>
+
+		    <?php echo $errors->first("keywords", '<span class="help-block">:message</span>'); ?>
+
+		    
+		</div>
+	</div>
+
+</div>

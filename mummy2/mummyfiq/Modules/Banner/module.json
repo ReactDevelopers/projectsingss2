@@ -1,0 +1,17 @@
+{
+    "name": "Banner",
+    "alias": "banner",
+    "description": "",
+    "version": "v0.1",
+    "keywords": [],
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\Banner\\Providers\\BannerServiceProvider",
+        "Modules\\Banner\\Providers\\RouteServiceProvider"
+    ],
+    "aliases":{},
+    "files": [
+        
+    ]
+}

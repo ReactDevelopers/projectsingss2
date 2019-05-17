@@ -1,0 +1,185 @@
+<?php $__env->startSection('content-header'); ?>
+    <h1>
+        <?php echo e(trans('banner::banners.title.create banner')); ?>
+
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(route('dashboard.index')); ?>"><i class="fa fa-dashboard"></i> <?php echo e(trans('core::core.breadcrumb.home')); ?></a></li>
+        <li><a href="<?php echo e(route('admin.banner.banner.index')); ?>"><?php echo e(trans('banner::banners.title.banners')); ?></a></li>
+        <li class="active"><?php echo e(trans('banner::banners.title.create banner')); ?></li>
+    </ol>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('styles'); ?>
+    <?php echo Theme::script('js/vendor/ckeditor/ckeditor.js'); ?>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <?php echo Form::open(['route' => ['admin.banner.banner.store'], 'method' => 'post']); ?>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <?php echo $__env->make('partials.form-tab-headers', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                <div class="tab-content">
+                    <?php $i = 0; ?>
+                    <?php foreach(LaravelLocalization::getSupportedLocales() as $locale => $language): ?>
+                        <?php $i++; ?>
+                        <div class="tab-pane <?php echo e(locale() == $locale ? 'active' : ''); ?>" id="tab_<?php echo e($i); ?>">
+                            <?php echo $__env->make('banner::admin.banners.partials.create-fields', ['lang' => $locale], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                        </div>
+                    <?php endforeach; ?>
+
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-primary btn-flat"><?php echo e(trans('core::core.button.create')); ?></button>
+                        <button class="btn btn-default btn-flat" name="button" type="reset"><?php echo e(trans('core::core.button.reset')); ?></button>
+                        <a class="btn btn-danger pull-right btn-flat" href="<?php echo e(route('admin.banner.banner.index')); ?>"><i class="fa fa-times"></i> <?php echo e(trans('core::core.button.cancel')); ?></a>
+                    </div>
+                </div>
+            </div> <?php /* end nav-tabs-custom */ ?>
+        </div>
+    </div>
+    <?php echo Form::close(); ?>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('footer'); ?>
+    <a data-toggle="modal" data-target="#keyboardShortcutsModal"><i class="fa fa-keyboard-o"></i></a> &nbsp;
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('shortcuts'); ?>
+    <dl class="dl-horizontal">
+        <dt><code>b</code></dt>
+        <dd><?php echo e(trans('core::core.back to index')); ?></dd>
+    </dl>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('scripts'); ?>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            $(document).keypressAction({
+                actions: [
+                    { key: 'b', route: "<?= route('admin.banner.banner.index') ?>" }
+                ]
+            });
+        });
+    </script>
+    <script>
+        $( document ).ready(function() {
+            $('input[type="checkbox"].flat-blue, input[type="radio"].flat-blue').iCheck({
+                checkboxClass: 'icheckbox_flat-blue',
+                radioClass: 'iradio_flat-blue'
+            });
+        });
+    </script>
+
+    <script>
+        $(function(){
+            $(".country").select2({'placeholder':'All'});
+            $(".category").select2({'placeholder':'All'});
+            $(".vendor").select2({'placeholder':'All'});
+            $(".subcategory").select2({'placeholder':'All'});
+            $(".excludevendor").select2({'placeholder':'All'});
+            $('#predefined_filters').hide();
+
+
+            if($("#oldstatus").val()==1){
+                $('#predefined_filters').show();
+                $('#external_link').hide();
+            }
+            if($("#oldstatus").val()==0 && $("#oldstatus").val()!=''){
+                $('#predefined_filters').hide();
+                $('#external_link').show();   
+            }
+
+
+            var max_fields      = 5; //maximum input boxes allowed
+            var wrapper         = $(".input_fields_wrap"); //Fields wrapper
+            var add_button      = $(".add_field_button"); //Add button ID
+
+            var x = 1; //initlal text box count
+            $(add_button).on("click",function(e){ //on add input button click
+            e.preventDefault();
+            if(x < max_fields){ //max input box allowed
+                x++; //text box increment
+                $(wrapper).append('<div style="margin-top: 5px;overflow: hidden;"><input class="form-control" type="text" name="keywords[]" value="" /><a href="javascript:void(0);" class="remove_field">Remove</a></div>'); //add input box
+            }
+            });
+
+            $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+            e.preventDefault(); $(this).parent('div').remove(); x--;
+            })
+
+        });
+
+        $(document).on('click','.status', function(e){
+            var status = $(this).val();
+            if(status==1){
+                $('#predefined_filters').show();
+                $('#external_link').hide();
+            }
+            else{
+                $('#predefined_filters').hide();
+                $('#external_link').show();
+            }
+        });
+
+        // $("#countrycheckbox").click(function(){
+        //     if($("#countrycheckbox").is(':checked') ){
+        //         $("#country > option").prop("selected","selected");
+        //         $("#country").trigger("change");
+        //     }else{
+        //         $("#country > option").removeAttr("selected");
+        //          $("#country").trigger("change");
+        //      }
+        // });
+
+        // $("#catcheckbox").click(function(){
+        //     if($("#catcheckbox").is(':checked') ){
+        //         $("#category > option").prop("selected","selected");
+        //         $("#category").trigger("change");
+        //     }else{
+        //         $("#category > option").removeAttr("selected");
+        //          $("#category").trigger("change");
+        //      }
+        // });
+
+
+        // $("#vendorcheckbox").click(function(){
+        //     if($("#vendorcheckbox").is(':checked') ){
+        //         alert('cbhbh');
+        //         $("#vendor").val('All selected').trigger('change');
+        //         // $("#vendor > option").prop("selected","selected");
+        //         // $("#vendor").trigger("change");
+        //     }else{
+        //         // $("#vendor > option").removeAttr("selected");
+        //         //  $("#vendor").trigger("change");
+        //      }
+        // });
+
+        // $("#subcatcheckbox").click(function(){
+        //     if($("#subcatcheckbox").is(':checked') ){
+        //         $("#subcategory > option").prop("selected","selected");
+        //         $("#subcategory").trigger("change");
+        //     }else{
+        //         $("#subcategory > option").removeAttr("selected");
+        //          $("#subcategory").trigger("change");
+        //      }
+        // });
+
+        // $('#subcategory').on('select2:unselecting', function (e) {
+        //     $("#subcatcheckbox"). prop("checked", false);
+        // });
+        // $('#category').on('select2:unselecting', function (e) {
+        //     $("#catcheckbox"). prop("checked", false);
+        // });
+        // $('#vendor').on('select2:unselecting', function (e) {
+        //     $("#vendorcheckbox"). prop("checked", false);
+        // });
+        // $('#country').on('select2:unselecting', function (e) {
+        //     $("#countrycheckbox"). prop("checked", false);
+        // });
+    </script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

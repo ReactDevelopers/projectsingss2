@@ -1,0 +1,3208 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Mummy API",
+        "version": "1.0.0"
+    },
+    "basePath": "/api",
+    "schemes": [
+        "http"
+    ],
+    "paths": {
+        "/v1/auth/client": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Authenticate Client to get Access Token",
+                "description": "<ul>\n     *      <li>username : string (required)</li>\n     *      <li>password : string (required)</li>\n     *      <li>grant_type : enum (required)</li>\n     *      <li>client_id : integer (required) </li>\n     *      <li>client_secret : string (required)</li></ul>",
+                "operationId": "api.auth.client",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AuthClient"
+                        }
+                    }
+                ],
+                "responses": {
+                    "101": {
+                        "description": "Wrong email or password"
+                    },
+                    "102": {
+                        "description": "You need to confirm your account"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/auth/refresh-token": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh Token",
+                "description": "<ul>\n     *      <li>grant_type : enum (required)</li>\n     *      <li>refresh_token : string (required)</li>\n     *      <li>client_id : integer (required) </li>\n     *      <li>client_secret : string (required)</li></ul>",
+                "operationId": "api.auth.refreshToken",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AuthRefreshToken"
+                        }
+                    }
+                ],
+                "responses": {
+                    "101": {
+                        "description": "Wrong email or password"
+                    },
+                    "102": {
+                        "description": "You need to confirm your account"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/customers/getLogout": {
+            "get": {
+                "tags": [
+                    "CUSTOMERS"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.customers.getLogout",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/customers/postLogin": {
+            "post": {
+                "tags": [
+                    "CUSTOMERS"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>email : string (required)</li>\n     *     <li>password : string (required)</li></ul>",
+                "operationId": "api.v1.customers.postLogin",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Customer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "101": {
+                        "description": "Wrong email or password"
+                    },
+                    "102": {
+                        "description": "You need to confirm your account"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/customers/postRegister": {
+            "post": {
+                "tags": [
+                    "CUSTOMERS"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>email : string (required)</li>\n     *     <li>password : string (required)</li>\n     *     <li>name : string (required)</li></ul>",
+                "operationId": "api.v1.customers.postRegister",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CustomerRegister"
+                        }
+                    }
+                ],
+                "responses": {
+                    "103": {
+                        "description": "The email has already been taken"
+                    },
+                    "104": {
+                        "description": "Send mail error"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/customers/postForgotPassword": {
+            "post": {
+                "tags": [
+                    "CUSTOMERS"
+                ],
+                "summary": "View",
+                "description": "<ul><li>email : string (required)</li></ul>",
+                "operationId": "api.v1customers.postForgotPassword",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CustomerForgotPassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "104": {
+                        "description": "Send mail error"
+                    },
+                    "108": {
+                        "description": "We can't find a user with that e-mail address"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/customers/postResendEmail": {
+            "post": {
+                "tags": [
+                    "CUSTOMERS"
+                ],
+                "summary": "View",
+                "description": "<ul><li>email : string (required)</li></ul>",
+                "operationId": "api.v1.customers.postResendEmail",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CustomerResendEmail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "104": {
+                        "description": "Send mail error"
+                    },
+                    "108": {
+                        "description": "We can't find a user with that e-mail address"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/customers/postSocialLogin": {
+            "post": {
+                "tags": [
+                    "CUSTOMERS"
+                ],
+                "summary": "View",
+                "description": "<ul><li>facebook_id or google_id : string (required)</li>\n     *     <li>name : string</li></ul>",
+                "operationId": "api.v1.customers.postSocialLogin",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CustomerSocialLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/customers/getCustomer": {
+            "get": {
+                "tags": [
+                    "CUSTOMERS"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.customers.getCustomer",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/userBadgeNumber": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.userBadgeNumber",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/showPopup": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.showPopup",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/getHome?take={take}&page={page}": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.getHome",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "take",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "type": "integer",
+                        "default": ""
+                    },
+                    {
+                        "name": "page",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "type": "integer",
+                        "default": ""
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/getListFavourite?take={take}&page={page}": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.getListFavourite",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "take",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "type": "integer",
+                        "default": ""
+                    },
+                    {
+                        "name": "page",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "type": "integer",
+                        "default": ""
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/deleteFavourite": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>currentPassword : string (required)</li>\n     *     <li>newPassword : string (required)</li></ul>",
+                "operationId": "api.v1.homes.deleteFavourite",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Favourite"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/getSearchScreen?country_id={country_id}": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.getSearchScreen",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "country_id",
+                        "in": "path",
+                        "description": "",
+                        "required": false,
+                        "type": "integer",
+                        "default": ""
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postSearch": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>currentPassword : string (required)</li>\n     *     <li>newPassword : string (required)</li></ul>",
+                "operationId": "api.v1.homes.postSearch",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Search"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postSearchByName": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>currentPassword : string (required)</li>\n     *     <li>newPassword : string (required)</li></ul>",
+                "operationId": "api.v1.homes.postSearchByName",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SearchByName"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postSearchNearBy": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>currentPassword : string (required)</li>\n     *     <li>newPassword : string (required)</li></ul>",
+                "operationId": "api.v1.homes.postSearchNearBy",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SearchNearby"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postFilter": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>currentPassword : string (required)</li>\n     *     <li>newPassword : string (required)</li></ul>",
+                "operationId": "api.v1.homes.postFilter",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Filter"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postAllPortfolioByVendor": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.postAllPortfolioByVendor",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AllPortFolioByVendor"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postLovePortfolio": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.postLovePortfolio",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LovePortfolio"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postPortfolioAllComment": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.postPortfolioAllComment",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Portfolio"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/deleteComment": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.deleteComment",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DeleteComment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postPricelist": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.postPricelist",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Pricelist"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postProfileMyVendor": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.postProfileMyVendor",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ProfileMyVendor"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postProfileMyReview": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.postProfileMyReview",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ProfileMyReview"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/getProfileMyAccount": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.getProfileMyAccount",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/editReview": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.editReview",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/EditReview"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/deleteReview": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.deleteReview",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Review"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postReviewDetail": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.postReviewDetail",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Review"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/sendReview": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.sendReview",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SendReview"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/getMLink": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.getMLink",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/getSendMessage?receiver_id={receiver_id}": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.getSendMessage",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "receiver_id",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "type": "integer",
+                        "default": ""
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postSendMessage": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.postSendMessage",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SendMessage"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/MessageScreen": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.MessageScreen",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/MessageScreen"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/getReadMessage?message_id={message_id}": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.getReadMessage",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "message_id",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "type": "integer",
+                        "default": ""
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/deleteMessage": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.deleteMessage",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DeleteMessage"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postReportReview": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.postReportReview",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ReportReview"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/getCategory": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.getCategory",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postSubCategory": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.postSubCategory",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SubCategory"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/getPriceRange": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.getPriceRange",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/getCountries": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.getCountries",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/homes/postCities": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.postCities",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Cities"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/getVersion": {
+            "get": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.homes.getVersion",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": []
+            }
+        },
+        "/v1/profiles/getAccountDetail": {
+            "get": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.profiles.getAccountDetail",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/profiles/postAccountDetail": {
+            "post": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.profiles.postAccountDetail",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AccountDetail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/profiles/getChildrenDetail": {
+            "get": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.profiles.getChildrenDetail",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/profiles/postChildrenDetail": {
+            "post": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.profiles.postChildrenDetail",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ChildrenDetail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/profiles/postChangePassword": {
+            "post": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>currentPassword : string (required)</li>\n     *     <li>newPassword : string (required)</li></ul>",
+                "operationId": "api.v1.profiles.postChangePassword",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CustomerChangePassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "105": {
+                        "description": "Current password incorrect"
+                    },
+                    "106": {
+                        "description": "Account does not exist"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/profiles/getNotificationScreen": {
+            "get": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.profiles.getNotificationScreen",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/profiles/postNotificationScreen": {
+            "post": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.profiles.postNotificationScreen",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/NotificationScreen"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/getTermsAndConditions": {
+            "get": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.getTermsAndConditions",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Page Not Found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/v1/getContact": {
+            "get": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.getContact",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Page Not Found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/v1/getAbout": {
+            "get": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.getAbout",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Page Not Found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/v1/getPrivacyPolicy": {
+            "get": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.getPrivacyPolicy",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Page Not Found"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/v1/profiles/postUpdateAvatar": {
+            "post": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "Update Avatar Customer",
+                "description": "",
+                "operationId": "api.v1.profiles.postUpdateAvatar",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "photo",
+                        "in": "formData",
+                        "description": "avatar's profile",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/user/profile": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.user.profile",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/getListVendor": {
+            "get": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.vendors.getListVendor",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/v1/vendors/submitComment": {
+            "post": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>currentPassword : string (required)</li>\n     *     <li>newPassword : string (required)</li></ul>",
+                "operationId": "api.v1.vendors.submitComment",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SubmitComment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/saveVendor": {
+            "post": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>currentPassword : string (required)</li>\n     *     <li>newPassword : string (required)</li></ul>",
+                "operationId": "api.v1.vendors.saveVendor",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SaveVendor"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/deleteSaveVendor": {
+            "post": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>currentPassword : string (required)</li>\n     *     <li>newPassword : string (required)</li></ul>",
+                "operationId": "api.v1.vendors.deleteSaveVendor",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SaveVendor"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/addFavourite": {
+            "post": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>currentPassword : string (required)</li>\n     *     <li>newPassword : string (required)</li></ul>",
+                "operationId": "api.v1.vendors.addFavourite",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Favourite"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/likeVendor": {
+            "post": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "View",
+                "description": "<ul>\n     *     <li>currentPassword : string (required)</li>\n     *     <li>newPassword : string (required)</li></ul>",
+                "operationId": "api.v1.vendors.likeVendor",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SaveVendor"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/getVendorScreen": {
+            "get": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.vendors.getVendorScreen",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/postListVendorByCategory": {
+            "post": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.vendors.postListVendorByCategory",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ListVendorByCategory"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/getVendorProfile?vendor_id={vendor_id}": {
+            "get": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.vendors.getVendorProfile",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "vendor_id",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "type": "integer",
+                        "default": ""
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/getInstagramFeed?vendor_id={vendor_id}&page={page}&take={take}": {
+            "get": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.vendors.getInstagramFeed",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "vendor_id",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "type": "integer",
+                        "default": ""
+                    },
+                    {
+                        "name": "page",
+                        "in": "path",
+                        "description": "",
+                        "required": false,
+                        "type": "integer",
+                        "default": "1"
+                    },
+                    {
+                        "name": "take",
+                        "in": "path",
+                        "description": "",
+                        "required": false,
+                        "type": "integer",
+                        "default": "15"
+                    },
+                    {
+                        "name": "next_page",
+                        "in": "path",
+                        "description": "",
+                        "required": false,
+                        "type": "string",
+                        "default": "15"
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/getInstagramFeedDetail?vendor_id={vendor_id}&media_id={media_id}": {
+            "get": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.vendors.getInstagramFeedDetail",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "vendor_id",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "type": "integer",
+                        "default": ""
+                    },
+                    {
+                        "name": "media_id",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "type": "integer",
+                        "default": ""
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/getAllReviewByVendor": {
+            "post": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.vendors.getAllReviewByVendor",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AllReviewByVendor"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/v1/vendors/viewAction": {
+            "post": {
+                "tags": [
+                    "VENDORS"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "api.v1.vendors.viewAction",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Target customer.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ViewAction"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        }
+    },
+    "definitions": {
+        "AuthClient": {
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "example": "lvonrueden@example.net"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "secret"
+                },
+                "grant_type": {
+                    "type": "string",
+                    "example": "password"
+                },
+                "client_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": "2"
+                },
+                "client_secret": {
+                    "type": "string",
+                    "example": "G2yJmIjtCfQJPCq752D0z3Csc9QC6hwsdT2XuaiK"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "refreshToken"
+            }
+        },
+        "AuthRefreshToken": {
+            "properties": {
+                "grant_type": {
+                    "type": "string",
+                    "example": "refresh_token"
+                },
+                "refresh_token": {
+                    "type": "string",
+                    "example": "CR/y3sHfRoMtYEf6Qw1s/o0zWKPKdPC51mqgzN0eQSNIyszZZtXVPlGbJLP7mL0EcQH9eHVbFRXbkcvAgAjkFMBCTYDwHELUINV5kP5sNbKBrwNPC1aFYM1kIY3EoTLiJqBG0438SwITXvgQBeuicLS1rIHzGFmLhCT1ZZXcZQ0u/UZ2xMU/pDA3l78LmjLCYdW2JjUw0lVcZvRgGf3eNU/Pi4pdDe+KHp4OIxb0pwYtpW6ZgNuERAHBZTpYIcoVzpq867ejUqevfV1vp9hr3YAgHFhwZjxl1H+Pm/DOXUoJPS9BZB1uxChzRxpSmXEsQDoQJANUQX8RkgAXPKnuCzU0/fmd9JluDlcN0TEKSthkYTirMjrdHbN1J2kfsa4zE7gZCYPf1KL+WSRnynnFmgEKnD8BnniCnBSSulA6IS+Mt8XsTqW1qlyn8WmedoSVMEUVMZRKBS3w5Vcat7+1ivnFOJDwFbqlIEwv6mQJCjbwxEKZggI9aZnd06PfDyuAfwvzfbx2Qt7ttj0182PJbgp8fNSM+JrlWQZb+3D7jy2H+o5cgyJnxMr70qyUtzNnKL1pPhGOpg+rpY6aFUdZ4FkqLmc4y13Gb0fnC3j8Az0gNfzj0DuNRLkuuY9l6D1KsT6VCziSM4ZkFGAuxRxeQ+tePul8sb41G37Y6+72wOg="
+                },
+                "client_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": "2"
+                },
+                "client_secret": {
+                    "type": "string",
+                    "example": "NgTPQpcuEAWsy31v6uiAAxwU5UFiJULO8yg5oIA7"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": ""
+            }
+        },
+        "Cities": {
+            "properties": {
+                "country_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "Customer": {
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "test@test.com"
+                },
+                "password": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "7c4a8d09ca3762af61e59520943dc26494f8941b"
+                },
+                "first_app_login": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "444454545454"
+                },
+                "device_token": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "7c4a8d09ca3762af61e59520943dc26494f8941b"
+                },
+                "device_type": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "android"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "CustomerChangePassword": {
+            "properties": {
+                "currentPassword": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "7c4a8d09ca3762af61e59520943dc26494f8941b"
+                },
+                "newPassword": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "Q8nJ3JCCM4zmdP899PubGPyGrQriiuMS4KX9bs2Z"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "UserChangePassword"
+            }
+        },
+        "CustomerForgotPassword": {
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "test@test.com"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "CustomerForgotPassword"
+            }
+        },
+        "CustomerRegister": {
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "test@test.com"
+                },
+                "password": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "7c4a8d09ca3762af61e59520943dc26494f8941b"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "name"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "CustomerRegister"
+            }
+        },
+        "CustomerResendEmail": {
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "test@test.com"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "CustomerResendEmail"
+            }
+        },
+        "CustomerSocialLogin": {
+            "properties": {
+                "facebook_id": {
+                    "type": "string",
+                    "example": "123456789"
+                },
+                "name": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "Nhat Doan"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "test@test.com"
+                },
+                "first_app_login": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "444454545454"
+                },
+                "device_token": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "7c4a8d09ca3762af61e59520943dc26494f8941b"
+                },
+                "device_type": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "android"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "CustomerSocialLogin"
+            }
+        },
+        "CustomerUpdateProfile": {
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "7c4a8d09ca3762af61e59520943dc26494f8941b"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "name"
+                },
+                "company": {
+                    "type": "string",
+                    "example": "AppsCyclone"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "12345678"
+                },
+                "dob": {
+                    "type": "integer",
+                    "example": "1483604126"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "UserUpdateProfile"
+            }
+        },
+        "AllPortFolioByVendor": {
+            "properties": {
+                "page": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "take": {
+                    "type": "string",
+                    "example": "10"
+                },
+                "vendor_id": {
+                    "type": "string",
+                    "example": "2"
+                },
+                "category_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "sort_by": {
+                    "type": "string",
+                    "example": "2"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "DeleteComment": {
+            "properties": {
+                "comment_id": {
+                    "type": "integer",
+                    "example": "1"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "DeleteMessage": {
+            "properties": {
+                "message_id": {
+                    "type": "integer",
+                    "example": "1"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "EditReview": {
+            "properties": {
+                "review_id": {
+                    "type": "integer",
+                    "example": "27"
+                },
+                "rating": {
+                    "type": "integer",
+                    "example": "3"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "test title"
+                },
+                "content": {
+                    "type": "string",
+                    "example": "test content"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "Filter": {
+            "properties": {
+                "page": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "take": {
+                    "type": "string",
+                    "example": "10"
+                },
+                "category_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "sub_category_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "price_range_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "country_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "LovePortfolio": {
+            "properties": {
+                "portfolio_id": {
+                    "type": "string",
+                    "example": "2"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "MessageScreen": {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "page": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "take": {
+                    "type": "string",
+                    "example": "10"
+                },
+                "is_read": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "sort_by": {
+                    "type": "string",
+                    "example": "1"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "NotificationScreen": {
+            "properties": {
+                "reply_my_message": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "reply_my_review": {
+                    "type": "string",
+                    "example": "1"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "Portfolio": {
+            "properties": {
+                "page": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "take": {
+                    "type": "string",
+                    "example": "10"
+                },
+                "portfolio_id": {
+                    "type": "string",
+                    "example": "2"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "Pricelist": {
+            "properties": {
+                "page": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "take": {
+                    "type": "string",
+                    "example": "10"
+                },
+                "vendor_id": {
+                    "type": "string",
+                    "example": "50"
+                },
+                "category_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "ProfileMyReview": {
+            "properties": {
+                "page": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "take": {
+                    "type": "string",
+                    "example": "10"
+                },
+                "sort_by": {
+                    "type": "string",
+                    "example": "1"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "ProfileMyVendor": {
+            "properties": {
+                "sort_by": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "page": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "take": {
+                    "type": "string",
+                    "example": "10"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "ReportReview": {
+            "properties": {
+                "review_id": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "content": {
+                    "type": "string",
+                    "example": "1"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "Review": {
+            "properties": {
+                "review_id": {
+                    "type": "string",
+                    "example": "1"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "Search": {
+            "properties": {
+                "page": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "take": {
+                    "type": "string",
+                    "example": "10"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "vendor"
+                },
+                "category_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "sub_category_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "price_range_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "country_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "city_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "SearchByName": {
+            "properties": {
+                "page": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "take": {
+                    "type": "string",
+                    "example": "10"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "demo"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "SearchNearby": {
+            "properties": {
+                "lat": {
+                    "type": "string",
+                    "example": "27"
+                },
+                "lng": {
+                    "type": "string",
+                    "example": "27"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "SendMessage": {
+            "properties": {
+                "receiver_id": {
+                    "type": "integer",
+                    "example": "4"
+                },
+                "subject": {
+                    "type": "string",
+                    "example": "test title"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "test content"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "SendReview": {
+            "properties": {
+                "vendor_id": {
+                    "type": "integer",
+                    "example": "27"
+                },
+                "rating": {
+                    "type": "integer",
+                    "example": "3"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "test title"
+                },
+                "content": {
+                    "type": "string",
+                    "example": "test content"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "WriteReview": {
+            "properties": {
+                "vendor_id": {
+                    "type": "string",
+                    "example": "27"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "AccountDetail": {
+            "properties": {
+                "first_name": {
+                    "type": "string",
+                    "example": "123456789"
+                },
+                "last_name": {
+                    "type": "string",
+                    "example": "123456789"
+                },
+                "phone_code": {
+                    "type": "string",
+                    "example": "123456789"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "123456789"
+                },
+                "facebook_id": {
+                    "type": "string",
+                    "example": "123456789"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "ChildrenDetail": {
+            "properties": {
+                "childrens": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "default": "Bin"
+                            },
+                            "dob": {
+                                "type": "integer",
+                                "default": "1"
+                            },
+                            "age": {
+                                "type": "integer",
+                                "default": "1"
+                            }
+                        },
+                        "type": "object"
+                    }
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "SubCategory": {
+            "properties": {
+                "category_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "AllReviewByVendor": {
+            "properties": {
+                "vendor_id": {
+                    "type": "string",
+                    "example": "51"
+                },
+                "page": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "take": {
+                    "type": "string",
+                    "example": "10"
+                },
+                "sort_by": {
+                    "type": "string",
+                    "example": "1"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "Favourite": {
+            "properties": {
+                "portfolio_id": {
+                    "type": "string",
+                    "example": "27"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "ListVendorByCategory": {
+            "properties": {
+                "page": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "take": {
+                    "type": "string",
+                    "example": "10"
+                },
+                "category_id": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "country_id": {
+                    "description": "The contact id list",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "sort_by": {
+                    "type": "string",
+                    "example": "1"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "SaveVendor": {
+            "properties": {
+                "vendor_id": {
+                    "type": "string",
+                    "example": "27"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "SubmitComment": {
+            "properties": {
+                "portfolios_id": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "comment": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "test comment"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        },
+        "ViewAction": {
+            "properties": {
+                "vendor_id": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "type": {
+                    "type": "string",
+                    "format": "int64",
+                    "example": "7"
+                }
+            },
+            "type": "object",
+            "xml": {
+                "name": "Customer"
+            }
+        }
+    },
+    "securityDefinitions": {
+        "api_key": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

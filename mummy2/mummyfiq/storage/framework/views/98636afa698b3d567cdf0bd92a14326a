@@ -1,0 +1,66 @@
+<div class="box-body">
+    <div class="form-group">
+        <?php echo Form::label("Vendor", trans('Vendor')); ?> <span class="text-danger">*</span>
+        <?php echo Form::select("vendor_id", $vendors, old("vendor_id", $portfolio->vendor_id), ['class' => "form-data-vendor form-control vendor", 'id' => "vendor"]); ?>
+
+        <?php echo Form::hidden("url_vendor", route('api.vendor.getVendor'), ['class' => "form-control", 'id' => "url-vendor"] ); ?>
+
+        <?php echo $errors->first("vendor_id", '<span class="help-block">:message</span>'); ?>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div lass='form-group<?php echo e($errors->has("category_id") ? ' has-error' : ''); ?>'>
+                <?php echo Form::label("category_id", trans('Category')); ?> <span class="text-danger">*</span>
+                <?php echo Form::select("category_id", ["" => ""] + $categoryVendor, old("category_id", $portfolio->category_id), ['class' => "form-data-category form-control category", 'id' => "category"]); ?>
+
+                <?php echo Form::hidden("url_category", route('api.category.get'), ['class' => "form-control", 'id' => "url-category"] ); ?>
+
+                <?php echo Form::hidden("token", csrf_token(), ['class' => "form-control", 'id' => "token"] ); ?>
+
+                <?php echo $errors->first("category_id", '<span class="help-block">:message</span>'); ?>
+
+            </div>   
+        </div>
+        <div class="col-sm-6">
+            <div class='form-group<?php echo e($errors->has("sub_category_id") ? ' has-error' : ''); ?>'>
+                <?php echo Form::label("Sub Category", trans('Sub Category')); ?>
+
+                <?php echo Form::select("sub_category_id", ["" => ""] + $subCategories, old("sub_category_id", $portfolio->sub_category_id), ['class' => "form-data-subcategory form-control sub_category", 'id' => "sub_category"]); ?>
+
+                <?php echo $errors->first("sub_category_id", '<span class="help-block">:message</span>'); ?>
+
+            </div>
+        </div>
+    </div>
+    <div class='form-group<?php echo e($errors->has("city") ? ' has-error' : ''); ?>'>
+        <?php echo Form::label("city", trans('City')); ?> <span class="text-danger">*</span>
+        <?php echo Form::text("city", Input::old('city',$portfolio->city), ['class' => "form-control", 'placeholder' => trans('City')] ); ?>
+
+        <?php echo $errors->first("city", '<span class="help-block">:message</span>'); ?>
+
+    </div>
+     <div class='form-group<?php echo e($errors->has("title") ? ' has-error' : ''); ?>'>
+        <?php echo Form::label("title", trans('Title')); ?> <span class="text-danger">*</span>
+        <?php echo Form::text("title", Input::old('title',$portfolio->title), ['class' => "form-control", 'placeholder' => trans('Title')] ); ?>
+
+        <?php echo $errors->first("title", '<span class="help-block">:message</span>'); ?>
+
+    </div>
+   <div class='form-group<?php echo e($errors->has("description") ? ' has-error' : ''); ?>'>
+        <?php echo Form::label("description", trans('portfolio::portfolios.form.description')); ?>
+
+        <?php echo Form::textarea("description", Input::old('description',$portfolio->description), ['class' => "form-control", 'rows' => 5, 'placeholder' => trans('portfolio::portfolios.form.description')]); ?>
+
+        <?php echo $errors->first("description", '<span class="help-block">:message</span>'); ?>
+
+    </div>    
+    <div class='form-group<?php echo e($errors->has("photography") ? ' has-error' : ''); ?>'>
+        <?php echo Form::label("photography", trans('portfolio::portfolios.form.photography')); ?>
+
+        <?php echo Form::text("photography", Input::old('photography',$portfolio->photography), ['class' => "form-control", 'placeholder' => trans('portfolio::portfolios.form.photography')]); ?>
+
+        <?php echo $errors->first("photography", '<span class="help-block">:message</span>'); ?>
+
+    </div>  
+</div>  
