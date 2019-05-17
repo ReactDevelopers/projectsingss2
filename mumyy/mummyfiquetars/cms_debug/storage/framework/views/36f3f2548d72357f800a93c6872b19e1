@@ -1,0 +1,70 @@
+<div class="box-body">
+    <div class='form-group<?php echo e($errors->has("name") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("name", trans('package::packages.form.name')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text("name", Input::old('name', $package->name), ['class' => "form-control", 'placeholder' => trans('package::packages.form.name')] ); ?>
+
+	    <?php echo $errors->first("name", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("price") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("price", trans('package::packages.form.price')); ?> <span class="text-danger">*</span>
+	    <?php echo Form::text('price', Input::old('price', $package->price), ['class' => 'form-control', 'placeholder' => trans('package::packages.form.price')]); ?>
+
+	    <?php echo $errors->first("price", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<?php /* <div class='form-group<?php echo e($errors->has("type") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("type", trans('package::packages.form.type')); ?>
+
+	    <?php echo Form::select('type', Config('asgard.package.config.type'), old('type', $package->type), ['class' => 'form-control']); ?>
+
+	    <?php echo $errors->first("type", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("services") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("services", trans('package::packages.form.services')); ?>
+
+	    <?php echo Form::textarea('services', Input::old('services', $package->services), ['class' => 'form-control', 'rows' => 5, 'placeholder' => trans('package::packages.form.services')]); ?>
+
+	    <?php echo $errors->first("services", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("country_id") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("country_id", trans('package::packages.form.country')); ?>
+
+	    <?php echo Form::select('country_id', $countries, old('country_id', $package->country_id), ['class' => 'form-control js-example-basic-single']); ?>
+
+	    <?php echo $errors->first("country_id", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+	<div class='form-group<?php echo e($errors->has("status") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("status", trans('package::packages.form.status')); ?>
+
+	    <?php echo Form::select("status", Config('constant.status'), old("status", $package->status), ['class' => "form-control"]); ?>
+
+	    <?php echo Form::hidden("id", old("id", $package->id), ['class' => "form-control"]); ?>
+
+	    <?php echo $errors->first("status", '<span class="help-block">:message</span>'); ?>
+
+	</div> */ ?>
+	<div class='form-group<?php echo e($errors->has("feature") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("feature", trans('package::packages.form.features')); ?>
+
+	    <?php if($features): ?>
+	    	<?php foreach($features as $item): ?>
+	    		<div class="checkbox">
+                    <label class="">
+                        <div class="icheckbox_flat-blue checked" style="position: relative;">
+                        	<input name="feature[<?php echo e($item->code); ?>]" type="checkbox" class="flat-blue" <?php echo e($item->value == "Y" ? "checked" : ""); ?> value="<?php echo e($item->code); ?>" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block ; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
+                        </div> <?php echo e(config('asgard.package.config.feature')[$item->code]); ?>
+
+                    </label>
+                </div>
+	    	<?php endforeach; ?>
+	    <?php endif; ?>
+	    <?php echo Form::hidden("id", old("id", $package->id), ['class' => "form-control"]); ?>
+
+	    <?php echo $errors->first("feature", '<span class="help-block">:message</span>'); ?>
+
+	</div>
+</div>

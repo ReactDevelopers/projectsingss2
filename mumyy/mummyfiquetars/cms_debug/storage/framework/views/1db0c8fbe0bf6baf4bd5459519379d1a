@@ -1,0 +1,91 @@
+<?php $__env->startSection('content-header'); ?>
+<h1>
+    
+</h1>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+<div class="row">
+<div class="form-group">
+	<div class="col-xs-12">
+	    <div class="box box-primary">
+	        <div class="box-header">
+	        </div>
+	        <!-- /.box-header -->
+	        <div class="box-body">
+	            <table class="data-table table table-bordered table-hover">
+	                <thead>
+	                    <tr>
+	                        <th><?php echo trans('Date'); ?></th>
+	                          <th><?php echo trans('Amount'); ?> (S$)</th>
+	                          <th><?php echo trans('Point'); ?></th> 
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                <?php if(count($credits) > 0): ?>
+	                <?php foreach($credits as $key => $item): ?>
+	                    <tr>
+	                      <td><?php echo e($item->created_at); ?></td>
+	                      <td>
+                            <?php echo e($item->amount); ?>
+
+                        </td>
+	                      <td>
+	                      	  <?php echo e($item->point); ?>
+
+	                      </td>
+	                      
+	                    </tr>
+	                <?php endforeach; ?>
+	                <?php endif; ?>
+	                </tbody>
+	            </table>
+	        <!-- /.box-body -->
+	        </div>
+          <div class="box-footer">
+            <a href="<?php echo e(route('admin.credit.credit.index')); ?>" class="btn btn-default pull-right"><?php echo e(trans('Back')); ?></a>
+          </div>
+	    <!-- /.box -->
+		</div>
+	<!-- /.col (MAIN) -->
+	</div>
+</div>
+</div>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('scripts'); ?>
+<?php $locale = App::getLocale(); ?>
+<script type="text/javascript">
+    $( document ).ready(function() {
+
+        $(document).keypressAction({
+            actions: [
+                { key: 'c', route: "<?= route('admin.user.user.create') ?>" }
+            ]
+        });
+    });
+    $(function () {
+        $('.data-table').dataTable({
+            "paginate": false,
+            "lengthChange": false,
+            "filter": false,
+            "sort": false,
+            "info": false,
+            "autoWidth": false,
+            "order": [[ 0, "desc" ]],
+            "language": {
+                "url": '<?php echo Module::asset("core:js/vendor/datatables/{$locale}.json") ?>'
+            }
+        });
+    });
+</script>
+<?php $__env->stopSection(); ?>
+
+
+
+
+
+
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

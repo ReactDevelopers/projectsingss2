@@ -1,0 +1,26 @@
+<table>
+	<thead>
+		<tr>
+			<th>id</th>
+			<th>Event name</th>
+			<th>Performed User</th>
+			<th>Email</th>
+			<th>Title</th>
+			<th>Created Date Time</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php if(count($logs) > 0): ?>
+			<?php foreach($logs as $key => $log): ?>
+				<tr>
+					<td><?php echo e($log->id); ?></td>
+                    <td><?php echo e($log->event_name); ?></td>
+                    <td><?php echo e($log->performedUser ? $log->performedUser->first_name . ' ' .  $log->performedUser->last_name : "N/A"); ?></td>
+                    <td><?php echo e($log->performedUser ? $log->performedUser->email : "N/A"); ?></td>
+                    <td><?php echo e($log->title); ?></td>
+                    <td><?php echo e($log->created_at && $log->created_at != \Carbon\Carbon::create(0, 0, 0, 0) ? \Carbon\Carbon::parse($log->created_at)->format('d/m/Y H:i:s') : ""); ?></td>
+				</tr>
+			<?php endforeach; ?>
+		<?php endif; ?>
+	</tbody>
+</table>

@@ -1,0 +1,51 @@
+{
+  "name": "asgardcms/media-module",
+  "type": "asgard-module",
+  "description": "Media module for AsgardCMS. Handles the media library.",
+  "keywords": [
+    "asgardcms",
+    "media",
+    "files",
+    "library",
+    "thumbnails",
+    "filters"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nicolas Widart",
+      "email": "info@asgardcms.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "email": "support@asgardcms.com",
+    "issues": "https://github.com/AsgardCms/Media/issues",
+    "source": "https://github.com/AsgardCms/Media"
+  },
+  "require": {
+    "php": ">=5.4",
+    "composer/installers": "~1.0",
+    "intervention/image": "^2.3",
+    "asgardcms/core-module": "~1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.0",
+    "orchestra/testbench": "~3.1",
+    "league/flysystem-aws-s3-v3": "~1.0"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/nWidart/modules"
+    }
+  ],
+  "autoload-dev": {
+    "psr-4": {
+      "Modules\\Media\\": ".",
+      "Modules\\": "Modules/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

@@ -1,0 +1,11 @@
+<div class='form-group'>
+    <?php echo Form::label($settingName, trans($moduleInfo['description'])); ?>
+
+    <?php if (isset($dbSettings[$settingName])): ?>
+        <?php echo Form::text($settingName, Input::old($settingName, $dbSettings[$settingName]->plainValue), ['class' => 'form-control', 'placeholder' => trans($moduleInfo['description'])]); ?>
+
+    <?php else: ?>
+        <?php echo Form::text($settingName, Input::old($settingName), ['class' => 'form-control', 'placeholder' => trans($moduleInfo['description'])]); ?>
+
+    <?php endif; ?>
+</div>

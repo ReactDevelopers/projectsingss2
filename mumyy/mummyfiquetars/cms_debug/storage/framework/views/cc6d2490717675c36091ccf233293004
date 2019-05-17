@@ -1,0 +1,6 @@
+<ul class="sidebar-menu">
+    <?php foreach($groups as $group): ?>
+        <?php echo $group; ?>
+
+    <?php endforeach; ?>
+</ul>

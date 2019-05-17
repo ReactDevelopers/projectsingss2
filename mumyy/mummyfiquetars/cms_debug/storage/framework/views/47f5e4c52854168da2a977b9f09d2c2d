@@ -1,0 +1,11 @@
+<div class="form-group">
+    <label for="<?php echo e($settingName); ?>"><?php echo e(trans($moduleInfo['description'])); ?></label>
+    <select class="form-control" name="<?php echo e($settingName); ?>" id="<?php echo e($settingName); ?>">
+        <?php foreach ($themes as $name => $theme): ?>
+            <option value="<?php echo e($name); ?>" <?php echo e(isset($dbSettings[$settingName]) && $dbSettings[$settingName]->plainValue == $name ? 'selected' : ''); ?>>
+                <?php echo e($theme->getName()); ?>
+
+            </option>
+        <?php endforeach; ?>
+    </select>
+</div>

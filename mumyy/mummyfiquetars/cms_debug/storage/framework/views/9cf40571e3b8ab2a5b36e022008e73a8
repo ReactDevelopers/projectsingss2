@@ -1,0 +1,22 @@
+<div class="box-body">
+   <div class='form-group<?php echo e($errors->has("comment") ? ' has-error' : ''); ?>'>
+	    <?php echo Form::label("Content", trans('Content')); ?>
+
+	    <?php echo Form::textarea("Content", Input::old('content',$comment->comment), ['class' => "form-control",'readonly' => "readonly", 'rows' => 10, 'placeholder' => trans('Content')]); ?>
+
+	</div>
+	<div class='form-group'>
+	    <?php echo Form::label("Status", trans('Status')); ?>
+
+	    <select class="form-control" name="status">
+	    	<?php if($comment->status == 1): ?>
+	    		<option value="0">InActive</option>
+	    		<option value="1" selected="selected">Active</option>
+	    	<?php else: ?>
+	    		<option value="0" selected="selected">InActive</option>
+	    		<option value="1">Active</option>
+	    	<?php endif; ?>
+	    	
+	    </select>
+	</div>
+</div>

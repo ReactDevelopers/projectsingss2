@@ -1,0 +1,20 @@
+{
+  "name": "Menu",
+  "alias": "menu",
+  "description": "Managing menus.",
+  "keywords": [
+  ],
+  "version": "1.17.0",
+  "active": 1,
+  "order": 1,
+  "providers": [
+    "Modules\\Menu\\Providers\\RouteServiceProvider",
+    "Modules\\Menu\\Providers\\MenuServiceProvider",
+    "Modules\\Menu\\Providers\\EventServiceProvider",
+    "Pingpong\\Menus\\MenusServiceProvider"
+  ],
+  "aliases": {
+    "Menu": "Pingpong\\Menus\\MenuFacade"
+  },
+  "files": []
+}

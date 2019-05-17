@@ -1,0 +1,67 @@
+<table>
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Customer Name</th>
+			<th>Customer Email</th>
+			<th>Portfolio</th>
+			<th>Content</th>
+			<th>Created Date Time</th>
+			<th>Status</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php if(count($comments) > 0): ?>
+			<?php foreach($comments as $key => $comment): ?>
+			<?php $customer = \Modules\User\Entities\User::find($comment->user_id);
+				  $portfolio = \Modules\Portfolio\Entities\Portfolio::find($comment->portfolios_id);
+                  $customerEmail = '';
+                  $customerName = '';
+                  $portfolioTitle = '';
+                  if(isset($customer) && !empty($customer))
+                  {
+                      $customerEmail = $customer->email;
+                      $customerName = $customer->first_name;
+                  }
+                  if(isset($portfolio) && !empty($portfolio))
+                  {
+                  	  $portfolioTitle = $portfolio->title;
+                  }
+             ?>
+				<tr>
+					<td>
+                        <?php echo e($comment->id); ?>
+
+                    </td>
+                    <td>
+                        <?php echo e($customerName); ?>
+
+                    </td>
+                    <td>
+                        <?php echo e($customerEmail); ?>
+
+                    </td>
+                    <td>
+                        <?php echo e($portfolioTitle); ?>
+
+                    </td>
+                     <td>
+                        <?php echo e(str_limit($comment->comment, 50)); ?>
+
+                    </td>
+                    <td>
+                        <?php echo e($comment->created_at && $comment->created_at != \Carbon\Carbon::create(0, 0, 0, 0) ? \Carbon\Carbon::parse($comment->created_at)->format('d/m/Y H:i:s') : ""); ?>
+
+                    </td>
+                    <td>
+                        <?php if($comment->status == 1): ?>
+                        Active
+                        <?php else: ?>
+                        InActive
+                        <?php endif; ?>
+                    </td>
+				</tr>
+			<?php endforeach; ?>
+		<?php endif; ?>
+	</tbody>
+</table>
