@@ -1,0 +1,5 @@
+{
+    "urls": {
+        "BASE_PATH": "http://localhost/laravel/larareact/public/"
+    }
+}

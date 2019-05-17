@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Exports;
+
+use Maatwebsite\Excel\Concerns\FromCollection;
+use App\User;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+
+
+class CourseDataReport implements FromCollection, WithHeadings, WithMapping, WithColumnFormatting
+{   
+    public $reports;
+
+    public function __construct(Builder $reports){
+
+        $this->reports = $reports;
+    }
+
+    /**
+    * @var Invoice $invoice
+    */
+    public function map($row): array
+    {
+        return [
+            $row->id,
+            $row->course_code,
+            $row->title,
+            $row->prog_category_name,
+            $row->prog_type_name,
+            Date::dateTimeToExcel($row->start_date),
+            Date::dateTimeToExcel($row->end_date),
+            $row->month_year,
+            $row->duration_in_days,
+            $row->no_of_trainees ? $row->no_of_trainees : 0,
+            $row->no_of_attendees ? $row->no_of_absantee : 0,
+            $row->no_of_penalties ? $row->no_of_penalties : 0,
+            $row->no_of_failure ? $row->no_of_failure : 0,
+            $row->overall ? $row->overall : 0,
+            $row->trainer_delivery ? $row->trainer_delivery : 0,
+            $row->content_relevance ? $row->content_relevance : 0,
+            $row->site_visits ? $row->site_visits : 0,
+            $row->facilities ? $row->facilities : 0,
+            $row->admin ? $row->admin : 0,
+            $row->response_rate ? $row->response_rate : 0,
+        ];
+    }
+
+    /**
+    * @return \Illuminate\Support\Collection
+    */
+    public function collection()
+    {
+        return $this->reports->get();
+    }
+
+    public function headings(): array {
+
+        return [
+            'Course Run ID',
+            'Course Code',
+            'Course Name',
+            'Programme Category',
+            'Programme Type',
+            'Start Date',
+            'End Date',
+            'Month/Year',
+            'Training Duration (Days)',
+            'No. of Trainees',
+            'No. of Absentee(s)',
+            'No. of Penalty(ies)',
+            'No. of Failure(s)',
+            'Overall Average (%)',
+            'Trainer\'s Delivery (%)',
+            'Content Relevance (%)',
+            'Site Visits (%)',
+            'Facilities (%)',
+            'Admin (%)',
+            'Response Rate (%)'
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function columnFormats(): array
+    {
+        return [
+            'G' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'H' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'A1:T1' => Color::COLOR_GREEN,
+        ];
+    }
+}

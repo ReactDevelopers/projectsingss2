@@ -1,0 +1,19 @@
+﻿CASE1
+Hi, Your PUBNET credentials are invalid. Please contact 1111 1111 or email them at <a href="mailto:{SERVICE_DESK_EMAIL}?subject=Regarding failed login for the user in {APPLICATION_NAME}&cc={VENDOR_EMAIL}&body=I received this error message when trying to access {APPLICATION_NAME}: Your PUBNET credentials are invalid. %0D%0APlease reset my PUBNET credentials. %0D%0A%0D%0AThanks." >{SERVICE_DESK_EMAIL}.</a>
+ENDCASE1
+
+CASE2
+Hi, Your PUBNET credentials are valid, but some needed info is missing in your LDAP records. Please contact 1111 1111 or email them at <a href="mailto:{SERVICE_DESK_EMAIL}?subject=Regarding failed login for the user in {APPLICATION_NAME}&cc={VENDOR_EMAIL}&body=I received this error message when trying to access {APPLICATION_NAME}: Your PUBNET credentials are valid, but some needed info is missing in your LDAP records. %0D%0APlease check my LDAP record to see if the following fields are correctly set. %0D%0A%0D%0A - Info (should contain personnel number) %0D%0A%0D%0AThanks.">{SERVICE_DESK_EMAIL}.</a>
+ENDCASE2 
+
+CASE3
+Your PUBNET credentials are valid, but you don’t exist in our records. Please email the application owner at <a href="mailto:{SERVICE_DESK_EMAIL}?subject=Regarding failed login for the user in {APPLICATION_NAME}&cc={VENDOR_EMAIL}&body=I received this error message when trying to access {APPLICATION_NAME}: Your PUBNET credentials are valid, but you don’t exist in our records.%0D%0A%0D%0AThanks.">{SERVICE_DESK_EMAIL}.</a>.
+ENDCASE3
+
+CASE4
+Your PUBNET credentials are valid, but you don't have access rights to this application. Please email the application owner at <a href="mailto:{VENDOR_EMAIL}?subject=Regarding failed login for the user in {APPLICATION_NAME}&body=I received this error message when trying to access {APPLICATION_NAME}: Your PUBNET credentials are valid, but you don't have access rights to this application.%0D%0APlease grant me access to the application.%0D%0A%0D%0AThanks.">{VENDOR_EMAIL}</a>
+ENDCASE4
+
+CASE5
+Sorry, You cannot log in because the application is in development mode.
+ENDCASE5

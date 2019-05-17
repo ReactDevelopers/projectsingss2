@@ -1,0 +1,39 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch-poll": "npm run watch -- --watch-poll",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+  },
+  "devDependencies": {
+    "cross-env": "^3.2.3",
+    "css-loader": "^0.26.4",
+    "laravel-mix": "^0.8.1",
+    "laravel-mix-react": "^1.0.1",
+    "node-sass": "^4.5.0",
+    "react-css-modules": "^4.1.0",
+    "resolve-url-loader": "^2.0.2",
+    "sass-loader": "^6.0.2",
+    "style-loader": "^0.13.2"
+  },
+  "dependencies": {
+    "axios": "^0.15.3",
+    "history": "^4.6.1",
+    "jwt-decode": "^2.2.0",
+    "lodash": "^4.17.4",
+    "prop-types": "^15.5.8",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-redux": "^5.0.3",
+    "react-router-dom": "^4.1.1",
+    "react-social-login": "^2.0.0",
+    "react-transition-group": "^1.1.2",
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.2.0",
+    "underscore": "^1.9.1"
+  }
+}

@@ -1,0 +1,32 @@
+.social-button {
+	width: 90%;
+	margin: 0 auto 20px;
+	padding: 10px;
+	text-align: center;
+	font-size: 1.4em;
+	box-shadow: 0 0 6px 0 rgba(0,0,0,0.4);
+	transform: scale(1);
+	transition: all 0.3s;
+	color: white !important;
+	text-decoration: none;
+	cursor: pointer;
+
+
+	&:hover {
+		// transform: scale(1.01);
+		width: 92%;
+		box-shadow: 0 0 8px 0 rgba(0,0,0,0.4);
+	}
+	&.github {
+		background: #2A2A2A;
+	}
+
+	&.twitter {
+		background: #55ACEE;
+
+	}
+
+	&.btn-facebook {
+		background: #3B5998;
+	}
+}

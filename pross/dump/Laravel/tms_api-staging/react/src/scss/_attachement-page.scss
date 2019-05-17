@@ -1,0 +1,40 @@
+.custom-files-upload {
+    text-align: center !important;
+    display:  inline-block;
+    background-color:  $white;
+    padding: 10px 15px !important;
+    border-radius:  5px;
+    cursor:  pointer;
+    transition:  all 0.3s ease;
+    color:  $black;
+    font-weight: 400;
+    font-size: 13px;
+    &:hover {
+        background-color: #1d75bf;
+        color:  $white;
+    }
+    input {
+        display:  none;
+    }
+}
+
+.attachments-list {
+    padding-top: 10px;
+    .list-group-item {
+        padding: 8px 9px 0px 9px;
+        line-height: 27px;
+        font-size: 13px;
+        color: #446aa9;
+        margin-bottom: 5px;
+        border-radius: 0;
+        border: 0;
+        .form-group {
+            margin-bottom : 0px
+        }
+        .btn-remove {
+            float: right;
+        }
+
+    }
+
+}

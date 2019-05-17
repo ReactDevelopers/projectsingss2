@@ -1,0 +1,30 @@
+.sweet-alert {
+    padding: 10px !important;
+    h2 {
+        font-size:  18px;
+        margin: 0;
+    }
+    .text-muted {
+        font-size:  14px;
+        color:  $black;
+        margin-bottom: 10px !important;
+    }
+    .btn {
+        border-radius: 4px;
+        padding: 0px 15px;
+        height: 35px;
+        line-height: 35px;
+        font-size: 14px;
+        border: 0;
+    }
+    .btn-link {
+        color: $black;
+        background-color: #f4f4f4;
+        &:hover {
+            background-color:  #dddddd;
+            color:  $black;
+            text-decoration:  none;
+        }
+    }
+
+}

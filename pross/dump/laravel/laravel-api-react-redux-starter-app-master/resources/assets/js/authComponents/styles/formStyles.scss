@@ -1,0 +1,58 @@
+.modalForm {
+	padding: 10px;
+
+	.social-buttons {
+		width: 100%;
+		margin: 0 auto;
+		display: flex;
+		flex-flow: row;
+		justify-content: space-between;
+	}
+
+	label {
+		color: white;
+		font-size: 1.3em;
+		margin-left: 10%;
+		margin-top: 20px;
+		
+	}
+
+	input {
+		display: block;
+		width: 80%;
+		padding: .4em;
+		font-size: 1.5em;
+		margin: 8px auto 30px;
+		text-align: center;
+		background: #34658c;
+		color: white;
+		border: none;
+		outline: none;
+	}
+
+
+
+	button {
+		width: 50%;
+		border: none;
+		outline: none;
+		color: white;
+		background: #292988;
+		font-size: 1.1em;
+		padding: 10px;
+		text-transform: uppercase;
+		margin: 10px auto;
+		cursor: pointer;
+		display: block;
+	}
+
+	h2 {
+		color: white;
+		width: 80%;
+		display:block;
+		text-align: center;
+		font-size: 1.4em;
+		margin: 0 auto;
+	}
+}
+

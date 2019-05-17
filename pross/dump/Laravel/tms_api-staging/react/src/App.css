@@ -1,0 +1,256 @@
+
+.header_wrap{
+	background: #fff;
+}
+
+.open>.dropdown-menu {
+    display: block;
+}
+.dcxGMi:before {
+	z-index: 999;
+}
+.ktHroX {
+    position: static !important;
+    height: auto;
+}
+
+.react-bs-table {
+	height: auto !important;
+}
+
+.react-bs-table-container .react-bs-table-pagination .pagination ,
+.react-bs-table-container .react-bs-table-pagination  .page-count-info,
+.react-bs-table + div.react-bs-table-pagination .react-bs-table-sizePerPage-dropdown{
+	display: none;
+}
+
+.react-bs-table + div.react-bs-table-pagination .pagination ,
+.react-bs-table + div.react-bs-table-pagination  .page-count-info
+{
+    display: block;
+}
+
+td.remove_overflow {
+    overflow: unset !important;
+}
+
+body .react-bs-container-body {
+	overflow: unset;
+}
+
+.table-cell-read-more{ 
+	cursor: pointer;
+	text-transform: capitalize;
+}
+
+.react-bs-table table td, .react-bs-table table th {
+	overflow: unset;
+	white-space: normal;
+	text-overflow: initial;
+}
+
+.table-cell-read-more {
+	color: #002980;
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 19px;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+.table-cell-read-more:hover {
+    color: #333333;
+}
+.react-bs-container-header, .react-bs-container-footer {
+	overflow: unset;
+}
+.react-bs-table.react-bs-table-bordered {
+	width: 100%;
+	overflow-x: auto;
+}
+
+.order {
+	right: 2px;
+}
+
+.react-bs-table .dropdown-menu {
+	position: static;
+}
+
+body .Select.is-disabled > .Select-control {
+    background-color: #eee;
+}
+
+body .Select.is-disabled .Select-value-label {
+	color: #555;
+    font-weight: normal;
+}
+
+.login-error-message-container {
+
+	max-width: 502px;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+.login-error-message-container  p{ 
+	line-height: 20px;
+ }
+.alert-danger {
+	background-color: #f00;
+	color: #fff;
+ }
+
+.login-error-message-container  button.close {
+    color: #fff;
+    opacity: 1;
+    padding-bottom: 5px;
+    display: inline-block;
+    clear: both;
+}
+.login-error-message-container a {
+  color: #f8d349;
+}
+.running-course-list .control-label{
+	text-align: left;
+	padding-bottom: 10px;
+}
+
+.drop-link a.download-btn {
+	
+	background-image: none;	
+	font-size: 24px;
+}
+.drop-link a.download-btn span{
+	margin-top: 10px;
+}
+
+.drop-link a.download-btn:focus, .drop-link a.download-btn:hover {
+	background-image: none;
+	background-color:#22559d;
+}
+
+.create-running-course-table .table thead th:nth-child(4){
+
+	width: 51px;
+}
+
+.running-course-list .inner-form {
+	padding: 0;
+}
+
+.running-course-list.lineframe .lineframe-inner{
+	padding: 10px 20px 10px;
+}
+
+.loadingImage {
+	width: 60;
+	height: 60px;
+	display: block;
+	margin: auto;
+}
+.loading .table tr {
+    background: transparent !important;
+    border: none !important;
+}
+.loading .table td.react-bs-table-no-data {
+    background: transparent;
+    border: none;
+}
+.loading .table {
+    border: none;
+}
+
+@keyframes loading {
+	from {left: 50%; width: 0;z-index:100;}
+	33.3333% {left: 0; width: 100%;z-index: 10;}
+	to {left: 0; width: 100%;}
+}
+
+.load-bar {
+	position: relative;
+	/* margin-top: 20px; */
+	width: 100%;
+	height: 6px;
+	background-color: #fdba2c;
+	overflow: hidden;
+  }
+  .bar {
+	content: "";
+	display: inline;
+	position: absolute;
+	width: 0;
+	height: 100%;
+	left: 50%;
+	text-align: center;
+  }
+  .bar:nth-child(1) {
+	background-color: #da4733;
+	animation: loading 3s linear infinite;
+  }
+  .bar:nth-child(2) {
+	background-color: #3b78e7;
+	animation: loading 3s linear 1s infinite;
+  }
+  .bar:nth-child(3) {
+	background-color: #fdba2c;
+	animation: loading 3s linear 2s infinite;
+  }
+
+/* 
+tr.upcoming_event_row td , tr.upcoming_event_row{
+    background:#96cb84 !important;
+} */
+tr.past_event_row td , tr.past_event_row{
+    background: #c7c7c7  !important;
+}
+
+tr.row_in_red td , tr.row_in_red{
+	background: #b92d2d !important;
+	color: #eee !important;
+}
+
+a[href="https://www.froala.com/wysiwyg-editor?k=u"] {
+    display: none !important;
+}
+.mg-top-btn {
+	margin-top: 16px;
+}
+
+.react-bs-table table td, .react-bs-table table th {
+    overflow: unset !important;
+    white-space: normal !important;
+    text-overflow: initial !important;
+}
+
+.m-b-15 {
+	margin-bottom: 15px;
+}
+
+.email_template_preview {
+	background: #fff;
+	margin-top: 15px;
+}
+
+
+.lineframe.email-template-edit-form .lineframe-inner .container{
+	padding:0px;
+}
+.email-template-edit-form .submit-btn { 
+	margin-right: -12px;
+}
+.create-btn {
+	margin-top: 9px;
+}
+.field_name_label {
+	font-weight: bold;
+}
+.record_action {
+	font-style: italic;
+    color: #3b7fda;
+}
+.export-btn {
+	margin-left: 25px;
+}
+
+.container {
+   max-width:100% !important
+}

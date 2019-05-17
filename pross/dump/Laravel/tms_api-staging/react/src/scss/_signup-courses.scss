@@ -1,0 +1,78 @@
+.radioBtn {
+	margin-right: 15px;
+	input[type="radio"] {
+		margin-top: 0;
+	}
+}
+
+.left-text {
+	text-align: left !important;
+}
+
+.color-black {
+	color: $black;
+}
+
+.checkBox-wrapper {
+	position:  relative;
+    padding-left: 25px;
+	.checkbox {
+	    display:  inline-block;
+	    position:  absolute;
+	    top: -3px;
+	    left: 0;
+	    padding: 0;
+	    label {
+		    padding-top: 0;
+		}
+	}
+}
+
+.fileUpload {
+	padding-top: 6px;
+}
+
+.react-datepicker__close-icon::after {
+    top: 10px;
+    margin: 0;
+}
+
+.btn-addDelete {
+	border-radius:  50%;
+    height: 28px;
+    width: 28px;
+    transition: all 0.3s ease;
+    font-size:0;
+    border: 0;
+    background-repeat:no-repeat;
+    background-position: center center;
+    background-size: 12px;	
+    outline:none;
+	background-color: #296779;    
+	&:hover {
+    	box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.3);
+	    transform: rotate(360deg);
+	    background-size: 18px;
+	    background-color: $white;		    
+
+    }
+}
+
+.btn-add {
+    background-image: url(./assets/images/add-row-hover.png);
+    &:hover {
+	    background-image: url(./assets/images/add-row.png);
+	}
+}
+.btn-remove {
+	background-image: url(./assets/images/delete.png);
+	&:hover {
+	    background-image: url(./assets/images/delete-hover.png);
+	}
+}
+
+.add-edit-link {
+    display: inline-block;
+    margin-right: -50px;
+    padding-top: 4px;
+}

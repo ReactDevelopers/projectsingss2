@@ -1,0 +1,38 @@
+/* Header Style Goes Here */
+
+.navbar-brand {
+	max-width: 210px;
+}
+
+.icon-user {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    font-size: 0;
+    margin-right: 5px
+}
+
+.admin-icon {
+    background: url(./assets/images/sprite.png) no-repeat -565px -90px;
+}
+
+.profile-icon {
+    background: url(./assets/images/sprite.png) no-repeat -569px -217px;
+}
+
+.enginner-icon {
+    background: url(./assets/images/sprite.png) no-repeat -566px -300px;
+}
+
+.assistant-icon {
+    background: url(./assets/images/sprite.png) no-repeat -566px -171px;
+}
+
+.approver-icon {
+    background: url(./assets/images/sprite.png) no-repeat -567px -130px;
+}
+
+.logout-icon {
+    background: url(./assets/images/sprite.png) no-repeat -566px -264px;
+}

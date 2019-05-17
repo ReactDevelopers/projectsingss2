@@ -1,0 +1,97 @@
+
+.react-datepicker__day-name, 
+.react-datepicker__day, 
+.react-datepicker__time-name {
+    font-size: 15px;
+    line-height: 30px;
+    width: 30px;
+    height: 30px;
+}
+
+.react-datepicker {
+    font-size: 12px;
+    font-family: Arial,Helvetica,sans-serif;
+}
+
+.react-datepicker__current-month, 
+.react-datepicker-time__header {
+    font-size: 12px;
+}
+
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+    border-width: 7px;
+}
+
+.react-datepicker__year-read-view--down-arrow, 
+.react-datepicker__month-read-view--down-arrow, 
+.react-datepicker__month-year-read-view--down-arrow {
+    border-width: 4px;
+    top: 7x;
+    border-top-color: #171717;
+}
+.react-datepicker__month .react-datepicker__day:hover{
+    background: #e2e2e2;
+}
+
+.react-datepicker__navigation--previous {
+    border-right-color: #000000;
+}
+
+.react-datepicker__navigation--next {
+    border-left-color: #000000;
+}
+.react-datepicker__month .react-datepicker__day
+{
+    
+    border: 1px solid #c5c5c5;
+    background: #f6f6f6;
+    font-weight: normal;
+    color: #454545;
+}
+.react-datepicker__month .react-datepicker__day--selected, 
+.react-datepicker__month .react-datepicker__day--in-selecting-range, 
+.react-datepicker__month .react-datepicker__day--in-range,
+.react-datepicker__month .react-datepicker__day--keyboard-selected {
+    background: #002980;
+    color: #fff;
+}
+
+
+.react-datepicker__week .react-datepicker__day--outside-month {
+
+    background: #fffdfe;
+    visibility: hidden;
+}
+.react-datepicker__navigation {
+    top: 17px;
+}
+.react-datepicker__header {
+    background-color: initial;
+    border-bottom: none;
+    font-size: 15px;
+}
+
+.react-datepicker__current-month.react-datepicker__current-month--hasYearDropdown.react-datepicker__current-month--hasMonthDropdown{
+
+    background: #e9e9e9;
+    padding: 5px 0px;
+    margin: 0 5px;
+    border-radius: 3px;
+    font-size: 15px;
+
+}
+
+
+.react-datepicker__year-read-view--down-arrow, .react-datepicker__month-read-view--down-arrow, .react-datepicker__month-year-read-view--down-arrow{
+
+    top: 8px;
+}
+
+.react-datepicker__header__dropdown.react-datepicker__header__dropdown--scroll{
+        padding: 6px 0 0 0;
+}
+.react-datepicker__day--disabled {
+    cursor: default;
+    color: #ccc !important;
+}

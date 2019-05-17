@@ -1,0 +1,218 @@
+.panel-sections {
+    .panel-default > .panel-heading {
+        background-color: transparent;
+        padding: 10px 10px 10px 15px;
+    }
+    .panel {
+        border-radius: 0;
+        margin-bottom: 10px;
+        border:0;
+    }
+    .upload-result-points li
+    {
+        font-size: 14px;
+        &+ li {
+            padding-left: 60px;
+        }
+    } 
+    .no-error {
+        background-color: #fef8d4;
+    }
+    .has-error{
+        background-color: #ffc1c2;
+    }
+    .upload-result-points {
+        padding-top: 2px;
+    }
+} 
+.dropzone {
+    padding: 4px;
+    margin-top: 15px;
+    &>div{
+        border-style:solid!important;
+        border-radius: 0!important;
+    }
+}
+.dropzone-message-wrap {
+    position: relative;
+    text-align: center;
+    padding: 15px;
+    color: #fff;
+    border: 2px dashed #fff;
+    margin: 4px;
+    h4 {
+        margin: 0;
+    }
+}
+.white-overlay:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, .3);
+}
+.upload-file-row.has-file {
+    margin: 4px;
+    background-color: #fff;
+    font-size: 12px;
+    padding: 10px 0;
+  
+}
+.upload-file-row {
+    margin: 0;
+}
+.upload-item-wrapper {
+    font-size: 12px;
+    width: 75px;
+    height: 75px;
+    border-radius: 15px;
+    text-align: center;
+    background-color: #f5f5f5;
+    color: #000;
+    line-height: 16px;
+    padding:8px;
+    & > span {
+        display: inline-block;
+        width: 23px;
+        overflow: hidden;
+        margin: 0 auto;
+    }
+    .progress {
+        height: 10px;
+        margin-bottom: 0;
+        width: 45px;
+        margin: 0 auto;
+        border-radius: 10px;
+        & > div {
+            width:100%;
+        }
+    }
+    .progress-bar {
+        background-color: #3e4144;
+    }
+}
+.success-check {
+   display: block;
+   height: 18px;
+   width: 18px;
+   background-color: #000;
+   border-radius: 50%;
+   position: relative;
+   margin: 0 auto;
+    &:after {
+        content: '';
+        height: 6px;
+        width: 12px;
+        position: absolute;
+        border: 2px solid #fff;
+        display: block;
+        border-right: 0;
+        border-top: 0;
+        transform: rotate(-45deg);
+        top: 5px;
+        left: 3px;
+    }
+}
+.close-btn {
+    border-radius: 50%;
+    height: 18px;
+    width: 18px!important;
+    font-size: 0;
+    padding: 0;
+    border-color: transparent;
+    background-color: transparent;
+    position: relative;
+    outline: 0;
+    &.close-btn:after,
+    &.close-btn:before {
+        content: '';
+        position: absolute;
+        height: 10px;
+        width: 1px;
+        background: #fff;
+        top: 3px;
+        left: 7px;
+    }
+    &.close-btn:after {
+        transform: rotate(45deg);
+    }
+    &.close-btn:before {
+        transform: rotate(-45deg);
+    }
+    &:hover,
+    &:active,
+    &:focus {
+        background: transparent;
+        outline: 0;
+    }
+}
+
+.no-error .close-btn {
+    background: #aca36a!important;
+}
+.has-error .close-btn {
+    background: #f04444!important;
+}
+
+.upload-error-list {
+    &> li > p {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0;
+        line-height: 20px;
+    }
+    &> li + li {
+        margin-top: 10px;
+    }
+    li > ol {
+        margin: 5px 0 5px 15px;
+        padding:0;
+        &li + li {
+            margin-top: 5px;
+        }
+        li {
+            list-style-type: decimal;
+            list-style-position: inside;
+        }
+    }
+} 
+.date-range-filter button {
+    border: 0;
+    background: transparent;
+    font-size: 12px;
+    outline: 0;
+    font-style: italic;
+    text-decoration: underline;
+}
+.uploading.col-sm-1 , .uploaded.col-sm-1 {
+    width: auto !important;
+    margin: 0 0 15px 0;
+}
+.dropzone-message-wrap{
+    background: #2a677a;
+}
+.btn-duplicate-btn-yes,.btn-duplicate-btn-cancel {
+    width: 50%;
+    margin-top: 20PX;
+}
+
+.btn-duplicate-btn-yes {
+    text-align: right;
+}
+.btn-duplicate-btn-yes .btn,
+.btn-duplicate-btn-cancel .btn {
+    min-width: 80px;
+}
+
+ul.upload-result-points .btn-duplicate-msg {
+    padding-left: 0px !important;
+    width: 100%;
+    padding-top: 11px;
+}
+
+ul.upload-result-points .btn-duplicate-msg i {
+    font-weight: bold;
+    color: #22559d;
+}

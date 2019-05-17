@@ -1,0 +1,164 @@
+.modalWrapper {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.8);
+}
+
+.modalBox {
+	overflow: hidden;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	background: #0a2a44;
+	box-shadow: 0 0 8px 2px rgba(0,0,0,0.7);
+	min-width: 500px;
+	border-radius: 4px;
+}
+
+.title {
+	padding: 10px;
+	width: 100%;
+	background: #2196f3;
+	position: relative;
+	box-shadow: 0 2px 3px 0 rgba(0,0,0,0.5);
+
+	h1 {
+		font-size: 40px;
+		color: white;
+	}
+
+
+}
+.closeButton {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	height: 40px;
+	width: 40px;
+	cursor: pointer;
+
+	span {
+		display: inline-block;
+		width: 50px;
+		height: 50px;
+		padding: 10px;
+		overflow: hidden;
+
+		&:hover {
+			&::before, &::after {
+				background: tomato;
+			}
+		}
+
+		&::before, &::after {
+			content: '';
+			position: absolute;
+			height: 2px;
+			width: 100%;
+			top: 50%;
+			left: 0;
+			margin-top: -1px;
+			background: #ddd;
+			transition: background 0.4s;
+		}
+		&::before {
+			transform: rotate(45deg);
+		}
+		&::after {
+			transform: rotate(-45deg);
+		}
+	}
+}
+
+
+.enter {
+  opacity: 0.01;
+  transition: opacity 0.5s ease-in;
+
+  .modalBox {
+	  transform: translateY(-100%);
+	  opacity: 0;
+	  transition: all 0.3s 0.4s;
+  }
+  &.enterActive {
+    opacity: 1;
+
+	.modalBox {
+		transform: translateY(0);
+		opacity: 1;
+	}
+  }
+
+}
+
+.leave {
+  opacity: 1;
+  transition: opacity 0.3s ease-in;
+
+  &.leaveActive {
+    opacity: 0.01;
+  }
+}
+
+.appear {
+  opacity: 0.01;
+
+  &.appearActive {
+    transition: opacity 0.5s ease-in;
+    opacity: 1;
+  }
+}
+
+.signUpModal {
+	position: fixed;
+	top: 0; left: 0; right: 0; bottom: 0;
+	width: 100%;
+	height: 100vh;
+	background: rgba(240,240,240,1);
+	
+	.btn {
+		position: absolute;
+		top: 50%;
+		margin-top: -50px;
+		height: 100px;
+		width: 100px;
+		outline: 0;
+		border: 0;
+		background: orange;
+		cursor: pointer;
+		font-size: 60px;
+
+		&:disabled {
+			display: none;
+
+		}
+	}
+
+	.btn-increment {
+		right: 0;
+	}
+
+	.btn-decrement {
+		left: 0;
+	}
+}
+
+.ok-btn {
+	width: 50%;
+	border: none;
+	outline: none;
+	color: white;
+	background: #292988;
+	font-size: 1.1em;
+	padding: 10px;
+	text-transform: uppercase;
+	margin: 10px auto;
+	cursor: pointer;
+	display: block;
+}

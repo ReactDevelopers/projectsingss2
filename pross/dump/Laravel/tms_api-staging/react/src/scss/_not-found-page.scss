@@ -1,0 +1,18 @@
+.not-found-page {
+    position:  absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    .not-found {
+        text-align:  center;
+        padding: 60px 0;
+        h2 {
+            font-size: 85px;
+            color: $white;
+        }
+        p {
+            font-size:  18px;
+            color: $white;
+        }
+    }
+}

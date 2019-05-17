@@ -1,0 +1,154 @@
+.signUpModal {
+	position: fixed;
+	top: 0; left: 0; right: 0; bottom: 0;
+	width: 100%;
+	height: 100vh;
+	background: rgba(240,240,240,1);
+	
+	.btn {
+		position: absolute;
+		top: 50%;
+		margin-top: -50px;
+		height: 100px;
+		width: 100px;
+		outline: 0;
+		border: 0;
+		background: orange;
+		cursor: pointer;
+		font-size: 60px;
+
+		&:disabled {
+			display: none;
+
+		}
+	}
+
+	.btn-increment {
+		right: 0;
+	}
+
+	.btn-decrement {
+		left: 0;
+	}
+}
+
+.slideContainer {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    overflow: hidden;
+    box-shadow: 0 0 8px 0 rgba(0,0,0,0.5);
+    min-width: 400px;
+    max-width: 600px;
+    background: white;
+    
+    .header {
+        background: #2196f3;
+        color: white;
+        padding: 1em;
+        box-shadow: 0 4px 4px 0 rgba(30,40,150,0.4);
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+	.buttons {
+		border-top: 2px solid #555;
+		display: flex;
+		justify-content: space-around;
+
+		.btn {
+			border: 2px solid #555;
+			background: #eee;
+			outline: none;
+		}
+
+		.btn-prev-slide {
+
+			&:disabled {
+				opacity: 0.5;
+			}
+
+		}
+
+		.btn-next-slide {
+
+			&:disabled {
+				opacity: 0.5s;
+			}
+
+		}
+	}
+}
+
+.signUpSlideEnter {
+	animation: slideLeft 0.3s;
+	opacity: 0;
+	animation-delay: 0.4s;
+}
+.signUpSlideEnterOpposite {
+	animation: slideRight 0.3s;
+	opacity: 0;
+	animation-delay: 0.4s;
+}
+.signUpSlideAppear {
+	animation: slideLeft 0.3s;
+}
+.signUpSlideAppearOpposite {
+	animation: slideRight 0.3s;
+}
+.signUpSlideLeave {
+	animation: fadeOut 0.5s;
+}
+
+@keyframes slideLeft {
+	0% {
+		opacity: 0;
+  		transform: translateX(50%) translateY(-50%);
+		
+	}
+	75%, 90% {
+		opacity: 1;
+		transform: translateX(-54%) translateY(-50%);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(-50%) translateY(-50%);
+	}
+}
+
+@keyframes slideRight {
+	0% {
+		opacity: 0;
+  		transform: translateX(-150%) translateY(-50%);
+		
+	}
+	75%, 90% {
+		opacity: 1;
+		transform: translateX(-46%) translateY(-50%);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(-50%) translateY(-50%);
+	}
+}
+
+@keyframes fadeOut {
+	0% {
+		opacity: 1;
+  		transform: translateX(-50%) translateY(-50%) scale(1);
+		
+	}
+	10%, 25% {
+		opacity: .9;
+		transform: translateX(-50%) translateY(-50%) scale(1.05);
+	}
+	100% {
+		opacity: 0;		
+		transform: translateX(-50%) translateY(-50%) scale(.7);
+		
+	}
+}
+

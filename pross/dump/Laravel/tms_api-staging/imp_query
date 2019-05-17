@@ -1,0 +1,10 @@
+# get History of Course Run Status
+
+SELECT users.personnel_number, users.name, course_run_status_histories.course_run_id, course_run_status_histories.current_status as `Status`, course_run_status_histories.created_at as `Time When changed` FROM `course_run_status_histories`
+JOIN users ON users.id = course_run_status_histories.updater_id WHERE course_run_status_histories.course_run_id = 568
+
+# Get Placement Status changed History:
+
+SELECT  users.personnel_number, users.name, placements.id as `Placement ID`,  placements.course_run_id as `Course Run ID`, placement_status_histories.current_status as `Status changed To`, placement_status_histories.created_at as `Time when Changed` FROM `placement_status_histories`
+JOIN placements ON placements.id = placement_status_histories.placement_id
+JOIN users ON users.id = placement_status_histories.updater_id where placements.course_run_id = 568 ORDER BY placements.id

@@ -1,0 +1,70 @@
+/* Login Page Style Goes Here */
+.loginContainer {
+    padding-top: 60px;
+    min-height: calc(100vh - 150px);
+    padding-bottom: 45px;
+}
+.header-message .right-content {
+    font-size: 15px;
+    line-height: 24px;
+    font-weight: 700;
+    color: $white;
+    text-align: right;
+    padding-top: 30px;
+
+    .sub-head {
+	    font-size: 13px;
+	    line-height: 15px;
+	    font-weight: 400;
+	    color: $lightBlue;
+	    text-align: right;
+	}
+    p {
+        margin: $no-margin;
+    }
+}
+
+.login-box {
+    padding: 8px;
+    border: 1px solid $white;
+    max-width: 502px;
+    margin: $marginAutoLR;
+
+    .login-box-inner {
+        background-color: rgba(255,255,255,0.55);
+        padding: 35px 15px;
+
+
+        .login-heading {
+            font-weight: 600;
+            font-size: 18px;
+            color: $primaryColor;
+            line-height: 24px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .login-subheading {
+            font-weight: 500;
+            font-size: 15px;
+            color: $primaryGrey;
+            margin: 0;
+            padding: 10px 0 0 0;
+        }
+
+        .formWrapper {
+            max-width: 312px;
+            padding-top: 46px;
+            margin: $marginAutoLR;
+        }
+
+        .form-control {
+            border-radius:0;
+        }
+        .form-control:focus {
+            outline: none;
+            box-shadow: none;
+        }
+    }
+}
