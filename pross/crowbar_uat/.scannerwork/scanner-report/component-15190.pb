@@ -1,0 +1,1 @@
+Öv,resources/views/backend/skill/list.blade.php 2phpX'hr,resources/views/backend/skill/list.blade.php

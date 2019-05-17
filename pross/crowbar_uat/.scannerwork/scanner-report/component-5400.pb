@@ -1,0 +1,1 @@
+˜*;node_modules/node-sass/test/fixtures/depth-first/_vars.scss 2scssXhr;node_modules/node-sass/test/fixtures/depth-first/_vars.scss

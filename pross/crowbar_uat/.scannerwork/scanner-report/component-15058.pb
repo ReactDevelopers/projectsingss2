@@ -1,0 +1,1 @@
+Òu0resources/views/talent/job/job-details.blade.php 2phpX¾hr0resources/views/talent/job/job-details.blade.php

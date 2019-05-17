@@ -1,0 +1,1 @@
+´w1resources/views/backend/pages/templates.blade.php 2phpX/hr1resources/views/backend/pages/templates.blade.php

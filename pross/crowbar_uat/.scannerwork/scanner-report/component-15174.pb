@@ -1,0 +1,1 @@
+Æv0resources/views/talent/invite/template.blade.php 2phpX4hr0resources/views/talent/invite/template.blade.php

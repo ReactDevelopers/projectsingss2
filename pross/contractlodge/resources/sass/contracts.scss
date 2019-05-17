@@ -1,0 +1,152 @@
+
+ @import url('https://fonts.googleapis.com/css?family=Arizonia');
+
+.is-approved {
+    background-image: url('/img/green-approved-stamp-400x.png');
+    background-repeat: no-repeat;
+    background-attachment: relative;
+    background-position: right top;
+    background-size: 150px;
+}
+
+.signature {
+    font-family: 'Arizonia', cursive, Helvetica, sans-serif;
+    font-size: 3.4rem;
+}
+.spark-uploader-control {
+    padding: 0;
+    left: 0;
+    height: 30px;
+}
+.file-upload {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+.invalid-feedback {
+    display: block;
+    clear: both;
+}
+
+.table-striped.override-table .vdpTable thead th,
+.table-striped.override-table .vdpTable thead tr:nth-of-type(odd),
+.table-striped.override-table .vdpTable tbody tr:nth-of-type(odd) {
+    background-color: transparent;
+    font-size: inherit;
+    border: 0;
+}
+.table-striped.override-table .vdpTable thead th,
+.card .table.override-table .vdpTable td,
+.card .table.override-table .vdpTable th {
+    padding: .3em .5em 1.8em;
+    border: 0;
+}
+.card .table.override-table .vdpTable td.vdpCell {
+    padding: .5em 0;
+}
+
+.info-tooltip {
+    position: relative;
+    display: inline-block;
+    padding: 0 5px;
+    background-color: #ddd;
+    border-radius: 100%;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+}
+.info-tooltip .fa {
+    font-size: 10px;
+}
+.info-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 250px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 135%;
+    left: 50%;
+    margin-left: -105px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.info-tooltip .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+.info-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.orange-color {
+    color: #FFA500 !important;
+}
+
+.blue-color {
+    color: #42a2dc !important;
+}
+.z-index-1 {
+    z-index: 1;
+}
+dl.room-types-brk {
+     .room-type-brk {
+        border-bottom: 1px solid $gray-200;
+        margin-bottom: 0px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+    }
+}
+
+div.button-sticky-footer {
+    background-color: $card-bg !important;
+    border-top: solid #ddd !important;
+    margin:0 auto;
+}
+
+.bg-white {
+    background-color: $white !important;
+}
+
+.bg-gray-100 {
+    background-color: $gray-100 !important;
+}
+
+.bg-gray-200 {
+    background-color: $gray-200 !important;
+}
+
+.bg-gray-300 {
+    background-color: $gray-300 !important;
+}
+
+dl.room-types-brk {
+    dt.room-type-brk {
+       padding-right: 5px;
+   }
+}
+
+dl.room-types-brk {
+    dd.room-type-brk {
+       padding-left: 0px;
+   }
+}
+
+table {
+    tr.header-row {
+        background-color: hsl($brand-hue, 25%, 92%) !important;
+        border-bottom: 2px solid $gray-300;
+        border-top: 1px solid $gray-900;
+    }
+}

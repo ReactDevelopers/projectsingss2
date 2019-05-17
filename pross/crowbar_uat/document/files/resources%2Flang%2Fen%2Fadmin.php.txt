@@ -1,0 +1,104 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Talet Language Lines
+    |--------------------------------------------------------------------------
+    |
+    | The following language lines are used during talent actions for various
+    | messages that we need to display to the user. You are free to modify
+    | these language lines according to your application's requirements.
+    |
+    */
+
+    'A0001'     => 'Country field is required.',
+    'A0002'     => 'Country format is invalid.',
+    'A0003'     => 'State name field is required.',
+    'A0004'     => 'State name format is invalid.',
+    'A0005'     => 'ISO code field is required.',
+    'A0006'     => 'ISO code format is invalid.',
+    'A0007'     => 'State has been saved successfully.',
+    'A0008'     => 'Select Country',
+    'A0009'     => 'Select State',
+    'A0010'     => 'State field is required.',
+    'A0011'     => 'State format is invalid.',
+    'A0012'     => 'City name field is required.',
+    'A0013'     => 'City name format is invalid.',
+    'A0014'     => 'City has been saved successfully.',
+    'A0015'     => 'Industry Name field is required.',
+    'A0016'     => 'Industry Name format is invalid.',
+    'A0017'     => 'Industry has been saved successfully.',
+    'A0018'     => 'Select Industry',
+    'A0019'     => 'Industry',
+    'A0020'     => 'City',
+    'A0021'     => 'Sub Industry',
+    'A0022'     => 'Industry field is required.',
+    'A0023'     => 'Industry format is invalid.',
+    'A0024'     => 'Sub Industry Name field is required.',
+    'A0025'     => 'Sub Industry Name format is invalid.',    
+    'A0026'     => 'Sub Industry has been saved successfully.',
+    'A0027'     => 'Basic', 
+    'A0028'     => 'Countries',
+    'A0029'     => 'States',
+    'A0030'     => 'City',
+    'A0031'     => 'Industry',
+    'A0032'     => 'Sub Industry',
+    'A0033'     => 'Abusive Word',
+    'A0034'     => 'Api Information',
+    'A0035'     => '%s Listing',
+    'A0036'     => 'Abusive word field is required.',
+    'A0037'     => 'Abusive word format is invalid.',
+    'A0038'     => 'Abusive word has been submitted successfully.',
+    'A0039'     => 'Degree',
+    'A0040'     => 'Degree field is required.',
+    'A0041'     => 'Degree format is invalid.',
+    'A0042'     => 'Degree has been submitted successfully.',
+    'A0043'     => 'Certificate',
+    'A0044'     => 'Certificate field is required.',
+    'A0045'     => 'Certificate format is invalid.',
+    'A0046'     => 'Certificate has been submitted successfully.',
+    'A0047'     => 'College',
+    'A0048'     => 'College field is required.',
+    'A0049'     => 'College format is invalid.',
+    'A0050'     => 'College has been submitted successfully.',
+    'A0051'     => 'Skill',
+    'A0052'     => 'Industry field is required.',
+    'A0053'     => 'Industry format is invalid.',
+    'A0054'     => 'Skill field is required.',
+    'A0055'     => 'Skill format is invalid.',    
+    'A0056'     => 'Skill has been submitted successfully.',    
+    'A0057'     => 'Feature',
+    'A0058'     => 'Feature field is required.',
+    'A0059'     => 'Feature format is invalid.',
+    'A0060'     => 'Crowbar has resolve the raise dispute opened by %s.',
+    'A0061'     => 'You have successfully refunded for the disputed item and also marked job closed and mark the disputed item as resolved.',
+    'A0062'     => 'Stay calm, we will soon resolved this issue.',
+    'A0063'     => 'State has been updated successfully.',
+
+    'social_connected'                              => 'Connected',
+    'social_not_connected'                          => 'Not Connected',
+    'phone_connected'                               => 'Verified',
+    'phone_not_connected'                           => 'Not Verified',
+    'message_required'                              => 'Message field is required.',
+    'message_deleted'                               => 'Message has been successfully deleted.',
+    'updated_successfully'                          => 'Item has been updated successfully.',
+    'report_abuse_resolve_confirm'                  => 'Do you really want to mark this as resolved item?',
+    'report_abuse_unlink_confirm'                   => 'Do you really want to contine. This will remove chat connection between both concerned employer and talent.',
+    'report_abuse_resolve_message'                  => 'Crowbar has resolve the report abuse opened by %s ',
+    'report_abuse_unlink_message'                   => 'Crowbar has unlink chat connection against the report abuse opened by %s ',
+
+    'sub_industry_required'     => 'Sub Industry field is required.',
+    'expertise_required'     => 'Expertise field is required.',
+    'experience_required'     => 'Experience field is required.',
+
+    'country_required'     => 'Country field is required.',
+    'iso_required'     => 'Currency ISO field is required.',
+    'sign_required'     => 'Currency Symbol field is required.',
+    'banner_image_required'     => 'Banner image is required.',
+    'banner_text_required'     => 'Banner text is required.',
+    'banner_text_min'     => 'Banner text may not be less than '.BANNER_TEXT_MIN_LENGTH.' characters.',
+    'banner_text_max'     => 'Banner text may not be greater than '.BANNER_TEXT_MAX_LENGTH.' characters.',
+];
+

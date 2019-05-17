@@ -1,0 +1,1108 @@
+<?php
+
+    namespace Models; 
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Mail;
+
+    class Payments extends Model{
+        const CREATED_AT = 'created';
+        const UPDATED_AT = 'updated';
+
+        protected $fillable = [];
+
+        protected $hidden = [];
+
+        public function __construct(){
+    	   
+        }
+
+        public static function  braintree_response($data){
+            $table_api_braintree_response = DB::table('api_braintree_response');
+
+            if(!empty($data)){
+                $isInserted = $table_api_braintree_response->insert($data); 
+            }
+            return (bool)$isInserted;            
+        }
+
+        public static function save_credit_card($credit_card){
+            $table_user_card = DB::table('user_card');
+            if(!empty($credit_card)){
+                $isInserted = $table_user_card->insertGetId($credit_card); 
+            }
+            return $isInserted;              
+        }
+        
+        public static function mark_card_default($user_id,$card_id = NULL){
+            $isUpdated = DB::table('user_card')->where('user_id',$user_id)->update(['default' => DEFAULT_NO_VALUE, 'updated' => date('Y-m-d H:i:s')]);
+
+            if(!empty($card_id)){
+                return DB::table('user_card')
+                ->where('id_card',$card_id)
+                ->where('user_id',$user_id)
+                ->update([
+                    'default' => DEFAULT_YES_VALUE, 
+                    'updated' => date('Y-m-d H:i:s')
+                ]);
+            }else{
+                $selected = DB::table('user_card')
+                ->select(['id_card'])
+                ->where('user_id',$user_id)
+                ->where('card_status','active')
+                ->orderBy('updated','DESC')
+                ->get()
+                ->first();
+
+                if(!empty($selected)){
+                    return DB::table('user_card')
+                    ->where('user_id',$user_id)
+                    ->where('id_card',$selected->id_card)
+                    ->update([
+                        'default' => DEFAULT_YES_VALUE, 
+                        'updated' => date('Y-m-d H:i:s')
+                    ]);
+                }else{
+                    return false;
+                }
+            }
+        }
+        
+        public static function get_user_card($user_id,$card_id="",$fetch = 'array',$keys=['*']){
+            $table_user_card = DB::table('user_card');
+            $table_user_card->select($keys);
+            $table_user_card->where(['card_status' => 'active']);
+            if(!empty($user_id)){
+                $table_user_card->where(['user_id' => $user_id]);
+            }
+            if(!empty($card_id)){
+            	$table_user_card->where(['id_card' => $card_id]);
+            }
+            $table_user_card->orderBy('id_card','DESC');
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_user_card->get()
+                    ),
+                    true
+                );
+            }else if($fetch === 'first'){
+                return json_decode(
+                    json_encode(
+                        $table_user_card->first()
+                    ),
+                    true
+                );
+            }else{
+                return $table_user_card->get();
+            }
+        }
+
+        public static function get_user_default_card($user_id,$keys=['*']){
+            if(empty($user_id)){
+                return [];
+            }
+
+            $table_user_card = DB::table('user_card');
+            $table_user_card->select($keys);
+            $table_user_card->where(['card_status' => 'active']);
+        
+            $table_user_card->where(['user_id' => $user_id]);
+            $table_user_card->where(['default' => DEFAULT_YES_VALUE]);
+            
+            return json_decode(json_encode($table_user_card->get()->first()),true);
+        }
+
+        public static function delete_card($card_id){
+            $table_user_card = DB::table('user_card');
+            if($card_id){
+                $table_user_card->where('id_card','=',$card_id);
+                $isUpdated = $table_user_card->update(['card_status'=>'trashed']);
+            }
+            return (bool)$isUpdated;
+        }
+
+        public static function save_transaction($transaction_data){
+            $table_transaction = DB::table('transactions');
+
+            if(!empty($transaction_data)){
+                $isInserted = $table_transaction->insertGetId($transaction_data); 
+            }
+            return $isInserted;
+        }
+
+        public static function init_employer_payment($data, $repeat){
+            
+            $table_transaction = DB::table('transactions');
+
+            if(!empty($data)){
+                $data['created'] = date('Y-m-d H:i:s');
+                $data['updated'] = date('Y-m-d H:i:s');
+                $isInserted = $table_transaction->insertGetId($data);
+
+                if(!empty($isInserted)){
+                    $table_project = DB::table('projects');
+                    $table_project->where('id_project',$data['transaction_project_id']);
+                    
+                    $isUpdated = $table_project->update(['transaction' => $repeat, 'updated' => date('Y-m-d H:i:s')]);
+
+                    if(!empty($isUpdated)){
+                        return $table_transaction->where('id_transactions',$isInserted)->get()->first();
+                    }else{
+                        return false;
+                    }
+                }else{
+                    return false;
+                } 
+            }else{
+                return false;
+            }
+        }
+
+        public static function init_talent_payment($project_id,$transaction_by){
+            $table_transaction = DB::table('transactions');
+            $data = \Models\Payments::get_talent_payout_details($project_id);
+            
+            if(!empty($data)){
+                $data['created'] = date('Y-m-d H:i:s');
+                $data['updated'] = date('Y-m-d H:i:s');
+                
+                $result = \Models\Payments::transfer_payment_talent($data['accepted_talent_email'],$data['transaction_subtotal']);
+                
+                unset($data['accepted_talent_email']);
+                $data['transaction_reference_id'] = $result['data']['CORRELATIONID'];
+                $data['transaction_done_by'] = $transaction_by;
+
+                if(empty($result['status'])){
+                    $data['transaction_status'] = 'failed';
+                    $isInserted = $table_transaction->insertGetId($data);
+                    
+                    return false;
+                }else{
+                    $data['transaction_status'] = 'confirmed';
+                    $isInserted = $table_transaction->insertGetId($data);
+                    
+                    if(!empty($isInserted)){
+                        return $table_transaction->where('id_transactions',$isInserted)->get()->first();
+                    }else{
+                        return false;
+                    }
+
+                } 
+            }else{
+                return false;
+            }
+        }
+
+        public static function refund_transaction($project_id, $data){
+            
+            $table_transaction = DB::table('transactions');
+
+            if(!empty($data)){
+                $data['created'] = date('Y-m-d H:i:s');
+                $data['updated'] = date('Y-m-d H:i:s');
+                $isInserted = $table_transaction->insertGetId($data);
+
+                if(!empty($isInserted)){
+                    return true;
+                }else{
+                    return false;
+                } 
+            }else{
+                return false;
+            }
+        }
+
+        public static function dispute_upcoming_payment($project_id){
+
+            $isDisputed = DB::table('project_log')
+            ->where('project_id',$project_id)
+            ->whereNotNull('project_log.enddate')
+            ->where('close','pending')
+            ->update([
+                'close' => 'disputed',
+                'updated' => date('Y-m-d')
+            ]);
+        }
+
+        public static function update_transaction($transaction_id,$data){
+
+            $table_transaction = DB::table('transactions');
+
+            if(!empty($data)){
+                return $table_transaction->where('id_transactions',$transaction_id)->update($data);
+            }else{
+                return false;
+            }
+        }
+
+        public static function summary($user_id,$type,$result = []){
+
+            if($type == 'talent'){
+                $result = [
+                    'total_received' => DB::table('transactions')->where('transaction_user_id',$user_id)->where('transaction_user_type',$type)->where('transaction_status','confirmed')->where('transaction_type','credit')->get()->sum('transaction_subtotal'),
+                    'total_due' => 0,
+                    'total_completed_job' => DB::table('projects')->leftjoin('talent_proposals as proposals','proposals.project_id','=','projects.id_project')->where('proposals.user_id',$user_id)->where('project_status','closed')->get()->count(),
+                    'payments' => [
+                        \Models\Payments::listing($user_id,$type,'all',true),
+                        \Models\Payments::listing($user_id,$type,'received',true),
+                        \Models\Payments::listing($user_id,$type,'disputed',true)
+                    ]
+                ];
+            }else if($type == 'employer'){
+                $balance = json_decode(
+                    json_encode(
+                        DB::table('transactions')
+                        ->where('transaction_user_id',$user_id)
+                        ->where('transaction_status','confirmed')
+                        ->select([
+                            \DB::raw("(
+                                SUM(COALESCE(CASE WHEN transaction_type = 'debit' THEN transaction_subtotal END,0))
+                                - 
+                                SUM(COALESCE(CASE WHEN transaction_type = 'credit' THEN transaction_subtotal END,0)) 
+                            ) as balance 
+                        ")])->groupBy(['transaction_project_id'])->get()
+                    ),
+                    true
+                );
+
+                $result = [
+                    'total_paid' => DB::table('transactions')->where('transaction_user_id',$user_id)->where('transaction_user_type',$type)->where('transaction_status','confirmed')->where('transaction_type','debit')->get()->sum('transaction_subtotal'),
+                    'total_balance' => array_sum(array_column($balance, 'balance')),
+                    'total_posted_jobs' => DB::table('projects')->where('user_id',$user_id)->get()->count(),
+                    'payments' => [
+                        \Models\Payments::listing($user_id,$type,'all',true),
+                        \Models\Payments::listing($user_id,$type,'paid',true),
+                        \Models\Payments::listing($user_id,$type,'refunded',true)
+                    ]
+                ];
+            }
+
+            return $result;
+        }
+
+        public static function listing($user_id, $listing = null, $type = null, $count = false, $page = NULL, $sort = NULL, $search = NULL, $limit = DEFAULT_PAGING_LIMIT){
+            $type = (!empty($type))?$type:'all';
+
+            $table_transaction = DB::table('transactions');
+
+            if($listing === 'employer'){
+                if($type == 'all'){
+                    return self::employer_payments_due(\Auth::user()->id_user,NULL,$count);
+                }else if($type == 'paid'){
+                    $table_transaction->where('transaction_status','confirmed');    
+                }else if($type == 'refunded'){
+                    $table_transaction->where('transaction_status','refunded');    
+                }
+
+                if(!empty($search)){
+                    $table_transaction->where('projects.title', 'like', "%$search%");
+                }
+
+                if(!empty($sort)){
+                    $sorting = ___decodefilter($sort);
+                    $table_transaction->orderByRaw($sorting);
+                }
+
+                if(!empty($page)){
+                    $offset = ($page - 1)*$limit;
+
+                    $table_transaction->offset($offset);
+                    $table_transaction->limit($limit);
+                }
+
+                $payments = $table_transaction->select([
+                    /*TRANSACTIONS*/
+                    'transactions.id_transactions',
+                    'transactions.transaction_user_id',
+                    'transactions.transaction_project_id',
+                    'transactions.transaction_proposal_id',
+                    'transactions.transaction_subtotal',
+                    'transactions.transaction_reference_id',
+                    'transactions.transaction_type',
+                    'transactions.transaction_status',
+                    'transactions.transaction_date',
+                    'transactions.created',
+                    /*JOBS*/
+                    'projects.title',
+                    'projects.transaction',
+                    /*EMPLOYERS*/  
+                    'employers.company_name', 
+                    /*PROPOSALS*/
+                    'proposals.quoted_price',
+                ])
+                ->leftjoin("projects","projects.id_project", "=", "transactions.transaction_project_id")
+                ->leftjoin("talent_proposals as proposals","proposals.id_proposal", "=", "transactions.transaction_proposal_id")
+                ->leftjoin("users as employers","employers.id_user", "=", "transactions.transaction_user_id")
+                ->where('transaction_user_id',$user_id)
+                ->where('transaction_user_type',$listing)
+                ->where('projects.employment','!=','fulltime');
+
+                if(empty($count)){
+                    return $payments->get();
+                }else{
+                    return $payments->get()->count();
+                }
+            }else if($listing === 'talent'){
+
+                if($type == 'all'){
+                    return self::talent_upcoming_payment(NULL,$count);
+                }else if($type == 'received'){
+                    $table_transaction->where('transaction_status','confirmed');    
+                }else if($type == 'disputed'){
+                    return self::talent_disputed_payment(NULL,$count);
+                }
+
+                if(!empty($search)){
+                    $table_transaction->where('projects.title', 'like', "%$search%");
+                }
+
+                if(!empty($sort)){
+                    $sorting = ___decodefilter($sort);
+                    $table_transaction->orderByRaw($sorting);
+                }
+
+                if(!empty($page)){
+                    $offset = ($page - 1)*$limit;
+
+                    $table_transaction->offset($offset);
+                    $table_transaction->limit($limit);
+                }
+
+                $payments = $table_transaction->select([
+                    /*TRANSACTIONS*/
+                    'transactions.id_transactions',
+                    'transactions.transaction_user_id',
+                    'transactions.transaction_project_id',
+                    'transactions.transaction_proposal_id',
+                    'transactions.transaction_subtotal',
+                    'transactions.transaction_reference_id',
+                    'transactions.transaction_type',
+                    'transactions.transaction_status',
+                    'transactions.transaction_date',
+                    'transactions.created',
+                    /*JOBS*/
+                    'projects.title',
+                    'projects.transaction',
+                    /*EMPLOYERS*/  
+                    'employers.company_name', 
+                    /*PROPOSALS*/
+                    'proposals.quoted_price',
+                ])
+                ->leftjoin("projects","projects.id_project", "=", "transactions.transaction_project_id")
+                ->leftjoin("talent_proposals as proposals",function($leftjoin){
+                    $leftjoin->on("proposals.id_proposal", "=", "transactions.transaction_proposal_id");
+                    $leftjoin->on("proposals.user_id", "=", \DB::raw(\Auth::user()->id_user));
+                })
+                ->leftjoin("users as employers","employers.id_user", "=", "projects.user_id")
+                ->where('transaction_user_id',$user_id);
+
+                if(empty($count)){
+                    return $payments->get();
+                }else{
+                    return $payments->get()->count();
+                }
+            }else{
+                $prefix = DB::getTablePrefix();
+            
+                \DB::statement(\DB::raw('set @row_number=0'));
+                $payments = $table_transaction->select([
+                    /*TRANSACTIONS*/
+                    \DB::raw('@row_number  := @row_number  + 1 AS row_number'),
+                    'transactions.id_transactions',
+                    'transactions.transaction_user_id',
+                    'transactions.transaction_project_id',
+                    'transactions.transaction_proposal_id',
+                    'transactions.transaction_subtotal',
+                    'transactions.transaction_reference_id',
+                    'transactions.transaction_type',
+                    'transactions.transaction_status',
+                    'transactions.transaction_date',
+                    'transactions.created',
+                    /*JOBS*/
+                    'projects.title',
+                    'projects.transaction',
+                    /*EMPLOYERS*/  
+                    'employers.company_name', 
+                    /*PROPOSALS*/
+                    'proposals.quoted_price',
+                    "users.type as user_type",
+                    \DB::Raw("TRIM(CONCAT({$prefix}users.first_name,' ',{$prefix}users.last_name)) as transaction_user_name"),
+                ])
+                ->leftjoin("projects","projects.id_project", "=", "transactions.transaction_project_id")
+                ->leftjoin("talent_proposals as proposals",function($leftjoin){
+                    $leftjoin->on("proposals.id_proposal", "=", "transactions.transaction_proposal_id");
+                })
+                ->leftjoin("users as employers","employers.id_user", "=", "projects.user_id")
+                ->leftjoin("users","users.id_user", "=", "transactions.transaction_user_id")
+                ->where('transaction_project_id',$user_id);
+
+                if(empty($count)){
+                    return $payments->get();
+                }else{
+                    return $payments->get()->count();
+                }
+            }
+        }
+
+        public static function talent_upcoming_payment($project_id = NULL, $count = false){
+            $prefix = DB::getTablePrefix();
+
+            \DB::statement(\DB::raw('set @row_number=0'));
+            $table_projects = DB::table('projects');
+            
+            $payments = $table_projects->select([
+                \DB::raw('@row_number  := @row_number  + 1 AS row_number'),
+                'projects.id_project as transaction_project_id',
+                'projects.title',
+                'employers.company_name',
+                'project_log.close as transaction_status',
+                'project_log.enddate as transaction_date',
+                'transaction',
+                'projects.transaction',
+                'projects.employment',
+                'project_log.startdate',
+                'project_log.enddate',
+                'project_log.start',
+                'project_log.close',
+                'project_log.request_payout',
+                'proposals.quoted_price',
+                \DB::Raw("(SUM(TIMESTAMPDIFF(Second,{$prefix}project_log.startdate,{$prefix}project_log.enddate))/3600) as working_hours"),
+            ]);
+            
+            $table_projects->leftjoin("users as employers","employers.id_user", "=", "projects.user_id");
+            $table_projects->leftjoin("project_log",function($leftjoin){
+                $leftjoin->on("project_log.project_id", "=", "projects.id_project");
+                $leftjoin->on("project_log.close", "=", \DB::Raw('"pending"'));
+            });
+            $table_projects->leftjoin("talent_proposals as proposals",function($leftjoin){
+                $leftjoin->on("proposals.project_id", "=", "projects.id_project");
+                $leftjoin->on("proposals.status", "=", \DB::Raw('"accepted"'));
+            });
+
+            if(!empty($project_id)){
+                $table_projects->where('id_project',$project_id);
+            }
+
+            $table_projects->whereNotNull('project_log.enddate');
+            $table_projects->where('close','pending');
+            $table_projects->groupBy(['id_log']);
+
+            if(empty($count)){
+                return $payments->get();
+            }else{
+                return $payments->get()->count();
+            }
+        }
+
+        public static function employer_payments_due($employer_id, $project_id = NULL, $count = false){
+            $prefix = DB::getTablePrefix();
+
+            \DB::statement(\DB::raw('set @row_number=0'));
+            $table_projects = DB::table('projects');
+            
+            $payments = $table_projects->select([
+                \DB::raw('@row_number  := @row_number  + 1 AS row_number'),
+                'projects.id_project as transaction_project_id',
+                'projects.title',
+                'employers.company_name',
+                'project_log.close as transaction_status',
+                'project_log.enddate as transaction_date',
+                'transaction',
+                'projects.transaction',
+                'projects.employment',
+                'project_log.startdate',
+                'project_log.enddate',
+                'project_log.start',
+                'project_log.close',
+                'project_log.request_payout',
+                'proposals.quoted_price',
+                \DB::Raw("(SUM(TIMESTAMPDIFF(Second,{$prefix}project_log.startdate,{$prefix}project_log.enddate))/3600) as working_hours"),
+            ]);
+            
+            $table_projects->leftjoin("users as employers","employers.id_user", "=", "projects.user_id");
+            $table_projects->leftjoin("project_log",function($leftjoin){
+                $leftjoin->on("project_log.project_id", "=", "projects.id_project");
+                $leftjoin->on("project_log.close", "=", \DB::Raw('"pending"'));
+            });
+            
+            $table_projects->leftjoin("talent_proposals as proposals",function($leftjoin){
+                $leftjoin->on("proposals.project_id", "=", "projects.id_project");
+                $leftjoin->on("proposals.status", "=", \DB::Raw('"accepted"'));
+            });
+
+            if(!empty($project_id)){
+                $table_projects->where('id_project',$project_id);
+            }
+
+            $table_projects->where('projects.user_id',$employer_id);
+
+            $table_projects->whereNotNull('project_log.enddate');
+            $table_projects->where('close','pending');
+            $table_projects->groupBy(['id_log']);
+
+            if(empty($count)){
+                return $payments->get();
+            }else{
+                return $payments->get()->count();
+            }
+        }
+
+        public static function talent_disputed_payment($project_id = NULL, $count = false){
+            $prefix = DB::getTablePrefix();
+
+            \DB::statement(\DB::raw('set @row_number=0'));
+            $table_projects = DB::table('projects');
+            
+            $payments = $table_projects->select([
+                \DB::raw('@row_number  := @row_number  + 1 AS row_number'),
+                'projects.id_project as transaction_project_id',
+                'projects.title',
+                'employers.company_name',
+                'project_log.close as transaction_status',
+                'transaction',
+                'projects.transaction',
+                'projects.employment',
+                'project_log.startdate',
+                'project_log.enddate',
+                'project_log.start',
+                'project_log.updated as transaction_date',
+                'project_log.close',
+                'proposals.quoted_price',
+                \DB::Raw("(SUM(TIMESTAMPDIFF(Second,{$prefix}project_log.startdate,{$prefix}project_log.enddate))/3600) as working_hours"),
+            ]);
+            
+            $table_projects->leftjoin("users as employers","employers.id_user", "=", "projects.user_id");
+            $table_projects->leftjoin("project_log","project_log.project_id", "=", "projects.id_project");
+            $table_projects->leftjoin("talent_proposals as proposals",function($leftjoin){
+                $leftjoin->on("proposals.project_id", "=", "projects.id_project");
+                $leftjoin->on("proposals.status", "=", \DB::Raw('"accepted"'));
+            });
+
+            if(!empty($project_id)){
+                $table_projects->where('id_project',$project_id);
+            }
+
+            $table_projects->whereNotNull('project_log.enddate');
+            $table_projects->where('close','disputed');
+            $table_projects->groupBy(['id_log']);
+
+            if(empty($count)){
+                return $payments->get();
+            }else{
+                return $payments->get()->count();
+            }
+        }
+
+        public static function transfers($project_id,$fetch = 'object'){
+
+            $table_transaction = DB::table('transactions');
+
+            $payments = $table_transaction->select([
+                /*TRANSACTIONS*/
+                'transactions.id_transactions',
+                'transactions.transaction_user_id',
+                'transactions.transaction_project_id',
+                'transactions.transaction_proposal_id',
+                'transactions.transaction_subtotal',
+                'transactions.transaction_reference_id',
+                'transactions.transaction_type',
+                'transactions.transaction_status',
+                'transactions.transaction_date',
+                'transactions.created',
+                /*JOBS*/
+                'projects.title',
+                'projects.transaction',
+                /*EMPLOYERS*/  
+                'employers.company_name', 
+                /*PROPOSALS*/
+                'proposals.quoted_price',
+            ])
+            ->leftjoin("projects","projects.id_project", "=", "transactions.transaction_project_id")
+            ->leftjoin("talent_proposals as proposals","proposals.id_proposal", "=", "transactions.transaction_proposal_id")
+            ->leftjoin("users as employers","employers.id_user", "=", "transactions.transaction_user_id")
+            ->where('transaction_type','credit')
+            ->where('transaction_project_id',$project_id);
+
+            if($fetch == 'object'){
+                return $payments->get();
+            }
+        }
+
+        public static function get_talent_payout_details($project_id,$transaction_status = NULL){
+            if(empty($transaction_status)){
+                $transaction_status = 'initiated';
+            }
+
+            $proposal   = \App\Models\Proposals::accepted_proposal($project_id);
+
+            $transaction_total = $transaction_subtotal = ___calculate_payment($proposal['employment'],$proposal['quoted_price'],$proposal['working_hours']);
+
+            return [
+                'accepted_talent_email'     => $proposal['accepted_talent_email'],
+                'transaction_user_id'       => $proposal['user_id'],
+                'transaction_user_type'     => 'talent',
+                'transaction_project_id'    => $proposal['project_id'],
+                'transaction_proposal_id'   => $proposal['id_proposal'],
+                'transaction_total'         => ___format($transaction_total),
+                'transaction_subtotal'      => ___format($transaction_subtotal),
+                'transaction_reference_id'  => ___get_transaction_id(),
+                'transaction_comment'       => TRANSACTION_COMMENT,
+                'transaction_type'          => 'credit',
+                'transaction_status'        => $transaction_status,
+                'transaction_date'          => date('Y-m-d H:i:s'),
+            ];
+        }
+
+        public static function create_braintree_customer($braintree_id){
+            if(empty($braintree_id)){
+                $add_customer_result = \Braintree_Customer::create(array(
+                    'firstName'         => \Auth::user()->first_name,
+                    'lastName'          => \Auth::user()->last_name,
+                    'email'             => \Auth::user()->email
+                ));
+
+                if($add_customer_result->success){
+                    \Models\Payments::braintree_response([
+                        'user_id'                   => \Auth::user()->id_user,
+                        'braintree_response_json'   => json_encode($add_customer_result),
+                        'status'                    => 'true',
+                        'type'                      => 'card',
+                        'created'                   => date('Y-m-d H:i:s')
+                    ]);
+
+                    \Models\Employers::change(
+                        \Auth::user()->id_user,
+                        ['braintree_id' => $add_customer_result->customer->id]
+                    ); 
+
+                    return $add_customer_result->customer->id;
+                }else{
+                    \Models\Payments::braintree_response([
+                        'user_id'                   => \Auth::user()->id_user,
+                        'braintree_response_json'   => json_encode($add_customer_result->message),
+                        'status'                    => 'false',
+                        'type'                      => 'card',
+                        'created'                   => date('Y-m-d H:i:s')
+                    ]);
+
+                    return false;
+                }
+            }else{
+                try {
+                    $customer = \Braintree_Customer::find($braintree_id);
+                    
+                    if(!empty($customer)){
+                        return $braintree_id;
+                    }else{
+                        return false;
+                    }
+                } catch (\Braintree_Exception_NotFound $e) {
+                    $add_customer_result = \Braintree_Customer::create(array(
+                        'firstName' => \Auth::user()->first_name,
+                        'lastName' => \Auth::user()->last_name,
+                        'company' => \Auth::user()->company_name,
+                        'email' =>\Auth::user()->email,
+                        'phone' =>\Auth::user()->mobile,
+                        'website' => \Auth::user()->website
+                    ));
+
+                    if($add_customer_result->success){
+                        \Models\Payments::braintree_response([
+                            'user_id'                   => \Auth::user()->id_user,
+                            'braintree_response_json'   => json_encode($add_customer_result),
+                            'status'                    => 'true',
+                            'type'                      => 'card',
+                            'created'                   => date('Y-m-d H:i:s')
+                        ]);
+
+                        \Models\Employers::change(
+                            \Auth::user()->id_user,
+                            ['braintree_id' => $add_customer_result->customer->id]
+                        ); 
+
+                        return $add_customer_result->customer->id;
+                    }else{
+                        \Models\Payments::braintree_response([
+                            'user_id'                   => \Auth::user()->id_user,
+                            'braintree_response_json'   => json_encode($add_customer_result->message),
+                            'status'                    => 'false',
+                            'type'                      => 'card',
+                            'created'                   => date('Y-m-d H:i:s')
+                        ]);
+
+                        return false;
+                    }
+                }
+
+            }
+        }
+        
+        public static function create_braintree_card($request,$braintree_id){
+            $get_user_default_card = self::get_user_default_card(\Auth::user()->id_user);
+            $result = \Braintree_CreditCard::create(array(
+                'cardholderName' => $request->cardholder_name,
+                'customerId' => $braintree_id,
+                'expirationDate' => $request->expiry_month . '/' . $request->expiry_year,
+                'number' => $request->number,
+                'cvv' => $request->cvv
+            ));
+
+            if($result->success == 1){
+                \Models\Payments::braintree_response([
+                    'user_id'                   => \Auth::user()->id_user,
+                    'braintree_response_json'   => json_encode((array)$result->creditCard),
+                    'status'                    => 'true',
+                    'type'                      => 'card',
+                    'created'                   => date('Y-m-d H:i:s')
+                ]);
+
+                $credit_card['default']                     = !empty($get_user_default_card) ? DEFAULT_NO_VALUE : DEFAULT_YES_VALUE;
+                $credit_card['user_id']                     = \Auth::user()->id_user;
+                $credit_card['type']                        = \Auth::user()->type;
+                $credit_card['bin']                         = $result->creditCard->bin;
+                $credit_card['expiration_month']            = $result->creditCard->expirationMonth;
+                $credit_card['expiration_year']             = $result->creditCard->expirationYear;
+                $credit_card['last4']                       = $result->creditCard->last4;
+                $credit_card['card_type']                   = $result->creditCard->cardType;
+                $credit_card['cardholder_name']             = $result->creditCard->cardholderName;
+                $credit_card['commercial']                  = $result->creditCard->commercial;
+                $credit_card['country_of_issuance']         = $result->creditCard->countryOfIssuance; 
+                $credit_card['created_at']                  = $result->creditCard->createdAt->format('Y-m-d H:i:s');
+                $credit_card['customer_id']                 = $result->creditCard->customerId;
+                $credit_card['customer_location']           = $result->creditCard->customerLocation;
+                $credit_card['debit']                       = $result->creditCard->debit;
+                $credit_card['durbin_regulated']            = $result->creditCard->durbinRegulated;
+                $credit_card['expired']                     = $result->creditCard->expired;
+                $credit_card['healthcare']                  = $result->creditCard->healthcare;
+                $credit_card['image_url']                   = $result->creditCard->imageUrl;
+                $credit_card['issuing_bank']                = $result->creditCard->issuingBank;
+                $credit_card['payroll']                     = $result->creditCard->payroll;
+                $credit_card['prepaid']                     = $result->creditCard->prepaid;
+                $credit_card['product_id']                  = $result->creditCard->productId;
+                $credit_card['subscriptions']               = json_encode($result->creditCard->subscriptions);
+                $credit_card['token']                       = $result->creditCard->token;
+                $credit_card['unique_number_identifier']    = $result->creditCard->uniqueNumberIdentifier;
+                $credit_card['updated_at']                  = $result->creditCard->updatedAt->format('Y-m-d H:i:s');
+                $credit_card['venmo_sdk']                   = $result->creditCard->venmoSdk;
+                $credit_card['verifications']               = json_encode($result->creditCard->verifications);
+                $credit_card['billing_address']             = $result->creditCard->billingAddress;
+                $credit_card['expiration_date']             = $result->creditCard->expirationDate;
+                $credit_card['masked_number']               = $result->creditCard->maskedNumber;
+                $credit_card['card_status']                 = 'active';
+                $credit_card['updated']                     = date('Y-m-d H:i:s');
+                $credit_card['created']                     = date('Y-m-d H:i:s');
+                
+                $isInserted = \Models\Payments::save_credit_card($credit_card);
+                $session    = \Session::get('payment');
+                
+                if($isInserted){
+                    return [
+                        'message'   => "M0392",
+                        'status'    => true,
+                        'card'      => self::get_user_card(\Auth::user()->id_user,$isInserted,'first')
+                    ];
+                }else{
+                    return [
+                        'message'   => "M0356",
+                        'status'    => false,
+                        'card'      => []
+                    ];
+                }
+            }else{
+                \Models\Payments::braintree_response([
+                    'user_id'                   => \Auth::user()->id_user,
+                    'braintree_response_json'   => json_encode($result->message),
+                    'status'                    => 'false',
+                    'type'                      => 'card',
+                    'created'                   => date('Y-m-d H:i:s')
+                ]);
+
+                return [
+                    'message'   => $result->errors->deepAll()[0]->code,
+                    'status'    => false,
+                    'card'      => []
+                ];
+            } 
+        }
+
+        public static function get_payment_checkout_html($employer_id){
+            $default_card_detail = \Models\Payments::get_user_default_card($employer_id);
+                
+            $html = '<span class="plan-main-heading">'.trans('website.W0433').'</span>';
+            if(!empty($default_card_detail)){
+                $html .= '<span>';
+                    $html .= '<a class="manage-cards" data-target="#add-cards" data-request="ajax-modal" data-url="'.url(sprintf('%s/payment/card/manage',EMPLOYER_ROLE_TYPE)).'">'.trans('website.W0431').'</a>';
+                    $html .= '<img class="selected-card" src="'.$default_card_detail['image_url'].'" />';
+                    $html .= '<strong>';
+                        $html .= wordwrap(sprintf("%s%s",str_repeat(".",strlen($default_card_detail['masked_number'])-4),$default_card_detail['last4']),4,' ',true);
+                    $html .= '</strong>';
+                $html .= '</span>';
+            }else{
+                $html .= '<span>';
+                    $html .= '<a class="manage-cards" style="left: 0;" data-target="#add-cards" data-request="ajax-modal" data-url="'.url(sprintf('%s/payment/card/manage',EMPLOYER_ROLE_TYPE)).'">'.trans('website.W0430').'</a>';
+                $html .= '</span>';
+            }
+
+            return [
+                'html' => $html,
+                'is_card_available' => (!empty($default_card_detail))?true:false
+            ];
+        }
+
+        public static function transfer_payment_talent($receiver_emails,$amount,$note = NULL,$unique_id = NULL){
+            $email_subject  = urlencode(MASSPAY_EMAIL_SUBJECT);
+            $receiver_type  = urlencode('EmailAddress');
+            $currency       = urlencode(MASSPAY_CURRENCY);
+            $nvpstr         = NULL;
+
+            if (!empty($receiver_emails)){
+                $receiverEmail = urlencode($receiver_emails);
+                $amount = urlencode($amount);
+                $unique_id = urlencode($unique_id);
+                $note = urlencode($note);
+                $nvpstr.="&L_EMAIL0=$receiverEmail&L_Amt0=$amount&L_UNIQUEID0=$unique_id&L_NOTE0=$note";
+
+                $nvpstr.="&EMAILSUBJECT=$email_subject&RECEIVERTYPE=$receiver_type&CURRENCYCODE=$currency" ;
+                
+                return \App\Helper\Masspay::hash_call("MassPay",$nvpstr,$email_subject);
+            }else{
+                return [
+                    'status' => false
+                ];
+            }
+        }
+
+        public static function employer_refund_detail($project_id){
+            $prefix = DB::getTablePrefix();
+            
+            $amount_agreed = \DB::table("transactions")->select([
+                'transactions.transaction_subtotal as amount',
+                'transactions.transaction_reference_id',
+                'transactions.transaction_user_id',
+                'transactions.transaction_user_type',
+            ])
+            ->where('transactions.transaction_project_id','=',$project_id)
+            ->where('transactions.transaction_type','=','debit')
+            ->where('transactions.transaction_status','=','confirmed')
+            ->get()
+            ->first();
+
+            $amount_paid = DB::table("transactions")
+            ->select(
+                \DB::Raw("SUM({$prefix}transactions.transaction_subtotal) amount")
+            )
+            ->where('transactions.transaction_project_id','=',$project_id)
+            ->where('transactions.transaction_type','=','credit')
+            ->where('transactions.transaction_status','=','confirmed')
+            ->get()
+            ->first();
+
+            return [
+                'refundable_amount'         => ___format($amount_agreed->amount - $amount_paid->amount),
+                'refundable_transaction_id' => $amount_agreed->transaction_reference_id,
+                'refundable_user_id' => $amount_agreed->transaction_user_id,
+                'refundable_user_type' => $amount_agreed->transaction_user_type,
+                'refundable_proposal_id'    => \App\Models\Proposals::accepted_proposal_id($project_id)
+            ];
+        }
+
+        public static function talent_payble_detail($project_id){
+            $prefix = DB::getTablePrefix();
+
+            $table_projects = DB::table('projects');
+            
+            $payments = $table_projects->select([
+                \DB::Raw("
+                    IF(
+                        ({$prefix}projects.employment = 'hourly'),
+                        (
+                            (
+                                SUM(
+                                    TIMESTAMPDIFF(
+                                        Second,
+                                        {$prefix}project_log.startdate,
+                                        {$prefix}project_log.enddate
+                                    )
+                                )/3600
+                            )*{$prefix}proposals.quoted_price
+                        ),
+                        {$prefix}proposals.quoted_price
+                    ) as amount
+                "),
+            ]);
+            
+            $table_projects->leftjoin("project_log","project_log.project_id", "=", "projects.id_project");
+            $table_projects->leftjoin("talent_proposals as proposals",function($leftjoin){
+                $leftjoin->on("proposals.project_id", "=", "projects.id_project");
+                $leftjoin->on("proposals.status", "=", \DB::Raw('"accepted"'));
+            });
+
+            if(!empty($project_id)){
+                $table_projects->where('id_project',$project_id);
+            }
+
+            $table_projects->whereNotNull('project_log.enddate');
+            $table_projects->where('close','pending');
+            $table_projects->groupBy(['projects.id_project']);
+
+            $result = $payments->get()->first();
+
+            if(!empty($result)){
+                return ___format((float)$result->amount);
+            }else{
+                return ___format((float)0);
+            }
+        }
+
+        public static function subscriptionResponse($data){
+            return DB::table('user_subscription')
+            ->insert($data);
+        }
+
+        public static function resolve_all_status($project_id){
+            /* CLOSING THE PROJECT */
+            $isProjectUpdated = \Models\Projects::change(["id_project" => $project_id],["project_status" => "closed","updated" => date('Y-m-d H:i:s')]);
+
+            /* RESOLVING RAISE DISPUTE */
+            $isDisputeClosed = \Models\RaiseDispute::resolve_raise_dispute($project_id);
+
+            /* DISPUTE PAYMENT FROM PROJJECT LOG */
+            $isDisputedPayment = \Models\Payments::dispute_upcoming_payment($project_id);
+
+            return true;
+        }
+
+        public static function payoutList($project_id = NULL){
+            $prefix = DB::getTablePrefix();
+
+            \DB::statement(\DB::raw('set @row_number=0'));
+            $table_projects = DB::table('projects');
+
+            $payments = $table_projects->select([
+                \DB::raw('@row_number  := @row_number  + 1 AS row_number'),
+                'projects.id_project as transaction_project_id',
+                'projects.title',
+                'employers.company_name',
+                'project_log.close as transaction_status',
+                'project_log.enddate as transaction_date',
+                'transaction',
+                'projects.transaction',
+                'projects.employment',
+                'project_log.startdate',
+                'project_log.enddate',
+                'project_log.start',
+                'project_log.close',
+                'proposals.quoted_price',
+                \DB::Raw("(SUM(TIMESTAMPDIFF(Second,{$prefix}project_log.startdate,{$prefix}project_log.enddate))/3600) as working_hours"),
+                \DB::Raw("TRIM(CONCAT(".$prefix."employers.first_name,' ',".$prefix."employers.last_name)) as employer_name"),
+
+                \DB::Raw("TRIM(CONCAT(".$prefix."talent.first_name,' ',".$prefix."talent.last_name)) as talent_name"),
+            ]);
+
+            $table_projects->leftjoin("users as employers","employers.id_user", "=", "projects.user_id");
+
+            $table_projects->leftjoin("project_log","project_log.project_id", "=", "projects.id_project");
+            $table_projects->leftjoin("talent_proposals as proposals",function($leftjoin){
+                $leftjoin->on("proposals.project_id", "=", "projects.id_project");
+                $leftjoin->on("proposals.status", "=", \DB::Raw('"accepted"'));
+            });
+            $table_projects->leftjoin("users as talent","talent.id_user", "=", "project_log.talent_id");
+
+            $table_projects->whereNotNull('project_log.enddate');
+            $table_projects->where('close','pending');
+            $table_projects->where('request_payout','yes');
+            $table_projects->groupBy(['id_log']);
+
+            return $payments->get();
+        }
+
+        public static function payment_detail($project_id){
+            $prefix             = DB::getTablePrefix();
+            $language           = \App::getLocale();
+            $tableProjectDetail = DB::table('projects as projects')
+            ->select([
+                'projects.id_project',
+                'projects.title',
+                'projects.description',
+                'projects.price_max',
+                'projects.bonus',
+                'projects.expertise',
+                'projects.location',
+                'projects.budget_type',
+                'projects.other_perks',
+                'projects.price AS price',
+                'talent_proposals.user_id as talent_id',
+                'projects.transaction AS transaction',
+                'projects.work_hours',
+                'projects.employment AS employment',
+                \DB::Raw('DATE_FORMAT('.$prefix.'projects.startdate, "%d %M %Y") AS startdate'),
+                \DB::Raw('DATE_FORMAT('.$prefix.'projects.enddate, "%d %M %Y") AS enddate'),
+                'projects.project_status AS project_status',
+                \DB::Raw('CONCAT('.$prefix.'users.first_name, " ",'.$prefix.'users.last_name) AS name'),
+                'users.company_name',
+                \DB::Raw("IF(({$prefix}industries.{$language} != ''),{$prefix}industries.`{$language}`, {$prefix}industries.`en`) as industry"),               
+                \DB::Raw("IF(({$prefix}subindustry.{$language} != ''),{$prefix}subindustry.`{$language}`, {$prefix}subindustry.`en`) as subindustry"),
+                \DB::Raw("
+                    IF(
+                        ({$prefix}city.`{$language}` != ''),
+                        {$prefix}city.`{$language}`,
+                        {$prefix}city.`en`
+                    ) as city_name"
+                ),                
+                'transactions.transaction_status',
+                'files.folder',                
+                \DB::Raw("(
+                        SELECT 
+                        {$prefix}transactions.transaction_subtotal
+                        FROM {$prefix}transactions 
+                        WHERE {$prefix}transactions.transaction_project_id = {$prefix}projects.id_project 
+                        AND {$prefix}transactions.transaction_type = 'debit'
+                        AND {$prefix}transactions.transaction_status = 'confirmed'
+                    ) as amount_agreed
+                "),
+                \DB::Raw("SUM({$prefix}transactions.transaction_subtotal) as amount_paid"),                
+            ])
+            ->leftJoin('users', 'projects.user_id', '=', 'users.id_user')
+            ->leftJoin('industries', 'projects.industry', '=', 'industries.id_industry')
+            ->leftJoin('industries AS subindustry', 'projects.subindustry', '=', 'subindustry.id_industry')
+            ->leftJoin('files as files',function($leftJoin){
+                $leftJoin->on('files.user_id','=','projects.user_id')
+                ->where('files.reference','=','users')
+                ->where('files.type','=','profile');
+            })
+            ->leftJoin('talent_proposals',function($leftjoin){
+               $leftjoin->on('talent_proposals.project_id','=','projects.id_project'); 
+               $leftjoin->on('talent_proposals.status','=',\DB::Raw('"accepted"')); 
+            })
+            ->leftJoin('transactions',function($leftjoin){
+               $leftjoin->on('transactions.transaction_project_id','=','projects.id_project');
+               $leftjoin->on('transactions.transaction_proposal_id','=','talent_proposals.id_proposal'); 
+               $leftjoin->on('transactions.transaction_proposal_id','=','talent_proposals.id_proposal'); 
+            })
+            ->leftJoin('city', function($join)
+            {
+                $join->on('city.id_city', '=', 'projects.location')
+                     ->where('projects.location', '>', 0);
+            })
+            ->where('projects.status', 'active')
+            ->where('projects.id_project', $project_id)
+            ->first();
+
+            return json_decode(json_encode($tableProjectDetail), true);
+        }
+
+        public static function project_payment_log_status($project_id){
+            $prefix             = DB::getTablePrefix();
+            $table_project_log  = DB::table('project_log');
+            $transaction_status = json_decode(json_encode($table_project_log->where(['project_id' => $project_id, 'close' => 'pending'])
+            ->get()->first()),true);
+            if(!empty($transaction_status)){
+                return true;
+            }
+            return false;
+        }
+    }
+

@@ -1,0 +1,63 @@
+<?php
+
+	namespace Models;
+
+	use Illuminate\Database\Eloquent\Model;
+	use Illuminate\Support\Facades\DB;
+	use Illuminate\Support\Facades\Crypt;
+
+	class Banner extends Model
+	{
+	    public function __construct(){
+
+	    }
+
+	    public static function getBanner(){
+	    	return DB::table('banner')
+	    	->select([
+	    		'id_banner',
+	    		'banner_title',
+	    		'banner_text',
+	    		'banner_variable',
+	    		'banner_image',
+	    		DB::Raw('DATE_FORMAT(updated, "%d-%m-%Y") as updated'),
+	    		])
+	    	->orderBy('id_banner', 'DESC')
+	    	->get();
+	    }
+
+	    public static function getBannerById($id_banner){
+	    	return DB::table('banner')
+	    	->where('id_banner', $id_banner)
+	    	->get()
+	    	->first();
+	    }
+
+	    public static function getBannerBySlug($slug){
+	    	return DB::table('banner')
+	    	->where('banner_variable', $slug)
+	    	->get()
+	    	->first();
+	    }
+
+	    public static function getAllBannerBySlug($slug){
+	    	$banner = DB::table('banner')
+	    	->where('banner_variable', $slug)
+	    	->get()
+	    	->toArray();
+
+	    	return json_decode(json_encode($banner), true);
+	    }
+
+	    public static function updateBanner($id_banner, $updateArr){
+	    	return DB::table('banner')
+	    	->where('id_banner', $id_banner)
+	    	->update($updateArr);
+	    }
+
+	    public static function insertBanner($insertArr){
+	    	return DB::table('banner')
+	    	->insertGetId($insertArr);
+	    }
+	}
+

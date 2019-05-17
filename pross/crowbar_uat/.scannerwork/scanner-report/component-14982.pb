@@ -1,0 +1,1 @@
+†u-resources/views/front/pages/pricing.blade.php 2phpX_hr-resources/views/front/pages/pricing.blade.php

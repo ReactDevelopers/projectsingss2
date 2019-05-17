@@ -1,0 +1,1 @@
+Ít7resources/views/vendor/pagination/bootstrap-4.blade.php 2phpX%hr7resources/views/vendor/pagination/bootstrap-4.blade.php

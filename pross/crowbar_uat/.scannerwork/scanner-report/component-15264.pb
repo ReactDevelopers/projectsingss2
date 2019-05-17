@@ -1,0 +1,1 @@
+ w$resources/views/backend/faq/category :Ÿw¨wr$resources/views/backend/faq/category

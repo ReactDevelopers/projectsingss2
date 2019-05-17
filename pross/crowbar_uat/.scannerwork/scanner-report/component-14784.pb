@@ -1,0 +1,1 @@
+Às*resources/views/chat/placeholder.blade.php 2phpX(hr*resources/views/chat/placeholder.blade.php

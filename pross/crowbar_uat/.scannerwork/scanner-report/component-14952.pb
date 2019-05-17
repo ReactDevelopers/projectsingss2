@@ -1,0 +1,1 @@
+èt/resources/views/front/includes/banner.blade.php 2phpXhr/resources/views/front/includes/banner.blade.php

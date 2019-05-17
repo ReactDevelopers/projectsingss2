@@ -1,0 +1,1 @@
+ñw9resources/views/backend/talent/connected_talent.blade.php 2phpXhr9resources/views/backend/talent/connected_talent.blade.php

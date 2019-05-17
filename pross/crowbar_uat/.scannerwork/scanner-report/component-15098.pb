@@ -1,0 +1,1 @@
+úu*resources/views/talent/pages/404.blade.php 2phpX&hr*resources/views/talent/pages/404.blade.php

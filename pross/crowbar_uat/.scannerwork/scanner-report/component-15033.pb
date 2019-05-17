@@ -1,0 +1,1 @@
+¹u6resources/views/talent/settings/notification.blade.php 2phpX^hr6resources/views/talent/settings/notification.blade.php

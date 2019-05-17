@@ -1,0 +1,2951 @@
+<?php
+
+    namespace App\Http\Controllers\Api;
+
+    use App\Http\Requests;
+    use Illuminate\Http\Request;
+    use Illuminate\Validation\Rule;
+    use Illuminate\Support\Facades\DB;
+    
+    use App\Http\Controllers\Controller;
+    use App\Models\Proposals;
+    class Employer extends Controller{
+        
+        /**
+         * Create a new controller instance.
+         *
+         * @return void
+         */
+        protected $jwt;
+        private $post;
+        private $token;
+        private $status;
+        private $jsondata;
+        private $status_code;
+        private $prefix;
+
+        public function __construct(Request $request){
+            $this->jsondata     = (object)[];
+            $this->message      = "M0000";
+            $this->error_code   = "no_error_found";
+            $this->status       = false;
+            $this->status_code  = 200;
+            $this->prefix       = \DB::getTablePrefix();
+
+            $json = json_decode(file_get_contents('php://input'),true);
+            if(!empty($json)){
+                $this->post = $json;
+            }else{
+                $this->post = $request->all();
+            }
+
+            /*RECORDING API REQUEST IN TABLE*/
+            \Models\Listings::record_api_request([
+                'url' => $request->url(),
+                'request' => json_encode($this->post),
+                'type' => 'webservice',
+                'created' => date('Y-m-d H:i:s')
+            ],$request);
+        }
+
+        private function populateresponse($data){
+            $data['message'] = (!empty($data['message']))?"":$this->message;
+            $data['error'] = (empty($this->error))?trans(sprintf("general.%s",$data['message'])):$this->error; 
+            $data['error_code'] = "";
+
+            if(empty($data['status'])){
+                $data['status'] = $this->status;
+                $data['error_code'] = $this->message;
+            }
+
+            $data['status_code'] = $this->status_code;
+            
+            $data = json_decode(json_encode($data),true);
+
+            array_walk_recursive($data, function(&$item,$key){
+                if($key === 'default_card_detail'){
+                    $item = (object)[];
+                } else if (gettype($item) == 'integer' || gettype($item) == 'float' || gettype($item) == 'NULL'){
+                    $item = trim($item);
+                }
+            });
+
+            if(empty($data['data'])){
+                $data['data'] = (object) $data['data'];
+            }
+
+            return $data;
+        }
+
+        public function viewprofile(Request $request){
+            $user = \Models\Employers::get_user($request->user());
+            
+            if(!empty($user)){
+                $this->status = true;
+            }
+
+            $this->jsondata = [
+                'user' => $user
+            ];
+
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_one(Request $request){
+            $request->replace($this->post);
+            $validation_mobile = validation('phone_number'); unset($validation_mobile[0]);
+            
+            $validator = \Validator::make($request->all(), [
+                'first_name'                => validation('first_name'),
+                'last_name'                 => validation('last_name'),
+                'email'                     => ['required','email',Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],
+                'mobile'                    => array_merge([Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],validation('mobile')),
+                'other_mobile'              => array_merge([Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],validation('mobile'),['different:mobile']),
+                'website'                   => validation('website'),
+                'address'                   => validation('address'),
+                'country'                   => validation('country'),
+                'state'                     => validation('state'),
+                'postal_code'               => validation('postal_code'),
+                'country_code'              => !empty($request->mobile) ? array_merge(['required'], validation('country_code')) : validation('country_code'),
+                'other_country_code'        => !empty($request->other_mobile) ? array_merge(['required'], validation('country_code')) : validation('country_code'),
+            ],[
+                'first_name.required'           => 'M0006',
+                'first_name.regex'              => 'M0007',
+                'first_name.string'             => 'M0007',
+                'first_name.max'                => 'M0020',
+                'last_name.required'            => 'M0008',
+                'last_name.regex'               => 'M0009',
+                'last_name.string'              => 'M0009',
+                'last_name.max'                 => 'M0019',
+                'email.required'                => 'M0010',
+                'email.email'                   => 'M0011',
+                'email.unique'                  => 'M0047',
+                'mobile.required'               => 'M0030',
+                'mobile.regex'                  => 'M0031',
+                'mobile.string'                 => 'M0031',
+                'mobile.min'                    => 'M0032',
+                'mobile.max'                    => 'M0033',
+                'mobile.unique'                 => 'M0197',
+                'website.string'                => 'M0114',
+                'website.regex'                 => 'M0114',
+                'website.max'                   => 'M0125',
+                'address.string'                => 'M0057',
+                'address.regex'                 => 'M0057',
+                'address.max'                   => 'M0058',
+                'country.integer'               => 'M0059',
+                'state.integer'                 => 'M0060',
+                'postal_code.string'            => 'M0061',
+                'postal_code.regex'             => 'M0061',
+                'postal_code.max'               => 'M0062',
+                'postal_code.min'               => 'M0063',
+                'country_code.required'         => 'M0164',
+                'country_code.string'           => 'M0074',
+                'other_country_code.required'   => 'M0432',
+                'other_country_code.string'     => 'M0074',
+                'other_mobile.required'         => 'M0030',
+                'other_mobile.regex'            => 'M0031',
+                'other_mobile.string'           => 'M0031',
+                'other_mobile.min'              => 'M0032',
+                'other_mobile.max'              => 'M0033',
+                'other_mobile.different'        => 'M0127',
+                'other_mobile.unique'           => 'M0197',
+            ]);
+
+            if($validator->fails()){
+                $this->message = $validator->messages()->first();
+            }else{
+                if(!empty($request->mobile) && empty($request->country_code)){
+                    $this->message = 'M0164';
+                }
+                else if(!empty($request->other_mobile) && empty($request->other_country_code)){
+                    $this->message = 'M0164';
+                }else{
+                    $update = array_intersect_key(
+                        json_decode(json_encode($request->all()),true), 
+                        array_flip(
+                            array(
+                                'first_name',
+                                'last_name',
+                                'email',
+                                'mobile',
+                                'other_mobile',
+                                'website',
+                                'address',
+                                'country',
+                                'state',
+                                'postal_code',
+                                'country_code',
+                                'other_country_code',
+                            )
+                        )
+                    );
+
+                    /*
+                    *   REPLACING ALL BLANK STRING WITH 
+                    *   NULL BECAUSE OF LARAVEL MYSQL 
+                    *   DRIVER ASKING FOR INTEGER VALUE 
+                    *   FOR INTEGER COLUMN TYPE
+                    */
+                    ___filter_null($update);
+                    if($update['mobile'] != $request->user()->mobile){
+                        $update['is_mobile_verified'] = DEFAULT_NO_VALUE;
+                    }                
+                    $isUpdated      = \Models\Employers::change($request->user()->id_user,$update);
+                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'webservice-employer-step-one',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+
+                    $this->jsondata = [
+                        'user' => \Models\Employers::get_user($request->user(),true)
+                    ];
+                    $this->status   = true;
+                    $this->message  = "M0110";
+                }
+            }
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_one_picture(Request $request){
+            
+            $validate = \Validator::make($request->all(), [
+                "image"              => validation('image'),
+            ],[
+                'image.mimetypes'    => 'M0120',
+            ]);
+
+            if($validate->fails()){
+                $this->message = $validate->messages()->first();
+            }else{
+                $folder = 'uploads/profile/';
+
+                $uploaded_file = upload_file($request,'image',$folder);
+                
+                $data = [
+                    'user_id'       => $request->user()->id_user,
+                    'reference'     => 'users',
+                    'filename'      => $uploaded_file['filename'],
+                    'extension'     => $uploaded_file['extension'],
+                    'folder'        => $folder,
+                    'type'          => 'profile',
+                    'size'          => $uploaded_file['size'],
+                    'is_default'    => DEFAULT_NO_VALUE,
+                    'created'       => date('Y-m-d H:i:s'),
+                    'updated'       => date('Y-m-d H:i:s'),
+                ];
+
+                $isInserted = \Models\Employers::create_file($data,false,true);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'employer',
+                    'action'            => 'webservice-employer-upload-profile',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+                
+                if(!empty($isInserted)){
+                    if(!empty($isInserted['filename'])){
+                        $isInserted['file_url'] = asset(sprintf("%s%s",$isInserted['folder'],$isInserted['filename']));
+                    }
+                    
+                    $this->status = true;
+                    $this->jsondata = $isInserted;
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_two(Request $request){
+            $request->replace($this->post);
+            if(!empty($this->post['company_profile']) && !in_array($this->post['company_profile'], company_profile('key'))){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'company_profile');
+            }else{
+                if($this->post['company_profile'] == 'individual'){
+                    $validator = \Validator::make($request->all(), [
+                        'gender'                        => validation('gender'),
+                        'company_name'                  => validation('company_name'),
+                        'company_work_field'            => validation('company_work_field'),
+                        'certificates'                  => validation('certificates'),
+                    ],[
+                        'gender.string'                 => 'M0056',
+                        'company_work_field.integer'    => 'M0115',
+                    ]);
+                }else if($this->post['company_profile'] == 'company'){
+                    $validator = \Validator::make($request->all(), [
+                        'company_name'                  => validation('company_name'),
+                        'contact_person_name'           => validation('contact_person_name'),
+                        'company_website'               => validation('website'),
+                        'company_work_field'            => validation('company_work_field'),
+                        'company_biography'             => validation('company_biography'),
+                        'certificates'                  => validation('certificates'),
+                    ],[
+                        'company_name.required'         => 'M0023',
+                        'company_name.regex'            => 'M0024',
+                        'company_name.string'           => 'M0024',
+                        'company_name.max'              => 'M0025',
+                        'contact_person_name.required'  => 'M0040',
+                        'contact_person_name.regex'     => 'M0041',
+                        'contact_person_name.string'    => 'M0041',
+                        'contact_person_name.max'       => 'M0042',
+                        'company_website.string'        => 'M0114',
+                        'company_website.regex'         => 'M0114',
+                        'company_work_field.integer'    => 'M0115',
+                        'company_biography.regex'       => 'M0116',
+                        'company_biography.string'      => 'M0116',
+                        'company_biography.max'         => 'M0117',
+                        'company_biography.min'         => 'M0118',
+                    ]);
+                }
+
+                if($validator->fails()){
+                    $this->message = $validator->messages()->first();
+                }else{
+                    $update = array_intersect_key(
+                        json_decode(json_encode($request->all()),true), 
+                        array_flip(
+                            array(
+                                'gender',
+                                'company_work_field',
+                                'company_profile',
+                                'company_name',
+                                'contact_person_name',
+                                'company_website',
+                                'company_biography',
+                            )
+                        )
+                    );
+                    /*
+                    *   REPLACING ALL BLANK STRING WITH 
+                    *   NULL BECAUSE OF LARAVEL MYSQL 
+                    *   DRIVER ASKING FOR INTEGER VALUE 
+                    *   FOR INTEGER COLUMN TYPE
+                    */
+                    ___filter_null($update);
+                    
+                    /*REMOVE AND ADD NEWLY SELECTED CERTIFICATES*/
+                    \Models\Employers::update_certificate($request->user()->id_user,$this->post['certificates']);
+
+
+                    $isUpdated      = \Models\Employers::change($request->user()->id_user,$update);
+                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'webservice-employer-step-two',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+
+                    $this->jsondata = [
+                        'user' => \Models\Employers::get_user($request->user(),true)
+                    ];
+                    $this->status   = true;
+                    $this->message  = "M0110";
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three_social_connect(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($this->post['social_key']) || !in_array($this->post['social_key'], valid_social_keys())){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'social_key');
+            }else if(empty($this->post['social_id'])){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'social_id');
+            }else{
+                $request->request->add([$request->social_key => $request->social_id]);
+                $validator = \Validator::make($request->all(), [
+                    $request->social_key    => [Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],
+                ],[
+                    sprintf('%s.unique',$request->social_key)   => 'M0126',
+                ]);
+
+                if($validator->fails()){
+                    $this->message = $validator->messages()->first();
+                }else{
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'webservice-employer-step-three-social-connect',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+
+                    $isUpdated = \Models\Employers::change($request->user()->id_user,[$request->social_key => $request->social_id, 'updated' => date('Y-m-d H:i:s')]);
+                    $this->status = true;
+                }
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three_change_mobile(Request $request){
+            $request->replace($this->post);
+            
+            $validator = \Validator::make($request->all(), [
+                'mobile'                    => array_merge([Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],validation('phone_number')),
+                'country_code'              => validation('country_code'),                
+            ],[
+                'country_code.string'       => 'M0074',
+                'mobile.required'           => 'M0030',
+                'mobile.regex'              => 'M0031',
+                'mobile.string'             => 'M0031',
+                'mobile.min'                => 'M0032',
+                'mobile.max'                => 'M0033',
+                'mobile.unique'             => 'M0197',
+
+            ]);
+
+            if($validator->fails()){
+                $this->message = $validator->messages()->first();
+            }else{
+                $created_date               = date('Y-m-d H:i:s');
+                $otp_shuffle                = \Cache::get('configuration')['otp_shuffle'];
+                $otp_length                 = \Cache::get('configuration')['otp_length'];
+                $otp_expired                = \Cache::get('configuration')['otp_expired'];
+
+                $otp_password               = substr(str_shuffle($otp_shuffle), 2, $otp_length);
+                $otp_message                = sprintf(\Cache::get('configuration')['otp_message'],$otp_password);
+                $otp_expired                = date('Y-m-d H:i:s',strtotime("+".$otp_expired." minutes", strtotime($created_date)));
+                
+                $isUpdated = \Models\Employers::change(
+                    $request->user()->id_user,[
+                        'country_code'          => $request->country_code, 
+                        'mobile'                => $request->mobile, 
+                        'otp_password'          => $otp_password,
+                        'otp_created'           => $created_date,
+                        'otp_expired'           => $otp_expired,
+                        'is_mobile_verified'    => DEFAULT_NO_VALUE,
+                        'updated'               => date('Y-m-d H:i:s')
+                    ]
+                );
+
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'employer',
+                    'action'            => 'webservice-employer-step-three-change-mobile',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+
+                try{
+                    $response = \Twilio::message(sprintf("%s%s",$request->country_code,$request->mobile), $otp_message);
+                    $this->status = true;
+                    $this->message = 'M0129';
+                    $this->jsondata = [
+                        'mobile' => $request->mobile,
+                        'country_code' => $request->country_code,
+                        'otp_password' => $otp_password,
+                    ];
+
+                    \Models\Listings::twilio_response([
+                        'user_id' => $request->user()->id_user,
+                        'twilio_response_json' => json_encode($response->client->last_response),
+                        'created' => $created_date
+                    ]);
+                }catch ( \Services_Twilio_RestException $e ) {
+                    $this->message = 'M0128';
+                    \Models\Listings::twilio_response([
+                        'user_id' => $request->user()->id_user,
+                        'twilio_response_json' => json_encode(['body' => $e->getMessage()]),
+                        'created' => $created_date
+                    ]);
+                } 
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three_verify_mobile(Request $request){
+            $request->replace($this->post);
+            
+            $validator = \Validator::make($request->all(), [
+                'otp_password'              => ['required']
+            ],[
+                'otp_password.required'     => 'M0130',
+            ]);
+
+            if($validator->fails()){
+                $this->message              = $validator->messages()->first();
+            }else{
+                $result = (array) \Models\Employers::findById($request->user()->id_user,['otp_password']);
+
+                if($result['otp_password'] == $request->otp_password){
+                    $created_date               = date('Y-m-d H:i:s');
+                    $otp_shuffle                = \Cache::get('configuration')['otp_shuffle'];
+                    $otp_length                 = \Cache::get('configuration')['otp_length'];
+                    $otp_expired                = \Cache::get('configuration')['otp_expired'];
+
+                    $otp_password               = substr(str_shuffle($otp_shuffle), 2, $otp_length);
+                    $otp_expired                = date('Y-m-d H:i:s',strtotime("+".$otp_expired." minutes", strtotime($created_date)));
+                    
+                    $this->message = 'M0132';
+                    $this->status = true;
+                    $isUpdated = \Models\Employers::change(
+                        $request->user()->id_user,[
+                            'otp_password'          => $otp_password,
+                            'otp_created'           => $created_date,
+                            'otp_expired'           => $otp_expired,
+                            'is_mobile_verified'    => DEFAULT_YES_VALUE,
+                            'updated'               => date('Y-m-d H:i:s')
+                        ]
+                    );
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'webservice-employer-step-three-verify-mobile',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+                }else{
+                    $this->message = 'M0131';
+                }
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function post_job(Request $request){
+            $request->replace($this->post);
+            $valid_employment_types = employment_types('post_job','keys');
+            $valid_expertise_levels = expertise_levels('keys');
+            $valid_job_types        = job_types('keys');
+            
+            if(empty($this->post['employment'])){
+                $this->message = 'M0133';
+            }else if(!empty($this->post['employment']) && !in_array($this->post['employment'], $valid_employment_types)){
+                $this->message = 'M0134';
+            }else{
+                if($this->post['employment'] == 'fulltime'){
+                    $validator = \Validator::make($request->all(), [
+                        'employment'                        => validation('employment'),
+                        'title'                             => validation('jobtitle'),
+                        'description'                       => validation('description'),
+                        'industry'                          => array_merge(['required'],validation('industry')),
+                        'subindustry'                       => array_merge(['required'],validation('subindustry')),
+                        'required_skills'                   => validation('required_skills'),
+                        'required_qualifications'           => validation('required_qualifications'),
+                        'price'                             => validation('salary'),
+                        'price_max'                         => validation('salary_max'),
+                        'bonus'                             => validation('salary_max'),
+                        'other_perks'                       => validation('other_perks'),
+                        'location'                          => validation('location'),
+                    ],[
+                        'employment.required'               => 'M0133',
+                        'employment.string'                 => 'M0134',
+                        'title.required'                    => 'M0090',
+                        'title.string'                      => 'M0091',
+                        'title.regex'                       => 'M0091',
+                        'title.max'                         => 'M0092',
+                        'title.min'                         => 'M0093',
+                        'description.required'              => 'M0138',
+                        'description.string'                => 'M0139',
+                        'description.regex'                 => 'M0139',
+                        'description.max'                   => 'M0140',
+                        'description.min'                   => 'M0141',
+                        'industry.integer'                  => 'M0064',
+                        'industry.required'                 => 'M0136',
+                        'subindustry.integer'               => 'M0065',
+                        'subindustry.required'              => 'M0137',
+                        'required_qualifications.array'     => 'M0150',
+                        'required_skills.array'             => 'M0142',
+                        'price.numeric_range'               => 'M0266',
+                        'price.required'                    => 'M0189',
+                        'price.numeric'                     => 'M0152',
+                        'price.max'                         => 'M0153',
+                        'price.min'                         => 'M0154',
+                        'price_max.numeric'                 => 'M0236',
+                        'price_max.max'                     => 'M0237',
+                        'price_max.min'                     => 'M0238',
+                        'bonus.numeric'                     => 'M0239',
+                        'bonus.max'                         => 'M0240',
+                        'bonus.min'                         => 'M0241',
+                        'other_perks.string'                => 'M0242',
+                        'other_perks.max'                   => 'M0243',
+                        'other_perks.min'                   => 'M0244',
+                        'location.required'                 => 'M0245',
+                        'location.string'                   => 'M0246',
+                    ]);
+                }else{
+                    $validator = \Validator::make($request->all(), [
+                        'employment'                        => validation('employment'),
+                        'title'                             => validation('jobtitle'),
+                        'description'                       => validation('description'),
+                        'industry'                          => array_merge(['required'],validation('industry')),
+                        'subindustry'                       => array_merge(['required'],validation('subindustry')),
+                        'required_skills'                   => validation('required_skills'),
+                        'expertise'                         => array_merge(['required'],validation('expertise')),
+                        'price'                             => validation('price'),
+                        'price_max'                         => validation('price_max'),
+                        'startdate'                         => array_merge(['required','validate_date'],validation('birthday')),
+                        'enddate'                           => array_merge(['required','validate_date','validate_date_type:'.$request->startdate.','.$request->employment],validation('birthday')),
+                    ],[
+                        'employment.required'               => 'M0133',
+                        'employment.string'                 => 'M0134',
+                        'title.required'                    => 'M0090',
+                        'title.string'                      => 'M0091',
+                        'title.regex'                       => 'M0091',
+                        'title.max'                         => 'M0092',
+                        'title.min'                         => 'M0093',
+                        'description.required'              => 'M0138',
+                        'description.string'                => 'M0139',
+                        'description.regex'                 => 'M0139',
+                        'description.max'                   => 'M0140',
+                        'description.min'                   => 'M0141',
+                        'industry.integer'                  => 'M0064',
+                        'industry.required'                 => 'M0136',
+                        'subindustry.integer'               => 'M0065',
+                        'subindustry.required'              => 'M0137',
+                        'required_skills.array'             => 'M0142',
+                        'expertise.required'                => 'M0143',
+                        'expertise.string'                  => 'M0066',
+                        'price.numeric_range'               => 'M0265',
+                        'price.required'                    => 'M0228',
+                        'price.numeric'                     => 'M0229',
+                        'price.max'                         => 'M0231',
+                        'price.min'                         => 'M0230',
+                        'price_max.numeric'                 => 'M0225',
+                        'price_max.max'                     => 'M0226',
+                        'price_max.min'                     => 'M0227',
+                        'startdate.required'                => 'M0146',
+                        'startdate.string'                  => 'M0147',
+                        'startdate.regex'                   => 'M0147',
+                        'startdate.validate_date'           => 'M0434',                        
+                        'enddate.required'                  => 'M0148',
+                        'enddate.string'                    => 'M0149',
+                        'enddate.regex'                     => 'M0149',
+                        'enddate.validate_date'             => 'M0435', 
+                        'enddate.validate_date_type'        => 'M0472'                       
+                    ]);
+                }
+
+                if($validator->fails()){
+                    $this->message              = $validator->messages()->first();
+                }else{
+                    if(!empty($this->post['employment']) && !in_array($this->post['employment'], $valid_employment_types)){
+                        $this->message = 'M0134';
+                    }else if(!empty($this->post['expertise']) && !in_array($this->post['expertise'], $valid_expertise_levels)){
+                        $this->message = 'M0066';
+                    }else if(!empty($this->post['price_type']) && !in_array($this->post['price_type'], $valid_job_types)){
+                        $this->message = 'M0101';
+                    }elseif(strtotime($request->startdate) < strtotime(date('Y-m-d')) && $request->employment !== 'fulltime'){
+                        $this->message = 'M0217';
+                    }elseif(strtotime($request->startdate) > strtotime($request->enddate) && $request->employment !== 'fulltime'){
+                        $this->message = 'M0190';
+                    }elseif(strtotime("+".MAX_POST_JOB_MONTH." months",strtotime(date('Y-m-d'))) < strtotime($request->enddate) && $request->employment !== 'fulltime'){
+                        $this->message = 'M0471';
+                    }else{
+                        $post_jobs = array_intersect_key(
+                            json_decode(json_encode($request->all()),true), 
+                            array_flip(
+                                array(
+                                    'employment',
+                                    'title',
+                                    'description',
+                                    'industry',
+                                    'subindustry',
+                                    'expertise',
+                                    'price',
+                                    'price_max',
+                                    'startdate',
+                                    'enddate',
+                                    'location',
+                                    'bonus',
+                                    'other_perks',
+                                )
+                            )
+                        );
+
+                        if($request->employment == 'fulltime'){
+                            if(empty($request->price_max)){
+                                $post_jobs['budget_type'] = 'M0232';
+                            }else{
+                                $post_jobs['budget_type'] = 'M0233';
+                            }
+                        }else{
+                            if(empty($request->price_max)){
+                                $post_jobs['budget_type'] = 'M0234';
+                            }else{
+                                $post_jobs['budget_type'] = 'M0235';
+                            }
+                        }
+
+                        if(!empty($post_jobs['price'])){
+                            $post_jobs['price'] = ___format($post_jobs['price']);
+                        }
+
+                        if(!empty($post_jobs['price_max'])){
+                            $post_jobs['price_max'] = ___format($post_jobs['price_max']);
+                        }
+
+                        /*
+                        *   REPLACING ALL BLANK STRING WITH 
+                        *   NULL BECAUSE OF LARAVEL MYSQL 
+                        *   DRIVER ASKING FOR INTEGER VALUE 
+                        *   FOR INTEGER COLUMN TYPE
+                        */
+                        ___filter_null($post_jobs);
+
+                        $isUpdated      = \Models\Employers::post_jobs($request->user()->id_user,$post_jobs);
+                        
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => $request->user()->id_user,
+                            'user_type'         => 'employer',
+                            'action'            => 'webservice-employer-post-job',
+                            'reference_type'    => 'projects',
+                            'reference_id'      => $isUpdated['id_project']
+                        ]));
+
+                        if(!empty($this->post['required_skills'])){
+                            /*REMOVE AND ADD NEWLY SELECTED CERTIFICATES*/
+                            \Models\Employers::update_job_skills($isUpdated['id_project'], $this->post['required_skills'],$request->subindustry);
+                        }
+
+                        if(!empty($this->post['required_qualifications'])){
+                            /*REMOVE AND ADD NEWLY SELECTED CERTIFICATES*/
+                            \Models\Employers::update_required_qualification($isUpdated['id_project'],$this->post['required_qualifications']);
+                        }
+                        $this->jsondata = $isUpdated;
+                        $this->status   = true;
+                        $this->message  = "M0221";
+                    }
+                }
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+        
+        public function employer_jobs(Request $request, $type){
+            $request->replace($this->post);
+            $this->status   = true;
+            $page           = 0;
+            $search         = "";
+
+            if(!empty($request->page)){
+                $page = $request->page;
+            }
+
+            if(!empty($request->search)){
+                $search = sprintf(" %sprojects.title like '%%{$request->search}%%' ",$this->prefix);
+            }
+            
+            $current_date = date('Y-m-d');
+            $my_jobs = json_decode(json_encode(\Models\Projects::employer_jobs($request->user()->id_user,$type,$page,'','',$search)),true);
+            if(!empty($my_jobs)){
+                array_walk($my_jobs, function(&$item){
+                    if($item['employment'] !== 'fulltime'){
+                        $item['timeline'] = ___d($item['startdate']).'-'.___d($item['enddate']);
+                    }else{
+                        $item['timeline'] = trans('website.W0039');
+                    }
+
+                    $item['job_type'] = employment_types('post_job',$item['employment']);
+                });
+                $this->jsondata = $my_jobs;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function my_scheduled_jobs(Request $request){
+            $request->replace($this->post);
+            $this->status   = true;
+            $page           = 0;
+            $search         = "";
+            $language       = \App::getLocale();
+            if(!empty($request->page)){
+                $page = $request->page;
+            }
+
+            if(!empty($request->search)){
+                $search = sprintf(" AND %sprojects.title like '%%{$request->search}%%' ",$this->prefix);
+            }
+            
+            $keys = [
+                'projects.id_project',
+                'projects.user_id',
+                'projects.title',
+                'users.company_name',
+                'projects.industry',
+                \DB::Raw("IF(({$this->prefix}industry.{$language} != ''),{$this->prefix}industry.`{$language}`, {$this->prefix}industry.`en`) as industry_name"),
+                'projects.price',
+                'projects.price_max',
+                'projects.price_type',
+                'projects.price_unit',
+                'projects.budget_type',
+                'projects.bonus',
+                'projects.other_perks',
+                'projects.location',
+                \DB::Raw("
+                    IFNULL(
+                        IF(
+                            ({$this->prefix}city.`{$language}` != ''),
+                            {$this->prefix}city.`{$language}`,
+                            {$this->prefix}city.`en`
+                        ),
+                        ''
+                    ) as location_name"
+                ),
+                'projects.employment',
+                \DB::Raw("DATE({$this->prefix}projects.startdate) as startdate"),
+                \DB::Raw("DATE({$this->prefix}projects.enddate) as enddate"),
+                \DB::Raw("'scheduled' as type"),
+                \DB::Raw("GROUP_CONCAT({$this->prefix}proposals.status) as proposal_status"),
+            ];
+            
+            $current_date = date('Y-m-d');
+            $having = " proposal_status LIKE '%accepted%' ";
+            $my_jobs = \Models\Employers::get_job(
+                sprintf(
+                    " 
+                        {$this->prefix}projects.user_id = %s 
+                        AND 
+                        {$this->prefix}projects.project_status = '%s'
+                        %s 
+                    ",
+                    $request->user()->id_user,
+                    'pending',
+                    $search
+                ),
+                'all',
+                $keys,
+                $page,
+                $having
+            );
+
+            if(!empty($my_jobs)){
+                array_walk($my_jobs, function(&$item){
+                    if($item['employment'] !== 'fulltime'){
+                        $item['timeline'] = ___d($item['startdate']).'-'.___d($item['enddate']);
+                    }else{
+                        $item['timeline'] = trans('website.W0039');
+                    }
+
+                    $item['job_type'] = employment_types('post_job',$item['employment']);
+                });
+
+                $this->jsondata = $my_jobs;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function my_completed_jobs(Request $request){
+            $request->replace($this->post);
+            $this->status   = true;
+            $page           = 0;
+            $search         = "";
+            $language       = \App::getLocale();
+            if(!empty($request->page)){
+                $page = $request->page;
+            }
+
+            if(!empty($request->search)){
+                $search = sprintf(" AND %sprojects.title like '%%{$request->search}%%' ",$this->prefix);
+            }
+                        
+            $keys = [
+                'projects.id_project',
+                'projects.user_id',
+                'projects.title',
+                'users.company_name',
+                'projects.industry',
+                \DB::Raw("IF(({$this->prefix}industry.{$language} != ''),{$this->prefix}industry.`{$language}`, {$this->prefix}industry.`en`) as industry_name"),
+                'projects.price',
+                'projects.price_max',
+                'projects.price_type',
+                'projects.price_unit',
+                'projects.budget_type',
+                'projects.bonus',
+                'projects.other_perks',
+                'projects.location',
+                \DB::Raw("
+                    IFNULL(
+                        IF(
+                            ({$this->prefix}city.`{$language}` != ''),
+                            {$this->prefix}city.`{$language}`,
+                            {$this->prefix}city.`en`
+                        ),
+                        ''
+                    ) as location_name"
+                ), 
+                'projects.employment',
+                \DB::Raw("DATE({$this->prefix}projects.startdate) as startdate"),
+                \DB::Raw("DATE({$this->prefix}projects.enddate) as enddate"),
+                \DB::Raw("'completed' as type"),
+            ];
+
+            $my_jobs = \Models\Employers::get_job(
+                sprintf(
+                    " 
+                        {$this->prefix}projects.user_id = %s 
+                        AND 
+                        {$this->prefix}projects.project_status = '%s'
+                        %s 
+                    ",
+                    $request->user()->id_user,
+                    'closed',
+                    $search
+                ),
+                'all',
+                $keys,
+                $page
+            );
+
+            if(!empty($my_jobs)){
+                array_walk($my_jobs, function(&$item){
+                    if($item['employment'] !== 'fulltime'){
+                        $item['timeline'] = ___d($item['startdate']).'-'.___d($item['enddate']);
+                    }else{
+                        $item['timeline'] = trans('website.W0039');
+                    }
+
+                    $item['job_type'] = employment_types('post_job',$item['employment']);
+                });
+
+                $this->jsondata = $my_jobs;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function my_submitted_jobs(Request $request){
+            $request->replace($this->post);
+            $this->status   = true;
+            $page           = 0;
+            $search         = "";
+            $language       = \App::getLocale();
+
+            if(!empty($request->page)){
+                $page = $request->page;
+            }
+
+            if(!empty($request->search)){
+                $search = sprintf(" AND %sprojects.title like '%%{$request->search}%%' ",$this->prefix);
+            }
+                        
+            $keys = [
+                'projects.id_project',
+                'projects.user_id',
+                'projects.title',
+                'users.company_name',
+                'projects.industry',
+                \DB::Raw("IF(({$this->prefix}industry.{$language} != ''),{$this->prefix}industry.`{$language}`, {$this->prefix}industry.`en`) as industry_name"),
+                'projects.price',
+                'projects.price_max',
+                'projects.price_type',
+                'projects.price_unit',
+                'projects.budget_type',
+                'projects.bonus',
+                'projects.other_perks',
+                'projects.location',
+                \DB::Raw("
+                    IFNULL(
+                        IF(
+                            ({$this->prefix}city.`{$language}` != ''),
+                            {$this->prefix}city.`{$language}`,
+                            {$this->prefix}city.`en`
+                        ),
+                        ''
+                    ) as location_name"
+                ),
+                'projects.employment',
+                \DB::Raw("DATE({$this->prefix}projects.startdate) as startdate"),
+                \DB::Raw("DATE({$this->prefix}projects.enddate) as enddate"),
+                \DB::Raw("'submitted' as type"),
+            ];
+
+            $my_jobs = \Models\Employers::get_job(
+                sprintf(" %sprojects.user_id = %s %s ",$this->prefix,$request->user()->id_user,$search),
+                'all',
+                $keys,
+                $page
+            );
+
+            if(!empty($my_jobs)){
+                array_walk($my_jobs, function(&$item){
+                    if($item['employment'] !== 'fulltime'){
+                        $item['timeline'] = ___d($item['startdate']).'-'.___d($item['enddate']);
+                    }else{
+                        $item['timeline'] = trans('website.W0039');
+                    }
+
+                    $item['job_type'] = strtolower(employment_types('post_job',$item['employment']));
+                });
+                
+                $this->jsondata = $my_jobs;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function job_detail(Request $request){
+            $request->replace($this->post);
+            $language  = \App::getLocale();
+            $keys = [
+                'projects.id_project',
+                'projects.user_id',
+                'projects.title',
+                'projects.description',
+                'users.company_name',
+                'projects.industry',
+                \DB::Raw("IF(({$this->prefix}industry.{$language} != ''),{$this->prefix}industry.`{$language}`, {$this->prefix}industry.`en`) as industry_name"),
+                'projects.price',
+                'projects.price_max',
+                'projects.price_type',
+                'projects.price_unit',
+                'projects.budget_type',
+                'projects.bonus',
+                'projects.other_perks',
+                'projects.location',
+                'projects.employment',
+                'projects.expertise',
+                \DB::Raw("GROUP_CONCAT({$this->prefix}skills.skill) as skills"),
+                \DB::Raw("GROUP_CONCAT({$this->prefix}qualifications.qualification) as required_qualifications"),
+                \DB::Raw("
+                    IFNULL(
+                        IF(
+                            ({$this->prefix}city.`{$language}` != ''),
+                            {$this->prefix}city.`{$language}`,
+                            {$this->prefix}city.`en`
+                        ),
+                        ''
+                    ) as location_name"
+                ),
+                \DB::Raw("DATE({$this->prefix}projects.startdate) as startdate"),
+                \DB::Raw("DATE({$this->prefix}projects.enddate) as enddate"),
+                \DB::Raw("COUNT(DISTINCT({$this->prefix}proposals.id_proposal)) total_accepted_proposal"),
+                \DB::Raw("{$this->prefix}proposals.user_id as accepted_talent_id"),
+            ];
+
+            $job_detail = \Models\Employers::get_job(sprintf(" {$this->prefix}projects.user_id = %s AND {$this->prefix}projects.id_project = %s ",$request->user()->id_user,$this->post['id_project']),'single',$keys);
+
+            if(!empty($job_detail)){
+                $this->status = true;    
+                $job_detail['chat']             = [];
+                if($job_detail['employment'] == 'fulltime'){
+                    $job_detail['timeline']         = trans('website.W0105');
+                }else{
+                    $job_detail['timeline']         = "";
+                }
+
+                $job_detail['skills']           = implode(',', array_unique(explode(',',$job_detail['skills'])));
+                $job_detail['job_type']         = employment_types('post_job',$job_detail['employment']);
+                
+                if(!empty($job_detail['accepted_talent_id'])){
+                    $job_detail['chat']         = \Models\Employers::get_my_chat_list($request->user()->id_user,NULL,$job_detail['accepted_talent_id']);
+                }
+
+                if($job_detail['employment']    !== 'fulltime'){
+                    $job_detail['timeline']     = ___d($job_detail['startdate']).'-'.___d($job_detail['enddate']);
+                }
+
+                $result                         = \Models\Projects::employer_actions($job_detail['id_project']);
+                $job_detail                     = array_merge($job_detail,$result);
+                $this->jsondata                 = $job_detail;
+            }else{
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_project');
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function talentprofile(Request $request){
+            $request->replace($this->post);
+
+            if(!empty($this->post['talent_id'])){
+                $user = \Models\Talents::get_user((object)['id_user' => $this->post['talent_id']],true);
+                
+                if(!empty($user)){
+                    $this->status = true;
+                }
+
+                $this->jsondata = [
+                    'user' => $user
+                ];
+            }else{
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'talent_id');
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function find_talents(Request $request){
+            $request->replace($this->post);
+            $page       = 0;
+            $search     = " 1 ";
+            $sort       = "";
+
+            if(empty($request->temporary_salary_low_filter)){
+                $request->temporary_salary_low_filter = 20;
+            }
+
+            if(empty($request->temporary_salary_high_filter)){
+                $request->temporary_salary_high_filter = 5000;
+            }
+
+            if(empty($request->permanent_salary_low_filter)){
+                $request->permanent_salary_low_filter = 0;
+            }
+
+            if(empty($request->permanent_salary_high_filter)){
+                $request->permanent_salary_high_filter = 15000000;
+            }
+
+            if(!empty($request->page)){
+                $page = $request->page;
+            }
+
+            if($request->sortby_filter){
+                $sort       = ___decodefilter($request->sortby_filter);
+            }
+
+            if(!empty($request->employment_type_filter)){
+                $search .= sprintf(" AND {$this->prefix}talent_interests.interest IN ('%s') ",implode("','", $request->employment_type_filter)); 
+            }
+
+            if(!empty($request->expertise_filter)){
+                $search .= sprintf(" AND {$this->prefix}users.expertise IN ('%s') ", implode("','",$request->expertise_filter)); 
+            }
+
+            if(!empty($request->industry_filter)){
+                $search .= sprintf(" AND {$this->prefix}users.industry = {$request->industry_filter} "); 
+            }
+
+            if(!empty($request->subindustry_filter)){
+                $search .= sprintf(" AND {$this->prefix}users.industry = {$request->subindustry_filter} "); 
+            }
+
+            if(!empty($request->skills_filter)){
+                $search .= sprintf(" AND {$this->prefix}talent_skills.skill IN ('%s') ",implode("','", $request->skills_filter)); 
+            }
+            
+            if(!empty($request->state_filter)){
+                $search .= sprintf(" AND {$this->prefix}users.city IN (%s) ",implode(",", $request->state_filter)); 
+            }
+
+            if(!empty($request->saved_talent_filter)){
+                $search .= sprintf(" AND {$this->prefix}saved_talent.id_saved IS NOT NULL"); 
+            }
+
+            if(!empty($request->search)){
+                $search .= sprintf(" AND 
+                    (
+                        {$this->prefix}users.name like '%%{$request->search}%%' 
+                        OR
+                        {$this->prefix}talent_skills.skill like '%%{$request->search}%%'
+                    )
+                "); 
+            }
+
+            $search .= sprintf(" AND (
+                ( 
+                    {$this->prefix}users.workrate >= {$request->temporary_salary_low_filter} 
+                    AND 
+                    {$this->prefix}users.workrate <= {$request->temporary_salary_high_filter} 
+                )
+                OR
+                (
+                    {$this->prefix}users.expected_salary >= {$request->permanent_salary_low_filter} 
+                    AND 
+                    {$this->prefix}users.expected_salary <= {$request->permanent_salary_high_filter}
+                )
+            )"); 
+            
+            $talents =  \Models\Employers::find_talents($request->user(),'all',$search,$page,$sort);
+
+            if(!empty($talents['result'])){
+                array_walk($talents['result'], function(&$item){
+                    
+                    if(!empty($item['availability_hours'])){
+                        $item['availability_hours'] = trim(sprintf(trans('general.M0180'),$item['availability_hours']));
+                    }else{
+                        $item['availability_hours'] = N_A;
+                    }
+
+                    if(!empty($item['expertise'])){
+                        $item['expertise'] = expertise_levels($item['expertise']);
+                    }else{
+                        $item['expertise'] = "";
+                    }
+                    
+                    if(!empty($item['skills'])){
+                        $item['skills'] = explode(',',$item['skills']);
+                    }else{
+                        $item['skills'] = [];
+                    }
+
+                    $item['gender'] = ucfirst($item['gender']);
+                });
+
+                $this->status = true;
+                $this->jsondata = $talents['result'];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );            
+        }
+
+        public function all_proposals(Request $request){
+            $request->replace($this->post);
+            
+            $this->status   = true;
+            $page           = 0;
+            $search         = "";
+            $sort           = "";
+
+            if(!empty($request->page)){
+                $page = $request->page;
+            }
+
+            if(!empty($request->search)){
+                $search = $request->search;
+            }
+            
+            $projects =  \Models\Employers::all_proposals($request->user()->id_user,$search,$page,$sort);
+
+            if(!empty($projects['result'])){
+                $this->jsondata = $projects['result'];
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );            
+        }
+
+        public function proposals_listing(Request $request){
+            $request->replace($this->post);
+            $this->status   = true;            
+
+            if(!empty($request->id_project)){
+                $project =  \Models\Employers::proposal_listing($request->user()->id_user,$request->id_project,$request->page,$request->sort,$request->filter,$request->search);
+
+                if(!empty($project)){
+
+                    array_walk($project['proposals'], function(&$item) use($request){
+                        $isChatConnection    = \Models\Employers::get_my_chat_list($request->user()->id_user,NULL,$item['user_id']);
+                        
+                        if(!empty($isChatConnection)){
+                            $item['chat'] = $isChatConnection;
+                        }else{
+                            $item['chat'] = [];
+                        }
+                    });
+
+                    $this->jsondata = $project;
+                }
+            }else{
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_project');
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+        
+        public function accept_proposal(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($request->project_id)){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else if(empty($request->proposal_id)){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'proposal_id');   
+            }else{
+                $isProposalAccepted =  \Models\Employers::accept_proposal($request->user()->id_user,$request->project_id,$request->proposal_id);
+                $this->message      = $isProposalAccepted['message'];
+
+                if(!empty($isProposalAccepted['status'])){
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'webservice-employer-accept-proposal',
+                        'reference_type'    => 'projects',
+                        'reference_id'      => $request->project_id
+                    ]));
+                    
+                    $this->status   = true;
+                }
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function decline_proposal(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($request->project_id)){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else if(empty($request->proposal_id)){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'proposal_id');   
+            }else{
+                $isProposalDeclined =  \Models\Employers::decline_proposal($request->user()->id_user,$request->project_id,$request->proposal_id);
+                $this->message  = $isProposalDeclined['message'];
+
+                if(!empty($isProposalDeclined['status'])){
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'webservice-employer-decline-proposal',
+                        'reference_type'    => 'projects',
+                        'reference_id'      => $request->project_id
+                    ]));
+
+                    $this->status   = true;
+                }
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }   
+
+        public function get_talent_availability(Request $request){
+            $this->status           = true;
+            $request->replace($this->post);
+            $availability_calendar  = [];
+            
+            if(!empty($request->talent_id)){
+                $talent_id              = ___decrypt($request->talent_id);
+                $talent_availability    = \Models\Talents::get_availability($talent_id);
+
+                if(!empty($talent_availability)){
+                    $get_scalar_availability = ___get_scalar_availability($talent_availability);
+
+                    if(!empty($get_scalar_availability)){
+                        $this->jsondata = $get_scalar_availability;
+                    }
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function save_talent(Request $request){
+            $request->replace($this->post);            
+            
+            if(empty($request->talent_id)){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'talent_id');
+            }else{
+                $isUpdated  = \Models\Employers::save_talent($request->user()->id_user,$request->talent_id);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'employer',
+                    'action'            => 'webservice-employer-save-talent',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->talent_id
+                ]));                
+                $this->status   = $isUpdated['status'];
+                
+                if($isUpdated['action'] == 'deleted_saved_talent'){
+                    $this->message  = 'M0220';               
+                }else if($isUpdated['action'] == 'saved_talent'){
+                    $this->message  = 'M0219';               
+                }else{
+                    $this->message  = 'M0022';
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );            
+        }
+
+        public function employer_chat_request(Request $request){
+            
+            if(empty($this->post['sender'])){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'sender');
+            }else if(empty($this->post['receiver'])){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'receiver');
+            }else {
+                $isRequestSent = \Models\Chats::employer_chat_request($this->post['sender'],$this->post['receiver']);
+                
+                if(!empty($isRequestSent['status'])){
+                    $this->status = $isRequestSent['status'];
+                    $this->message = $isRequestSent['message'];
+                }else{
+                    $this->message = $isRequestSent['message'];
+                    $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'receiver'); 
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function change_password(Request $request){
+            $request->replace($this->post);
+
+            $validator = \Validator::make($request->all(), [
+                "old_password"              => validation('old_password'),
+                "new_password"              => validation('new_password'),
+                "confirm_password"          => validation('new_confirm_password'),
+            ],[
+                'old_password.required'     => 'M0292',
+                'old_password.old_password' => 'M0295',
+                'new_password.different'    => 'M0300',
+                'new_password.required'     => 'M0293',
+                'new_password.regex'        => 'M0296',
+                'new_password.max'          => 'M0297',
+                'new_password.min'          => 'M0298',
+                'confirm_password.required' => 'M0294',
+                'confirm_password.same'     => 'M0299',
+            ]);
+
+            if($validator->fails()){
+                $this->message   = $validator->messages()->first();
+            }else{
+                $isUpdated      = \Models\Employers::change($request->user()->id_user,[
+                    'password'  => bcrypt($request->new_password),
+                    'updated'   => date('Y-m-d H:i:s')
+                ]);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'employer',
+                    'action'            => 'webservice-employer-change-password',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+                
+                $this->status   = true;
+                $this->message  = 'M0301';
+                $this->redirect = url(sprintf('%s/change-password',TALENT_ROLE_TYPE));
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function proposals_tag(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($request->proposal_id)){
+                $this->message = 'M0121';
+                $this->message = sprintf(trans(sprintf('general.%s',$this->message)),'proposal_id');
+            }else{
+                $isProposalTagged       =  \Models\Employers::tag_proposal($request->user()->id_user,$request->proposal_id);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'employer',
+                    'action'            => 'webservice-employer-proposal-tag',
+                    'reference_type'    => 'talent_proposals',
+                    'reference_id'      => $request->proposal_id
+                ]));
+                
+                $this->message = $isProposalTagged['message'];
+                $this->status  = true;
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }   
+
+        public function tagged_proposals(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($request->proposal_id)){
+                $this->message      = 'M0121';
+                $this->message      = sprintf(trans(sprintf('general.%s',$this->message)),'proposal_id');
+            }else if(empty($request->project_id)){
+                $this->message      = 'M0121';
+                $this->message      = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+            }else{
+                $proposals     = \Models\Employers::tagged_proposals($request->user()->id_user,$request->project_id,$request->proposal_id);
+
+                array_walk($proposals, function(&$item) use($request){
+                    $isChatConnection    = \Models\Employers::get_my_chat_list($request->user()->id_user,NULL,$item['user_id']);
+                    
+                    if(!empty($isChatConnection)){
+                        $item['chat'] = $isChatConnection;
+                    }else{
+                        $item['chat'] = [];
+                    }
+                });
+
+                $this->jsondata     = $proposals;
+                $this->status       = true;
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }    
+
+        public function start_job(Request $request){
+            $request->replace($this->post);
+            $project_possible_status    = \Models\Listings::project_status_column();
+
+            $job_details = \Models\Employers::get_job(" {$this->prefix}projects.id_project = {$request->project_id} AND {$this->prefix}projects.user_id = ".$request->user()->id_user,"single",[
+                'projects.id_project',
+                'projects.user_id',
+                'projects.project_status',
+                \DB::Raw("{$this->prefix}proposals.user_id as accepted_talent_id"),
+            ]); 
+
+            if(empty($request->project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else if(empty($job_details)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }/*else if((array_search($job_details['project_status'],$project_possible_status) >= array_search("open",$project_possible_status))){
+                $this->message  = "M0317";
+            }*/else{
+                $isConfirmed = \Models\ProjectLogs::confirm_start($request->project_id,$request->user()->id_user);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'employer',
+                    'action'            => 'webservice-employer-start-job',
+                    'reference_type'    => 'projects',
+                    'reference_id'      => $request->project_id
+                ]));
+                
+                $isNotified = \Models\Notifications::notify(
+                    $job_details['accepted_talent_id'],
+                    $job_details['user_id'],
+                    'JOB_STARTED_BY_EMPLOYER',
+                    json_encode([
+                        "user_id" => (string) $job_details['accepted_talent_id'],
+                        "project_id" => (string) $request->project_id
+                    ])
+                );
+
+                $this->status   = true;
+                $this->message  = "M0283";               
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function close_job(Request $request){
+            $request->replace($this->post);
+            $project_possible_status    = \Models\Listings::project_status_column();
+
+            $job_details = \Models\Employers::get_job(" {$this->prefix}projects.id_project = {$request->project_id} AND {$this->prefix}projects.user_id = ".$request->user()->id_user,"single",[
+                'projects.id_project',
+                'projects.user_id',
+                'projects.project_status',
+                \DB::Raw("{$this->prefix}proposals.user_id as accepted_talent_id"),
+            ]);
+
+            if(empty($request->project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+            }else if(empty($job_details)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'user_id');
+            }else if((array_search($job_details['project_status'],$project_possible_status) >= array_search("open",$project_possible_status))){
+                $this->message  = "M0317";
+            }else if(\Models\ProjectLogs::is_alredy_confirmed($request->project_id,$request->user()->id_user)){
+                $this->message = "M0355";
+            }else{
+                $isPayOutDone = \Models\Payments::init_talent_payment($request->project_id,$request->user()->id_user);
+                
+                if(!empty($isPayOutDone)){
+                    $isConfirmed = \Models\ProjectLogs::confirm_close($request->project_id,$request->user()->id_user);
+                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'webservice-employer-close-job',
+                        'reference_type'    => 'projects',
+                        'reference_id'      => $request->project_id
+                    ]));                    
+                    
+                    if($isConfirmed){
+                        $isNotified = \Models\Notifications::notify(
+                            $job_details['accepted_talent_id'],
+                            $job_details['user_id'],
+                            'JOB_COMPLETED_BY_EMPLOYER',
+                            json_encode([
+                                "user_id" => (string) $job_details['accepted_talent_id'],
+                                "project_id" => (string) $request->project_id
+                            ])
+                        );
+
+                        $this->status   = true;
+                        $this->message  = "M0283";
+                    }else{
+                        $this->message  = "M0354";
+                    }
+                }else{
+                    $this->message  = "M0372";
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function payments(Request $request){
+            $request->replace($this->post);
+            $currency = (!empty($request->currency)) ? $request->currency : DEFAULT_CURRENCY;
+            $payment_summary = \Models\Payments::summary($request->user()->id_user,'employer');
+            
+            $payment_summary = [
+                'total_paid'        => ___format($payment_summary['total_paid'],true,true),
+                'total_balance'     => ___format($payment_summary['total_balance'],true,true),
+                'total_posted_jobs' => $payment_summary['total_posted_jobs']
+            ];
+            
+            $this->jsondata = $payment_summary;
+            
+            $payments       = \Models\Payments::listing($request->user()->id_user,'employer',$request->type, false, $request->page,$request->sort,$request->search);
+
+            if(!empty($payments->count())){
+                $this->status   = true;
+                $payments_list  = json_decode(json_encode($payments),true);
+                
+                array_walk($payments_list, function(&$item){
+                    $item['transaction_subtotal']   = ___format($item['transaction_subtotal'],true,true);
+                    $item['quoted_price']           = ___format($item['quoted_price'],true,true);
+                });
+
+                $this->jsondata['payments_list'] = $payments_list;
+            }else{
+                $this->jsondata['payments_list'] = [];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }
+
+        public function talent_portfolio(Request $request){
+            $request->replace($this->post);
+            $page = 1;
+            
+            if(!empty($request->page)){
+                $page = $request->page;
+            }            
+
+            if(empty($request->talent_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'talent_id');
+            }else{
+                $portfolioes = \Models\Portfolio::get_portfolio($request->talent_id,"","all",[],$page);
+
+                if($portfolioes){
+                    $this->status = true;
+                    array_walk($portfolioes, function(&$item, $key){
+                        if(!empty($item['file'])){
+                            foreach ($item['file'] as &$file) {
+                                $file['file'] = asset(sprintf("%s%s",$file['folder'],$file['filename']));
+                            }
+                        }else{
+                            $item['file'][] = [
+                                'id_file' => 0,
+                                'filename' => DEFAULT_AVATAR_IMAGE,
+                                'folder' => 'images/',
+                                'file' => url(sprintf('images/%s',DEFAULT_AVATAR_IMAGE))
+                            ];
+                        }
+                    });
+                    $this->jsondata = $portfolioes;
+                }                
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );            
+        }
+
+        public function add_review(Request $request){
+            $request->replace($this->post);
+            if(empty($request->receiver_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'receiver_id'); 
+            }else if(empty($request->project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id'); 
+            }else{
+                $validator = \Validator::make($request->all(), [
+                    "description"           => validation('review_description'),
+                    "category_one"          => validation('review_average'),
+                    "category_two"          => validation('review_performance'),
+                    "category_three"        => validation('review_punctuality'),
+                    "category_four"         => validation('review_quality'),
+                    "category_five"         => validation('review_skill'),
+                    "category_six"          => validation('review_support'),
+                ],[
+                    "review_description.required"   => 'M0343',
+                    "review_description.string"     => 'M0336',
+                    "review_description.regex"      => 'M0336',
+                    "review_description.max"        => 'M0327',
+                    "review_description.min"        => 'M0328',
+                    "category_one.required"         => 'M0330',
+                    "category_one.numeric"          => 'M0337',
+                    "category_two.required"         => 'M0331',
+                    "category_two.numeric"          => 'M0338',
+                    "category_three.required"       => 'M0332',
+                    "category_three.numeric"        => 'M0339',
+                    "category_four.required"        => 'M0333',
+                    "category_four.numeric"         => 'M0340',
+                    "category_five.required"        => 'M0334',
+                    "category_five.numeric"         => 'M0341',
+                    "category_six.required"         => 'M0335',
+                    "category_six.numeric"          => 'M0342',
+                ]);
+                if($validator->fails()){
+                    $this->message = $validator->messages()->first();                
+                }else{
+                    if(empty($project_data = json_decode(json_encode(\Models\Projects::where(['id_project' => $request->project_id,'user_id' => $request->user()->id_user])->get(),true)))){
+                        $this->message = "M0121";
+                        $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+                    }else if(empty($proposal_data = json_decode(json_encode(Proposals::where(['project_id' => $request->project_id, 'user_id' => $request->receiver_id, 'type' => 'proposal', 'status' => 'accepted'])->get(),true ) ) ) ){
+                        $this->message = "M0121";
+                        $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+                    }else if(!empty(json_decode(json_encode(\Models\Reviews::where(['project_id' => $request->project_id, 'sender_id' => $request->user()->id_user ])->get(),true)))){
+                        $this->message = "M0329";
+                        $this->error = trans(sprintf('general.%s',$this->message));                 
+                    }else{
+                        $total_average  = ($request->category_two+$request->category_three+$request->category_four+$request->category_five+$request->category_six)/5;
+                        
+                        $reviewArray = [
+                            'project_id'            =>  $request->project_id,
+                            'sender_id'             =>  $request->user()->id_user,
+                            'receiver_id'           =>  $request->receiver_id,
+                            'description'           =>  $request->description,
+                            'review_average'          =>  $total_average,
+                            'category_two'          =>  $request->category_two,    
+                            'category_three'        =>  $request->category_three,
+                            'category_four'         =>  $request->category_four,
+                            'category_five'         =>  $request->category_five,
+                            'category_six'          =>  $request->category_six,
+                            'created'               =>  date('Y-m-d h:i:s'),
+                            'updated'               =>  date('Y-m-d h:i:s'),
+                        ];
+
+                        $isInserted = \Models\Reviews::add_review($reviewArray);
+                        
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => $request->user()->id_user,
+                            'user_type'         => 'employer',
+                            'action'            => 'webservice-employer-add-review',
+                            'reference_type'    => 'users',
+                            'reference_id'      => $request->receiver_id
+                        ]));
+                        
+                        if($isInserted){
+                            $this->status   = true;
+                            $this->message  = "M0326";
+                        }
+                    }
+                }
+            }
+
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );                        
+        }
+
+        public function my_profile_reviews(Request $request){
+            $request->replace($this->post);
+            $this->status   = true;
+            
+            $page           = (!empty($request->page)) ? $request->page : 1;
+            $review_type    = ((!empty($request->review_type)) ? $request->review_type : "by_talents");
+            
+            $this->jsondata = \Models\Reviews::employer_reviews($request->user()->id_user,'',$review_type,$page);
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );            
+        }
+
+        public function job_review_list(Request $request){
+            $request->replace($this->post);
+            $this->status   = true;
+            $page           = (!empty($request->page)) ? $request->page : 1;
+            $review_type    = ((!empty($request->review_type)) ? $request->review_type : "by_employers");
+            $this->jsondata = \Models\Reviews::employer_reviews($request->user()->id_user,'','by_talents',$page);
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            ); 
+        }
+
+        public function talent_profile_reviews(Request $request){
+            $request->replace($this->post);
+            if(empty($request->talent_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'talent_id'); 
+            }else{
+                $this->status   = true;
+                $page           = (!empty($request->page)) ? $request->page : 1;            
+                $this->jsondata = \Models\Reviews::talent_reviews($request->talent_id,'','by_employers',$page);
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function hire_premium_talents(Request $request){
+            $request->replace($this->post);
+            $this->status   = true;
+            $language       = \App::getLocale();
+            $search         = " 1 ";
+            $html           = "";
+            $page           = (!empty($request->page))?$request->page:1;
+            $sort           = "";
+
+            if(empty($request->experience_min_filter) && !empty($request->experience_min_filter)){
+                $this->message = "M0374";
+            }else if(!empty($request->experience_min_filter) && empty($request->experience_min_filter)){
+                $this->message = "M0375";
+            }else if($request->experience_min_filter > $request->experience_max_filter){
+                $this->message = "M0376";
+            }else {
+                if($request->sortby_filter){
+                    $sort       = ___decodefilter($request->sortby_filter);
+                }
+
+                if(empty($request->temporary_salary_low_filter)){
+                    $request->temporary_salary_low_filter = 20;
+                }
+
+                if(empty($request->temporary_salary_high_filter)){
+                    $request->temporary_salary_high_filter = 5000;
+                }
+
+                if(empty($request->permanent_salary_low_filter)){
+                    $request->permanent_salary_low_filter = 0;
+                }
+
+                if(empty($request->permanent_salary_high_filter)){
+                    $request->permanent_salary_high_filter = 15000000;
+                }
+
+                if(!empty($request->employment_type_filter)){
+                    $search .= sprintf(" AND {$this->prefix}talent_interests.interest IN ('%s') ",implode("','", $request->employment_type_filter));
+                }
+
+                if(!empty($request->experience_min_filter) && !empty($request->experience_max_filter)){
+                    $search .= sprintf(" AND CAST({$this->prefix}users.experience AS DECIMAL(10,6)) BETWEEN %s AND %s ",$request->experience_min_filter,$request->experience_max_filter);
+                }
+
+                $search .= sprintf(" AND (
+                    (
+                        {$this->prefix}users.expected_salary >= {$request->permanent_salary_low_filter}
+                        AND
+                        {$this->prefix}users.expected_salary <= {$request->permanent_salary_high_filter}
+                    )
+                )");
+
+                if(!empty($request->permanent_salary_low_filter) && !empty($request->permanent_salary_high_filter)){
+                    $search .= sprintf(" AND {$this->prefix}users.expected_salary >= {$request->permanent_salary_low_filter} AND {$this->prefix}users.expected_salary <= {$request->permanent_salary_high_filter} ");
+                }
+
+                if(!empty($request->expertise_filter)){
+                    $search .= sprintf(" AND {$this->prefix}users.expertise IN ('%s') ", implode("','",$request->expertise_filter));
+                }
+
+                if(!empty($request->industry_filter)){
+                    $search .= sprintf(" AND {$this->prefix}users.industry = {$request->industry_filter} ");
+                }
+
+                if(!empty($request->subindustry_filter)){
+                    $search .= sprintf(" AND {$this->prefix}users.subindustry = {$request->subindustry_filter} ");
+                }
+
+                if(!empty($request->skills_filter)){
+                    $search .= sprintf(" AND {$this->prefix}talent_skills.skill IN ('%s') ",implode("','", $request->skills_filter));
+                }
+
+                if(!empty($request->state_filter)){
+                    $search .= sprintf(" AND {$this->prefix}users.city IN (%s) ",implode(",", $request->state_filter));
+                }
+
+                if(!empty($request->search)){
+                    $search .= sprintf(" AND
+                        (
+                            {$this->prefix}users.name like '%%{$request->search}%%'
+                            OR
+                            {$this->prefix}talent_skills.skill like '%%{$request->search}%%'
+                        )
+                    ");
+                }
+
+                if(!empty($request->saved_talent_filter)){
+                    $search .= sprintf(" AND {$this->prefix}saved_talent.id_saved IS NOT NULL");
+                }
+
+                if(!empty(trim($request->__search))){
+                    $search .= sprintf(" AND
+                        (
+                            {$this->prefix}users.name like '%%{$request->__search}%%'
+                            OR
+                            {$this->prefix}talent_skills.skill like '%%{$request->__search}%%'
+                        )
+                    ");
+                }
+
+                $keys = [
+                    'users.id_user',
+                    'users.type',
+                    \DB::raw("CONCAT(IFNULL({$this->prefix}users.first_name,''),' ',IFNULL({$this->prefix}users.last_name,'')) as name"),
+                    'users.gender',
+                    'users.country',
+                    'users.workrate',
+                    'users.experience',
+                    'countries.country_name',
+                    'city.city_name',
+                    \DB::raw("CONCAT('".url('/')."/',{$this->prefix}files.folder,{$this->prefix}files.filename) as file"),
+                    \DB::Raw("IF(({$this->prefix}industries.{$language} != ''),{$this->prefix}industries.`{$language}`, {$this->prefix}industries.`en`) as industry_name"),
+                    \DB::Raw("IF(({$this->prefix}subindustries.{$language} != ''),{$this->prefix}subindustries.`{$language}`, {$this->prefix}subindustries.`en`) as subindustry"),
+                    \DB::raw('"0" as job_completion'),
+                    \DB::raw('"0" as availability_hours'),
+                    'users.expertise',
+                    \DB::raw("(SELECT GROUP_CONCAT(t.skill) FROM {$this->prefix}talent_skills as t WHERE t.user_id = {$this->prefix}users.id_user) as skills"),
+                    \DB::Raw("IF({$this->prefix}saved_talent.id_saved IS NOT NULL,'".DEFAULT_YES_VALUE."','".DEFAULT_NO_VALUE."') as is_saved"),
+                    \DB::raw('"0.0" as rating'),
+                    \DB::raw('"0" as review'),
+                ];
+
+                $talents =  \Models\Employers::find_premium_talents($request->user(),'all',$search,$page,$sort,$keys);
+
+                if(!empty($talents['result'])){
+                    array_walk($talents['result'], function(&$item){
+                        if(!empty($item['expertise'])){
+                            $item['expertise'] = expertise_levels($item['expertise']);
+                        }else{
+                            $item['expertise'] = "";
+                        }
+                        
+                        if(!empty($item['skills'])){
+                            $item['skills'] = explode(',',$item['skills']);
+                        }else{
+                            $item['skills'] = [];
+                        }
+
+                        $item['gender'] = ucfirst($item['gender']);
+                    });
+
+                    $this->status = true;
+                    $this->jsondata = $talents['result'];
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }   
+
+        public function talent_work_history(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($request->page)){
+                $request->page = NULL;
+            }
+
+            $work_histories = \Models\Employers::talent_work_history($request->talent_id,$request->page);
+            
+            $this->status   = true;
+            if(!empty($work_histories)){
+                $this->jsondata = json_decode(json_encode($work_histories),true);
+                array_walk($this->jsondata, function(&$item){
+                    $item['timeline'] = ___date_difference($item['startdate'],$item['enddate']);
+                    $item['job_type'] = employment_types('post_job',$item['employment']);
+                });
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function raise_dispute(Request $request){
+            $request->replace($this->post);
+
+            if(empty($request->project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else if(empty($request->talent_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'talent_id');   
+            }else{
+                $validator = \Validator::make($request->all(),[
+                    'reason'            => validation('rasie_dispute_reason')
+                ],[
+                    'reason.required'   => 'M0384',
+                    'reason.string'     => 'M0385',
+                    'reason.regex'      => 'M0385',
+                    'reason.max'        => 'M0386',
+                    'reason.min'        => 'M0387'
+                ]);
+
+                if($validator->fails()){
+                    $this->message = $validator->messages()->first();
+                }else{
+                    $raiseArray = [
+                        'project_id'    => $request->project_id,
+                        'receiver_id'   => $request->talent_id,
+                        'sender_id'     => $request->user()->id_user,
+                        'reason'        => $request->reason,
+                        'created'       => date('Y-m-d h:i:s'),
+                        'updated'       => date('Y-m-d h:i:s')
+                    ];
+
+                    $isDisputed = \Models\RaiseDispute::raise_dispute($raiseArray,'employer');
+                    if(!empty($isDisputed['status'])){
+                        
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => $request->user()->id_user,
+                            'user_type'         => 'employer',
+                            'action'            => 'webservice-employer-raise-dispute',
+                            'reference_type'    => 'users',
+                            'reference_id'      => $request->talent_id
+                        ]));
+
+                        $this->status   = true;
+                        $this->message  = $isDisputed['message'];
+                    }else{
+                        $this->message  = $isDisputed['message'];
+                    }
+                }
+            }    
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );        
+        }
+
+        public function payment_add_card(Request $request){
+            $request->replace($this->post);
+
+            $validator = \Validator::make($request->all(), [
+                'cardholder_name'  => validation('name'),
+                'expiry_month'     => validation('expiration_month'),
+                'expiry_year'      => validation('expiration_year'),
+                'number'           => validation('card_number'),
+                'cvv'              => validation('cvv')
+            ],[
+                'cardholder_name.required'  => 'M0396',
+                'cardholder_name.string'    => 'M0401',
+                'cardholder_name.regex'     => 'M0401',
+                'cardholder_name.max'       => 'M0402',
+                'number.required'           => 'M0403',
+                'number.string'             => 'M0403',
+                'number.regex'              => 'M0403',
+                'number.max'                => 'M0404',
+                'number.min'                => 'M0405',
+                'expiry_month.required'     => 'M0398',
+                'expiry_month.integer'      => 'M0406',
+                'expiry_year.required'      => 'M0399',
+                'expiry_year.integer'       => 'M0407',
+                'cvv.required'              => 'M0400',
+                'cvv.string'                => 'M0409',
+                'cvv.regex'                 => 'M0409',
+                'cvv.max'                   => 'M0410',
+                'cvv.min'                   => 'M0411',
+            ]);
+
+            if($validator->fails()){
+                $this->message = $validator->messages()->first();
+            }else{
+                $braintree_id = \Models\Payments::create_braintree_customer($request->user()->braintree_id);
+                
+                if(!empty($braintree_id)){
+                    $isCardCreated = \Models\Payments::create_braintree_card($request,$braintree_id);
+                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'webservice-employer-payment-add-card',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+
+                    $this->message = $isCardCreated['message'];
+                    $this->status = $isCardCreated['status'];
+                }else{
+                    $this->message = trans('general.M0433'); 
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            ); 
+        }
+
+        public function payment_manage_card(Request $request){
+            $request->replace($this->post);
+
+            $data['cards']      = \Models\Payments::get_user_card($request->user()->id_user,"","array",[
+                'id_card',
+                'default',
+                'image_url',
+                'masked_number',
+            ]);
+            
+            if(!empty($data['cards'])){
+                $this->status       = true;
+                $this->jsondata     = $data;
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );             
+        }
+
+        public function payment_select_card(Request $request){
+            $request->replace($this->post);
+
+            if(empty($request->card_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'card_id');   
+            }else{
+                $isMadeDefault  = \Models\Payments::mark_card_default($request->user()->id_user,$request->card_id);
+                if(!empty($isMadeDefault)){
+                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'webservice-employer-default-payment-card',
+                        'reference_type'    => 'user_card',
+                        'reference_id'      => $request->card_id
+                    ]));
+
+                    $this->status   = true;
+                    $this->message  = "M0393";
+                    $this->jsondata = $isMadeDefault;
+                }else{
+                    $this->status   = false;
+                }
+            }
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }
+
+        public function payment_delete_card(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($request->card_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'card_id');   
+            }else{
+                $data['user_card']  = \Models\Payments::get_user_card($request->user()->id_user,$request->card_id,'array',['token']);
+                if($data['user_card']){
+                    $card_delete_result = \Braintree_PaymentMethod::delete($data['user_card'][0]['token']);
+                    if($card_delete_result){
+                        $isDeleted      = \Models\Payments::delete_card($request->card_id);
+                        $isMadeDefault  = \Models\Payments::mark_card_default($request->user()->id_user);
+                    }
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'webservice-employer-delete-payment-card',
+                        'reference_type'    => 'user_card',
+                        'reference_id'      => $request->card_id
+                    ]));
+
+                    if($isDeleted){
+                        $this->status = true;
+                        $this->message  = "M0419";
+                    }
+                }else{
+                    $this->message = "M0121";
+                    $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'card_id');   
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        } 
+
+        public function payment_checkout(Request $request){
+            $request->replace($this->post);
+
+            $project                = \Models\Employers::project_header_detail($request->user()->id_user,$request->project_id);
+            $proposal               = \Models\Employers::get_proposal($request->proposal_id,['quoted_price']);
+            $number_of_days         = ___get_total_days($project['startdate'],$project['enddate']);
+            $default_card_detail    = \Models\Payments::get_user_default_card($request->user()->id_user,[
+                'id_card',
+                'default',
+                'image_url',
+                'masked_number',
+            ]);
+            if($project['startdate'] >= date('Y-m-d')){
+                if($project['employment'] == 'hourly'){
+                    $sub_total                  = $proposal['quoted_price']*$project['work_hours']*$number_of_days;
+                }else if($project['employment'] == 'daily'){
+                    $sub_total                  = $proposal['quoted_price']*$number_of_days;
+                }else if($project['employment'] == 'weekly'){
+                    $sub_total                  = $proposal['quoted_price']*ceil(($number_of_days/7));
+                }else if($project['employment'] == 'monthly'){
+                    $sub_total                  = $proposal['quoted_price']*ceil(($number_of_days/30));
+                }else if($project['employment'] == 'fixed'){
+                    $sub_total                  = $proposal['quoted_price'];
+                }
+
+                $commission                 = ___calculate_commission($sub_total,$request->user()->commission);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'employer',
+                    'action'            => 'webservice-employer-payment-checkout',
+                    'reference_type'    => 'projects',
+                    'reference_id'      => $request->project_id
+                ]));
+                
+                $this->status               = true;
+                $this->jsondata             = [
+                    'project'               => $project,
+                    'proposal'              => $proposal,
+                    'number_of_days'        => $number_of_days,
+                    'default_card_detail'   => $default_card_detail,
+                    'checout'               => [
+                        'total'             => $sub_total+$commission,
+                        'subtotal'          => $sub_total,
+                        'commission'        => $commission,
+                    ]
+                ];
+
+            }else{
+                $this->message = "M0351";
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }  
+
+        public function payment_confirm(Request $request){
+            $request->replace($this->post);
+
+            if(!empty($request->project_id)){
+                $project    = \Models\Employers::project_header_detail($request->user()->id_user,$request->project_id);
+                if(!empty($project)){
+                    $proposal               = \Models\Employers::get_proposal($request->proposal_id,['quoted_price']);
+                    $number_of_days         = ___get_total_days($project['startdate'],$project['enddate']);
+                    
+                    if(!empty($proposal)){
+                        if($project['startdate'] >= date('Y-m-d')){
+                            if($project['employment'] == 'hourly'){
+                                $sub_total                  = $proposal['quoted_price']*$number_of_days;
+                            }else if($project['employment'] == 'daily'){
+                                $sub_total                  = $proposal['quoted_price']*$number_of_days;
+                            }else if($project['employment'] == 'weekly'){
+                                $sub_total                  = $proposal['quoted_price']*ceil(($number_of_days/7));
+                            }else if($project['employment'] == 'monthly'){
+                                $sub_total                  = $proposal['quoted_price']*ceil(($number_of_days/30));
+                            }else if($project['employment'] == 'fixed'){
+                                $sub_total                  = $proposal['quoted_price'];
+                            }
+
+                            $commission                     = ___calculate_commission($sub_total,$request->user()->commission);
+                            $payment                        = [
+                                'transaction_user_id'       => (string) $request->user()->id_user,
+                                'transaction_user_type'     => $request->user()->type,
+                                'transaction_project_id'    => $request->project_id,
+                                'transaction_proposal_id'   => $request->proposal_id,
+                                'transaction_total'         => $sub_total+$commission,
+                                'transaction_subtotal'      => $sub_total,
+                                'transaction_type'          => 'debit',
+                                'transaction_date'          => date('Y-m-d H:i:s'),
+                                'transaction_commission'    => $commission,
+                            ];
+
+                            $card_details = \Models\Payments::get_user_default_card($request->user()->id_user,['token']);
+                            
+                            if(!empty($card_details)){
+                                $result = \Braintree_Transaction::sale([
+                                    'amount' => $payment['transaction_total'],
+                                    'merchantAccountId' => env('BRAINTREE_MERCHANT_ACCOUNT_ID'),
+                                    'paymentMethodToken' => $card_details['token'],
+                                    'options' => [
+                                        'submitForSettlement' => true,
+                                    ],
+                                ]);
+
+                                if(!empty($result->success)){
+                                    $payment['transaction_source'] = 'braintree';
+                                    $payment['transaction_reference_id'] = $result->transaction->id;
+                                    $payment['transaction_status'] = 'confirmed';
+                                }else{
+                                    $payment['transaction_status'] = 'failed';
+                                }
+                                
+                                \Models\Payments::braintree_response([
+                                    'user_id'                   => $request->user()->id_user,
+                                    'braintree_response_json'   => json_encode((array)$result->transaction),
+                                    'status'                    => 'false',
+                                    'type'                      => 'sale',
+                                    'created'                   => date('Y-m-d H:i:s')
+                                ]);
+
+                                $transaction = \Models\Payments::init_employer_payment(
+                                    $payment,
+                                    $request->repeat
+                                );
+
+                                /* RECORDING ACTIVITY LOG */
+                                event(new \App\Events\Activity([
+                                    'user_id'           => $request->user()->id_user,
+                                    'user_type'         => 'employer',
+                                    'action'            => 'webservice-employer-payment-confirm',
+                                    'reference_type'    => 'projects',
+                                    'reference_id'      => $request->project_id
+                                ]));
+
+                                if(!empty($result->success)){
+                                    $isProposalAccepted =  \Models\Employers::accept_proposal($request->user()->id_user,$payment['transaction_project_id'],$payment['transaction_proposal_id']);
+                                    $this->message      = $isProposalAccepted['message'];
+                                    $this->status       = true;
+                                    $this->jsondata     = $payment;
+                                }else{
+                                    $this->message      = $result->errors->deepAll()[0]->code;
+                                }   
+                            }else{
+                                $this->message      = "M0420";
+                            }
+                        }else{
+                            $this->message = "M0351";
+                        }
+                    }else{
+                        $this->message = 'M0121';
+                        $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'proposal_id');
+                    }
+
+                }else{
+                    $this->message = 'M0121';
+                    $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+                }
+                
+            }else{
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }   
+
+        public function settings(Request $request){
+            $this->status       = true;
+            $this->jsondata     = \Models\Settings::fetch($request->user()->id_user,$request->user()->type);
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }   
+
+        public function savesettings(Request $request){
+            $request->replace($this->post);
+
+            if(!empty($request->email)){
+                foreach ($request->email as $item) {
+                    if(!empty($item['status'] == DEFAULT_YES_VALUE)){
+                        $data['email'][] = $item['setting'];
+                    }
+                }
+            }
+
+            if(!empty($request->mobile)){
+                foreach ($request->mobile as $item) {
+                    if(!empty($item['status'] == DEFAULT_YES_VALUE)){
+                        $data['mobile'][] = $item['setting'];
+                    }
+                }
+            }
+
+            if(!empty($data)){
+                $isUpdated      = \Models\Settings::add($request->user()->id_user,$data);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'employer',
+                    'action'            => 'webservice-employer-save-settings',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+                
+                $this->status   = true;
+                $this->message  = 'M0426';
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }
+        
+        public function plan_features(Request $request){
+            $data['plan']       = \Models\Plan::getPlanList();
+            array_walk($data['plan']['plan'],function(&$item){
+                $item['price'] = ___format($item['price'],true,true);
+            });
+            $data['features']   = \Models\Plan::getFeatures();
+            $this->status       = true;
+            $this->jsondata     = $data;
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }
+
+        public function upgrade_member_checkout(Request $request){
+            $request->replace($this->post);
+            $plan  = \Models\Plan::getPlanDetail($request->id_plan);
+            $plan  = json_decode(json_encode($plan), true);
+
+            $default_card_detail    = \Models\Payments::get_user_default_card($request->user()->id_user,[
+                'id_card',
+                'default',
+                'image_url',
+                'masked_number',
+            ]);
+            $plan_payment = [
+                'transaction_user_id'       => (string) $request->user()->id_user,
+                'transaction_user_type'     => $request->user()->type,
+                'transaction_plan_id'       => $request->id_plan,
+                'transaction_total'         => $plan['price'],
+                'transaction_type'          => 'subscription',
+                'transaction_date'          => date('Y-m-d H:i:s'),
+                'price_unit'                => '$'
+            ];
+
+            if($default_card_detail){
+
+                $this->status               = true;
+                $this->jsondata             = [
+                    'default_card_detail'   => $default_card_detail,
+                    'plan'                  => $plan_payment
+                ];
+
+            }else{
+                $this->message = "M0437";
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }
+
+        public function upgrade_member_payment_confirm(Request $request){
+            $request->replace($this->post);
+
+            if(!empty($request->id_plan)){
+                $plan = \Models\Plan::getPlanDetail($request->id_plan);
+                $plan = json_decode(json_encode($plan), true);
+                if(!empty($plan)){
+                    $payment                        = [
+                        'transaction_user_id'       => (string) $request->user()->id_user,
+                        'transaction_user_type'     => $request->user()->type,
+                        'transaction_project_id'       => $request->id_plan,
+                        'transaction_total'         => $plan['price'],
+                        'transaction_type'          => 'subscription',
+                        'transaction_date'          => date('Y-m-d H:i:s'),
+                    ];
+
+                    $card_details = \Models\Payments::get_user_card($request->user()->id_user, $request->card_id, 'first',['token']);
+
+                    if(!empty($card_details)){
+                        $result = \Braintree_Subscription::create([
+                            'planId' => $plan['braintree_plan_id'],
+                            'merchantAccountId' => env('BRAINTREE_MERCHANT_ACCOUNT_ID'),
+                            'paymentMethodToken' => $card_details['token']
+                        ]);
+
+                        if(!empty($result->success)){
+                            $subscriptionData = [
+                                'id_plan'                   => $request->id_plan,
+                                'id_user'                   => $request->user()->id_user,
+                                'balance'                   => $result->subscription->balance,
+                                'billingDayOfMonth'         => $result->subscription->billingDayOfMonth,
+                                'currentBillingCycle'       => $result->subscription->currentBillingCycle,
+                                'daysPastDue'               => $result->subscription->daysPastDue,
+                                'failureCount'              => $result->subscription->failureCount,
+                                'firstBillingDate'          => $result->subscription->firstBillingDate->format('Y-m-d H:i:s'),
+                                'id'                        => $result->subscription->id,
+                                'merchantAccountId'         => $result->subscription->merchantAccountId,
+                                'neverExpires'              => $result->subscription->neverExpires,
+                                'nextBillAmount'            => $result->subscription->nextBillAmount,
+                                'nextBillingPeriodAmount'   => $result->subscription->nextBillingPeriodAmount,
+                                'nextBillingDate'           => $result->subscription->nextBillingDate->format('Y-m-d H:i:s'),
+                                'numberOfBillingCycles'     => $result->subscription->numberOfBillingCycles,
+                                'paidThroughDate'           => $result->subscription->paidThroughDate->format('Y-m-d H:i:s'),
+                                'paymentMethodToken'        => $result->subscription->paymentMethodToken,
+                                'planId'                    => $result->subscription->planId,
+                                'price'                     => $result->subscription->price,
+                                'status'                    => $result->subscription->status,
+                                'trialDuration'             => $result->subscription->trialDuration,
+                                'trialDurationUnit'         => $result->subscription->trialDurationUnit,
+                                'trialPeriod'               => $result->subscription->trialPeriod,
+                                'updated'                   => date('Y-m-d H:i:s'),
+                                'created'                   => date('Y-m-d H:i:s'),
+                            ];
+                            \Models\Payments::subscriptionResponse($subscriptionData);
+                            
+                            /* RECORDING ACTIVITY LOG */
+                            event(new \App\Events\Activity([
+                                'user_id'           => $request->user()->id_user,
+                                'user_type'         => 'employer',
+                                'action'            => 'webservice-employer-upgrade-membership-subscription',
+                                'reference_type'    => 'users',
+                                'reference_id'      => $request->user()->id_user
+                            ]));
+                        }
+                
+                
+                        if(!empty($result->success)){
+                            $payment['transaction_source'] = 'braintree';
+                            $payment['transaction_reference_id'] = $result->subscription->transactions[0]->id;
+                            $payment['transaction_status'] = 'confirmed';
+                        }else{
+                            $payment['transaction_status'] = 'failed';
+                        }
+
+                        \Models\Payments::braintree_response([
+                            'user_id'                   => $request->user()->id_user,
+                            'braintree_response_json'   => json_encode((array)$result->subscription),
+                            'status'                    => 'false',
+                            'type'                      => 'sale',
+                            'created'                   => date('Y-m-d H:i:s')
+                        ]);
+
+                        $transaction = \Models\Payments::init_employer_payment(
+                            $payment,
+                            $request->repeat
+                        );
+
+                        if(!empty($result->success)){
+                            \Models\Users::change(
+                                $request->user()->id_user,
+                                [
+                                'is_subscribed'=>'yes',
+                                'braintree_subscription_id'=> $result->subscription->id,
+                                ]
+                            );
+
+                            $this->message      = 'Successfully subscribed';
+                            $this->status       = true;
+                            $this->jsondata     = $payment;
+                        }
+                        else{
+                            $this->message      = $result->errors->deepAll()[0]->code;
+                        }
+                    }else{
+                        $this->message      = "M0420";
+                    }
+                }else{
+                    $this->message = 'M0121';
+                    $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+                }
+
+            }else{
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }
+
+        public function payment_detail(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($request->id_project)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else{
+                $payment_detail = \Models\Payments::payment_detail($request->id_project);
+                $talent_detail  = json_decode(json_encode(\Models\Talents::get_user((object)['id_user' => $payment_detail['talent_id']],true)),true);
+                if(empty($payment_detail)){
+                    $this->message = "M0121";
+                    $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+                }else{
+                    $payment_detail['price_max']        = ___format($payment_detail['price_max'],true,true);
+                    $payment_detail['price']            = ___format($payment_detail['price'],true,true);
+                    $payment_detail['amount_agreed']    = ___format($payment_detail['amount_agreed'],true,true);
+                    $payment_detail['amount_paid']      = ___format($payment_detail['amount_paid'],true,true);
+                    $payment_detail['folder']           = @(string)$payment_detail['folder'];
+                    $payment_detail['filename']         = @(string)$payment_detail['filename'];
+                    $payment_detail['image_url']        = get_file_url(['folder' => $payment_detail['folder'],"filename"=>$payment_detail['filename']]);
+
+
+                    if(!empty($talent_detail)){
+                        $talent_detail['workrate']          = ___format($talent_detail['workrate'],true,true);
+                        $talent_detail['workrate_max']      = ___format($talent_detail['workrate_max'],true,true);
+                        $talent_detail['expected_salary']   = ___format($talent_detail['expected_salary'],true,true);
+                    }
+
+                    $data['payment_detail']     = $payment_detail;
+                    $data['talent_detail']      = $talent_detail;
+                    $this->status               = true;
+                    $this->jsondata             = $data; 
+                }
+            }
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );            
+        }
+
+        public function add_thumb_device(Request $request){
+            $request->replace($this->post);
+            
+            $validator = \Validator::make($request->all(), [
+                'device_uuid'           => validation('touch_login'),
+                'device_type'           => validation('touch_login'),
+                'device_name'           => validation('touch_login'),
+            ],[
+                'device_uuid.required'  => 'M0430',
+                'device_type.required'  => 'M0430',
+                'device_name.required'  => 'M0430',
+            ]);
+
+            if($validator->fails()){
+                $this->message = $validator->messages()->first();
+            }else{
+                $setting          = @(string)(!empty($this->post['setting']))?$this->post['setting']:'off';
+                $device_uuid      = @(string)$this->post['device_uuid'];
+                $device_type      = @(string)$this->post['device_type'];
+                $device_name      = @(string)$this->post['device_name'];
+                
+                $isDeviceConfigured =\Models\ThumbDevices::add($request->user()->id_user, $device_uuid, $device_type, $device_name,$setting);
+                
+                if($request->setting == 'on'){
+                    if(!empty($isDeviceConfigured)){
+                        $this->message    = 'M0443';
+                        $this->status     = true;
+                        $this->jsondata   = [];
+                    }else{
+                        $this->status   = true;
+                        $this->message  = 'M0429';
+                    }
+                }else{
+                    $this->status   = true;
+                    $this->message  = 'M0448';
+                }
+
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );  
+        }
+
+        public function suggested_jobs(Request $request){
+            $this->status = true;
+            $this->jsondata = \Models\Projects::employer_jobs($request->user()->id_user,'suggested');
+            
+            if(empty($this->jsondata->count())){
+                $this->status = false;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );  
+        }
+
+        public function hire_talent(Request $request){
+            $request->replace($this->post);
+            $validator = \Validator::make($request->all(),[
+                'project_id'                        => ['required'],
+                'hire_talent_message'               => validation('hire_talent_message')
+            ],[
+                'project_id.required'               => 'M0450',
+                'hire_talent_message.required'      => 'M0444',
+                'hire_talent_message.string'        => 'M0445',
+                'hire_talent_message.regex'         => 'M0445',
+                'hire_talent_message.max'           => 'M0446',
+                'hire_talent_message.min'           => 'M0447'
+            ]);
+
+            if($validator->fails()){
+                $this->message = $validator->messages()->first();
+            }else{
+                $isInvitationSent   = \Models\ProjectInvitations::send($request->user()->id_user, [
+                    'talent_id'     => $request->talent_id,
+                    'employer_id'   => $request->user()->id_user,
+                    'project_id'    => $request->project_id,
+                    'message'       => $request->hire_talent_message,
+                    'updated'       => date('Y-m-d H:i:s'),
+                    'created'       => date('Y-m-d H:i:s')
+                ]);
+
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'employer',
+                    'action'            => 'invite-for-job',
+                    'reference_type'    => 'project',
+                    'reference_id'      => $request->project_id
+                ]));
+
+                $this->status           = true;
+                $this->message          = 'M0449';
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );  
+        }
+
+        public function change_currency(Request $request){
+            $currency = !empty($this->post['currency']) ? $this->post['currency'] : DEFAULT_CURRENCY;
+            $isUpdated = \Models\Employers::change($request->user()->id_user,[
+                'currency' => $currency,
+                'updated'  => date('Y-m-d h:i:s')
+            ]);
+            if($isUpdated){
+                $this->status = true;
+                $this->message  = "M0470";
+            }
+
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }        
+    }
+

@@ -1,0 +1,1 @@
+érapp/Models/TalentIndustries.php 2phpXhrapp/Models/TalentIndustries.php

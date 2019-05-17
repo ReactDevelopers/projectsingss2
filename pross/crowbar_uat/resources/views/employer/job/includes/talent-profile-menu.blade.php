@@ -1,0 +1,1 @@
+{!! ___getmenu('employer-talent-profile','<span class="hide">%s</span><ul class="user-profile-links clearfix">%s</ul>','active',true,true,sprintf("?talent_id=%s",___encrypt($talent['id_user']))) !!}

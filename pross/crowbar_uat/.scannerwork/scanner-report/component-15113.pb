@@ -1,0 +1,1 @@
+‰v)resources/views/talent/proposals/includes :ˆvr)resources/views/talent/proposals/includes

@@ -1,0 +1,332 @@
+<?php
+
+    namespace Models; 
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Mail;
+
+    class Reviews extends Model{
+        const CREATED_AT = 'created';
+        const UPDATED_AT = 'updated';
+
+        protected $fillable = [];
+
+        protected $hidden = [];
+        protected $table  = 'reviews';
+
+        public function __construct(){
+    	   
+        }
+
+        public static function add_review($data){
+            if(empty($data)){
+                return (bool) false;
+            }else{
+                if(self::insert($data)){
+                    return (bool)true;
+                }else{
+                    return (bool) false;
+                }
+            }
+        }
+
+        public static function is_reviewed($sender_id, $receiver_id, $project_id){
+            return DB::table('reviews as reviews')
+            ->where('sender_id',$sender_id)
+            ->where('receiver_id',$receiver_id)
+            ->where('project_id',$project_id)
+            ->get()->count();
+        }
+
+        public static function talent_reviews($talent_id,$project_id="",$review_type="by_employers",$page = 0,$keys = NULL,$limit = DEFAULT_PAGING_LIMIT){
+            $table_reviews = DB::table('reviews as reviews');
+            $prefix = DB::getTablePrefix();
+            $offset = 0;
+            
+            if(empty($keys)){
+                $keys           = [
+                    'reviews.id_review',
+                    'reviews.receiver_id',
+                    'reviews.sender_id',
+                    'reviews.description',
+                    'reviews.review_average',
+                    \DB::Raw("DATE({$prefix}reviews.created) as created"),
+                    \DB::Raw("CONCAT({$prefix}employer.first_name,' ',{$prefix}employer.last_name) as employer_name"),
+                ];
+            }
+
+            $table_reviews->select($keys);
+            if($review_type == 'by_me'){
+                $table_reviews->leftJoin('users as employer','employer.id_user','=','reviews.receiver_id');
+                $table_reviews->where("reviews.sender_id",$talent_id);
+            }else{
+                $table_reviews->leftJoin('users as employer','employer.id_user','=','reviews.sender_id');
+                $table_reviews->where("reviews.receiver_id",$talent_id);
+            }
+
+            if(!empty($project_id)){
+                $table_reviews->where("reviews.project_id",$project_id);
+            }
+
+
+            if(!empty($page)){
+                $offset = ($page - 1)*$limit;
+            }
+            
+            $table_reviews->groupBy(['reviews.id_review']);
+            $table_reviews->orderBy('reviews.id_review');
+            
+            $total = $table_reviews->get()->count();
+
+            $table_reviews->offset($offset);
+            $table_reviews->limit($limit);
+
+            $reviews  = json_decode(json_encode($table_reviews->get()),true);
+            $total_filtered_result = $table_reviews->get()->count();
+                
+            if(!empty($reviews)){
+                array_walk($reviews, function(&$item) use($review_type){
+                    $item['created'] = ___d($item['created']);
+                    if($review_type == 'by_me'){
+                        $item['picture'] = get_file_url(\Models\Talents::get_file(sprintf(" type = 'profile' AND user_id = %s",$item['receiver_id']),'single',['filename','folder']));
+                    }else{
+                        $item['picture'] = get_file_url(\Models\Talents::get_file(sprintf(" type = 'profile' AND user_id = %s",$item['sender_id']),'single',['filename','folder']));
+                    }
+                });
+            }
+
+            return [
+                'total' => $total,
+                'result' => $reviews,
+                'total_filtered_result' => $total_filtered_result,
+            ];
+        } 
+
+        public static function employer_reviews($employer_id,$project_id="",$review_type="by_talents",$page = 0,$keys = NULL,$limit = DEFAULT_PAGING_LIMIT){
+            $table_reviews = DB::table('reviews as reviews');
+            $prefix = DB::getTablePrefix();
+            $offset = 0;
+            
+            if(empty($keys)){
+                $keys           = [
+                    'reviews.id_review',
+                    'reviews.receiver_id',
+                    'reviews.sender_id',
+                    'reviews.description',
+                    'reviews.review_average',
+                    \DB::Raw("DATE({$prefix}reviews.created) as created"),
+                    \DB::Raw("CONCAT({$prefix}talent.first_name,' ',{$prefix}talent.last_name) as talent_name"),
+                ];
+            }
+
+            $table_reviews->select($keys);
+
+            if($review_type == 'by_me'){
+                $table_reviews->leftJoin('users as talent','talent.id_user','=','reviews.receiver_id');
+                $table_reviews->where("reviews.sender_id",$employer_id);
+            }else{
+                $table_reviews->leftJoin('users as talent','talent.id_user','=','reviews.sender_id');
+                $table_reviews->where("reviews.receiver_id",$employer_id);
+            }
+
+            if(!empty($project_id)){
+                $table_reviews->where("reviews.project_id",$project_id);
+            }
+            
+            if(!empty($page)){
+                $offset = ($page - 1)*$limit;
+            }
+            
+            $table_reviews->groupBy(['reviews.id_review']);
+            $table_reviews->orderBy('reviews.id_review');
+            
+            $total = $table_reviews->get()->count();
+
+            $table_reviews->offset($offset);
+            $table_reviews->limit($limit);
+
+            $reviews  = json_decode(json_encode($table_reviews->get()),true);
+            $total_filtered_result = $table_reviews->get()->count();
+                
+            if(!empty($reviews)){
+                array_walk($reviews, function(&$item) use($review_type){
+                    $item['created'] = ___d($item['created']);
+                    if($review_type == 'by_me'){
+                        $item['picture'] = get_file_url(\Models\Talents::get_file(sprintf(" type = 'profile' AND user_id = %s",$item['receiver_id']),'single',['filename','folder']));
+                    }else{
+                        $item['picture'] = get_file_url(\Models\Talents::get_file(sprintf(" type = 'profile' AND user_id = %s",$item['sender_id']),'single',['filename','folder']));
+                    }
+                });
+            }
+
+            return [
+                'total' => $total,
+                'result' => $reviews,
+                'total_filtered_result' => $total_filtered_result,
+            ];
+        }
+
+        public static function review_detail($review_id,$keys=NULL,$review_type=""){
+            $table_reviews = DB::table('reviews as reviews');
+            $prefix = DB::getTablePrefix();
+            if(empty($keys)){
+                $keys = [
+                    'reviews.receiver_id',
+                    'reviews.sender_id',
+                    'reviews.description as review',
+                    'reviews.review_average',
+                    'reviews.category_two as category1',
+                    'reviews.category_three as category2',
+                    'reviews.category_four as category3',
+                    'reviews.category_five as category4',
+                    'reviews.category_six as category5',
+                    'reviews.created as review_date',
+                    'projects.id_project',
+                    'projects.user_id as company_id',
+                    'projects.title',
+                    'projects.description',
+                    'projects.industry',
+                    'projects.location',
+                    'projects.created as project_created',
+                    'projects.price',
+                    'projects.price_max',
+                    'projects.budget_type',
+                    'projects.price_type',
+                    'projects.price_unit',
+                    'projects.employment',
+                    'projects.expertise',
+                    'projects.bonus',
+                    'projects.project_status',
+                    'industry.name as industry_name',
+                    \DB::Raw("
+                        IF(
+                            ({$prefix}sender.type = 'employer'),
+                            {$prefix}sender.company_name,
+                            IF(
+                                ({$prefix}receiver.type = 'employer'),
+                                {$prefix}receiver.company_name,
+                                ''
+                            )
+                        ) as company_name
+                    "),
+                    \DB::Raw("DATE({$prefix}projects.startdate) as startdate"),
+                    \DB::Raw("DATE({$prefix}projects.enddate) as enddate"),
+                    \DB::Raw("DATE({$prefix}reviews.created) as created"),
+                    \DB::Raw("CONCAT({$prefix}sender.first_name,' ',{$prefix}sender.last_name) as sender_name"),
+                    \DB::Raw("CONCAT({$prefix}receiver.first_name,' ',{$prefix}receiver.last_name) as receiver_name"),
+                ];
+            }
+
+            $table_reviews->select($keys);
+            $table_reviews->leftJoin('projects','projects.id_project','=','reviews.project_id');
+            $table_reviews->leftJoin('industries as industry','industry.id_industry','=','projects.industry');
+            $table_reviews->leftJoin('users as receiver','receiver.id_user','=','reviews.receiver_id');
+            $table_reviews->leftJoin('users as sender','sender.id_user','=','reviews.sender_id');
+            
+            $table_reviews->where("reviews.id_review",$review_id);
+            
+            $review_data                    = $table_reviews->first();
+
+            if(empty($review_data)){
+                $reviewData = [];
+            }else{
+                $reviewData                     = json_decode(json_encode($review_data),true);
+                
+                $reviewData['receiver_image']   = get_file_url(\Models\Talents::get_file(sprintf(" type = 'profile' AND user_id = %s",$reviewData['receiver_id']),'single',['filename','folder']));
+                $reviewData['job_type']         = employment_types('post_job',$reviewData['employment']);
+                $reviewData['project_created']  = sprintf("%s %s",trans('general.M0177'),___ago($reviewData['project_created']));
+                $reviewData['expertise']        = ucfirst($reviewData['expertise']);
+
+                if($reviewData['employment'] !== 'fulltime'){
+                    $reviewData['timeline']     = ___date_difference($reviewData['startdate'],$reviewData['enddate']);
+                    $reviewData['price_type']   = job_types($reviewData['price_type']);
+                }else{
+                    $reviewData['price_type']   = trans('website.W0039');
+                    $reviewData['timeline']     = trans('website.W0039');
+                }
+            }
+
+            return ($reviewData);
+        }
+
+        public static function listing($type,$user_id,$project_id = NULL, $page = 0, $keys = NULL, $limit = DEFAULT_PAGING_LIMIT){
+            $table_reviews  = DB::table('reviews as reviews');
+            $prefix         = DB::getTablePrefix();
+            $base_url       = ___image_base_url();
+
+            if(empty($keys)){
+                $keys           = [
+                    'reviews.id_review',
+                    'reviews.receiver_id',
+                    'reviews.sender_id',
+                    'reviews.category_two',
+                    'reviews.category_three',
+                    'reviews.category_four',
+                    'reviews.category_five',
+                    'reviews.category_six',
+                    'reviews.description',
+                    'reviews.review_average',
+                    'reviews.created',
+                    'sender.type as sender_type',
+                    \DB::Raw("TRIM(CONCAT({$prefix}sender.first_name,' ',{$prefix}sender.first_name)) as sender_name"),
+                    'receiver.type as receiver_type',
+                    \DB::Raw("TRIM(CONCAT({$prefix}receiver.first_name,' ',{$prefix}receiver.first_name)) as receiver_name"),
+                    \DB::Raw("
+                        IF(
+                            {$prefix}receiver_files.filename IS NOT NULL,
+                            CONCAT('{$base_url}','/',{$prefix}receiver_files.folder,{$prefix}receiver_files.filename),
+                            CONCAT('{$base_url}','/','images/','".DEFAULT_AVATAR_IMAGE."')
+                        ) as receiver_picture
+                    "),
+                    \DB::Raw("
+                        IF(
+                            {$prefix}sender_files.filename IS NOT NULL,
+                            CONCAT('{$base_url}','/',{$prefix}sender_files.folder,{$prefix}sender_files.filename),
+                            CONCAT('{$base_url}','/','images/','".DEFAULT_AVATAR_IMAGE."')
+                        ) as sender_picture
+                    "),
+                ];
+            }
+
+            $table_reviews->select($keys);
+            $table_reviews->leftJoin("users as sender","sender.id_user","=","reviews.sender_id");
+            $table_reviews->leftJoin("users as receiver","receiver.id_user","=","reviews.receiver_id");
+            $table_reviews->leftJoin('files as receiver_files',function($leftjoin){
+                $leftjoin->on('receiver_files.user_id','=','receiver.id_user');
+                $leftjoin->on('receiver_files.type','=',\DB::Raw('"profile"'));
+            });
+            $table_reviews->leftJoin('files as sender_files',function($leftjoin){
+                $leftjoin->on('sender_files.user_id','=','sender.id_user');
+                $leftjoin->on('sender_files.type','=',\DB::Raw('"profile"'));
+            });
+
+            if(!empty($project_id)){
+                $table_reviews->where("reviews.project_id",$project_id);
+            }
+            
+            if($type == 'sender'){
+                $table_reviews->where("reviews.sender_id",$user_id);
+            }elseif($type == 'receiver'){
+                $table_reviews->where("reviews.receiver_id",$user_id);
+            }
+
+            return $table_reviews->get();            
+        }
+
+        public static function summary($user_id){
+            $table_reviews = DB::table('reviews');
+
+            $reviews = $table_reviews->select([
+                \DB::raw('IFNULL(ROUND(AVG(review_average), 1), "0.0") as rating'),
+                \DB::raw('COUNT(id_review) as review')
+            ])
+            ->where('receiver_id',$user_id)
+            ->get()
+            ->first();
+
+            return json_decode(json_encode($reviews),true);
+        }
+    }
+

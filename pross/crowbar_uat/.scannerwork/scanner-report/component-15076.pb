@@ -1,0 +1,1 @@
+äuresources/views/talent/profile :ãuåuæuëuíuîuvrresources/views/talent/profile

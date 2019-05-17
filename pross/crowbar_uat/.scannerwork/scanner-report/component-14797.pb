@@ -1,0 +1,1 @@
+Ís4resources/views/employer/settings/payments.blade.php 2phpXKhr4resources/views/employer/settings/payments.blade.php

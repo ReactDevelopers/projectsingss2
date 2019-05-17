@@ -1,0 +1,1 @@
+Ét:resources/views/vendor/translation-manager/index.blade.php 2phpXthr:resources/views/vendor/translation-manager/index.blade.php

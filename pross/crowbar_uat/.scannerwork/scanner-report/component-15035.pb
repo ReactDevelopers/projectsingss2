@@ -1,0 +1,1 @@
+»u'resources/views/talent/settings/layouts :ºur'resources/views/talent/settings/layouts

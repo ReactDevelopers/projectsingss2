@@ -1,0 +1,1 @@
+½uQresources/views/talent/settings/pages/accept_reject_transfer_index_type.blade.php 2phpXEhrQresources/views/talent/settings/pages/accept_reject_transfer_index_type.blade.php

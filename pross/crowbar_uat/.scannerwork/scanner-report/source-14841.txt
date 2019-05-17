@@ -1,0 +1,24 @@
+<div class="col-md-3 left-sidebar">
+    <div class="user-profile-image">
+        <div class="user-display-details">
+            <div class="user-display-image cropper" data-request="cropper" data-class="profile" data-width="192" data-height="192" data-folder="{{TALENT_PROFILE_PHOTO_UPLOAD}}" data-record="0" data-column="profile" style="background: url('{{ $user['picture'] }}') no-repeat center center;background-size:100% 100%"></div>
+
+            <div class="user-name-info">
+                <p>{{ sprintf("%s %s",$user['first_name'],$user['last_name']) }}</p>
+                <span>{{ $user['email'] }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="profile-completion-block">
+        <h3>Profile Completion <span>{{ ___format($user['profile_percentage_count'],'no-decimal') }}%</span></h3>
+        <div class="completion-bar">
+            <span style="width: {{ ___format($user['profile_percentage_count'],'no-decimal') }}%;"></span>
+        </div>
+        <ul class="completion-list-group">
+            <li class="completed">Account Creation</li>
+            <li class="@if(!empty($user['profile_percentage_step_one'])) {{ 'completed'}} @endif">General Information</li>
+            <li class="@if(!empty($user['profile_percentage_step_two'])) {{ 'completed'}} @endif"">Setup Profile</li>
+            <li class="@if(!empty($user['profile_percentage_step_three'])) {{ 'completed'}} @endif"">Verify Account</li>
+        </ul>
+    </div>
+</div>

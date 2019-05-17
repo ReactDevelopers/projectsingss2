@@ -1,0 +1,63 @@
+@section('content')
+    <!-- Main Content -->
+    <div class="contentWrapper" data-request="scroll" data-section="{{ \Request::get('section') }}">
+        <div class="afterlogin-section has-nobanner after-login-view">
+            <div class="container">
+                @include('talent.includes.user-detail-header',$user)
+                @include('talent.viewprofile.includes.sidebar',$user)
+                <div class="col-md-9 col-sm-8 col-xs-12 right-sidebar verify-account">
+                    @include('talent.viewprofile.includes.tab-menu',$user)
+                    <div class="inner-profile-section work-experience-edit">
+                        <form class="form-horizontal" role="talent_step_one" action="{{url(sprintf('%s/connect/_verify_phone',TALENT_ROLE_TYPE))}}" method="post" accept-charset="utf-8">
+                            <div class="login-inner-wrapper">                                
+                                <div class="message">
+                                    {{ ___alert((!empty($alert))?$alert:($errors->has('alert'))?$errors->first('alert'):'') }}
+                                </div>
+                                {{ csrf_field() }}
+                                <input type="hidden" name="step_type" value="edit">
+                                <div class="form-group">
+                                    <label class="control-label col-md-12">{{trans('website.W0053')}}</label>
+                                    <div class="col-md-6 phonednumber-field close-fields-wrapper">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="custom-dropdown countrycode-dropdown">
+                                                    <select name="country_code" class="form-control">
+                                                        {!!___dropdown_options($country_phone_codes,'',$user['country_code'])!!}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">  
+                                                <input type="text" name="mobile" value="{{ old('mobile',$user['mobile']) }}" placeholder="{{trans('website.W0071')}}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <input type="hidden" name="mobile_error">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group button-group">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="row form-btn-set">
+                                        <div class="col-md-7 col-sm-7 col-xs-6">
+                                            <a href="{{ $skip_url }}" class="greybutton-line" value="Complete It Later">
+                                                    {{trans('website.W0186')}}
+                                                </a>
+                                        </div>
+                                        <div class="col-md-5 col-sm-5 col-xs-6">
+                                            <button type="button" data-request="ajax-submit" data-target='[role="talent_step_one"]' name="save" class="button" value="Save">
+                                                {{trans('website.W0124')}}
+                                            </button>
+                                        </div>                                
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

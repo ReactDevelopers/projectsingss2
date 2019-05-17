@@ -1,0 +1,461 @@
+<?php
+
+    namespace Models;
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\DB;
+
+    class Forum extends Model{
+        public function __construct(){
+
+        }
+
+        public static function change($id_question,$data){
+            $isUpdated = false;
+            $table_users = DB::table('forum_question');
+
+            if(!empty($data)){
+                $table_users->where('id_question','=',$id_question);
+                $isUpdated = $table_users->update($data);
+            }
+
+            return (bool)$isUpdated;
+        }
+
+        public static function changeReply($id_answer, $data){
+            $isUpdated = false;
+            $table_users = DB::table('forum_answer');
+
+            if(!empty($data)){
+                $table_users->where('id_answer','=',$id_answer);
+                $isUpdated = $table_users->update($data);
+            }
+
+            return (bool)$isUpdated;
+        }
+
+        public static function delete_question($id_question){
+            $isUpdated = false;
+            $table_users = DB::table('forum_answer');
+
+            $table_users->where('id_question','=',$id_question);
+            $isUpdated = $table_users->update(['status' => 'trash']);
+
+            $table_users = DB::table('forum_question');
+            $table_users->where('id_question','=',$id_question);
+            $isUpdated = $table_users->update(['status' => 'trash']);
+
+            return (bool)$isUpdated;
+        }
+
+        public static function delete_reply($id_answer){
+            $isUpdated = false;
+            $table_users = DB::table('forum_answer');
+
+            $table_users->where('id_answer','=',$id_answer);
+            $table_users->orWhere('id_parent','=',$id_answer);
+            $isUpdated = $table_users->update(['status' => 'trash']);
+
+            return (bool)$isUpdated;
+        }
+
+        public static function getQuestionList(){
+            $prefix       = DB::getTablePrefix();
+            $questionList = DB::table('forum_question')
+            ->select([
+                'forum_question.id_question',
+                'forum_question.id_user',
+                \DB::raw('SUBSTRING('.$prefix.'forum_question.question_description, 1, 80) AS question_description'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_question.approve_date, "%d-%m-%Y") AS approve_date'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_question.created, "%d-%m-%Y") AS created'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_question.updated, "%d-%m-%Y") AS updated'),
+                \DB::raw('CONCAT(UCASE(LEFT('.$prefix.'forum_question.status, 1)),SUBSTRING('.$prefix.'forum_question.status, 2)) AS status'),
+                \DB::Raw("TRIM(CONCAT(".$prefix."users.first_name,' ',".$prefix."users.last_name)) as person_name"),
+            ])
+            ->leftJoin('users as users','users.id_user','=','forum_question.id_user')
+            ->where('forum_question.status', '!=', 'trash')
+            ->get();
+
+            return $questionList;
+        }
+
+        public static function getQuestionFront($id_question = 0){
+            $prefix       = DB::getTablePrefix();
+            $questionList = DB::table('forum_question')
+            ->select([
+                'forum_question.id_question',
+                'forum_question.id_user',
+                \DB::raw('COUNT('.$prefix.'forum_answer.id_answer) AS total_reply'),
+                \DB::raw('SUBSTRING('.$prefix.'forum_question.question_description, 1, 80) AS question_description'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_question.approve_date, "%d-%m-%Y") AS approve_date'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_question.created, "%d-%m-%Y") AS created'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_question.updated, "%d-%m-%Y") AS updated'),
+                \DB::raw('CONCAT(UCASE(LEFT('.$prefix.'forum_question.status, 1)),SUBSTRING('.$prefix.'forum_question.status, 2)) AS status'),
+                \DB::Raw("TRIM(CONCAT(".$prefix."users.first_name,' ',".$prefix."users.last_name)) as person_name"),
+                \DB::Raw("TRIM(CONCAT(".$prefix."files.folder,'',".$prefix."files.filename)) as filename"),
+            ])
+            ->leftJoin('users as users','users.id_user','=','forum_question.id_user')
+            ->leftJoin('files', function($join)
+            {
+                $join->on('files.user_id', '=', 'users.id_user')
+                ->where('files.type', 'profile');
+            })
+            ->leftJoin('forum_answer','forum_answer.id_question','=','forum_question.id_question')
+            ->where('forum_question.status', '=', 'open');
+
+            if($id_question > 0){
+                $questionList->where('forum_question.id_question', $id_question);
+            }
+
+            $questionList->groupBY('forum_question.id_question');
+            $questionList = $questionList->get();
+
+            if($id_question > 0){
+                $questionList = $questionList->first();
+                $questionList = json_decode(json_encode($questionList), true);
+            }
+            return $questionList;
+        }
+
+        public static function getQuestionFrontById($id_question){
+            $questionList = DB::table('forum_question')
+            ->where('id_question',$id_question)
+            ->first();
+
+            return $questionList;
+        }
+
+        public static function getQuestion(){
+
+            return DB::table('question')
+                ->select('question.*')
+                ->where('question.status','active')
+                ->orderBy('id','DESC')
+                ->get()
+                ->toArray();
+        }
+
+        public static function saveAnswer($answerArr)
+        {
+            DB::table('forum_answer')->insert($answerArr);
+        }
+
+        public static function update_question($id_question,$data)
+        {
+            $table_question = DB::table('forum_question');
+            if(!empty($data)){
+                $table_question->where('id',$id_question);
+                $isUpdated = $table_question->update($data);
+            }
+            return (bool)$isUpdated;
+        }
+
+        public static function saveQuestion($data){
+            $table_question = DB::table('forum_question');
+            if(!empty($data)){
+                return $table_question->insertGetId($data);
+            }
+            return false;
+        }
+
+        public static function getQuestionById($id_question){
+            $questionList = DB::table('forum_question')
+            ->where('id_question',$id_question)
+            ->first();
+
+            return $questionList;
+        }
+
+        public static function getNestedAnswer($id_question, $id_parent = 0, $html = ''){
+            $prefix = DB::getTablePrefix();
+            $answer = DB::table('forum_answer')
+            ->select([
+                'forum_answer.id_answer',
+                'forum_answer.id_question',
+                'forum_answer.id_user',
+                'forum_answer.answer_description',
+                'forum_answer.up_counter',
+                'forum_answer.id_parent',
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.approve_date, "%d-%m-%Y") AS approve_date'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.created, "%d-%m-%Y") AS created'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.updated, "%d-%m-%Y") AS updated'),
+                \DB::raw('CONCAT(UCASE(LEFT('.$prefix.'forum_answer.status, 1)),SUBSTRING('.$prefix.'forum_answer.status, 2)) AS status'),
+                \DB::Raw("TRIM(CONCAT(".$prefix."users.first_name,' ',".$prefix."users.last_name)) as person_name"),
+            ])
+            ->where('forum_answer.id_question',$id_question)
+            ->where('forum_answer.id_parent',$id_parent)
+            ->leftJoin('users as users','users.id_user','=','forum_answer.id_user')
+            ->where('forum_answer.status', '!=', 'trash')
+            ->get()
+            ->toArray();
+
+            $answer = json_decode(json_encode($answer), true);
+
+            #$html .= self::generateHtml($answer);
+
+            foreach ($answer as &$element) {
+                $children = self::getNestedAnswer($id_question, $element['id_answer']);
+
+                if ($children) {
+                    #$html .= self::generateHtml($children, $html);
+                    $element['children'] = $children;
+                }
+            }
+            #dd($html);
+            return $answer;
+        }
+
+        public static function generateHtml($answer, $html = ''){
+            if(!empty($answer) && !empty($answer['html'])){
+                echo '<pre>';
+                print_r($answer);
+                echo '</pre>';
+                foreach ($answer as $element) {
+                    $html .= '<div>
+                        <div>'.$element['answer_description'].'</div>
+                        <div>
+                        <span>'.$element['up_counter'].' ups</span>
+                        <span>by '.$element['person_name'].'</span>
+                        <span>reply on '.$element['created'].'</span>
+                        </div>
+                    </div>';
+                }
+            }
+            return $html;
+        }
+
+        public static function getAnswerByQuesId($id_question, $id_parent = 0, $type = 'parent', $from = 'backend'){
+            $prefix = DB::getTablePrefix();
+            $answer = DB::table('forum_answer');
+            $answer->select([
+                'forum_answer.id_answer',
+                'forum_answer.id_question',
+                'forum_answer.id_user',
+                'forum_answer.answer_description',
+                'forum_answer.up_counter',
+                'forum_answer.id_parent',
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.approve_date, "%d-%m-%Y") AS approve_date'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.created, "%d-%m-%Y") AS created'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.updated, "%d-%m-%Y") AS updated'),
+                \DB::raw('CONCAT(UCASE(LEFT('.$prefix.'forum_answer.status, 1)),SUBSTRING('.$prefix.'forum_answer.status, 2)) AS status'),
+                \DB::Raw("TRIM(CONCAT(".$prefix."users.first_name,' ',".$prefix."users.last_name)) as person_name"),
+                \DB::Raw("TRIM(CONCAT(".$prefix."files.folder,'',".$prefix."files.filename)) as filename"),
+            ]);
+            $answer->where('forum_answer.id_question',$id_question);
+            $answer->leftJoin('users as users','users.id_user','=','forum_answer.id_user');
+            $answer->leftJoin('files', function($join)
+            {
+                $join->on('files.user_id', '=', 'users.id_user')
+                ->where('files.type', 'profile');
+            });
+
+            if($from == 'backend'){
+                $answer->where('forum_answer.status', '!=', 'trash');
+            }
+            elseif($from == 'front'){
+                $answer->where('forum_answer.status', 'approve');
+            }
+
+            $answer->where('forum_answer.id_parent',$id_parent);
+
+            if($type == 'parent'){
+                $answer = $answer->paginate(10);
+
+                foreach ($answer as &$value) {
+                    $has_child = DB::table('forum_answer')
+                    ->where('id_parent',$value->id_answer)
+                    ->get()
+                    ->toArray();
+
+                    if(!empty($has_child)){
+                        $value->has_child = 1;
+                    }
+                    else{
+                        $value->has_child = 0;
+                    }
+                }
+                return $answer;
+            }
+            elseif($type == 'child'){
+                $answer = $answer->get()->toArray();
+
+                $answer = json_decode(json_encode($answer), true);
+
+                foreach ($answer as &$value) {
+                    $has_child = DB::table('forum_answer')
+                    ->where('id_parent',$value['id_answer'])
+                    ->get()
+                    ->toArray();
+
+                    if(!empty($has_child)){
+                        $value['has_child'] = 1;
+                    }
+                    else{
+                        $value['has_child'] = 0;
+                    }
+                }
+
+                return $answer;
+            }
+        }
+
+        public static function getAnswerFrontByQuesId($id_question, $id_parent = 0, $type = 'parent'){
+            $prefix = DB::getTablePrefix();
+            $answer = DB::table('forum_answer');
+            $answer->select([
+                'forum_answer.id_answer',
+                'forum_answer.id_question',
+                'forum_answer.id_user',
+                'forum_answer.answer_description',
+                'forum_answer.up_counter',
+                'forum_answer.id_parent',
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.approve_date, "%d-%m-%Y") AS approve_date'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.created, "%d-%m-%Y") AS created'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.updated, "%d-%m-%Y") AS updated'),
+                \DB::raw('CONCAT(UCASE(LEFT('.$prefix.'forum_answer.status, 1)),SUBSTRING('.$prefix.'forum_answer.status, 2)) AS status'),
+                \DB::Raw("TRIM(CONCAT(".$prefix."users.first_name,' ',".$prefix."users.last_name)) as person_name"),
+                \DB::Raw("TRIM(CONCAT(".$prefix."files.folder,'',".$prefix."files.filename)) as filename"),
+            ]);
+            $answer->where('forum_answer.id_question',$id_question);
+            $answer->leftJoin('users as users','users.id_user','=','forum_answer.id_user');
+            $answer->leftJoin('files', function($join)
+            {
+                $join->on('files.user_id', '=', 'users.id_user')
+                ->where('files.type', 'profile');
+            });
+            $answer->where('forum_answer.status', '=', 'approve');
+            $answer->where('forum_answer.id_parent',$id_parent);
+
+            if($type == 'parent'){
+                $answer = $answer->get()->toArray();
+
+                foreach ($answer as &$value) {
+                    $has_child = DB::table('forum_answer')
+                    ->where('id_parent',$value->id_answer)
+                    ->get()
+                    ->toArray();
+
+                    if(!empty($has_child)){
+                        $value->has_child = 1;
+                    }
+                    else{
+                        $value->has_child = 0;
+                    }
+                }
+                return $answer;
+            }
+            elseif($type == 'child'){
+                $answer = $answer->get()->toArray();
+
+                $answer = json_decode(json_encode($answer), true);
+
+                foreach ($answer as &$value) {
+                    $has_child = DB::table('forum_answer')
+                    ->where('id_parent',$value['id_answer'])
+                    ->get()
+                    ->toArray();
+
+                    if(!empty($has_child)){
+                        $value['has_child'] = 1;
+                    }
+                    else{
+                        $value['has_child'] = 0;
+                    }
+                }
+
+                return $answer;
+            }
+        }
+
+        public static function __getAnswerFrontByQuesId($id_question, $id_parent = 0){
+            $prefix = DB::getTablePrefix();
+            $answer = DB::table('forum_answer')
+            ->select([
+                'forum_answer.id_answer',
+                'forum_answer.id_question',
+                'forum_answer.id_user',
+                'forum_answer.answer_description',
+                'forum_answer.up_counter',
+                'forum_answer.id_parent',
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.approve_date, "%d-%m-%Y") AS approve_date'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.created, "%d-%m-%Y") AS created'),
+                \DB::raw('DATE_FORMAT('.$prefix.'forum_answer.updated, "%d-%m-%Y") AS updated'),
+                \DB::raw('CONCAT(UCASE(LEFT('.$prefix.'forum_answer.status, 1)),SUBSTRING('.$prefix.'forum_answer.status, 2)) AS status'),
+                \DB::Raw("TRIM(CONCAT(".$prefix."users.first_name,' ',".$prefix."users.last_name)) as person_name"),
+            ])
+            ->where('forum_answer.id_question',$id_question)
+            ->leftJoin('users as users','users.id_user','=','forum_answer.id_user')
+            ->where('forum_answer.status', '!=', 'trash')
+            ->where('forum_answer.id_parent',$id_parent)
+            ->get()
+            ->toArray();
+
+            return json_decode(json_encode($answer), true);
+        }
+
+        public static function relatedQuestion($id_question){
+            $prefix = DB::getTablePrefix();
+            $question = self::getQuestionById($id_question);
+            /*
+            SELECT cb_forum_question.*,
+                   MATCH (question_description) AGAINST ('he is a good boy') AS relevance
+            FROM cb_forum_question
+            WHERE MATCH (question_description) AGAINST ('he is a good boy')
+            ORDER BY relevance DESC
+            */
+            if(!empty($question->question_description)){
+                $answer = DB::table('forum_question')
+                ->select([
+                    'forum_question.*',
+                    \DB::raw('SUBSTRING('.$prefix.'forum_question.question_description, 1, 100) AS question_description'),
+                    #'forum_answer.answer_description',
+                    #'forum_answer.id_answer',
+                    \DB::raw("MATCH (".$prefix."forum_question.question_description) AGAINST ('".$question->question_description."') AS relevance")
+                    ])
+                #->leftJoin('forum_answer','forum_answer.id_question','=','forum_question.id_question')
+                ->whereRaw("MATCH (".$prefix."forum_question.question_description) AGAINST ('".$question->question_description."' IN BOOLEAN MODE) ")
+                ->where('forum_question.id_question', '!=', $id_question)
+                #->where('forum_answer.id_parent', 0)
+                ->groupBy('forum_question.id_question')
+                ->orderBy('relevance', 'DESC')
+                #->orderBy('forum_answer.id_answer', 'ASC')
+                ->get()
+                ->toArray();
+
+                return json_decode(json_encode($answer), true);
+            }
+            else{
+                return [];
+            }
+        }
+
+        public static function latestQuestion(){
+            $prefix = DB::getTablePrefix();
+
+            $answer = DB::table('forum_question')
+            ->select([
+                'forum_question.*',
+                \DB::raw('SUBSTRING('.$prefix.'forum_question.question_description, 1, 100) AS question_description'),
+                #'forum_answer.answer_description',
+                #'forum_answer.id_answer'
+                ])
+            #->leftJoin('forum_answer','forum_answer.id_question','=','forum_question.id_question')
+            #->where('forum_question.id_question', '!=', $id_question)
+            #->where('forum_answer.id_parent', 0)
+            ->groupBy('forum_question.id_question')
+            #->orderBy('forum_answer.id_answer', 'ASC')
+            ->take(5)
+            ->get()
+            ->toArray();
+
+            return json_decode(json_encode($answer), true);
+
+            if(!empty($question->question_description)){
+
+            }
+            else{
+                return [];
+            }
+        }
+    }
+

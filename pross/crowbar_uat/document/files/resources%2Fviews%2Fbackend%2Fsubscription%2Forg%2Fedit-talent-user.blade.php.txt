@@ -1,0 +1,65 @@
+@extends('layouts.backend.dashboard')
+
+@section('content')
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="<?php echo ($page == '')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,''); ?>">Basic</a></li>
+                            <li class="<?php echo ($page == 'industry')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=industry'); ?>">Indusrty & Skills</a></li>
+                            <li class="<?php echo ($page == 'education')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=education'); ?>">Education</a></li>
+                            <li class="<?php echo ($page == 'experience')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=experience'); ?>">Work Experience</a></li>
+                            <li class="<?php echo ($page == 'hiring')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=hiring'); ?>">Availability For Hiring</a></li>
+                            <li class="<?php echo ($page == 'verify')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=verify'); ?>">Account Verification</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane <?php echo ($page == '')?'active':''; ?>">
+                                @if($page == '')
+                                @include('backend.user.talent-basic-detail')
+                                @endif
+                            </div>
+
+                            <div class="tab-pane <?php echo ($page == 'industry')?'active':''; ?>">
+                                @if($page == 'industry')
+                                @include('backend.user.talent-industry-detail')
+                                @endif
+                            </div>
+
+                            <div class="tab-pane <?php echo ($page == 'education')?'active':''; ?>">
+                                @if($page == 'education')
+                                @include('backend.user.talent-education-detail')
+                                @endif
+                            </div>
+
+                            <div class="tab-pane <?php echo ($page == 'experience')?'active':''; ?>">
+                                @if($page == 'experience')
+                                @include('backend.user.talent-work-experience')
+                                @endif
+                            </div>
+
+                            <div class="tab-pane <?php echo ($page == 'hiring')?'active':''; ?>">
+                                @if($page == 'hiring')
+                                @include('backend.user.talent-hiring-availability')
+                                @endif
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'verify')?'active':''; ?>">
+                                @if($page == 'verify')
+                                @include('backend.user.talent-verify')
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
+
+@push('inlinescript')
+<script type="text/javascript">
+    $('select').trigger('change');
+</script>
+@endpush
+

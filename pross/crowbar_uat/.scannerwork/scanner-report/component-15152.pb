@@ -1,0 +1,1 @@
+°v3resources/views/talent/jobdetail/proposal.blade.php 2phpX¥hr3resources/views/talent/jobdetail/proposal.blade.php

@@ -1,0 +1,1 @@
+Çs.resources/views/employer/cards/index.blade.php 2phpXPhr.resources/views/employer/cards/index.blade.php

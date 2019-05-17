@@ -1,0 +1,48 @@
+.popup {
+    background: rgba(0, 0, 0, 0.2) none repeat scroll 0 0;
+    display: none;
+    height: 100%;
+    left: 0;
+    overflow: auto;
+    position: fixed;
+    text-align: center;
+    top: 0;
+    width: 100%;
+    z-index: 100001;
+}
+.popup_align {
+    height: 100%;
+}
+.popup_align, .popup_content {
+    display: inline-block;
+    vertical-align: middle;
+}
+.loader > div {
+    background-size: 50px 50px;
+    border-radius: 100%;
+    height: 169px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    width: 169px;
+    padding: 10px;
+    transform: translate(-50% , -50%);
+}
+.loader .spinning img{
+
+}
+.loader .spinning, .popup .content .loader .spinning {
+    /*animation: 0.5s linear 0s normal none infinite running rotating;*/
+}
+span.loader-text {
+    position: relative;
+    top: -92px;
+}
+span.loader-text strong{
+    font-size: 18px;
+    font-weight: 700;
+}
+.loader .logo {
+    display: block;
+    margin: 35px 40px;
+}

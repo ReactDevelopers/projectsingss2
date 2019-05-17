@@ -1,0 +1,30 @@
+<?php
+
+namespace Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+
+class File extends Model
+{
+    protected $table = 'files';
+    protected $primaryKey = 'id_file';
+
+	const CREATED_AT = 'created';
+	const UPDATED_AT = 'updated';
+
+    protected $fillable = [
+        'user_id', 'record_id', 'reference', 'filename', 'extension', 'folder', 'type', 'caption','size', 'is_default', 'status', 'created','updated',
+    ];
+
+	public function __construct(){
+	}
+
+	public static function update_file($file_ids,$data){
+		$table_files = DB::table('files');
+		
+		$table_files->whereIn('id_file',$file_ids)->update($data);
+		return true;
+	}
+}
+

@@ -1,0 +1,346 @@
+<?php
+
+    namespace Models; 
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Mail;
+
+    class Notifications extends Model{
+        protected $table = 'notifications';
+        protected $primaryKey = 'id_notification';
+        
+        const CREATED_AT = 'created';
+        const UPDATED_AT = 'updated';
+
+        protected $fillable = [];
+
+        protected $hidden = [];
+
+        public function __construct() {}
+
+        public static function notify($notify, $notified_by, $notification, $notification_response_json){
+
+            $table_notification     = \DB::table('notifications');
+            $notification_type      = \Models\Users::findById($notify,['type'])['type'];
+            
+            $insert_data = [
+                'notify'                        => $notify,
+                'notified_by'                   => $notified_by,
+                'notification'                  => $notification,
+                'notification_response_json'    => $notification_response_json,
+                'created'                       => date('Y-m-d H:i:s'),
+                'updated'                       => date('Y-m-d H:i:s'),
+            ];
+
+            $isInserted = self::insertGetId($insert_data);
+
+            if(!empty($isInserted)){
+                /* SENDING MAIL FOR NOTIFICATION */
+                $email_setting = \Models\Settings::is_settings_enabled($notify,$notification,'email');
+                if(!empty($email_setting)){
+                    $receiver_information   = \Models\Users::findById($notify,['email','first_name','last_name']);
+                    $sender_information     = \Models\Users::findById($notified_by,['email','first_name','last_name']);
+                    
+                    if(!empty($receiver_information)){
+                        $emailData              = ___email_settings();
+                        $emailData['email']     = $receiver_information['email'];
+                        $emailData['name']      = $receiver_information['first_name'];
+                        $emailData['link']      = ___get_notification_url($notification,$notification_response_json);
+                        $emailData['subject']   = str_replace(".", "", trans(sprintf('notification.%s',$notification)));
+                        $emailData['content']   = sprintf(
+                            NOTIFICATION_TEMPLATE,
+                            get_file_url(\Models\Users::get_file(sprintf(" type = 'profile' AND user_id = %s",$notify),'single',['filename','folder'])),
+                            trim($sender_information['first_name'].' '.$sender_information['last_name']),
+                            trans(sprintf("notification.%s",sprintf("READABLE_%s",$notification))),
+                            ___d(date('Y-m-d H:i:s'))
+                        );
+
+                        ___mail_sender($receiver_information['email'],sprintf("%s %s",$receiver_information['first_name'],$receiver_information['last_name']),"notification",$emailData);
+                    }
+                }else{
+                    //return (bool) self::notificationhistory($notify,$notification_type,$notification,json_encode(['result' => 'Notification setting is not enabled.','user_id' => $notify, 'reference_table' => 'users']));
+                }
+
+                $mobile_setting = \Models\Settings::is_settings_enabled($notify,$notification,'mobile');
+                if(!empty($mobile_setting)){
+                    $notification_id = $isInserted;
+                    $notification_count = $table_notification->where(
+                        [
+                            'notify' => $notify,
+                            'notification_status' => 'unread'
+                        ]
+                    )->count();
+
+                    $device = \Models\Users::get_current_device($notify,['device_token','device_type']);
+                    
+                    if(!empty($device)){
+                        if($device['device_type'] == 'android'){
+                            return (bool) self::android($notify,$notification_type,$device['device_token'],$notification,$notification_id,$notification_count,$notification_response_json);
+                        }else if($device['device_type'] == 'iphone'){
+                            return (bool) self::ios($notify,$notification_type,$device['device_token'],$notification,$notification_id,$notification_count,$notification_response_json);
+                        }
+                    }else{
+                        return (bool) self::notificationhistory($notify,$notification_type,$notification,json_encode(['result' => 'No device added for this user.','user_id' => $notify, 'reference_table' => 'users']));
+                    }
+                }else{
+                    return (bool) self::notificationhistory($notify,$notification_type,$notification,json_encode(['result' => 'Notification setting is not enabled.','user_id' => $notify, 'reference_table' => 'users']));
+                }
+            }else{
+                return (bool) false;
+            }            
+        } 
+
+        public static function android($notify,$notification_type,$device_token,$notification,$notification_id,$notification_count,$notification_response_json) {
+            $users_data             = \Models\Users::findById($notify,['type']);
+            $push_notification      = \PushNotification::setService('fcm');
+            $push_notification->setMessage([
+                'notification' => [
+                    'title' => 'Crowbar',
+                    'body'  => trans(sprintf('notification.%s',$notification)),
+                    'sound' => 'default',
+                ],
+                'data' => [
+                    'id'        => $notification_id,
+                    'key'       => $notification,
+                    'proposal'  => self::unread_notifications($notify,'proposals',$users_data['type']),
+                    'count'     => (int)self::unread_notifications($notify),
+                    'payload'   => json_decode($notification_response_json,true),
+                ]
+            ]);
+
+            $push_notification->setApiKey(config(sprintf('environment.PUSH_NOTIFICATION.%s.ANDROID_GOOGLE_API_KEY',app()->environment())));
+
+            try{
+                $response = json_encode($push_notification->setDevicesToken($device_token)->send()->getFeedback());
+            }catch (\Exception $e ) {
+                $response = json_encode(['status' => false, 'message' => $e->getMessage()]);
+            }
+
+            return self::notificationhistory($notify,$notification_type,$notification,$response.config(sprintf('environment.PUSH_NOTIFICATION.%s.ANDROID_GOOGLE_API_KEY',app()->environment())));
+        }
+
+        public static function ios($notify,$notification_type,$device_token,$notification,$notification_id,$notification_count,$notification_response_json) {
+            $dry_run           = true;
+            $users_data        = \Models\Users::findById($request->user()->id_user,['type']);
+            $push_notification = \PushNotification::setService('apn');
+
+            $push_notification->setMessage([
+                'aps' => [
+                    'alert' => trans(sprintf('notification.%s',$notification)),
+                    'badge' => (int) $notification_count,
+                    'sound' => 'default',
+                ],
+                'data' => [
+                    'id'        => $notification_id,
+                    'key'       => $notification,
+                    'proposal'  => \Models\Notifications::unread_notifications($notify,'proposals',$users_data['type']),
+                    'count'     => (int)\Models\Notifications::unread_notifications($notify),
+                    'payload'   => json_decode($notification_response_json,true),
+                
+                ]
+            ]);
+
+            if(app()->environment() == 'staging'){
+                $dry_run = false;
+            }
+
+            $push_notification->setConfig([
+                'certificate'   => str_replace('app/', '', config(sprintf('environment.PUSH_NOTIFICATION.%s.IOS_APPLE_CERTIFICATE',app()->environment()))),
+                'passPhrase'    => base64_decode(config(sprintf('environment.PUSH_NOTIFICATION.%s.IOS_APPLE_PASSWORD',app()->environment()))),
+                'dry_run'       => $dry_run
+            ]);
+
+            try{
+                $response = json_encode($push_notification->setDevicesToken($device_token)->send()->getFeedback());
+            }catch (\Exception $e ) {
+                $response = json_encode(['status' => false, 'message' => $e->getMessage()]);
+            }
+
+            return self::notificationhistory($notify,$notification_type,$notification,$response);
+        }
+
+        public static function notificationhistory($user_id,$user_type,$notification,$notification_response){
+            $table_notification      = \DB::table('notification_history');
+
+            $isInserted = $table_notification->insert([
+                'user_id' => $user_id,
+                'user_type' => $user_type,
+                'notification_type' => $notification,
+                'notification_response' => $notification_response,
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s'),
+            ]);
+
+            if(!empty($isInserted)){
+                return $isInserted;
+            }else{
+                return false;
+            }
+        }
+
+        public static function is_user_notification($user_id,$user_type,$notification_id){
+            $table_notification     = \DB::table('notifications');
+
+            $is_notification = $table_notification->where([
+                'id_notification' => $notification_id,
+                'notify' => $user_id
+            ])->count();
+
+            if(!empty($is_notification)){
+                return (bool) $is_notification;
+            }else{
+                return (bool) false;
+            }
+        }
+
+        public static function remove($user_id,$user_type,$notification_id){
+            $table_notification     = \DB::table('notifications');
+
+            return (bool) $table_notification->where(
+                array(
+                    'id_notification' => $notification_id,
+                    'notify' => $user_id
+                )
+            )->update([
+                'notification_status' => 'trashed',
+                'notification_freshness_status' => 'no',
+                'updated' => date('Y-m-d H:i:s')
+            ]);
+        }
+
+        public static function getdetail($user_id,$user_type,$notification_id){
+            $table_notification     = \DB::table('notifications');
+
+            return json_decode(
+                json_encode(
+                    $table_notification->where([
+                        'id_notification' => $notification_id,
+                        'notify' => $user_id
+                    ])->get()
+                ),
+                true
+            );
+        }
+
+        public static function unread_notifications($user_id,$notification_type="", $user_type=""){
+            $table_notification = DB::table('notifications');
+            
+            if(!empty($notification_type) && $notification_type == 'proposals'){
+                if($user_type == 'employer'){
+                    $table_notification->where('notification','=','JOB_PROPOSAL_SUBMITTED_BY_TALENT');  
+                }else{
+                    $table_notification->where('notification','=','JOB_ACCEPTED_BY_EMPLOYER');
+                }
+            }
+
+            $table_notification->where('notification_status','!=','trashed')
+            ->where('notify','=',$user_id)
+            ->where('notification_status','unread');
+
+            return (int) $table_notification->count();
+        }
+
+        public static function lists($user_id,$page = 1,$limit = DEFAULT_NOTIFICATION_LIMIT){
+            $table_notification = DB::table('notifications as notifications');
+            $prefix     = DB::getTablePrefix();
+            $base_url   = ___image_base_url();
+
+            $offset = 0;
+            
+            if(empty($keys)){
+                $keys           = [
+                    \DB::Raw("TRIM(CONCAT({$prefix}sender.first_name,' ',{$prefix}sender.last_name)) as sender_name"),
+                    \DB::Raw("
+                        IF(
+                            {$prefix}files.filename IS NOT NULL,
+                            CONCAT('{$base_url}','/',{$prefix}files.folder,{$prefix}files.filename),
+                            CONCAT('{$base_url}','/','images/','".DEFAULT_AVATAR_IMAGE."')
+                        ) as sender_picture
+                    "),
+                    'notifications.id_notification',
+                    'notifications.notify',
+                    'notifications.notified_by',
+                    'notifications.notification',
+                    'notifications.notification_response_json',
+                    'notifications.notification_status',
+                    'notifications.desktop_notification_status',
+                    'notifications.created',
+                ];
+            }
+
+            $table_notification->select($keys);
+            $table_notification->leftJoin('users as sender','sender.id_user','=','notifications.notified_by');
+            $table_notification->leftJoin('files as files',function($leftjoin){
+                $leftjoin->on('files.user_id','=','sender.id_user');
+                $leftjoin->on('files.type','=',\DB::Raw('"profile"'));
+            });
+
+            if(!empty($page)){
+                $offset = ($page - 1)*$limit;
+            }
+            
+            $table_notification->where('notification_status','!=','trashed')->where('notify','=',$user_id);
+            $table_notification->orderBy('notifications.created','DESC');
+            
+            $table_notification_count = DB::table('notifications as notifications');
+            $table_notification_count->where('notification_status','!=','trashed')->where('notify','=',$user_id);
+
+            $table_notification->groupBy(['notifications.id_notification']);
+            $total = $table_notification->get()->count();
+            
+            $total_unread_notifications     = $table_notification_count->where('notification_status','unread')->get()->count();
+
+            $table_notification->offset($offset);
+            $table_notification->limit($limit);
+
+            $notifications                  = json_decode(json_encode($table_notification->get()),true);
+            $total_filtered_result          = $table_notification->get()->count();
+            
+            if(!empty($notifications)){
+                array_walk($notifications, function(&$item){
+                    $item['created']                    = ___ago($item['created']);
+                    $item['notification_key']           = $item['notification'];
+                    $item['notification']               = trans(sprintf("notification.%s",$item['notification']));
+                    $item['notification_redirection']   = ___get_notification_url($item['notification'],$item['notification_response_json']);
+                    $item['notification_response_json'] = json_decode($item['notification_response_json'],true);
+                });
+            }
+            
+            return [
+                'total' => $total,
+                'result' => $notifications,
+                'total_filtered_result' => $total_filtered_result,
+                'total_unread_notifications' => (!empty($total_unread_notifications))?$total_unread_notifications:"",
+            ];
+        }
+
+        public static function markread($notification_id,$user_id){
+            $users_data         = \Models\Users::findById($user_id,['type']);
+            $table_notification = DB::table('notifications as notifications');
+
+            $table_notification->where('id_notification','=',$notification_id);
+            $table_notification->update(['notification_status' => 'read', 'updated' => date('Y-m-d H:i:s')]);
+
+            $table_notification->select(['notification','notification_response_json']);
+            $notification = json_decode(json_encode($table_notification->get()->first()),true);            
+            
+            return [
+                'status' => true,
+                'total_unread_proposal_notifications'   => self::unread_notifications($user_id,'proposals',$users_data['type']),
+                'total_unread_notifications'            => self::unread_notifications($user_id),
+                'redirect' => ___get_notification_url($notification['notification'],$notification['notification_response_json'])
+            ];
+        }
+
+        public static function mark_read_desktop($notification_id){
+            $table_notification = DB::table('notifications');
+
+            $table_notification->where('id_notification','=',$notification_id);
+            $table_notification->update(['desktop_notification_status' => 'sent', 'updated' => date('Y-m-d H:i:s')]);
+
+            return ['status' => true];
+        }
+
+    }

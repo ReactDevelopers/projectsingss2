@@ -1,0 +1,50 @@
+.popup {
+    background: rgba(0, 0, 0, 0.2) none repeat scroll 0 0;
+    display: none;
+    height: 100%;
+    left: 0;
+    overflow: auto;
+    position: fixed;
+    text-align: center;
+    top: 0;
+    width: 100%;
+    z-index: 100001;
+}
+.popup_align {
+    height: 100%;
+}
+.popup_align, .popup_content {
+    display: inline-block;
+    vertical-align: middle;
+}
+.loading > div {
+    /*background-size: 50px 50px;*/
+    border-radius: 100%;
+    height: 100px;
+    left: 50%;
+    margin-left: -50px;
+    margin-top: -50px;
+    position: absolute;
+    top: 50%;
+    width: 100px;
+    background: #fff;
+}
+.loading .spinning {
+    background: url("../images/loader.gif") no-repeat center center;
+    background-size: 70px 70px;
+}
+.loading .spinning, .popup .content .loading .spinning {
+    /*animation: 0.5s linear 0s normal none infinite running rotating;*/
+}
+.loading .logo {
+    display: block;
+    margin: 35px 40px;
+}
+@keyframes rotating {
+    0% {
+        transform: rotate(0deg) translate3d(0px, 0px, 0px);
+    }
+    100% {
+        transform: rotate(360deg) translate3d(0px, 0px, 0px);
+    }
+}

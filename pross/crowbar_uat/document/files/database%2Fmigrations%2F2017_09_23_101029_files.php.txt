@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class Files extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('files', function (Blueprint $table) {
+            $table->increments('id_file');
+            $table->integer('user_id');
+            $table->integer('record_id')->nullable();
+            $table->string('reference', 100)->nullable();
+            $table->string('filename', 255)->nullable();
+            $table->string('extension', 100);
+            $table->text('folder')->nullable();
+            $table->enum('type', ['profile','portfolio','cv','certificates','proposal'])->nullable();
+            $table->text('caption')->nullable();
+            $table->string('size', 20)->nullable();
+            $table->enum('is_default', ['yes', 'no'])->default('no');
+            $table->enum('status', ['pending', 'active', 'inactive'])->default('active');
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('files');
+    }
+}
+

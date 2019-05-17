@@ -1,0 +1,1 @@
+ãtresources/views/front/includes :âtåtætçtètétêtëtìtítîtrresources/views/front/includes

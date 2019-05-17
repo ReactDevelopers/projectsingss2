@@ -1,0 +1,1 @@
+és.resources/views/employer/profile/one.blade.php 2phpX’hr.resources/views/employer/profile/one.blade.php

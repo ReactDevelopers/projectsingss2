@@ -1,0 +1,1 @@
+Óuresources/views/talent/job :ÒuÔuÕuÖu×uØuÚuÛu‚vrresources/views/talent/job

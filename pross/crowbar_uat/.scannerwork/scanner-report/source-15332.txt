@@ -1,0 +1,48 @@
+@extends('layouts.backend.dashboard')
+
+@section('content')
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel">
+                    <div class="panel-body">
+						<div class="mailbox-read-info">
+							<h3>{{$project_proposal['name']}}</h3>
+							<h5>Quoted Price: {!! sprintf('%s%s %s',___cache('currencies')[$project_proposal['price_unit']],___format($project_proposal['quoted_price']),job_types_rates_postfix($project_proposal['employment'])) !!}
+								<span class="mailbox-read-time pull-right">{{___d($project_proposal['created'])}}</span>
+							</h5>
+						</div>
+						<div class="mailbox-read-message">
+							<b>Proposal</b>
+							<p>{!!nl2br($project_proposal['comments'])!!}</p>
+						</div>
+						<div class="box-footer">
+							@if(!empty($project_proposal['document_id']))
+								<ul class="mailbox-attachments clearfix">
+									<li>
+										<span class="mailbox-attachment-icon"><i class="fa fa-file-o"></i></span>
+											<div class="mailbox-attachment-info">
+												<a href="{{asset(sprintf('/download/file?file_id=%s',___encrypt($project_proposal['document_id'])))}}" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i> {{$project_proposal['document_name']}}</a>
+												<span class="mailbox-attachment-size"> {{$project_proposal['document_size']}}
+													<a href="{{asset(sprintf('/download/file?file_id=%s',___encrypt($project_proposal['document_id'])))}}" class="btn btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
+												</span>
+											</div>
+									</li>
+								</ul>
+							@endif
+						</div>
+                    </div>
+                    <div class="panel-footer">
+                        <a href="{{url(sprintf('%s/project/detail/%s?page=%s',ADMIN_FOLDER,$project_proposal['project_id'],'proposal'))}}" class="btn btn-default">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
+
+@section('requirecss')
+@endsection
+
+@section('requirejs')
+@endsection

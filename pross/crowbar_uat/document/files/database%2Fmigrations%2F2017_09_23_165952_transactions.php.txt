@@ -1,0 +1,48 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class Transactions extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('transactions', function (Blueprint $table) {
+            $table->increments('id_transactions');
+            $table->integer('transaction_user_id');
+            $table->enum('transaction_user_type', ['employer', 'talent'])->nullable();
+            $table->integer('transaction_project_id')->nullable();
+            $table->integer('transaction_proposal_id')->nullable();
+            $table->float('transaction_total')->nullable();
+            $table->float('transaction_subtotal')->nullable();
+            $table->enum('transaction_source', ['paypal', 'braintree'])->default('paypal');
+            $table->text('transaction_reference_id')->nullable();
+            $table->text('transaction_comment')->nullable();
+            $table->enum('transaction_type', ['credit', 'debit', 'subscription'])->nullable();
+            $table->enum('transaction_status', ['initiated','pending','failed','cancelled','confirmed','refunded','disputed'])->default('initiated');
+            $table->dateTime('transaction_date')->nullable();
+            $table->dateTime('transaction_actual_date')->nullable();
+            $table->float('transaction_commission')->nullable();
+            $table->integer('transaction_done_by')->nullable();
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('transactions');
+    }
+}
+

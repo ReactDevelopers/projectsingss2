@@ -1,0 +1,1 @@
+Èt!resources/views/vendor/datatables :Çtòtr!resources/views/vendor/datatables

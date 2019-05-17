@@ -1,0 +1,1 @@
+ër%app/Models/companyConnectedTalent.php 2phpX5hr%app/Models/companyConnectedTalent.php

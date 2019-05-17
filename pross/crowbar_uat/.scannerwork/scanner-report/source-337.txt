@@ -1,0 +1,200 @@
+<form role="add-talent" method="post" enctype="multipart/form-data" action="<?php echo e(url('administrator/employer-users/'.$user['id_user'].'/update')); ?>">
+    <input type="hidden" name="_method" value="PUT">
+    <?php echo e(csrf_field()); ?>
+
+
+    <div class="panel-body">
+        <div class="form-group <?php if($errors->has('first_name')): ?>has-error <?php endif; ?>">
+            <label for="name">First Name</label>
+            <input type="text" class="form-control" name="first_name" placeholder="First Name" value="<?php echo e((old('first_name'))?old('first_name'):$user['first_name']); ?>">
+            <?php if($errors->first('first_name')): ?>
+                <span class="help-block">
+                    <?php echo e($errors->first('first_name')); ?>
+
+                </span>
+            <?php endif; ?>
+        </div>
+        <div class="form-group <?php if($errors->has('last_name')): ?>has-error <?php endif; ?>">
+            <label for="name">Last Name</label>
+            <input type="text" class="form-control" name="last_name" placeholder="Last Name" value="<?php echo e((old('last_name'))?old('last_name'):$user['last_name']); ?>">
+            <?php if($errors->first('last_name')): ?>
+                <span class="help-block">
+                    <?php echo e($errors->first('last_name')); ?>
+
+                </span>
+            <?php endif; ?>
+        </div>
+        <div class="form-group <?php if($errors->has('email')): ?>has-error <?php endif; ?>">
+            <label for="name">Email</label>
+            <input readonly="readonly" type="text" class="form-control" name="email" placeholder="Email" value="<?php echo e((old('email'))?old('email'):$user['email']); ?>">
+            <?php if($errors->first('email')): ?>
+                <span class="help-block">
+                    <?php echo e($errors->first('email')); ?>
+
+                </span>
+            <?php endif; ?>
+        </div>
+        <div class="form-group <?php if($errors->has('country_code')): ?>has-error <?php endif; ?>">
+            <label for="name">Country Code</label>
+            <?php 
+            if(old('country_code')){
+                $country_code = old('country_code');
+            }
+            else{
+                $country_code = $user['country_code'];
+            }
+             ?>
+            <select class="form-control" name="country_code" placeholder="Country Code">
+                <option value="">Select Country Code</option>
+                <?php $__currentLoopData = $countries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                    <option <?php echo e($country_code==$c->phone_country_code?' selected="selected"':''); ?> value="<?php echo e($c->phone_country_code); ?>"><?php echo e($c->phone_country_code); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+            </select>
+            <?php if($errors->first('country_code')): ?>
+                <span class="help-block">
+                    <?php echo e($errors->first('country_code')); ?>
+
+                </span>
+            <?php endif; ?>
+        </div>
+        <div class="form-group <?php if($errors->has('mobile')): ?>has-error <?php endif; ?>">
+            <label for="name">Phone Number</label>
+            <input type="text" class="form-control" name="mobile" placeholder="Phone Number" value="<?php echo e((old('mobile'))?old('mobile'):$user['mobile']); ?>">
+            <?php if($errors->first('mobile')): ?>
+                <span class="help-block">
+                    <?php echo e($errors->first('mobile')); ?>
+
+                </span>
+            <?php endif; ?>
+        </div>
+        <div class="form-group <?php if($errors->has('other_country_code')): ?>has-error <?php endif; ?>">
+            <label for="name">Other Country Code</label>
+            <?php 
+            if(old('other_country_code')){
+                $other_country_code = old('other_country_code');
+            }
+            else{
+                $other_country_code = $user['other_country_code'];
+            }
+             ?>
+            <select class="form-control" name="other_country_code" placeholder="Other Country Code">
+                <option value="">Select Other Country Code</option>
+                <?php $__currentLoopData = $countries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                    <option <?php echo e($other_country_code==$c->phone_country_code?' selected="selected"':''); ?> value="<?php echo e($c->phone_country_code); ?>"><?php echo e($c->phone_country_code); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+            </select>
+            <?php if($errors->first('other_country_code')): ?>
+                <span class="help-block">
+                    <?php echo e($errors->first('other_country_code')); ?>
+
+                </span>
+            <?php endif; ?>
+        </div>        
+        <div class="form-group <?php if($errors->has('other_mobile')): ?>has-error <?php endif; ?>">
+            <label for="name">Other Phone Number (Optional)</label>
+            <input type="text" class="form-control" name="other_mobile" placeholder="Other Phone Number" value="<?php echo e((old('other_mobile'))?old('other_mobile'):$user['other_mobile']); ?>">
+            <?php if($errors->first('other_mobile')): ?>
+                <span class="help-block">
+                    <?php echo e($errors->first('other_mobile')); ?>
+
+                </span>
+            <?php endif; ?>
+        </div>
+        <div class="form-group">
+            <label for="name">Website (Optional)</label>
+            <input type="text" class="form-control" name="website" placeholder="e.g. http://www.mywebsite.com" value="<?php echo e((old('website'))?old('website'):$user['website']); ?>">
+        </div>
+        <div class="form-group <?php if($errors->has('address')): ?>has-error <?php endif; ?>">
+            <label for="name">Address</label>
+            <textarea class="form-control" name="address" placeholder="Address"><?php echo e((old('address'))?old('address'):$user['address']); ?></textarea>
+            <?php if($errors->first('address')): ?>
+                <span class="help-block">
+                    <?php echo e($errors->first('address')); ?>
+
+                </span>
+            <?php endif; ?>
+        </div>
+
+        <div class="form-group <?php if($errors->has('country')): ?>has-error <?php endif; ?>">
+            <label for="name">Country</label>
+            <?php 
+            if(old('country')){
+                $country = old('country');
+            }
+            else{
+                $country = $user['country'];
+            }
+             ?>
+            <select class="form-control" name="country" id="country" data-url="<?php echo e(url('ajax/state-list')); ?>" placeholder="Country">
+                <?php $__currentLoopData = $countries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                    <option <?php echo e($country==$c->id_country?' selected="selected"':''); ?> value="<?php echo e($c->id_country); ?>"><?php echo e($c->country_name); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+            </select>
+            <?php if($errors->first('country')): ?>
+                <span class="help-block">
+                    <?php echo e($errors->first('country')); ?>
+
+                </span>
+            <?php endif; ?>
+        </div>
+        <div class="form-group <?php if($errors->has('state')): ?>has-error <?php endif; ?>">
+            <label for="name">State</label>
+            <?php 
+            if(old('state')){
+                $state = old('state');
+            }
+            else{
+                $state = $user['state'];
+            }
+             ?>
+            <select class="form-control" name="state" id="state" placeholder="State" data-url="<?php echo e(url('ajax/city-list')); ?>">
+                <option value="">Select State/ Province</option>
+                <?php $__currentLoopData = $states; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                    <option <?php echo e($state==$c->id_state?' selected="selected"':''); ?> value="<?php echo e($c->id_state); ?>"><?php echo e($c->state_name); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+            </select>
+            <?php if($errors->first('state')): ?>
+                <span class="help-block">
+                    <?php echo e($errors->first('state')); ?>
+
+                </span>
+            <?php endif; ?>
+        </div>
+
+        <div class="form-group <?php if($errors->has('postal_code')): ?>has-error <?php endif; ?>">
+            <label for="name">Postal Code</label>
+            <input type="text" class="form-control" name="postal_code" placeholder="Postal Code" value="<?php echo e((old('postal_code'))?old('postal_code'):$user['postal_code']); ?>">
+            <?php if($errors->first('postal_code')): ?>
+                <span class="help-block">
+                    <?php echo e($errors->first('postal_code')); ?>
+
+                </span>
+            <?php endif; ?>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+        <a href="<?php echo e($backurl); ?>" class="btn btn-default">Back</a>
+        <button type="button" data-request="ajax-submit" data-target='[role="add-talent"]' class="btn btn-default">Save</button>
+    </div>
+</form>
+<?php $__env->startPush('inlinescript'); ?>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#country').change(function(){
+        var id_country = $('#country').val();
+        var url = $('#country').data('url');
+        if(id_country > 0){
+            $.ajax({
+            method: "POST",
+            url: url,
+            data: { record_id: id_country}
+            })
+            .done(function(data) {
+                $('#state').html(data);
+            });
+        }
+    });
+});
+</script>
+<?php $__env->stopPush(); ?>

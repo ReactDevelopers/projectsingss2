@@ -1,0 +1,175 @@
+@section('content')
+    <form method="post" role="find-talents" accept-charset="utf-8" class="form-horizontal" autocomplete="off">
+        <div class="search-banner">
+            <div class="container form-horizontal">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <input type="text" name="search" value="{{ \Request::get('_search') }}" placeholder="Search" class="form-control" />
+                        <input type="text" name="__search" class="hide" value="{{ \Request::get('_search') }}"/>
+                        <button type="button" data-request="search" class="button">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.Search Banner Section -->
+        <!-- Main Content -->
+        <div class="contentWrapper job-listing-section job-listing-section-sub">
+            <div class="container">
+                <a href="javascript:void(0);" class="sidebar-menu"><span></span> Filter</a>
+                <div class="col-md-3 left-sidebar bottom-margin-10px" id="left-sidebar">
+                    <div class="sidebar-content">
+                        <h3>Filters <span data-request="clear-filter" data-url="{{ url(sprintf('%s/find-talents',EMPLOYER_ROLE_TYPE)) }}" id="clearAll">Clear All</span></h3>
+                        <div class="filter-options">
+                            <h4>{{ trans('website.W0333') }}</h4>
+                            <ul class="filter-list-group">
+                                <li>
+                                    <div class="checkbox">                
+                                        <input type="checkbox" id="saved-talent" name="saved_talent_filter" data-action="filter">
+                                        <label for="saved-talent"><span class="check"></span> {{ trans('website.W0334') }}</label>
+                                    </div>
+                                </li>
+                            </ul>
+                            <h4>Employment Type</h4>
+                            <ul class="filter-list-group">
+                                @foreach(employment_types('talent_personal_information') as $key => $value)
+                                    <li>
+                                        <div class="checkbox">                
+                                            <input type="checkbox" id="employement-{{ $value['type'] }}" name="employment_type_filter[]" value="{{ $value['type'] }}" data-action="filter">
+                                            <label for="employement-{{ $value['type'] }}"><span class="check"></span> {{ $value['type_name'] }}</label>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                            <h4>Temporary Salary Range (Per Hour)</h4>
+                            <div class="price-range-slider">
+                                <div class="price-range">
+                                    <div class="leftLabel form-control"></div>
+                                    <input type="text" class="hide" name="temporary_salary_low_filter" data-action="filter">
+                                    <span>-</span>
+                                    <div class="rightLabel form-control"></div>
+                                    <input type="text" class="hide" name="temporary_salary_high_filter" data-action="filter">
+                                </div>
+                                <div class="nstSlider" data-range_min="{{ (range_filter()['temporary_salary_range']['minimum']) }}" data-range_max="{{ (range_filter()['temporary_salary_range']['maximum']) }}" data-cur_min="{{ (range_filter()['temporary_salary_range']['minimum']) }}"  data-cur_max="{{ (range_filter()['temporary_salary_range']['maximum']) }}">
+                                    <div class="bar"></div>
+                                    <div class="leftGrip"></div>
+                                    <div class="rightGrip"></div>
+                                </div>
+                            </div>
+                            <h4>Permanent Salary Range (Per Year)</h4>
+                            <div class="price-range-slider">
+                                <div class="price-range">
+                                    <div class="leftLabel form-control"></div>
+                                    <input type="text" class="hide leftLabel" name="permanent_salary_low_filter" data-action="filter">
+                                    <span>-</span>
+                                    <div class="rightLabel form-control"></div>
+                                    <input type="text" class="hide rightLabel" name="permanent_salary_high_filter" data-action="filter">
+                                </div>
+                                <div class="nstSlider" data-range_min="{{ (range_filter()['permanent_salary_range']['minimum']) }}" data-range_max="{{ (range_filter()['permanent_salary_range']['maximum']) }}" data-cur_min="{{ (range_filter()['permanent_salary_range']['minimum']) }}"  data-cur_max="{{ (range_filter()['permanent_salary_range']['maximum']) }}">
+                                    <div class="bar"></div>
+                                    <div class="leftGrip"></div>
+                                    <div class="rightGrip"></div>
+                                </div>
+                            </div>
+                            <h4>Expertise Level</h4>
+                            <ul class="filter-list-group">
+                                @foreach(expertise_levels() as $key=> $value)
+                                    <li>
+                                        <div class="checkbox">                
+                                            <input type="checkbox" id="expertise-{{ $value['level'] }}" name="expertise_filter[]" value="{{ $value['level'] }}" data-action="filter">
+                                            <label for="expertise-{{ $value['level'] }}"><span class="check"></span>{{ $value['level_name'] }}</label>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                            <h4>{{trans('website.W0198')}}</h4>
+                            <div class="custom-dropdown industry-filter">
+                                <select name="industry_filter" class="form-control" data-action="filter" data-request="option" data-url="{{ url('ajax/industry-subindustry-list') }}" data-target="[data-filter='subindustry-filter']">
+                                    {!!___dropdown_options($industries_name,trans('website.W0198'),'',false)!!}
+                                </select>
+                            </div>
+                            <h4>{{trans('website.W0199')}}</h4>
+                            <div class="custom-dropdown industry-filter" data-filter="subindustry-filter">
+                                <select name="subindustry_filter" class="form-control" data-action="filter">
+                                    {!!___dropdown_options($subindustries_name,trans('website.W0199'),'',false)!!}
+                                </select>
+                            </div>
+                            <h4>Location</h4>
+                            <div class="location-filter">
+                                <input type="text" name="location_filter" placeholder="{{ trans('general.M0195') }}" class="form-control" data-request="city-filter" data-url="{{ url('ajax/city-list') }}" data-target=".city-filter-group" data-action="filter">
+                                <ul class="filter-list-group city-filter-group" data-request="custom-scrollbar"></ul>
+                            </div>
+                            @if(0)
+                                <h4>Select Timeline</h4>
+                                <div class="timeline-filter">
+                                    <div class="datebox startdate">
+                                        <div class='input-group datepicker timelineDatepicker'>
+                                            <input type='text' name="startdate_filter" class="form-control" data-action="filter" />
+                                            <span class="input-group-addon"></span>
+                                        </div>
+                                    </div><span>-</span>
+                                    <div class="datebox enddate">
+                                        <div class='input-group datepicker timelineDatepicker'>
+                                            <input type='text' name="enddate_filter" class="form-control" data-action="filter"/>
+                                            <span class="input-group-addon"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                            <h4>Skills</h4>
+                            <div class="skills-filter">
+                                <div class="custom-dropdown">
+                                    <select id="skills" name="skills_filter[]" class="filter form-control" data-request="tags" multiple="true" data-placeholder="{{ trans('website.W0193') }}">
+                                        {!!___dropdown_options(___cache('skills'),'','',false)!!}
+                                    </select>
+                                    <div class="js-example-tags-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+                <div class="col-md-9 right-sidebar">
+                    <h2 class="form-heading">
+                        <span class="filter-result-title"></span>
+                        <div class="heading-filter small-select">
+                            <div class="custom-dropdown sortby-filter">
+                                <select name="sortby_filter" class="form-control">
+                                    {!! 
+                                        ___dropdown_options(
+                                            \App\Lib\Dash::combine(
+                                                ___filter('talent_sorting_filter','all'),
+                                                '{n}.filter_key',
+                                                '{n}.filter_name'
+                                            ),
+                                            trans('general.M0193')
+                                        ) 
+                                    !!}
+                                </select>
+                            </div>
+                        </div>
+                    </h2>
+                    <div id="talent_listing" class="timeline timeline-inverse"></div>
+                    <div class="pager text-center"><img src="{{ asset('images/loader.gif') }}"></div>
+                    <div>
+                       <div id="loadmore">
+                           <button type="button" class="btn btn-default btn-block btn-lg" data-request="filter-paginate" data-url="{{ url(sprintf('%s/_find-talents',EMPLOYER_ROLE_TYPE)) }}" data-target="#talent_listing" data-showing="#paginate_showing" data-loadmore="#loadmore" data-form="[role='find-talents']">{{ trans('website.W0254') }}</button>
+                       </div>
+                   </div>
+                   <input type="hidden" name="page" value="1">
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- /Main Content -->
+@endsection
+@push('inlinescript')
+    <link rel="stylesheet" href="{{ asset('css/jquery.mCustomScrollbar.min.css') }}" media="all" type="text/css" />
+    <script src="{{ asset('js/jquery.mCustomScrollbar.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('script/filter.js') }}" type="text/javascript"></script>
+    <style type="text/css">
+        .content-box .js-example-tags-container .tag-selected{
+            padding: 4px 10px 4px 10px;
+        }
+        
+    </style>
+@endpush
+

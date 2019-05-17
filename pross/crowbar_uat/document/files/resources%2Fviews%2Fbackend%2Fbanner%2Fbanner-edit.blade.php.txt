@@ -1,0 +1,131 @@
+@extends('layouts.backend.dashboard')
+
+@section('content')
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel">
+                    <div class="panel-body">
+
+                    <form role="add-talent" id="main-form" method="post" enctype="multipart/form-data" action="{{ url(sprintf('%s/banner/edit/' . $id_banner,ADMIN_FOLDER)) }}">
+
+                        <input type="hidden" id="admin-banner-delete" value="{{ url(sprintf('%s/banner/image/delete',ADMIN_FOLDER)) }}">
+                        <input type="hidden" name="id_banner" value="{{$id_banner}}">
+                        <input type="hidden" id="image_name" name="image_name" value="">
+                        <input type="hidden" name="_method" value="PUT">
+                        {{ csrf_field() }}
+
+                        <div class="form-group">
+                            <label for="name">Banner Section: {{$banner->banner_title}}</label>
+                        </div>
+
+                        @if($banner->banner_variable == 'home-page')
+                        <div class="form-group">
+                            <label for="name">Banner Text</label>
+                            <input class="form-control" type="text" name="banner_text" value="{{$banner->banner_text}}" />
+                        </div>
+                        @endif
+
+                        <div class="form-group">
+                            <label for="name">Banner Image</label>
+                        </div>
+
+                        <div class="form-group">
+                            <img src="{{asset('uploads/banner/thumbnail/'.$banner->banner_image)}}">
+                        </div>
+                    </form>
+                    <form class="form-horizontal" action="{{ url(sprintf('%s/banner/image',ADMIN_FOLDER)) }}" role="doc-submit" method="post" accept-charset="utf-8">
+                        <input type="hidden" name="_method" value="PUT">
+                        {{ csrf_field() }}
+                        <div class="">
+                            <label for="name">Upload Image</label>
+                            <div class="upload-box row">
+                                <!-- PLACE FOR DYNAMICALLY MULTIPLE ADDED IMAGE  -->
+                                <div class="form-group col-md-6 bottom-margin-10px single-remove">
+                                    <label class="btn-bs-file add-image-box">
+                                        <span class="add-image-wrapper">
+                                            <img src="{{ asset('images/add-icon.png') }}" />
+                                            <span class="add-icon-title">{{ trans('website.W0325') }}</span>
+                                            <input type="file" name="file" class="upload" data-request="doc-submit" data-toadd =".upload-box" data-after-upload=".single-remove" data-target='[role="doc-submit"]' data-place="prepend" data-single="true"/>
+
+                                            <input type="hidden" name="image_name_one" value="">
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="panel-footer">
+                        <button type="button" data-request="ajax-submit" data-target='[role="add-talent"]' class="btn btn-default">Save</button>
+                    </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
+
+@push('inlinescript')
+<script src="{{ asset('js/cropper.min.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).on('click','.delete-admin-banner-template', function(){
+    var $data = new FormData($('#main-form')[0]);
+    $.ajax({
+        url  : $('#admin-banner-delete').val(),
+        data : $data,
+        cache : false,
+        type : 'post',
+        dataType : 'json',
+        contentType : false,
+        processData : false,
+        success : function($response){
+            $('#admin-banner-template').remove();
+            $('#image_name').val('');
+            $('.single-remove').show();
+        }
+    });
+});
+$(document).on('change','[data-request="doc-submit"]', function(){
+    $('#popup').show();  $('.alert').remove(); $(".has-error").removeClass('has-error');$('.help-block').remove();
+    var $this = $(this);
+    var $target         = $this.data('target');
+    var $url            = $($target).attr('action');
+    var $method         = $($target).attr('method');
+    var $data           = new FormData($($target)[0]);
+    var after_upload    = $this.data('after-upload');
+    $.ajax({
+        url  : $url,
+        data : $data,
+        cache : false,
+        type : $method,
+        dataType : 'json',
+        contentType : false,
+        processData : false,
+        success : function($response){
+            if($response.status==true){
+                if($this.data('place') == 'prepend'){
+                    $($this.data('toadd')).prepend($response.data.img_html);
+                }else{
+                    $($this.data('toadd')).append($response.data.img_html);
+                }
+                if($this.data('single') === true){
+                    $(after_upload).hide();
+                }
+                $('#image_name').val($response.data.image);
+            }else{
+                if ($response.data) {
+                    /*TO DISPLAY FORM ERROR USING .has-error class*/
+                    show_validation_error($response.data);
+                }
+            }
+            $this.val('');
+            $('#popup').hide();
+        }
+    });
+});
+</script>
+@endpush
+

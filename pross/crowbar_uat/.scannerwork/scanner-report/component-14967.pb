@@ -1,0 +1,1 @@
+÷t<resources/views/front/pages/talent_profile/sidebar.blade.php 2phpX4hr<resources/views/front/pages/talent_profile/sidebar.blade.php

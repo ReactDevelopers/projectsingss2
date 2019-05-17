@@ -1,0 +1,1 @@
+Ï2Dnode_modules/less/test/less-bom/errors/color-func-invalid-color.less 2lessXhrDnode_modules/less/test/less-bom/errors/color-func-invalid-color.less

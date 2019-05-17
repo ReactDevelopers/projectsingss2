@@ -1,0 +1,1 @@
+Àr#app/Http/Controllers/Api/Talent.php 2phpXï/hr#app/Http/Controllers/Api/Talent.php

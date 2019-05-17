@@ -1,0 +1,1 @@
+“t<resources/views/employer/jobdetail/includes/talent.blade.php 2phpX3hr<resources/views/employer/jobdetail/includes/talent.blade.php

@@ -1,0 +1,1 @@
+©v:resources/views/talent/community/send-invitation.blade.php 2phpXhr:resources/views/talent/community/send-invitation.blade.php

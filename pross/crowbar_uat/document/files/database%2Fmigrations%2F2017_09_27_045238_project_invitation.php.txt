@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class ProjectInvitation extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('project_invitation', function (Blueprint $table) {
+            $table->increments('id_invitation');
+            $table->integer('project_id');
+            $table->integer('employer_id');
+            $table->integer('talent_id');
+            $table->text('message');
+            $table->dateTime('updated');
+            $table->dateTime('created');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('project_invitation');
+    }
+}
+

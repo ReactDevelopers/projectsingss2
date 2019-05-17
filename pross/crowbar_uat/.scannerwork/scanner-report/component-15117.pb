@@ -1,0 +1,1 @@
+çv resources/views/talent/interview :åvévèvêvr resources/views/talent/interview

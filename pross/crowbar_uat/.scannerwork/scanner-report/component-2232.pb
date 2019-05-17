@@ -1,0 +1,1 @@
+¸Gnode_modules/bootstrap-sass/assets/stylesheets/bootstrap/_popovers.scss 2scssX„hrGnode_modules/bootstrap-sass/assets/stylesheets/bootstrap/_popovers.scss

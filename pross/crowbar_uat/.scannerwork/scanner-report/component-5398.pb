@@ -1,0 +1,1 @@
+–*7node_modules/node-sass/test/fixtures/invalid/index.scss 2scssXhr7node_modules/node-sass/test/fixtures/invalid/index.scss

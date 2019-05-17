@@ -1,0 +1,1 @@
+ÇuBresources/views/talent/settings/transferownershipconfirm.blade.php 2phpX}hrBresources/views/talent/settings/transferownershipconfirm.blade.php

@@ -1,0 +1,98 @@
+<?php $__env->startSection('content'); ?>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="panel">
+                    <div class="panel-body">
+                        <img class="profile-user-img img-responsive img-circle" src="<?php echo e(url($project_detail['employer']['company_logo'])); ?>" />
+                        <h3 class="profile-username text-center"><?php echo e($project_detail['employer']['name']); ?></h3>
+                        <p class="text-muted text-center"><?php echo e($project_detail['employer']['company_name']); ?></p>
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <b>Created</b> <span class="pull-right"><?php echo e(___d($project_detail['created'])); ?></span>
+                            </li>
+                            <?php if(!empty($project_detail['completedate'])): ?>
+                                <li class="list-group-item">
+                                    <b>Completed</b> <span class="pull-right"><?php echo e(___d($project_detail['completedate'])); ?></span>
+                                </li>
+                            <?php endif; ?>
+                            <?php if(!empty($project_detail['closedate'])): ?>
+                                <li class="list-group-item">
+                                    <b>Closed</b> <span class="pull-right"><?php echo e(___d($project_detail['closedate'])); ?></span>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="panel">
+                    <div class="nav-tabs-custom no-margin">
+                        <ul class="nav nav-tabs">
+                            <li class="<?php echo ($page == '')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,''); ?>">Detail</a></li>
+                            <li class="<?php echo ($page == 'description')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=description'); ?>">Description</a></li>
+                            <li class="<?php echo ($page == 'proposal')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=proposal'); ?>">Proposal</a></li>
+                            <li class="<?php echo ($page == 'transactions')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=transactions'); ?>">Transactions</a></li>
+                            <li class="<?php echo ($page == 'chat')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=chat'); ?>">Chat</a></li>
+                            <li class="<?php echo ($page == 'activity_log')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=activity_log'); ?>">Activity Log</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane <?php echo ($page == '')?'active':''; ?>">
+                                <?php if($page == ''): ?>
+                                    <?php echo $__env->make('backend.project.project-info', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'description')?'active':''; ?>">
+                                <?php if($page == 'description'): ?>
+                                    <?php echo $__env->make('backend.project.project-description', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'proposal')?'active':''; ?>">
+                                <?php if($page == 'proposal'): ?>
+                                    <?php echo $html->table();; ?>
+
+                                <?php endif; ?>
+                            </div>
+                            <div class="tab-pane table-responsive <?php echo ($page == 'transactions')?'active':''; ?>">
+                                <?php if($page == 'transactions'): ?>
+                                    <?php echo $html->table();; ?>
+
+                                <?php endif; ?>
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'chat')?'active':''; ?>">
+                                <?php if($page == 'chat'): ?>
+                                    <?php echo $__env->make('backend.project.chat', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'activity_log')?'active':''; ?>">
+                                <?php if($page == 'activity_log'): ?>
+                                    <?php echo $__env->make('backend.project.activity_log', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <?php if(Request::get('slug') == 'project'): ?>
+                            <a href="<?php echo e(url('administrator/project/listing')); ?>" class="btn btn-default">Back</a>
+                        <?php else: ?>
+                            <a href="<?php echo e(url('administrator/report')); ?>" class="btn btn-default">Back</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('requirecss'); ?>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('requirejs'); ?>    
+    <script src="<?php echo e(asset('js/jquery.dataTables.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/dataTables.bootstrap.js')); ?>"></script>
+    <?php if($page == 'proposal' || $page == 'transactions'): ?>
+        <?php echo $html->scripts(); ?>
+
+    <?php endif; ?>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.backend.dashboard', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -1,0 +1,28 @@
+# FOR NOT FOUND IMAGES SETTING UP DEFAULT IMAGE
+RewriteEngine on
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule \.(gif|jpe?g|png|bmp) images/avatar.png [NC,L]
+
+<IfModule mod_rewrite.c>
+  <IfModule mod_negotiation.c>
+      Options -MultiViews
+  </IfModule>
+
+  RewriteEngine On
+
+  # Redirect Trailing Slashes If Not A Folder...
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+  # Handle Front Controller...
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ index.php [L]
+
+  # Handle Authorization Header
+  RewriteCond %{HTTP:Authorization} .
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+
+
+php_flag opcache.enable Off

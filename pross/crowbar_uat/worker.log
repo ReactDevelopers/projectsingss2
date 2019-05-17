@@ -1,0 +1,2344 @@
+[2017-10-16 14:07:17] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-16 14:10:11] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-16 14:13:50] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-16 14:29:18] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:03:00] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:03:00] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:09:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:09:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:11:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:18:37] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:18:37] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:19:34] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:32:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:45:51] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:45:52] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:49:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:49:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 03:55:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 04:10:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 04:14:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 04:20:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 04:23:02] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+
+
+
+
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                        
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+[2017-10-17 09:04:33] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:34] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:34] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:34] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:35] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:35] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:36] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:36] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:37] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:37] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:38] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:38] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:39] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:39] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:40] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:40] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:40] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:41] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:41] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:44] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:44] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:45] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:45] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:45] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:46] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:48] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:48] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:50] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:50] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:51] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:51] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:52] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:53] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:53] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:53] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:56] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:57] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:57] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:57] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:58] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:58] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:59] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 09:04:59] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:03:45] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:03:46] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:03:46] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:03:46] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:03:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:03:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:03:48] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:03:48] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:03:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:03:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:03:50] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:04:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:04:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:06:35] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:09:07] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:12:35] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:12:35] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:13:20] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:13:38] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:16:50] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:19:02] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:25:11] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:25:12] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:29:15] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:29:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:30:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:38:15] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:40:25] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:43:33] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:44:33] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:44:36] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:45:12] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:45:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:46:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:47:04] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:47:18] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:47:19] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 10:47:19] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 11:04:08] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 11:04:45] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 11:25:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 11:25:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 11:31:34] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 12:01:02] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 12:02:20] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 12:17:09] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 12:21:12] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 12:34:34] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 12:42:46] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 12:44:00] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-17 12:51:19] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:44] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:45] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:45] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:45] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:46] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:46] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:48] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:48] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:50] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:50] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:50] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:51] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:51] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:52] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:52] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:52] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:53] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:53] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:56] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:56] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:57] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:57] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:58] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:58] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:58] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:59] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:43:59] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:00] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:00] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:02] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:02] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:04] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:04] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:05] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:05] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:06] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:44:07] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:45:45] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:50:19] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 04:58:11] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:00:10] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:02:48] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:03:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:26:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:28:39] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:34:12] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:38:25] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:38:32] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:38:37] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:38:40] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:39:37] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:41:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:41:57] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:52:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:53:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:54:31] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:55:08] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:55:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 05:58:52] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:00:08] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:00:34] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:01:15] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:01:27] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:01:41] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:16:10] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:20:28] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:20:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:21:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:21:24] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:21:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:24:50] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:48:16] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 06:57:44] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 07:01:57] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:13:06] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:17:40] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:18:46] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:19:32] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:20:56] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:24:36] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:28:31] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:31:12] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:32:18] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:32:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:32:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:33:36] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:45:38] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:51:29] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 08:55:59] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:01:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:08:35] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:09:30] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:10:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:13:00] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:13:35] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:22:36] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:23:51] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:25:09] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:26:30] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:29:09] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 09:30:46] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:04:26] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:14:04] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:14:14] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:16:07] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:17:20] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:19:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:19:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:20:07] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:20:08] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:21:28] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:21:29] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:33:39] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:36:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:37:26] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:38:59] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:39:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:39:57] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:48:56] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:50:41] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:52:19] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 10:52:31] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 11:08:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 11:08:48] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 11:37:15] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 11:40:13] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 11:40:13] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 11:47:36] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 11:50:46] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 11:50:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 11:54:39] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 12:01:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 12:02:48] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-18 12:20:26] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-19 03:19:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-19 03:19:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-19 03:26:16] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-19 03:26:17] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-19 03:26:17] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-21 06:23:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-21 06:34:14] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-21 08:16:19] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-21 08:16:19] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-21 08:21:12] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:28] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:28] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:29] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:29] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:29] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:30] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:30] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:30] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:31] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:31] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:31] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:32] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:32] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:33] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:33] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:54:34] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 09:57:48] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 11:52:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 11:52:04] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 13:09:39] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 13:26:44] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 13:38:34] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 13:43:37] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 14:00:16] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 14:00:18] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 14:02:17] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 14:28:06] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 14:28:06] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 14:49:59] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 14:49:59] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 14:50:52] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 15:02:38] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 15:02:39] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 15:13:16] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 15:32:17] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 15:55:35] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 16:00:40] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 16:01:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 16:03:18] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 16:07:14] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 16:09:32] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 16:18:28] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 16:18:29] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-25 16:18:30] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-26 04:10:59] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-26 14:02:38] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-26 15:00:16] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-26 15:18:06] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-26 15:21:26] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-26 15:27:59] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-26 15:36:53] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-27 05:08:06] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-28 02:17:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-28 02:24:22] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-28 02:27:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-28 02:28:58] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-28 02:57:50] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-28 02:59:32] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-28 09:36:57] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-30 06:50:24] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 05:03:27] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 05:08:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 05:11:39] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 05:12:12] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 05:13:27] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 05:13:33] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 05:29:39] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 05:44:07] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 05:44:07] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 05:47:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 05:50:37] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-10-31 06:12:44] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 04:07:52] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 05:28:24] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 05:28:24] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 09:51:10] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 09:51:10] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 09:57:18] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 09:58:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 10:24:34] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 10:24:34] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 10:25:04] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 10:25:04] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 10:26:17] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 10:27:31] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 10:28:52] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 10:39:04] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:17:30] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:22:56] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:23:56] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:24:53] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:25:09] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:26:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:26:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:26:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:30:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:33:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:48:09] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:49:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:54:31] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:55:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:57:24] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:57:54] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:58:24] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:59:27] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:59:27] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 11:59:28] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 12:03:06] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 12:05:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 12:30:37] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 12:38:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 14:32:41] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 14:34:52] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 14:38:25] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 14:41:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 14:41:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 14:46:47] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-01 14:47:20] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 03:47:13] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 03:51:12] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 03:53:36] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:24:08] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:27:24] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:29:03] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:37:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:37:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:38:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:38:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:41:07] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:41:07] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:49:58] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:55:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:55:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:59:13] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:59:14] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:59:57] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 04:59:58] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 05:00:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 05:01:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 05:01:56] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 05:08:56] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 05:10:42] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 05:10:43] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 05:11:19] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 05:18:05] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 05:23:52] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 05:23:53] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 05:31:13] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 06:02:59] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 07:31:11] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 07:31:11] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 07:33:35] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 08:19:07] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 08:25:31] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 08:31:31] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 08:51:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 08:52:55] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 09:22:36] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 09:22:36] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 10:43:14] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 10:43:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 10:44:25] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 11:50:21] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 12:11:46] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 12:17:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 12:19:53] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 12:20:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-02 12:22:16] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-06 04:46:02] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-11 12:31:40] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-11 12:45:57] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-11 12:50:18] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-13 04:17:02] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-15 13:35:10] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-15 13:42:05] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-15 13:42:49] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-15 13:45:01] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-15 13:45:22] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-15 13:47:10] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-15 13:47:11] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-11-15 13:47:13] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-12-22 13:16:44] Failed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-12-23 05:13:40] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+[2017-12-23 05:13:45] Processed: Illuminate\Mail\Jobs\HandleQueuedMessage
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+
+                                                                                                                                                                                                                                                                                                                                                
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+
+                                                                                                                                                                                                                                                                                                                                                
+  [Illuminate\Database\QueryException]                                                                                                                                  
+
+  [Illuminate\Database\QueryException]                                                                                                                                    SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)                                                                                                                                                                          
+
+                                                                                                                                                                        
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+
+
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                                                                                                                                        
+  [Illuminate\Database\QueryException]                                                                                                                                  
+  SQLSTATE[HY000] [2002] No such file or directory (SQL: select `id`, `sign`, `iso_code`, `conversion_rate` from `cb_currencies` where `default_currency` = Y limit 1)  
+                                                                                                                                                                        
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [Doctrine\DBAL\Driver\PDOException]               
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+
+                                                    
+  [PDOException]                                    
+  SQLSTATE[HY000] [2002] No such file or directory  
+                                                    
+

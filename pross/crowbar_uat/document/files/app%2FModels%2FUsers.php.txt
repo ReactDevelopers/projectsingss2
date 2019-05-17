@@ -1,0 +1,741 @@
+<?php
+
+    namespace Models; 
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Mail;
+
+    class Users extends Model{
+        protected $table = 'users';
+        protected $primaryKey = 'id_user';
+        
+        const CREATED_AT = 'created';
+        const UPDATED_AT = 'updated';
+
+        protected $fillable = [
+            'type',
+            'name',
+            'first_name',
+            'last_name',
+            'email',
+            'gender',
+            'password',
+            'status',
+            'last_login',
+            'api_token',
+        ];
+
+        protected $hidden = [
+            'password', 'remember_token',
+        ];
+
+        public static function change($userID,$data){
+            $isUpdated = false;
+            $table_users = DB::table('users');
+
+            if(!empty($data)){
+                $table_users->where('id_user','=',$userID);
+                $isUpdated = $table_users->update($data); 
+            }
+            
+            return (bool)$isUpdated;
+        }
+
+        public static function findById($userID,$keys = []){
+            $table_user = DB::table((new static)->getTable());
+
+            if(!empty($keys)){
+                $table_user->select($keys);
+            }
+
+            return json_decode(
+                json_encode(
+                    $table_user->where(
+                        array(
+                            'id_user' => $userID,
+                        )
+                    )->whereIn('type',['talent','employer'])->whereNotIn('status',['trashed'])->first()
+                ),
+                true
+            );
+        }
+
+        public static function get_support_user($userID,$keys = ['*']){
+            $table_user = DB::table((new static)->getTable());
+
+            if(!empty($keys)){
+                $table_user->select($keys);
+            }
+
+            $result = json_decode(
+                json_encode(
+                    $table_user->where(
+                        array(
+                            'id_user' => $userID,
+                        )
+                    )->whereIn('type',['support'])->whereNotIn('status',['trashed'])->first()
+                ),
+                true
+            );
+            
+            $result['sender']                             = trim(sprintf("%s %s",$result['first_name'],$result['last_name']));
+            $result['sender_id']                          = $result['id_user'];
+            $result['sender_picture']                     = $result['picture'];
+            $result['sender_email']                       = ___e($result['email']);
+            $result['sender_profile_link']                = url(sprintf('%s/talent/profile?talent_id=%s',EMPLOYER_ROLE_TYPE,___encrypt($result['id_user'])));
+            
+            return $result;
+        }
+
+        public static function findByEmail($email,$keys = []){
+            $table_user = DB::table((new static)->getTable());
+
+            if(!empty($keys)){
+                $table_user->select($keys);
+            }
+
+            return json_decode(
+                json_encode(
+                    $table_user->where(
+                        array(
+                            'email' => $email,
+                        )
+                    )->whereNotIn('type',['superadmin','administrator','sub-admin'])->whereNotIn('status',['trashed'])->first()
+                ),
+                true
+            );
+        }
+
+        public static function findByToken($token,$keys = []){
+            $table_user = DB::table((new static)->getTable());
+
+            if(!empty($keys)){
+                $table_user->select($keys);
+            }
+
+            return json_decode(
+                json_encode(
+                    $table_user->where(
+                        array(
+                            'remember_token' => $token,
+                        )
+                    )->whereNotIn('type',['superadmin','administrator','sub-admin'])->whereNotIn('status',['trashed'])->first()
+                ),
+                true
+            );
+        }
+
+
+        public static function _authenticate($email,$password){
+            $table_user = DB::table((new static)->getTable());
+            
+            $user = $table_user->where(
+                array(
+                    'email' => $email,
+                    'password' => md5($password),
+                )
+            )->whereNotIn('status',['trashed'])->first();
+
+            if(!empty($user)){
+                if($user->status == 'active'){
+                    /*\Auth::loginUsingId($user->id_user);*/
+                    \Session::put('front_login', [
+                        'login_id' => $user->id_user,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'type' => $user->type,
+                    ]);
+
+                    if($user->type == 'talent'){
+                        return [
+                            'status' => true,
+                            'message' => sprintf(ALERT_SUCCESS,trans(sprintf('general.successfully_loggedin'))),
+                            'redirect' => '/talent/dashboard'
+                        ];
+                    }else if($user->type == 'employer'){
+                        return [
+                            'status' => true,
+                            'message' => sprintf(ALERT_SUCCESS,trans(sprintf('general.successfully_loggedin'))),
+                            'redirect' => '/employer/dashboard'
+                        ];
+                    }else{
+                        return [
+                            'status' => false,
+                            'message' => sprintf(ALERT_DANGER,trans(sprintf('general.invalid_credentials'))),
+                            'redirect' => '/login'
+                        ];
+                    }
+                }else{
+                    return [
+                        'status' => false,
+                        'message' => sprintf(ALERT_DANGER,trans(sprintf('general.account_%s',$user->status))),
+                        'redirect' => '/login'
+                    ];
+                }
+            }else{
+                return [
+                    'status' => false,
+                    'message' => sprintf(ALERT_DANGER,trans(sprintf('general.invalid_credentials'))),
+                    'redirect' => '/login'
+                ];
+            }
+        }
+
+        public static function authenticate($email,$password){
+            $response = (object)[];
+            $table_user = DB::table((new static)->getTable());
+
+            $user = $table_user->where(
+                array(
+                    'email' => $email,
+                    'password' => bcrypt($password),
+                )
+            )->whereNotIn('status',['trashed'])->first();
+
+            if(!empty($user)){
+                if($user->status == 'active'){
+                    if($user->type == 'talent'){
+                        return [
+                            'status' => true,
+                            'data' => $user,
+                            'message' => 'successfully_loggedin',
+                        ];
+                    }else if($user->type == 'employer'){
+                        return [
+                            'status' => true,
+                            'data' => $user,
+                            'message' => 'successfully_loggedin',
+                        ];
+                    }else{
+                        return [
+                            'status' => false,
+                            'data' => $response,
+                            'message' => 'invalid_credentials',
+                        ];
+                    }
+                }else{
+                    return [
+                        'status' => false,
+                        'data' => $response,
+                        'message' => sprintf('account_%s',$user->status),
+                    ];
+                }
+            }else{
+                return [
+                    'status' => false,
+                    'data' => $response,
+                    'message' => 'invalid_credentials',
+                ];
+            }
+        }
+
+        public static function get_file($where = "",$fetch = 'all',$keys = ['*']){
+            $table_files = DB::table('files');
+            $table_files->select($keys);
+
+            if(!empty($where)){
+                $table_files->whereRaw($where);
+            }
+
+            if($fetch == 'count'){
+                return $table_files->get()->count();
+            }else if($fetch == 'single'){
+                return (array) $table_files->get()->first();
+            }else if($fetch == 'all'){
+                return json_decode(json_encode($table_files->get()),true);
+            }else{
+                return $table_files->get();
+            }
+        }
+
+        public static function get_current_device($user_id,$keys = array()){
+            $table_devices = DB::table('devices');
+        
+            if(!empty($keys)){
+                $table_devices->select($keys);
+            }
+
+            return json_decode(
+                json_encode(
+                    $table_devices->where([
+                        'user_id' => $user_id,
+                        'is_current_device' => 'yes'
+                    ])->get()->first()
+                ),
+                true
+            );
+        }
+
+        public static function getSubscribeList(){
+            \DB::statement(\DB::raw('set @row_number=0'));
+            return $detail = DB::table('subscriber')
+            ->select([
+                \DB::raw('@row_number  := @row_number  + 1 AS row_number'),
+                'id_subscriber',
+                'email',
+                'newsletter_token',
+                'status',
+                'updated',
+                'created',
+            ])
+            ->get();
+        }
+
+        public static function getSubscribeByEmail($email){
+            $detail = DB::table('subscriber')
+            ->where('email', $email)
+            ->first();
+
+            return json_decode(json_encode($detail), true);
+        }
+
+        public static function insertSubscribe($data){
+            DB::table('subscriber')
+            ->insert($data);
+            return true;
+        }
+
+        public static function getSubscribeByToken($token){
+            $detail = DB::table('subscriber')
+            ->where('newsletter_token', $token)
+            ->first();
+
+            return json_decode(json_encode($detail), true);
+        }
+
+        public static function updateSubscribe($id_subscriber, $data){
+            $detail = DB::table('subscriber')
+            ->where('id_subscriber', $id_subscriber)
+            ->update($data);
+        }
+
+        public static function deleteSubscribe($id_subscriber){
+            $detail = DB::table('subscriber')
+            ->where('id_subscriber', $id_subscriber)
+            ->delete();
+        }
+
+        public static function get_my_chat_list($user_id, $search = NULL, $employer_id = NULL){
+            $prefix                 = DB::getTablePrefix();
+            $base_url               = ___image_base_url();
+            
+            $table_chat_requests    = DB::table(\DB::Raw("(
+                    SELECT * 
+                    FROM  {$prefix}chat_requests 
+                    WHERE (
+                        {$prefix}chat_requests.sender_id = {$user_id}
+                        OR 
+                        {$prefix}chat_requests.receiver_id = {$user_id}
+                    )
+                    ORDER BY {$prefix}chat_requests.created DESC
+                ) as {$prefix}requests
+            "));
+
+            $table_chat_requests->select([
+                \DB::Raw("({$prefix}requests.sender_id + {$prefix}requests.sender_id) AS chat_user_id"),
+                \DB::Raw("{$user_id} as sender_id"),
+                \DB::Raw("
+                    IF(
+                        ({$user_id} = {$prefix}requests.sender_id),
+                        {$prefix}requests.receiver_id,
+                        {$prefix}requests.sender_id
+                    ) as receiver_id
+                "),
+                \DB::Raw("
+                    IF(
+                        ({$user_id} = {$prefix}requests.sender_id),
+                        TRIM(CONCAT({$prefix}talent.first_name,' ',{$prefix}talent.last_name)),
+                        TRIM(CONCAT({$prefix}employer.first_name,' ',{$prefix}employer.last_name))
+                    ) as receiver_name
+                "),
+                \DB::Raw("
+                    IF(
+                        ({$user_id} = {$prefix}requests.sender_id),
+                        {$prefix}talent.email,
+                        {$prefix}employer.email
+                    ) as receiver_email
+                "),
+                \DB::Raw("
+                    IF(
+                        ({$user_id} = {$prefix}requests.sender_id),
+                        {$prefix}talent.chat_status,
+                        {$prefix}employer.chat_status
+                    ) as status
+                "),
+                \DB::Raw("
+                    IF(
+                        ({$user_id} = {$prefix}requests.sender_id),
+                        IF(
+                            {$prefix}sender_image.filename IS NOT NULL,
+                            CONCAT('{$base_url}','/',{$prefix}sender_image.folder,{$prefix}sender_image.filename),
+                            CONCAT('{$base_url}','/','images/','".DEFAULT_AVATAR_IMAGE."')
+                        ),
+                        IF(
+                            {$prefix}receiver_image.filename IS NOT NULL,
+                            CONCAT('{$base_url}','/',{$prefix}receiver_image.folder,{$prefix}receiver_image.filename),
+                            CONCAT('{$base_url}','/','images/','".DEFAULT_AVATAR_IMAGE."')
+                        )
+                    ) as receiver_picture
+                "),
+                \DB::Raw(
+                    "IF(
+                        ({$prefix}requests.request_status = 'pending' AND {$prefix}requests.chat_initiated != 'talent'),
+                        'accepted',
+                        {$prefix}requests.request_status
+                    ) as request_status"
+                ),
+                \DB::Raw("
+                    (
+                        IFNULL(
+                            (
+                                SELECT COUNT(id_chat) FROM {$prefix}chat 
+                                WHERE (
+                                    (
+                                        (
+                                            {$prefix}chat.sender_id = {$user_id} 
+                                            AND 
+                                            receiver_id = IF(
+                                                ({$user_id} = {$prefix}requests.sender_id),
+                                                {$prefix}requests.receiver_id,
+                                                {$prefix}requests.sender_id
+                                            ) 
+                                        )
+                                        OR 
+                                        (
+                                            {$prefix}chat.sender_id = IF(
+                                                ({$user_id} = {$prefix}requests.sender_id),
+                                                {$prefix}requests.receiver_id,
+                                                {$prefix}requests.sender_id
+                                            ) 
+                                            AND  
+                                            receiver_id = {$user_id}
+                                        )
+                                    )
+                                    AND 
+                                    seen_status != 'read'
+                                    AND 
+                                    delete_sender_status = 'active'
+                                )
+                            ),
+                            0
+                        )
+                    ) as unread_messages
+                "),
+                \DB::Raw("
+                    (
+                        SELECT message FROM {$prefix}chat 
+                        WHERE (
+                            (
+                                {$prefix}chat.sender_id = {$user_id} 
+                                AND 
+                                receiver_id = IF(
+                                    ({$user_id} = {$prefix}requests.sender_id),
+                                    {$prefix}requests.receiver_id,
+                                    {$prefix}requests.sender_id
+                                ) 
+                            )
+                            OR 
+                            (
+                                {$prefix}chat.sender_id = IF(
+                                    ({$user_id} = {$prefix}requests.sender_id),
+                                    {$prefix}requests.receiver_id,
+                                    {$prefix}requests.sender_id
+                                ) 
+                                AND  
+                                receiver_id = {$user_id}
+                            )
+                        )
+                        AND 
+                        delete_sender_status = 'active'
+                        ORDER BY {$prefix}chat.id_chat DESC
+                        LIMIT 0,1
+                    ) as last_message
+                "),
+                \DB::Raw("
+                    (
+                        IFNULL(
+                            (
+                                SELECT created FROM {$prefix}chat 
+                                WHERE (
+                                    (
+                                        {$prefix}chat.sender_id = {$user_id} 
+                                        AND 
+                                        receiver_id = IF(
+                                            ({$user_id} = {$prefix}requests.sender_id),
+                                            {$prefix}requests.receiver_id,
+                                            {$prefix}requests.sender_id
+                                        ) 
+                                    )
+                                    OR 
+                                    (
+                                        {$prefix}chat.sender_id = IF(
+                                            ({$user_id} = {$prefix}requests.sender_id),
+                                            {$prefix}requests.receiver_id,
+                                            {$prefix}requests.sender_id
+                                        ) 
+                                        AND  
+                                        receiver_id = {$user_id}
+                                    )
+                                )
+                                ORDER BY {$prefix}chat.id_chat DESC
+                                LIMIT 0,1
+                            ),
+                            {$prefix}requests.created
+                        )
+                    ) as timestamp
+                "),
+                \DB::Raw("
+                    (
+                        IFNULL(
+                            (
+                                SELECT created FROM {$prefix}chat 
+                                WHERE (
+                                    (
+                                        {$prefix}chat.sender_id = {$user_id} 
+                                        AND 
+                                        receiver_id = IF(
+                                            ({$user_id} = {$prefix}requests.sender_id),
+                                            {$prefix}requests.receiver_id,
+                                            {$prefix}requests.sender_id
+                                        ) 
+                                    )
+                                    OR 
+                                    (
+                                        {$prefix}chat.sender_id = IF(
+                                            ({$user_id} = {$prefix}requests.sender_id),
+                                            {$prefix}requests.receiver_id,
+                                            {$prefix}requests.sender_id
+                                        ) 
+                                        AND  
+                                        receiver_id = {$user_id}
+                                    )
+                                )
+                                ORDER BY {$prefix}chat.id_chat DESC
+                                LIMIT 0,1
+                            ),
+                            {$prefix}requests.created
+                        )
+                    ) as requested_date
+                ")
+            ]);
+
+            $table_chat_requests->leftJoin("users as employer","employer.id_user","=","requests.sender_id");
+            $table_chat_requests->leftJoin("users as talent","talent.id_user","=","requests.receiver_id");
+            $table_chat_requests->leftJoin('files as sender_image',function($leftjoin){
+                $leftjoin->on('sender_image.user_id','=','requests.sender_id');
+                $leftjoin->on('sender_image.type','=',\DB::Raw('"profile"'));
+            });
+            $table_chat_requests->leftJoin('files as receiver_image',function($leftjoin){
+                $leftjoin->on('receiver_image.user_id','=','requests.receiver_id');
+                $leftjoin->on('receiver_image.type','=',\DB::Raw('"profile"'));
+            });
+            $table_chat_requests->groupBy(["chat_user_id"]);
+            $table_chat_requests->orderBy("requests.created","DESC");
+
+            if(!empty($search)){
+                $table_chat_requests->having("receiver_name","like","%{$search}%");
+            }
+
+            $result = json_decode(json_encode($table_chat_requests->get()),true);
+            
+            if(!empty($result)){
+                array_walk($result, function(&$item) use($user_id){
+                    $item['ago']                = ___agoday($item['timestamp']);
+                    $item['fulltime']           = ___d($item['timestamp']);
+                    $item['timestamp']          = strtotime($item['timestamp']);
+                    $item['last_message_code']  = "";
+
+                    if($item['last_message'] == CHAT_EMPLOYER_NEW_REQUEST || $item['last_message'] == CHAT_EMPLOYER_GREETING_MESSAGE || $item['last_message'] == CHAT_TALENT_GREETING_MESSAGE){
+                        $item['last_message_code']  = $item['last_message'];
+                        $item['last_message']       = trans(sprintf("general.%s",$item['last_message']));
+                    }
+
+                    if($user_id != $item['receiver_id']){
+                        $item['last_message']       = sprintf("%s: %s",trans('general.M0277'),$item['last_message']);
+                    }
+
+                    $item['profile_link']   = "";
+                });
+            }
+
+            return $result;
+        }
+
+        public static function getSubscribeUser($type){
+            $prefix             = DB::getTablePrefix();
+
+            $projectProposal    = DB::table('users')
+            ->select(
+                'users.id_user',
+                \DB::Raw('CONCAT('.$prefix.'users.first_name, " ", '.$prefix.'users.last_name ) AS name'),
+                'users.email'
+            )
+            ->where('status', 'active')
+            ->where('newsletter_subscribed', 'yes')
+            ->where('type', $type)
+            ->get();
+
+            return $projectProposal;
+        }
+
+        public static function getUserNewsletterToken($token){
+            $detail = DB::table('users')
+            ->where('newsletter_token', $token)
+            ->first();
+
+            return json_decode(json_encode($detail), true);
+        }
+
+        public static function getTalentByIndustry($id_industry){
+            $prefix = DB::getTablePrefix();
+            $current_datetime = date('Y-m-d H:i:s');
+            $past_datetime = date('Y-m-d H:i:s', mktime(date('H'),date('i'),date('s'),date('m'),date('d')-7,date('Y')));
+
+            $table_user = DB::table('users')
+            ->select(
+                \DB::Raw("TRIM(CONCAT({$prefix}users.first_name,' ',{$prefix}users.last_name)) as name"),
+                'email',
+                'newsletter_token',
+                \DB::raw('"0" as job_completion'),
+                \DB::raw('(SELECT IFNULL(ROUND((TIMESTAMPDIFF(MINUTE, `startdate`, `enddate`)/60), 0), 0) AS total_hours FROM `'.$prefix.'project_log` AS pl WHERE pl.talent_id = '.$prefix.'users.id_user AND `startdate` >= "'.$past_datetime.'" AND `enddate` <= "'.$current_datetime.'") AS availability_hours'),
+                \DB::raw('(SELECT IFNULL(ROUND(AVG(review_average), 1), "0.0") FROM '.$prefix.'reviews AS rev WHERE rev.receiver_id = '.$prefix.'users.id_user) as rating'),
+                \DB::raw('(SELECT COUNT(*) FROM '.$prefix.'reviews AS rev WHERE rev.receiver_id = '.$prefix.'users.id_user) as review'),
+                \DB::raw('CONCAT(UCASE(LEFT(expertise, 1)),SUBSTRING(expertise, 2)) AS expertise'),
+                \DB::raw("(SELECT GROUP_CONCAT(t.skill) FROM {$prefix}talent_skills as t WHERE t.user_id = {$prefix}users.id_user) as skills")
+                )
+            ->where('type','talent')
+            ->where('status','active')
+            ->where('newsletter_subscribed','yes')
+            ->where('industry',$id_industry)
+            ->get()
+            ->toArray();
+
+            return json_decode(json_encode($table_user),true);
+        }
+
+        public static function getEmployerByIndustry($id_industry){
+            $prefix = DB::getTablePrefix();
+            $table_user = DB::table('users')
+            ->select(
+                \DB::Raw("TRIM(CONCAT({$prefix}users.first_name,' ',{$prefix}users.last_name)) as name"),
+                'email',
+                'newsletter_token'
+                )
+            ->where('type','employer')
+            ->where('status','active')
+            ->where('newsletter_subscribed','yes')
+            ->where('industry',$id_industry)
+            ->get()
+            ->toArray();
+
+            return json_decode(json_encode($table_user),true);
+        }
+
+        public static function  listing($where, $keys = ['*']){
+            \DB::statement(\DB::raw('set @row_number=0'));
+
+            $table_users = DB::table('users');
+            $keys[] = \DB::raw('@row_number  := @row_number  + 1 AS row_number');
+            $table_users->select($keys);
+            $table_users->where($where);
+            $table_users->where('status','!=','trashed');
+
+            return $table_users->get();
+        }
+
+        public static function getTalentForNewsLetter(){
+            $prefix = DB::getTablePrefix();
+            $current_datetime = date('Y-m-d H:i:s');
+            $past_datetime = date('Y-m-d H:i:s', mktime(date('H'),date('i'),date('s'),date('m'),date('d')-7,date('Y')));
+
+            $table_user = DB::table('users')
+            ->select(
+                \DB::Raw("TRIM(CONCAT({$prefix}users.first_name,' ',{$prefix}users.last_name)) as name"),
+                'email',
+                'newsletter_token',
+                \DB::raw('"0" as job_completion'),
+                \DB::raw('(SELECT IFNULL(ROUND((TIMESTAMPDIFF(MINUTE, `startdate`, `enddate`)/60), 0), 0) AS total_hours FROM `'.$prefix.'project_log` AS pl WHERE pl.talent_id = '.$prefix.'users.id_user AND `startdate` >= "'.$past_datetime.'" AND `enddate` <= "'.$current_datetime.'") AS availability_hours'),
+                \DB::raw('(SELECT IFNULL(ROUND(AVG(review_average), 1), "0.0") FROM '.$prefix.'reviews AS rev WHERE rev.receiver_id = '.$prefix.'users.id_user) as rating'),
+                \DB::raw('(SELECT COUNT(*) FROM '.$prefix.'reviews AS rev WHERE rev.receiver_id = '.$prefix.'users.id_user) as review'),
+                \DB::raw('CONCAT(UCASE(LEFT(expertise, 1)),SUBSTRING(expertise, 2)) AS expertise'),
+                \DB::raw("(SELECT GROUP_CONCAT(t.skill) FROM {$prefix}talent_skills as t WHERE t.user_id = {$prefix}users.id_user) as skills")
+                )
+            ->where('type','talent')
+            ->where('status','active')
+            ->where('newsletter_subscribed','yes')
+            ->where('industry',NULL)
+            ->get()
+            ->toArray();
+
+            return json_decode(json_encode($table_user),true);
+        }
+
+        public static function getEmployerForNewsLetter(){
+            $prefix = DB::getTablePrefix();
+            $table_user = DB::table('users')
+            ->select(
+                \DB::Raw("TRIM(CONCAT({$prefix}users.first_name,' ',{$prefix}users.last_name)) as name"),
+                'email',
+                'newsletter_token'
+                )
+            ->where('type','employer')
+            ->where('status','active')
+            ->where('newsletter_subscribed','yes')
+            ->where('industry',NULL)
+            ->get()
+            ->toArray();
+
+            return json_decode(json_encode($table_user),true);
+        }
+
+        public static function getUserRating($id_user){
+            $prefix = DB::getTablePrefix();
+            $table_user = DB::table('users')
+            ->select(
+                \DB::raw('(SELECT IFNULL(ROUND(AVG(review_average), 1), "0.0") FROM '.$prefix.'reviews AS rev WHERE rev.receiver_id = '.$prefix.'users.id_user) as rating'),
+                \DB::raw('(SELECT COUNT(*) FROM '.$prefix.'reviews AS rev WHERE rev.receiver_id = '.$prefix.'users.id_user) as review')
+                )
+            ->where('id_user',$id_user)
+            ->get()
+            ->first();
+
+            return $table_user;
+        }
+
+        public static function getUserForNewsLetter($userType = 'talent', $where_data = ''){
+            $prefix = DB::getTablePrefix();
+            $current_datetime = date('Y-m-d H:i:s');
+            $past_datetime = date('Y-m-d H:i:s', mktime(date('H'),date('i'),date('s'),date('m'),date('d')-7,date('Y')));
+
+            $table_user = DB::table('users');
+            $table_user->select(
+                'users.*',
+                \DB::Raw("TRIM(CONCAT({$prefix}users.first_name,' ',{$prefix}users.last_name)) as name"),
+                'email',
+                'newsletter_token',
+                \DB::raw('"0" as job_completion'),
+                \DB::raw('(SELECT IFNULL(ROUND((TIMESTAMPDIFF(MINUTE, `startdate`, `enddate`)/60), 0), 0) AS total_hours FROM `'.$prefix.'project_log` AS pl WHERE pl.talent_id = '.$prefix.'users.id_user AND `startdate` >= "'.$past_datetime.'" AND `enddate` <= "'.$current_datetime.'") AS availability_hours'),
+                \DB::raw('(SELECT IFNULL(ROUND(AVG(review_average), 1), "0.0") FROM '.$prefix.'reviews AS rev WHERE rev.receiver_id = '.$prefix.'users.id_user) as rating'),
+                \DB::raw('(SELECT COUNT(*) FROM '.$prefix.'reviews AS rev WHERE rev.receiver_id = '.$prefix.'users.id_user) as review'),
+                \DB::raw('CONCAT(UCASE(LEFT(expertise, 1)),SUBSTRING(expertise, 2)) AS expertise'),
+                \DB::raw("(SELECT GROUP_CONCAT(t.skill) FROM {$prefix}talent_skills as t WHERE t.user_id = {$prefix}users.id_user) as skills")
+                );
+            $table_user->where('type',$userType);
+            $table_user->where('status','active');
+            $table_user->where('newsletter_subscribed','yes');
+            if(!empty($where_data)){
+                $where_data = implode(' AND ', $where_data);
+                $table_user->whereRaw($where_data);
+            }
+            $table_user = $table_user->get()->toArray();
+
+            $table_user = json_decode(json_encode($table_user),true);
+
+            #dd($table_user);
+            return $table_user;
+        }
+    }
+
+

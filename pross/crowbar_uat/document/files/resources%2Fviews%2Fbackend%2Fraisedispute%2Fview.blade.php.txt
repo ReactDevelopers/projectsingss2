@@ -1,0 +1,281 @@
+@extends('layouts.backend.chat')
+
+@section('requirecss')
+    <link href="{{url('css/placeholder.min.css')}}" rel="stylesheet" />
+@endsection
+@section('inlinejs-top')
+    <script src="{{ asset('js/chat/socket.io') }}.js"></script>
+    <script src="{{ asset('js/chat/slimscroll.js') }}"></script>
+    <script src="{{ asset('js/chat/moment.js') }}"></script>
+    <script src="{{ asset('js/chat/moment-timezone.js') }}"></script>
+    <script src="{{ asset('js/chat/moment-timezone-with-data-2012-2022.js') }}"></script>
+    <script src="{{ asset('js/chat/livestamp.js') }}"></script>
+@endsection
+@section('content')
+	<section class="content">
+		<div class="row">
+			<div class="col-md-3">
+				<div class="panel">
+					<div class="panel-body">
+						<img class="profile-user-img img-responsive img-circle" src="{{ url($raisedispute['employer_picture']) }}" />
+
+						<h3 class="profile-username text-center">{{$raisedispute['employer_name']}}</h3>
+						<p class="text-muted text-center">{{$raisedispute['company_name']}}</p>
+						<ul class="list-group list-group-unbordered">
+							<li class="list-group-item">
+								<b>Amount Agreed</b> <span class="pull-right">{{PRICE_UNIT.___format($raisedispute['amount_agreed'])}}</span>
+							</li>
+							<li class="list-group-item">
+								<b>Amount Paid</b> <span class="pull-right">{{PRICE_UNIT.___format($raisedispute['amount_paid'])}}</span>
+							</li>
+							<li class="list-group-item">
+								<b>Disputed By</b> <span class="pull-right">{{$raisedispute['sender_name']}}</span>
+							</li>
+							<li class="list-group-item">
+								<b>Dispute Status</b> <span class="pull-right">{{ucfirst($raisedispute['status'])}}</span>
+							</li>
+							<li class="list-group-item">
+								<b>Date</b> <span class="pull-right">{{___d($raisedispute['created'])}}</span>
+							</li>
+							@if(!empty($raisedispute['admin_name']))
+								<li class="list-group-item">
+									<b>Closed By</b> <span class="pull-right">{{$raisedispute['admin_name']}}</span>
+								</li>
+								<li class="list-group-item">
+									<b>Date</b> <span class="pull-right">{{___d($raisedispute['dispute_closed_date'])}}</span>
+								</li>
+							@endif
+						</ul>
+						<div class="form-group" id="raise_dispute_buttons">
+							@if($raisedispute['status'] == 'open')
+								@if(!empty($total_payment_due))
+									<div class="form-group">
+										<button class="btn btn-primary btn-block" data-url="{{ url(sprintf('%s/payment/pay?project_id=%s',ADMIN_FOLDER,___encrypt($raisedispute['project_id']))) }}" data-request="ajax-confirm" data-ask_title="{{ ADMIN_CONFIRM_TITLE }}" data-ask="This will refund payment to empoyer and also will close job permanently.">
+											<b>Pay ({{PRICE_UNIT.___format($total_payment_due)}})</b>
+										</button>
+									</div>
+								@endif
+
+								<div class="form-group">
+									<button class="btn btn-primary btn-block" data-url="{{ url(sprintf('%s/payment/refund?project_id=%s',ADMIN_FOLDER,___encrypt($raisedispute['project_id']))) }}" data-request="ajax-confirm" data-ask_title="{{ ADMIN_CONFIRM_TITLE }}" data-ask="This will refund payment to empoyer and also will close job permanently." class="btn btn-primary btn-block">
+										<b>Refund ({{PRICE_UNIT.___format($raisedispute['amount_agreed']-$raisedispute['amount_paid'])}})</b>
+									</button>
+								</div>
+
+								<div class="form-group">
+									<a href="#" class="btn btn-primary btn-block">
+										<b>Resolve & Notify</b>
+									</a>
+								</div>
+							@else
+
+							@endif
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="nav-tabs-custom">
+					<ul class="nav nav-tabs">
+						<li class="<?php echo ($page == 'project')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'&page=project'); ?>">Project Detail</a></li>
+						<li class="<?php echo ($page == 'proposal')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'&page=proposal'); ?>">Accepted Proposal</a></li>
+						<li class="<?php echo ($page == 'payments')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'&page=payments'); ?>">Payouts</a></li>
+						<li class="<?php echo ($page == 'payments-due')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'&page=payments-due'); ?>">Due Payments</a></li>
+						<li class="<?php echo ($page == 'disputed-payment')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'&page=disputed-payment'); ?>">Disputed Payments</a></li>
+						<li class="<?php echo ($page == 'chat')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'&page=chat'); ?>">Chat</a></li>
+					</ul> 
+					<div class="tab-content">
+						@if($page == 'project')
+							<div class="tab-pane<?php echo ($page == 'project')?' active':''; ?>">
+								<div class="mailbox-read-info">
+									<h3>{{$raisedispute['title']}}</h3>
+									<h5>Posted By: {{$raisedispute['employer_name']}}
+										<span class="mailbox-read-time pull-right">{{___d($raisedispute['project_created'])}}</span>
+									</h5>
+								</div>
+								<div class="mailbox-read-message">
+									<div class="form-group"><b>Project Type</b> <span class="pull-right">{{employment_types('post_job',$raisedispute['employment'])}}</span> </div>
+									<div class="form-group"><b>Industry</b> <span class="pull-right">{{$raisedispute['industry_name']}}</span></div>
+									<div class="form-group"><b>Expertise Level</b> <span class="pull-right">{{expertise_levels($raisedispute['expertise'])}}</span></div>
+									<div class="form-group">
+										<b>Timeline</b> 
+										<span class="pull-right">
+											{{___date_difference($raisedispute['startdate'],$raisedispute['enddate'])}}
+										</span>
+									</div>
+									<br>
+									<b>Description</b>
+									<p>{!!nl2br($raisedispute['description'])!!}</p>				                  	
+									<br>
+									<b>Skills</b>
+									<p>
+										@if(!empty($raisedispute['skills']))
+											{!! sprintf('<span class="label label-default">%s</span>',implode('</span> <span class="label label-default">',array_unique(explode(',',$raisedispute['skills'])))) !!}
+										@else
+											{{N_A}}
+										@endif
+									</p>
+									<br>
+									<b>Required Qualification</b>
+									<p>
+										@if(!empty($raisedispute['required_qualifications']))
+											{!! sprintf('<span class="label label-default">%s</span>',implode('</span> <span class="label label-default">',array_unique(explode(',',$raisedispute['required_qualifications'])))) !!}
+										@else
+											{{N_A}}
+										@endif
+									</p>
+								</div>
+							</div>
+						@elseif($page == 'proposal')
+							<div class="tab-pane<?php echo ($page == 'proposal')?' active':''; ?>">
+								<div class="mailbox-read-info">
+									<h3>{{$raisedispute['talent_name']}}</h3>
+									<h5>Quoted Price: {!! sprintf('%s%s %s',PRICE_UNIT,___format($raisedispute['amount_agreed']),job_types_rates_postfix($raisedispute['employment'])) !!}
+										<span class="mailbox-read-time pull-right">{{___d($raisedispute['proposal_submitted'])}}</span>
+									</h5>
+								</div>
+								<div class="mailbox-read-message">
+									<b>Proposal</b>
+									<p>{!!nl2br($raisedispute['proposal_comments'])!!}</p>
+								</div>
+								<div class="box-footer">
+									<ul class="mailbox-attachments clearfix">
+										<li>
+											<span class="mailbox-attachment-icon"><i class="fa fa-file-o"></i></span>
+											<div class="mailbox-attachment-info">
+												<a href="#" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i> {{$raisedispute['document_name']}}</a>
+												<span class="mailbox-attachment-size"> {{$raisedispute['document_size']}}
+													<a href="{{url(sprintf('/download/file?file_id=%s',___encrypt($raisedispute['document_id'])))}}" class="btn btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
+												</span>
+											</div>
+										</li>
+									</ul>
+								</div>
+							</div>
+						@elseif($page == 'payments')
+							<div class="tab-pane<?php echo ($page == 'payments')?' active':''; ?>">
+								{!! $html->table(); !!}
+							</div>
+						@elseif($page == 'payments-due')
+							<div class="tab-pane<?php echo ($page == 'payments-due')?' active':''; ?>">
+								{!! $html->table(); !!}
+							</div>
+						@elseif($page == 'disputed-payment')
+							<div class="tab-pane<?php echo ($page == 'disputed-payment')?' active':''; ?>">
+								{!! $html->table(); !!}
+							</div>
+						@elseif($page == 'chat')
+							<div class="tab-pane<?php echo ($page == 'chat')?' active':''; ?>">
+								<div id="chat-body" class="row">
+									<div class="chat-holder" style="display: none;">
+										<div class="col-md-3 col-sm-4 col-xs-12 names-holder" id="chat-left-box">
+											<div class="chat-list-wrapper">
+												<div class="search-box">
+													<div class="afterlogin-searchbox">
+											            <div class="form-group">
+											                <input type="text" name="search-friend" class="form-control" placeholder="Search for people">
+											                <button type="submit" class="btn searchBtn">Search</button>
+											            </div>
+											        </div>
+										        </div>
+												<ul class="names-list"></ul>
+											</div>
+										</div>
+										@includeIf('chat.chatbox')
+									</div>
+									<div class="no-chat-connection">
+										@includeIf('chat.placeholder')
+									</div>
+								</div>
+							</div>
+						@endif
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+@endsection
+@section('requirejs')
+    <script src="{{ asset('js/chat/chat.js') }}"></script>
+    <script src="{{ asset('js/chat/notification.js') }}"></script>
+@endsection
+@push('inlinescript')
+	<script>
+		var current_time    = moment.tz(new Date(), "{{ date_default_timezone_get() }}");
+		var timezone 		= current_time.clone().tz("{{ ___current_timezone() }}");
+		var socket						= new io.connect(
+			'{!!env('SOCKET_CONNECTION_URL')!!}:{!!env('SOCKET_CONNECTION_POST')!!}', {
+			'reconnection': true,
+			'reconnectionDelay': 2000,
+			'reconnectionDelayMax' : 5000,
+			'secure':false
+		});
+
+		var chat_save_url 				= '{{ url(sprintf("%s/chat-save","chat")) }}';
+		var chat_history_url			= '{{ url(sprintf("%s/chat-history","chat")) }}';
+		var chat_users_list_url 		= '{{ url(sprintf("%s/chat-list","chat")) }}';
+		var sender_details				= {!! json_encode(['sender' => $user['sender'], 'sender_picture' => $user['sender_picture'], 'type' => $user['type'], 'id_user' => $user['id_user'], 'sender_id' => $user['sender_id']]) !!};
+		var chat_left_box				= '#chat-left-box';
+		var chat_right_box				= '#chat-right-box';
+		
+		var message_box 				= 'ul.messages';
+		var profile_text 				= '{{ trans("general.M0268") }}';
+		var message_box_text 			= '{{ trans("general.M0269") }}';
+		var chat_accept_button_text 	= '{{ trans("general.M0272") }}';
+		var chat_reject_button_text 	= '{{ trans("general.M0273") }}';
+		var chat_request_postfix 		= '{{ trans("general.M0274") }}';
+		var chat_request_prefix 		= '{{ trans("general.M0275") }}';
+		var chat_not_available 			= '{{ trans("general.M0276") }}';
+		var sender_tag 					= '{{ trans("general.M0277") }}';
+		var new_message_tag 			= '{{ trans("general.M0278") }}';
+		var connecting_text 			= '{{ trans("general.M0279") }}';
+		var no_chat_list 				= '{{ trans("website.W0297") }}';
+		var report_abuse_text 			= '{{ trans("website.W0350") }}';
+		var delete_all_text 			= '{{ trans("website.W0351") }}';
+		var reported_abuse_text 		= '{{ trans("website.W0352") }}';
+		var image_text 					= '{{ trans("website.W0423") }}';
+		var support_chat_user_id 		= '{{ SUPPORT_CHAT_USER_ID }}';
+		var help_desk_tagline 			= '{{ trans("website.W0424") }}';
+		var chat_box_title 				= '{{ trans("website.W0434") }}';
+		
+		var chat = new chat({
+			'socket'					: socket,
+			'chat_box_title'			: chat_box_title,
+			'chat_save_url'				: chat_save_url,
+			'sender_details'			: sender_details,
+			'chat_left_box'				: chat_left_box,
+			'chat_right_box'			: chat_right_box,
+			'profile_text'				: profile_text,
+			'message_box'				: message_box,
+			'message_box_text'			: message_box_text,
+			'chat_accept_button_text'	: chat_accept_button_text,
+			'chat_reject_button_text'	: chat_reject_button_text,
+			'chat_request_postfix'		: chat_request_postfix,
+			'chat_request_prefix'		: chat_request_prefix,
+			'chat_not_available'		: chat_not_available,
+			'sender_tag'				: sender_tag,
+			'new_message_tag'			: new_message_tag,
+			'connecting_text'			: connecting_text,
+			'no_chat_list'				: no_chat_list,
+			'report_abuse_text'			: report_abuse_text,
+			'delete_all_text'			: delete_all_text,
+			'reported_abuse_text'		: reported_abuse_text,
+			'image_text'				: image_text,
+			'timezone'					: timezone,
+			'support_chat_user_id'		: support_chat_user_id,
+			'help_desk_tagline'			: help_desk_tagline
+		});
+
+		/* INITIATING CHAT APPLICATION */
+		chat.initiate();
+
+		$(function(){
+			$('body').addClass('slide-chat');
+		});
+	</script>
+
+	@if($page == 'payments' || $page == 'payments-due' || $page == 'disputed-payment' )
+		{!! $html->scripts(); !!}
+	@endif
+@endpush
+

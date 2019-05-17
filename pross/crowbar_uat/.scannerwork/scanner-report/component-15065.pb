@@ -1,0 +1,1 @@
+Ùu;resources/views/talent/settings/transferownership.blade.php 2phpX>hr;resources/views/talent/settings/transferownership.blade.php

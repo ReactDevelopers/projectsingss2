@@ -1,0 +1,122 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Field Validation Common File
+    |--------------------------------------------------------------------------
+    |
+    | The following language lines are used during talent actions for various
+    | messages that we need to display to the user. You are free to modify
+    | these language lines according to your application's requirements.
+    |
+    */
+
+    'J0001'                 => '&#8592; Back to Search Result',
+    'J0002'                 => 'Budget',
+    'J0003'                 => 'Industry',
+    'J0004'                 => 'Expected Timeline',
+    'J0005'                 => 'Job Type',
+    'J0006'                 => 'Expertise Level',
+    'J0007'                 => 'Posted',
+    'J0008'                 => 'Skills Required',
+    'J0009'                 => 'Minimum Qualification',
+    'J0010'                 => 'Save Job',
+    'J0011'                 => 'Reviews given to employer',
+    'J0012'                 => 'Reviews given by employer',
+    
+    'J0013'                 => 'Submit A Proposal',
+    'J0014'                 => 'ABOUT THE EMPLOYER',
+    'J0015'                 => 'OTHER JOB BY THIS EMPLOYER',
+    'J0016'                 => 'SIMILAR JOBS',
+
+    /*Submit Praposals*/
+    'J0017'                 => 'Read Complete Job Detail &#8594;',
+    'J0018'                 => 'Submit Your Proposal',
+    'J0019'                 => 'Your current work rate is %s %s.',
+    'J0020'                 => 'This amount will be seen by the client.',
+    'J0021'                 => 'Quoted Price (in '.PRICE_UNIT.')',
+    'J0022'                 => 'Submission Fee (in '.PRICE_UNIT.')',
+    'J0023'                 => 'Amount you will receive (in '.PRICE_UNIT.')',
+    'J0024'                 => 'Your Comments',
+    'J0025'                 => 'Optional',
+    'J0026'                 => 'Attach Documents',
+    'J0027'                 => 'Add Documents',
+    'J0028'                 => 'Cancel',
+    'J0029'                 => 'Submit Proposal',
+    'J0030'                 => 'Please select an attachment from your computer. Attachements can be PDF\'s, TXT\'s, DOC\'s, XLS\'s, JPG\'s, PNG\'s, GIF\'s and images in format and less than 10MB.',
+    'J0031'                 => 'Write your comments',
+
+    /*Saved Jobs, Current jobs, jobs schedule, Post Job Schedule*/
+    'J0032'                 => 'Saved Jobs',
+    'J0033'                 => 'Current Jobs',
+    'J0034'                 => 'Jobs Scheduled',
+    'J0035'                 => 'Past Job History',
+    'J0036'                 => 'Show Description',
+    'J0037'                 => 'Salary Range',
+    'J0038'                 => 'Full Time',
+    'J0039'                 => 'Active Proposals',
+    'J0040'                 => 'Submitted Proposals',
+    'J0041'                 => 'Submitted On',
+    'J0042'                 => 'Proposal Accepted',
+
+    /* Employer Proposals*/
+    'J0043'                 => 'All Proposals',
+    'J0044'                 => 'Proposal Recieved',
+    'J0045'                 => 'Proposal Accepted',
+    'J0046'                 => 'Approvel Pending',
+    'J0047'                 => '',
+    'J0048'                 => '',
+    'J0049'                 => '',
+    'J0050'                 => '',
+    'J0051'                 => 'You have yet not set your work rate, please update your work rate.',
+    'J0052'                 => 'Your submitted proposal.',
+    'J0053'                 => 'Start this job',
+    'J0054'                 => 'Mark Completed',
+    'J0055'                 => 'Amount Paid',
+    'J0056'                 => 'Amount agreed',
+    'J0057'                 => 'Close Job',
+    'J0058'                 => 'Job Completed',
+    'J0059'                 => 'Job to be started',
+    'J0060'                 => 'Set Time For Availability',
+    'J0061'                 => 'Other Details',
+    'J0062'                 => 'Send Chat Request',
+    'J0063'                 => 'Chat Request Sent',
+    'J0064'                 => 'Apply To This Job',
+    'J0065'                 => 'Job Started',
+    'J0066'                 => 'Already Applied',
+    'J0067'                 => 'Confirmation pending',
+    'J0068'                 => 'Confirmation pending',
+    'J0069'                 => 'Confirm start job',
+    'J0070'                 => 'Confirm job completed',
+    'J0071'                 => 'Job started',
+    'J0072'                 => 'Talent working',
+    'J0073'                 => 'Your submitted application.',
+    'J0074'                 => 'Expected Salary<br>(in '.PRICE_UNIT.')',
+    'J0075'                 => 'Your current expected salary is %s per annum.',
+    'J0076'                 => 'You have yet not set your expected salary, please update your expected salary.',
+    'J0077'                 => 'Your Comments',
+    'J0078'                 => 'Your application has been submitted successfully.',
+    'J0079'                 => 'Your submitted application.',
+    'J0080'                 => 'Apply Job',
+    'J0081'                 => 'Please wait...',
+    'J0082'                 => 'We have yet not received any confirmation to proceed from the talent user.',
+    'J0083'                 => 'Enter review comments',
+    'J0084'                 => 'I will do it later',
+    'J0085'                 => 'Submit a Review',
+    'J0086'                 => 'Performance',
+    'J0087'                 => 'Submit a Review',
+    'J0088'                 => 'Performance',
+    'J0089'                 => 'Punctuality',
+    'J0090'                 => 'Quality',
+    'J0091'                 => 'Skills',
+    'J0092'                 => 'Support',
+    'J0093'                 => 'Overall Rating',
+    'J0094'                 => 'Review This Job',
+    'J0095'                 => 'Submitted Review',
+    'J0096'                 => 'Bonus',
+    'J0097'                 => 'Location',
+    'J0098'                 => 'Contact Talent',
+];
+

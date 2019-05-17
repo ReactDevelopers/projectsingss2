@@ -1,0 +1,110 @@
+@section('content')
+    <div class="allproposal-detail allproposal-detail-list">
+        <div class="container">
+            <div class="content-box">
+                <div class="content-box-header clearfix no-padding-left">
+                    <div class="contentbox-header-title">
+                        <h3>
+                            <a>{{$payment_detail['title']}}</a>
+                            <a href="{{ url(sprintf('%s/my-jobs/job_details?job_id=%s',EMPLOYER_ROLE_TYPE,___encrypt($payment_detail['id_project']))) }}" style="width: 100px;padding: 6px;font-size: 14px!important;font-weight: bold;" class="button pull-right font-12x">{{ trans('website.W0575') }}</a>
+                        </h3>
+                    </div>                                    
+                    <div class="contentbox-price-range">
+                        <span class="company-name">{{$payment_detail['company_name']}}</span>
+                    </div>
+                    <div class="contentbox-tags top-margin-20px">
+                        <span>{{trans('website.W0553')}}: <span>{{___d($payment_detail['enddate'])}}</span></span>
+                        <span>{{trans('website.W0554')}}: <span>{{___format($payment_detail['amount_agreed'],true,true)}}</span></span>
+                        <span>{{trans('website.W0555')}}: <span>{{___format($payment_detail['amount_paid'],true,true)}}</span></span>
+                    </div>
+                    <div class="contentbox-link">
+                        <a href="{{ url(sprintf('%s/my-jobs/job_details?job_id=%s',EMPLOYER_ROLE_TYPE, ___encrypt($payment_detail['id_project']))) }}"">{{trans('job.J0017')}}</a>
+                    </div>
+                </div>                              
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="contentWrapper job-listing-section job-listing-section-sub">
+            <div class="col-md-9">
+                <div class="content-box find-talent-list">
+                    <div class="content-box-header clearfix">
+                        <div class="contentbox-header-title">
+                            <div class="talent-header-xs clearfix">
+                                
+                                @if(!empty($talent_detail['picture']))
+                                    <div class="talent-display-xs"><img src="{{url($talent_detail['picture'])}}"></div>
+                                @endif
+
+                                <div class="talent-details-xs">
+                                    <h4>
+                                        <a href="{{url("employer/find-talentprofile?talent_id=".___encrypt($talent_detail['id_user']))}}">
+                                            {{___ucfirst($talent_detail['first_name']." ".$talent_detail['last_name'])}}
+                                        </a>
+                                        
+                                        <small>
+                                            @if(!empty($talent_detail['gender']) && empty(\Cache::get('countries')[$talent_detail['country']]))
+                                                {{sprintf(" %s",ucfirst($talent_detail['gender']))}}
+                                            @elseif(empty($talent_detail['gender']) && !empty(\Cache::get('countries')[$talent_detail['country']]))
+                                                {{sprintf(" %s",\Cache::get('countries')[$talent_detail['country']])}}
+                                            @elseif(!empty($talent_detail['gender']) && !empty(\Cache::get('countries')[$talent_detail['country']]))
+                                                {{sprintf(" %s, %s",ucfirst($talent_detail['gender']),\Cache::get('countries')[$talent_detail['country']])}}
+                                            @endif
+                                        </small>
+
+                                    </h4>
+                                    <div class="rating-review">
+                                        <span class="rating-block">
+                                            {!!___ratingstar($talent_detail['rating'])!!}
+                                        </span>
+                                        <a href="{{url(sprintf('%s/find-talentreviews?talent_id=%s',EMPLOYER_ROLE_TYPE,___encrypt($talent_detail['id_user'])))}}" class="reviews-block" style="color:#444444;">{{$talent_detail['review']}} Reviews</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @if(!empty($talent_detail['workrate']))
+                            <div class="contentbox-price-range">
+                                <span>
+                                    {{sprintf(trans('website.W0205'),'',___format($talent_detail['workrate'],true,true))}}
+                                </span>
+                            </div>
+                        @endif
+                        
+                    </div>
+                    
+                    <div class="contentbox-minutes clearfix">
+                        <div class="minutes-left">
+                            <span>{{trans('website.W0203')}}: <strong>{{$talent_detail['job_completion']}}</strong></span>
+                            
+                            @if(!empty($talent_detail['availability_hours']))
+                                <span>{{trans('website.W0204')}}: <strong>{{sprintf(trans('general.M0180'),$talent_detail['availability_hours'])}}</strong></span>
+                            @else
+                                <span>{{trans('website.W0204')}}: <strong>{{N_A}}</strong></span>
+                            @endif
+
+                            @if(!empty($talent_detail['expertise']))
+                                <span>{{trans('website.W0062')}}: <strong>{{expertise_levels($talent_detail['expertise'])}}</strong></span>
+                            @else
+                                <span>{{trans('website.W0062')}}: <strong>{{N_A}}</strong></span>
+                            @endif
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    
+                    <div class="row others top-margin-10px bottom-margin-10px">
+                        <div class="col-md-1"><small style="padding: 10px 0;display: block;">Skills: </small></div>
+                            <div class="col-md-11 js-example-tags-container">
+                                @if(!empty($talent_detail['skills']))
+                                    {!!sprintf("<ul>%s</ul>",___tags($talent_detail['skills'],'<li class="tag-selected">%s</li>',' '))!!}
+                                @else
+                                    <small style="padding: 10px 0;display: block;">{{N_A}}</small>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+

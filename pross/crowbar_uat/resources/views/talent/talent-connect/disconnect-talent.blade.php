@@ -1,0 +1,44 @@
+ <section class="invite-section">
+    <div class="container-fluid">
+    	<div class="row">
+    		<div class="col-md-12">
+    			<div class="panel">
+                    <form role="send-unlink-request" action="{{url('talent/send-unlink-application')}}" method="post">
+                    	{{csrf_field()}}
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <textarea id="answer_description" name="content" class="form-control" placeholder="{{trans('website.W0449')}}"></textarea>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                          	<a href="" class="btn btn-default">Back</a>
+                        	<button type="button" data-request="ajax-submit" data-target='[role="send-unlink-request"]' class="btn btn-default redShedBtn">Save</button>
+                        </div>
+                    </form>  
+                </div>
+    		</div>
+    	</div>
+    </div>
+</section>
+@push('inlinescript')
+ 	<script src="https://cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
+    <script type="text/javascript">
+        CKEDITOR.config.allowedContent = true;
+        CKEDITOR.config.extraAllowedContent = "div(*)";
+        CKEDITOR.replace('answer_description', { 
+            on:{
+                'instanceReady': function(evt) {
+                    evt.editor.document.on('keyup', function() {
+                        document.getElementById('answer_description').value = evt.editor.getData();
+                    });
+
+                    evt.editor.document.on('paste', function() {
+                        document.getElementById('answer_description').value = evt.editor.getData();
+                    });
+                }
+            }
+        });
+    </script>
+@endpush
+
+

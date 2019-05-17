@@ -1,0 +1,1 @@
+Ÿw3resources/views/backend/faq/category/list.blade.php 2phpX'hr3resources/views/backend/faq/category/list.blade.php

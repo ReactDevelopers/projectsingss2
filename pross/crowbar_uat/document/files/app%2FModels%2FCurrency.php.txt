@@ -1,0 +1,154 @@
+<?php
+    
+    namespace Models;
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\DB;
+
+    class Currency extends Model{
+        protected $table = 'currencies';
+        /**
+         * [getCurrencyByCountryId description]
+         * @param  [type] $id_country [description]
+         * @return [type]             [description]
+         */
+
+        public static function getCurrencyList(){
+            $language = \App::getLocale();
+            return \DB::table('currencies')
+            ->select(
+            'currencies.*',
+             \DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as country_name")
+            )
+            ->leftjoin("countries","countries.id_country", "=", "currencies.id_country")
+            ->where('currencies.status','!=','deleted')
+            ->get();
+        }
+
+        public static function saveCurrency($answerArr)
+        {
+            DB::table('currencies')->insert($answerArr);
+        }
+
+        public static function change($id_curr,$data){
+            $isUpdated = false;
+            $table_users = DB::table('currencies');
+
+            if(!empty($data)){
+                $table_users->where('id','=',$id_curr);
+                $isUpdated = $table_users->update($data);
+            }
+
+            return (bool)$isUpdated;
+        }
+
+        public static function getCurrencyByCountryId($id_country){
+            $id_country = ($id_country ? $id_country : 208);
+            $currency = Currency::select(['id','sign','iso_code','conversion_rate'])->where('id_country',$id_country)->first();
+            if(empty($currency)){
+                $currency = self::getDefaultCurrency();
+            }
+            return $currency;
+        }
+
+        /**
+         * [getCurrencyByCountryCode description]
+         * @param  [type] $country_code [description]
+         * @return [type]             [description]
+         */
+
+        public static function getCurrencyByCountryCode($country_code){
+        	$currency = Currency::select(['currencies.id','sign','countries.iso_code','conversion_rate'])
+            ->join('countries','countries.id_country','=','currencies.id_country')
+            ->where('countries.iso_code',$country_code)
+            ->first();
+
+            if(empty($currency)){
+                $currency = self::getDefaultCurrency();
+            }
+            
+            return $currency;
+        }
+
+        /**
+         * [getCurrencyById description]
+         * @param  [type] $id_currency [description]
+         * @return [type]              [description]
+         */
+
+        public static function getCurrencyById($id_currency){
+        	$currency = Currency::select(['id','sign','iso_code','id_country','conversion_rate','status'])->where('id',$id_currency)->first();
+            if(empty($currency)){
+                $currency = self::getDefaultCurrency();
+            }
+            return $currency;
+        }
+        
+        /**
+         * [getCurrencyByISOCode description]
+         * @param  [type] $iso_code [description]
+         * @return [type]           [description]
+         */
+        
+        public static function getCurrencyByISOCode($iso_code){
+            $currency = Currency::select(['id','sign','iso_code','conversion_rate'])->where('iso_code',$iso_code)->first();
+            if(empty($currency)){
+                $currency = self::getDefaultCurrency();
+            }
+            return $currency;
+        }
+
+        /**
+         * [getShopCurrency description]
+         * @param  [type] $id_user [description]
+         * @return [type]          [description]
+         */
+        
+        public static function getShopCurrency($id_user){
+        	$currency = Currency::select(['currency.id','currency.iso_code','currency.sign','currency.conversion_rate'])->join('shop','currency.id_country','=','shop.id_country')->where(['shop.id_user'=>$id_user])->first();
+        	if(empty($currency)){
+        		$currency = self::getDefaultCurrency();
+        	}
+        	return $currency;
+        }
+
+        /**
+         * [getDefaultCurrency description]
+         * @return [type] [description]
+         */
+        
+        public static function getDefaultCurrency(){
+            return Currency::select(['id','sign','iso_code','conversion_rate'])->where('default_currency','Y')->first();
+        }
+
+        /**
+        * Return price converted
+        *
+        * @param float $price Product price
+        * @param object|array $currency Current currency object
+        * @param bool $to_currency convert to currency or from currency to default currency
+        * @param Context $context
+        * @return float Price
+        */
+
+        public static function convertPrice($price, $currency = null, $to_currency = true){
+            $currency  = self::getCurrencyByCountryCode($currency);
+            
+            $defaultCurrency = self::getDefaultCurrency();
+            $default_currency = $defaultCurrency->id;
+            
+            $c_id = $currency->id;
+            $c_rate = $currency->conversion_rate;
+
+            if ($c_id != $default_currency) {
+                if ($to_currency) {
+                    $price *= $c_rate;
+                } else {
+                    $price /= $c_rate;
+                }
+            }
+
+            return $price;
+        }
+    }
+

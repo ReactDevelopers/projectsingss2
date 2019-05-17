@@ -1,0 +1,101 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class InsertPlanFeaturesTableData extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        \DB::table('plan_features')->insert([
+            [
+                'plan_id' => 2,
+                'feature_id' => 1,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'plan_id' => 2,
+                'feature_id' => 2,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'plan_id' => 2,
+                'feature_id' => 3,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'plan_id' => 2,
+                'feature_id' => 4,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'plan_id' => 2,
+                'feature_id' => 5,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'plan_id' => 2,
+                'feature_id' => 6,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'plan_id' => 2,
+                'feature_id' => 7,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'plan_id' => 2,
+                'feature_id' => 8,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'plan_id' => 1,
+                'feature_id' => 1,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'plan_id' => 1,
+                'feature_id' => 2,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+
+        ]);
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        \DB::table('plan_features')->truncate();
+    }
+}
+

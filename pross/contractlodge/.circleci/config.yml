@@ -1,0 +1,111 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # Specify the version you desire here
+      # - image: circleci/php:7.3.1-fpm-stretch
+      - image: circleci/php:7.3-browsers
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # Using the RAM variation mitigates I/O contention
+      # for database intensive operations.
+      # - image: circleci/mysql:5.7-ram
+      #
+      # - image: redis:2.8.19
+
+    steps:
+      - checkout
+
+      - run:
+         name: Download NodeJS v11
+         command: curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
+
+      - run: sudo apt update && sudo apt-get install -y libsqlite3-dev nodejs libpng-dev libjpeg62-turbo-dev nodejs libwebp-dev libxpm-dev libfreetype6-dev libgmp-dev libgmp3-dev
+      # - run: sudo apt-get install libpspell-dev
+      # - run: ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
+      - run: sudo -E docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-webp-dir=/usr/include/ --with-xpm-dir=/usr/include/
+      # - run: sudo docker-php-ext-install zip
+      # - run: php -i
+      - run: sudo -E docker-php-ext-install -j$(nproc) gd pdo_mysql bcmath
+
+      - run:
+         name: Setup Laravel environment variables for CircleCI test
+         command: cp .env.dusk.testing .env; cp .env.dusk.testing .env.testing
+
+      - run:
+         name: Update composer to latest version
+         command: sudo composer self-update
+
+      # Download and cache dependencies
+
+      # composer cache
+      - restore_cache:
+          keys:
+          # "composer.lock" can be used if it is committed to the repo
+          - v1-dependencies-{{ checksum "composer.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: composer install -n --prefer-dist
+
+      - save_cache:
+          key: composer-v1-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+
+      # node cache
+
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "package.json" }}
+            - dependency-cache-
+      - run:
+          name: Install NodeJS Packages
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+            - ~/.node_modules
+
+      # prepare the database
+      - run: touch database/database.sqlite
+      - run: php artisan migrate --force #--env=testing --database=sqlite_testing
+
+      - run:
+          name: Compile JS & CSS for Browser Testing
+          command: npm run production
+
+      - run:
+          name: Update chromedriver via artisan command
+          command: sudo php artisan dusk:update
+
+      - run:
+          name: Start Chrome Driver
+          command: ./vendor/laravel/dusk/bin/chromedriver-linux
+          background: true
+
+      - run:
+          name: Run Laravel Server
+          command: php artisan serve
+          background: true
+
+      - run:
+          name: Test 1 - PHPunit Testing
+          command: ./vendor/phpunit/phpunit/phpunit
+
+      - run:
+          name: Test 2 - Laravel Dusk Browser Testing
+          command: php artisan dusk:serve --env=local
+
+      - store_test_results:
+         path: tests/_output
+
+      - store_artifacts:
+         path: tests/Browser/screenshots

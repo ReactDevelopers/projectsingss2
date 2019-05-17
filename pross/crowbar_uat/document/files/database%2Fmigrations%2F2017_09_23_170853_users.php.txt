@@ -1,0 +1,108 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class Users extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->increments('id_user');
+            $table->enum('type', ['superadmin','sub-admin','employer','talent','premium','support']);
+            $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            $table->string('first_name', 125);
+            $table->string('last_name', 125)->nullable();
+            $table->string('name', 255);
+            $table->string('company_name', 255)->nullable();
+            $table->text('company_website')->nullable();
+            $table->integer('company_work_field')->nullable();
+            $table->text('company_biography')->nullable();
+            $table->enum('company_profile', ['individual', 'company'])->nullable();
+            $table->string('contact_person_name', 255)->nullable();
+            $table->string('email', 255);
+            $table->text('website')->nullable();
+            $table->text('password')->nullable();
+            $table->text('encryption')->nullable();
+            $table->text('previous_password')->nullable();
+            $table->date('birthday')->nullable();
+            $table->text('secure_key')->nullable();
+            $table->string('mobile', 100)->nullable();
+            $table->string('other_mobile', 100)->nullable();
+            $table->string('otp_password', 100)->nullable();
+            $table->dateTime('otp_expired')->nullable();
+            $table->dateTime('otp_created')->nullable();
+            $table->string('picture', 255)->default('avatar.png');
+            $table->integer('country')->nullable();
+            $table->string('country_code', 10)->nullable();
+            $table->string('other_country_code', 10)->nullable();
+            $table->integer('state')->nullable();
+            $table->integer('city')->nullable();
+            $table->string('postal_code', 10)->nullable();
+            $table->text('address')->nullable();
+            $table->integer('industry')->nullable();
+            $table->integer('subindustry')->nullable();
+            $table->enum('expertise', ['novice', 'proficient', 'expert'])->nullable();
+            $table->double('expected_salary')->nullable()->default(0);
+            $table->text('other_expectations')->nullable();
+            $table->float('experience')->nullable();
+            $table->float('workrate')->nullable()->default(0);
+            $table->float('workrate_max')->nullable();
+            $table->enum('workrate_unit', ['per day','per hour','per week','per month'])->nullable();
+            $table->text('workrate_information')->nullable();
+            $table->string('latitude', 20)->nullable();
+            $table->string('longitude', 20)->nullable();
+            $table->enum('is_mobile_verified', ['yes', 'no'])->default('no');
+            $table->enum('is_email_verified', ['yes', 'no'])->default('no');
+            $table->text('remember_token')->nullable();
+            $table->string('facebook_id', 100)->nullable();
+            $table->text('googleplus_id')->nullable();
+            $table->string('twitter_id', 100)->nullable();
+            $table->string('linkedin_id', 100)->nullable();
+            $table->string('instagram_id', 100)->nullable();
+            $table->enum('newsletter_subscribed', ['yes', 'no'])->default('no');
+            $table->text('newsletter_token');
+            $table->text('cover_letter_description')->nullable();
+            $table->enum('agree', ['yes', 'no'])->default('no');
+            $table->enum('agree_pricing', ['yes', 'no'])->default('no');
+            $table->enum('status', ['pending','inactive','active','suspended','trashed'])->default('pending');
+            $table->dateTime('last_login')->nullable();
+            $table->text('api_token')->nullable();
+            $table->enum('current_profile_step', ['personal','industry-skills','curriculum-vitae','availability','general','setup','verify-account'])->nullable();
+            $table->float('percentage_default')->nullable();
+            $table->float('percentage_step_one')->nullable();
+            $table->float('percentage_step_two')->nullable();
+            $table->float('percentage_step_three')->nullable();
+            $table->float('percentage_step_four')->nullable();
+            $table->float('percentage_step_five')->nullable();
+            $table->enum('chat_status', ['online', 'offline'])->nullable()->default('offline');
+            $table->string('braintree_id', 40)->nullable();
+            $table->dateTime('trial_ends_at');
+            $table->float('commission')->nullable();
+            $table->enum('is_subscribed', ['yes', 'no'])->default('no');
+            $table->string('braintree_subscription_id', 255);
+            $table->enum('is_interview_popup_appeared', ['yes', 'no'])->default('no');
+            $table->enum('touch_login', ['yes', 'no'])->default('no');
+            $table->string('currency', 6)->default('USD');
+            $table->dateTime('updated');
+            $table->dateTime('created');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('users');
+    }
+}
+

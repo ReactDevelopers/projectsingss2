@@ -1,0 +1,74 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class InsertCurrenciesTableData extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        \DB::table('currencies')->insert([
+            [
+                'name' => 'USD',
+                'iso_code' => 'USD',
+                'sign' => '$',
+                'id_country' => '190',
+                'conversion_rate' => '1.000000',
+                'default_currency' => 'Y',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'INR',
+                'iso_code' => 'INR',
+                'sign' => '₹',
+                'id_country' => '243',
+                'conversion_rate' => '63.840000',
+                'default_currency' => 'N',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'IDR',
+                'iso_code' => 'IDR',
+                'sign' => 'Rp',
+                'id_country' => '89',
+                'conversion_rate' => '13225.000000',
+                'default_currency' => 'N',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'CNY',
+                'iso_code' => 'CNY',
+                'sign' => '¥',
+                'id_country' => '41',
+                'conversion_rate' => '6.460000',
+                'default_currency' => 'N',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ]
+        ]);
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        \DB::table('currencies')->truncate();
+    }
+}
+

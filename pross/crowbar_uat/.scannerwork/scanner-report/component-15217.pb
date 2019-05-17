@@ -1,0 +1,1 @@
+ñvIresources/views/backend/subscription/org/talent-industry-detail.blade.php 2phpX×hrIresources/views/backend/subscription/org/talent-industry-detail.blade.php

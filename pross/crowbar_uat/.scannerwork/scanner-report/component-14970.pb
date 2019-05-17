@@ -1,0 +1,1 @@
+út:resources/views/front/pages/talent_profile/index.blade.php 2phpX=hr:resources/views/front/pages/talent_profile/index.blade.php

@@ -1,0 +1,13 @@
+<div class="how-it-works">
+    <div class="container-fluid">
+        <h3>how it works ?</h3>
+        <ul class="works-as">
+            <li>
+                <a href="{{ asset('/signup/talent') }}"><span>talent</span></a>
+            </li>
+            <li>
+                <a href="{{ asset('/signup/employer') }}"><span>employer</span></a>
+            </li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,1 @@
+Æu0resources/views/talent/settings/social.blade.php 2phpXthr0resources/views/talent/settings/social.blade.php

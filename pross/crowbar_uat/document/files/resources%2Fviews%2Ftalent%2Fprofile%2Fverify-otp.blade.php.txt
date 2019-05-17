@@ -1,0 +1,43 @@
+@section('content')
+    @include('talent.profile.includes.header')
+    <!-- Main Content -->
+    <div class="contentWrapper">
+        <div class="afterlogin-section">
+            <div class="container">
+                @include('talent.profile.includes.sidebar')
+                <div class="col-md-9 col-sm-8 right-sidebar">
+                    <form class="form-horizontal" role="talent_step_one" action="{{url(sprintf('%s/connect/_verify_otp',TALENT_ROLE_TYPE))}}" method="post" accept-charset="utf-8">
+                        <div class="login-inner-wrapper">
+                            <span class="otp-verify-message">{{sprintf(trans('website.W0216'),$user['mobile'])}}</span>
+                            {{ csrf_field() }}
+                            <div class="form-group">
+                                <div class="col-md-6 otp-field">
+                                    <input type="text" name="otp_password" value="" placeholder="{{trans('website.W0195')}}" class="form-control">
+                                </div>
+                            </div>
+                            <span class="resend-otp-link text-red">
+                                {!! sprintf(trans('website.W0217'),sprintf('<a href="%s">%s</a>',$edit_url,trans('website.W0218'))) !!}
+                            </span>
+                        </div>
+                        <div class="form-group button-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="row form-btn-set">
+                                    <div class="col-md-7 col-sm-7 col-xs-6">
+                                        <a href="{{ $skip_url }}" class="greybutton-line">
+                                            {{trans('website.W0186')}}
+                                        </a>
+                                    </div>
+                                    <div class="col-md-5 col-sm-5 col-xs-6">
+                                        <button type="button" data-request="ajax-submit" data-target='[role="talent_step_one"]' name="save" class="button" value="Save">
+                                            {{trans('website.W0013')}}
+                                        </button>
+                                    </div>                                
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

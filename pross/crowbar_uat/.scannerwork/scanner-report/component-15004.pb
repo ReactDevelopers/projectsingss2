@@ -1,0 +1,1 @@
+œu4resources/views/front/article/layouts/main.blade.php 2phpXUhr4resources/views/front/article/layouts/main.blade.php

@@ -1,0 +1,1 @@
+Ås-resources/views/employer/cards/list.blade.php 2phpX3hr-resources/views/employer/cards/list.blade.php

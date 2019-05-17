@@ -1,0 +1,1 @@
+é2Gnode_modules/less/test/less-bom/errors/property-asterisk-only-name.less 2lessXhrGnode_modules/less/test/less-bom/errors/property-asterisk-only-name.less

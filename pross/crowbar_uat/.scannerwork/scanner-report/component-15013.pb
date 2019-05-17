@@ -1,0 +1,1 @@
+¥u3resources/views/front/home/layouts/events.blade.php 2phpX‰hr3resources/views/front/home/layouts/events.blade.php

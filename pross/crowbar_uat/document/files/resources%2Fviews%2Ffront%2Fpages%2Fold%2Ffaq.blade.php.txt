@@ -1,0 +1,77 @@
+@extends('layouts.front.main')
+
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+    @section('requirecss')
+        <link href="{{ asset('css/owl.carousel.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/owl.theme.default.min.css') }}" rel="stylesheet">
+    @endsection
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinecss')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    @section('requirejs')
+        <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+    @endsection
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinejs')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    @section('content')
+        <!-- Banner Section -->
+        @if(Request::get('stream') != 'mobile')
+            <div class="static-heading-sec">
+                <div class="container-fluid">
+                    <div class="static Heading">                    
+                        <h1>{{trans('website.W0167')}}</h1>                        
+                    </div>                    
+                </div>
+            </div>
+        @endif
+        <!-- /Banner Section -->
+        <!-- Main Content -->
+        <div class="contentWrapper">
+            <section class="aboutSection termsAndConditonSec">
+                <div class="container">
+                    <div class="row">
+                        <!-- <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="howmakeitSection">
+                                <div class="sectionHeading sectionSubHeading">
+                                    <h2>{{trans('website.W0167')}}</h2>
+                                </div>
+                            </div>
+                        </div> -->
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="faqContent">
+                                <div class="panel-group clearfix" id="accordion" role="tablist" aria-multiselectable="true">
+                                    @if(!empty($faqs))
+                                        @foreach($faqs as $index => $item)
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading" role="tab" id="heading{{ $item['id_faq'] }}">
+                                                    <h4 class="panel-title">
+                                                        <a role="button" class="@if($index != 0){{'collapsed'}}@endif" data-toggle="collapse" data-parent="#accordion" href="#collapse-{{$index}}" aria-expanded="@if($index == 0){{'true'}}@else{{'false'}}@endif" aria-controls="#collapse-{{$index}}">{{ $item['faq_question'] }}</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse-{{$index}}" class="panel-collapse collapse @if($index == 0) {{'in'}} @endif" role="tabpanel" aria-labelledby="heading{{ $item['id_faq'] }}">
+                                                    <div class="panel-body">{{ $item['faq_answer'] }}</div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section> 
+        </div>
+    @endsection
+

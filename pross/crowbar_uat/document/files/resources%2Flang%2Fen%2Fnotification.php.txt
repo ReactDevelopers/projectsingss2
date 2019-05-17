@@ -1,0 +1,55 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notification Common File
+    |--------------------------------------------------------------------------
+    |
+    | The following language lines are used during talent actions for various
+    | messages that we need to display to the user. You are free to modify
+    | these language lines according to your application's requirements.
+    |
+    */
+
+    'JOB_ACCEPTED_BY_EMPLOYER'                              => 'You proposal has been accepted by employer.',    
+    'JOB_CHAT_REQUEST_SENT_BY_TALENT'                       => 'Talent has sent you chat request.',    
+    'JOB_CHAT_REQUEST_ACCEPTED_BY_EMPLOYER'                 => 'Your chat request has been accepted successfully.',    
+    'JOB_CHAT_REQUEST_REJECTED_BY_EMPLOYER'                 => 'Your chat request has been rejected from employer.',    
+    'JOB_STARTED_BY_EMPLOYER'                               => 'Job has been started by employer.',    
+    'JOB_APPLICATION_SUBMITTED_BY_TALENT'                   => 'A new talent has submitted application the job posted by you.',    
+    'JOB_PROPOSAL_SUBMITTED_BY_TALENT'                      => 'A new talent has submitted proposal the job posted by you.',    
+    'JOB_STARTED_BY_TALENT'                                 => 'Job has been started by talent.',    
+    'JOB_COMPLETED_BY_TALENT'                               => 'Job has been marked completed by talent.',    
+    'JOB_DISPUTED_BY_EMPLOYER'                              => 'Job has been disputed by employer.',    
+    'JOB_DISPUTED_BY_TALENT'                                => 'Job has been disputed by talent.',    
+    'JOB_COMPLETED_BY_EMPLOYER'                             => 'Job has been completed by employer.',    
+    'JOB_REJECTED_BY_EMPLOYER'                              => 'Your job proposal has been declined by employer.',    
+    'JOB_PAYMENT_RELEASED_BY_CROWBAR'                       => 'Your job payment has been released by team crowbar.',    
+    'JOB_REVIEW_REQUEST_BY_TALENT'                          => 'Submit the review for the completed job.',    
+    'JOB_REVIEW_REQUEST_BY_EMPLOYER'                        => 'Submit the review for the employer of this job.',    
+    'JOB_REQUEST_PAYOUT_BY_TALENT'                          => 'Talent requested for payout.',    
+    'JOB_INVITATION_SENT_BY_EMPLOYER'                       => 'Employer has requested to submit your proposal/application.',    
+
+    /*READABLE NOTIFICATION*/
+
+    'READABLE_JOB_ACCEPTED_BY_EMPLOYER'                     => 'has accepted your job proposal on {site}.',    
+    'READABLE_JOB_CHAT_REQUEST_SENT_BY_TALENT'              => 'has sent you chat request on {site}.',    
+    'READABLE_JOB_CHAT_REQUEST_ACCEPTED_BY_EMPLOYER'        => 'has accepted your chat request on {site}.',    
+    'READABLE_JOB_CHAT_REQUEST_REJECTED_BY_EMPLOYER'        => 'has declined your chat request on {site}.',    
+    'READABLE_JOB_STARTED_BY_EMPLOYER'                      => 'has confirmed your job start request on {site}.',    
+    'READABLE_JOB_APPLICATION_SUBMITTED_BY_TALENT'          => 'has submitted job application on the job posted by you on {site}.',    
+    'READABLE_JOB_PROPOSAL_SUBMITTED_BY_TALENT'             => 'has submitted proposal on the job posted by you on {site}.',    
+    'READABLE_JOB_STARTED_BY_TALENT'                        => 'has been started by talent on the proposal accepted by you on {site}.',    
+    'READABLE_JOB_COMPLETED_BY_TALENT'                      => 'has been marked completed job posted by you on {site}.',    
+    'READABLE_JOB_DISPUTED_BY_EMPLOYER'                     => 'has been raised dispute on the job performed by you on {site}.',    
+    'READABLE_JOB_DISPUTED_BY_TALENT'                       => 'has been raised dispute on the job posted by you on {site}.',    
+    'READABLE_JOB_COMPLETED_BY_EMPLOYER'                    => 'has confirmed job close request on {site}.',    
+    'READABLE_JOB_REJECTED_BY_EMPLOYER'                     => 'has declined the job proposal submitted by you on {site}.',    
+    'READABLE_JOB_PAYMENT_RELEASED_BY_CROWBAR'              => 'has been released payment and also closed the job performed by you on {site}.',    
+    'READABLE_JOB_REVIEW_REQUEST_BY_TALENT'                 => 'has requested to submit job review for the job completed by you on {site}.',    
+    'READABLE_JOB_REVIEW_REQUEST_BY_EMPLOYER'               => 'has requested to submit job review for the job closed by you on {site}.',    
+    'READABLE_JOB_REQUEST_PAYOUT_BY_TALENT'                 => 'has requested for payment for the job performed on {site}.',    
+    'READABLE_JOB_INVITATION_SENT_BY_EMPLOYER'              => 'has requested requested you to submit proposal/application on {site}.',    
+];

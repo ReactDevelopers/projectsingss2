@@ -1,0 +1,201 @@
+<?php
+
+	namespace App\Models;
+
+	use Illuminate\Database\Eloquent\Model;
+
+	class Proposals extends Model{
+	    protected $table = 'talent_proposals';
+	    protected $primaryKey = 'id_proposal';
+
+		const CREATED_AT = 'created';
+		const UPDATED_AT = 'updated';
+
+	    protected $fillable = [
+	        'user_id', 'project_id', 'submission_fee','quoted_price', 'comments','type', 'status', 'created','updated',
+	    ];
+
+        public static function lists($employer_id, $page = NULL, $sort = NULL, $search = NULL, $limit = DEFAULT_PAGING_LIMIT){
+            
+            $table_projects = \DB::table('projects as projects');
+            $prefix         = \DB::getTablePrefix();
+
+            if(!empty($page)){
+                $table_projects->limit($limit);
+                $table_projects->offset(($page - 1)*$limit);  
+            }
+
+            $table_projects->select([
+                'projects.id_project',
+                'projects.title',
+                'projects.created',
+                \DB::Raw("COUNT({$prefix}proposals.id_proposal) as total_proposals"),
+                \DB::Raw("
+                    IF(
+                        (
+                            SELECT COUNT(proposal.id_proposal) FROM {$prefix}talent_proposals as proposal 
+                            WHERE proposal.project_id = {$prefix}proposals.project_id
+                            AND proposal.status = 'accepted'
+                        ),
+                        '".DEFAULT_YES_VALUE."',
+                        '".DEFAULT_NO_VALUE."'
+                    ) as proposal_current_status
+                "),
+            ]);
+
+            $table_projects->leftJoin('talent_proposals as proposals','proposals.project_id','=','projects.id_project');
+            $table_projects->where('projects.user_id','=',$employer_id);
+            $table_projects->groupBy(['projects.id_project']);
+            $table_projects->orderBy('projects.updated','DESC');
+            return $table_projects->get();
+        }
+
+	    public static function accepted_proposal($project_id){
+            $prefix = \DB::getTablePrefix();
+            $table_talent_proposals = \DB::table('talent_proposals as talent_proposals');
+            
+            $table_talent_proposals->select([
+                'talent.email as accepted_talent_email',
+                'talent_proposals.user_id',
+                'talent_proposals.project_id',
+                'talent_proposals.id_proposal',
+                'talent_proposals.quoted_price',
+                'projects.employment',
+                'projects.title',
+                'employer.company_name',
+                \DB::Raw("(SUM(TIMESTAMPDIFF(Second,{$prefix}project_log.startdate,{$prefix}project_log.enddate))/3600) as working_hours")
+            ]);
+
+            $table_talent_proposals->leftJoin('projects','projects.id_project','=','talent_proposals.project_id');
+            $table_talent_proposals->leftJoin('project_log',function($leftjoin){
+                $leftjoin->on('project_log.project_id','=','talent_proposals.project_id');
+                $leftjoin->whereNotNull('project_log.startdate');
+                $leftjoin->whereNotNull('project_log.enddate');
+            });
+            $table_talent_proposals->leftJoin('users as employer','employer.id_user','=','projects.user_id');
+            $table_talent_proposals->leftJoin('users as talent','talent.id_user','=','talent_proposals.user_id');
+            $table_talent_proposals->where('talent_proposals.project_id','=',$project_id);
+            $table_talent_proposals->where('talent_proposals.status','=','accepted');
+            $table_talent_proposals->groupBy(['talent_proposals.project_id']);
+
+            return json_decode(json_encode($table_talent_proposals->get()->first()),true);
+        }
+
+        public static function proposals_detail($proposal_id){
+            $table_talent_proposals = \DB::table('talent_proposals as talent_proposals');
+            $prefix = \DB::getTablePrefix();
+            $table_talent_proposals->select([
+                'talent_proposals.user_id',
+                'talent_proposals.project_id',
+                'talent_proposals.id_proposal',
+                'talent_proposals.quoted_price',
+                'talent_proposals.comments',
+                'talent_proposals.created',
+                'projects.employment',
+                'projects.work_hours',
+                'projects.title',
+                'projects.employment',
+                'employer.company_name',
+                \DB::Raw('CONCAT('.$prefix.'talent.first_name, " ",'.$prefix.'talent.last_name) AS name'),
+                'proposal_document.id_file as document_id',
+                'proposal_document.filename as document_name',
+                'proposal_document.size as document_size',
+            ]);
+
+            $table_talent_proposals->leftJoin('projects','projects.id_project','=','talent_proposals.project_id');
+            $table_talent_proposals->leftJoin('users as employer','employer.id_user','=','projects.user_id');
+            $table_talent_proposals->leftJoin('users as talent','talent.id_user','=','talent_proposals.user_id');
+            $table_talent_proposals->leftjoin('files as proposal_document', function($leftjoin){
+                $leftjoin->on('proposal_document.record_id','=','talent_proposals.id_proposal');
+                $leftjoin->where('proposal_document.type','=','proposal');
+            });            
+            $table_talent_proposals->where('id_proposal','=',$proposal_id);
+
+            return json_decode(json_encode($table_talent_proposals->get()->first()),true);
+        }
+
+        public static function accepted_proposal_id($project_id){
+            $proposal = \DB::table('talent_proposals')
+            ->select('user_id')
+            ->where('project_id',$project_id)
+            ->where('status','accepted')
+            ->get()
+            ->first();
+
+            if(!empty($proposal->user_id)){
+                return $proposal->user_id;
+            }else{
+                return false;
+            }
+        }
+
+        public static function accepted_proposal_talent($project_id){
+            $proposal = \DB::table('talent_proposals')
+            ->select('user_id')
+            ->where('project_id',$project_id)
+            ->where('status','accepted')
+            ->get()
+            ->first();
+
+            if(!empty($proposal->user_id)){
+                return $proposal->user_id;
+            }else{
+                return false;
+            }
+        }
+
+        public static function project_proposal_detail($project_id,$talent_id){
+            $proposal = \DB::table('talent_proposals')
+            ->where('project_id',$project_id)
+            ->where('user_id',$talent_id)
+            ->get()
+            ->first();
+
+            if(!empty($proposal)){
+                return json_decode(json_encode($proposal),true);
+            }else{
+                return [];
+            }
+        }
+
+        public static function talents($type, $talent_id,$page = NULL,$keys = NULL,$limit = DEFAULT_PAGING_LIMIT){
+            $table_proposals = \DB::table('talent_proposals as proposals');
+            $prefix = \DB::getTablePrefix();
+            
+            if(empty($keys)){
+                $keys           = [
+                    'projects.id_project',
+                    'projects.title',
+                    'employer.company_name',
+                    'employer.id_user',
+                    'proposals.created',
+                    'proposals.status',
+                    'proposals.id_proposal',
+                ];
+            }
+
+            $table_proposals->select($keys);
+            $table_proposals->leftJoin('projects as projects',function($leftjoin){
+                $leftjoin->on('projects.id_project', '=', 'proposals.project_id');
+                $leftjoin->on('projects.project_status','!=',\DB::raw("'close'"));
+            });
+
+            $table_proposals->leftJoin('users as employer',function($leftjoin) use ($talent_id){
+                $leftjoin->on('employer.id_user', '=', 'projects.user_id');
+            });
+            
+            if($type == 'active'){
+                $table_proposals->where('proposals.status','=','accepted');
+            }else if($type == 'submitted'){
+                $table_proposals->where('proposals.status','!=','accepted');
+            }
+
+            $table_proposals->where('proposals.user_id','=',\DB::Raw($talent_id));
+            
+            $table_proposals->groupBy(['proposals.id_proposal']);
+            $table_proposals->orderBy('proposals.id_proposal','DESC');
+            
+            return $table_proposals->get();
+        }
+    }
+

@@ -1,0 +1,1 @@
+„u2resources/views/front/pages/signuptalent.blade.php 2phpX—hr2resources/views/front/pages/signuptalent.blade.php

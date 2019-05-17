@@ -1,0 +1,38 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class TalentEducations extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('talent_educations', function (Blueprint $table) {
+            $table->increments('id_education');
+            $table->integer('user_id')->nullable();
+            $table->string('college', 255)->nullable();
+            $table->integer('degree')->nullable();
+            $table->string('passing_year', 4)->nullable();
+            $table->text('area_of_study')->nullable();
+            $table->enum('degree_status', ['passed', 'appearing'])->nullable();
+            $table->integer('degree_country')->nullable();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('talent_educations');
+    }
+}
+

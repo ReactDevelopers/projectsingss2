@@ -1,0 +1,125 @@
+<?php $__env->startSection('requirecss'); ?>
+    <link href="<?php echo e(asset('css/cropper.min.css')); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('css/crop.min.css')); ?>" rel="stylesheet">
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="panel">
+                    <div class="panel-body box-profile">
+                        <div class="image-circle">
+                            <div class="user-display-image cropper" data-request="cropper" data-class="profile" data-width="190" data-height="190" data-folder="<?php echo e(TALENT_PROFILE_PHOTO_UPLOAD); ?>" data-record="0" data-column="profile" style="background: url('<?php echo e($picture); ?>') no-repeat center center;background-size:190px 190px;"></div>
+                        </div>
+                        <h3 class="profile-username text-center"><?php echo e($user['first_name']); ?> <?php echo e($user['last_name']); ?></h3>
+                        <p class="text-muted text-center"><?php echo e(ucfirst($user['type'])); ?></p>
+                        <p class="text-center">
+                            <?php if($user['remuneration']): ?>
+                                <?php $__currentLoopData = $user['remuneration']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                                    <?php if($s['interest'] != 'fixed'): ?>
+                                        <?php echo e(___cache('currencies')[$user['currency']]); ?><?php echo e($s['workrate']); ?>/<?php echo e(substr($s['interest'],0,1)); ?>&nbsp;
+                                    <?php else: ?>
+                                        <br><?php echo e(___cache('currencies')[$user['currency']]); ?><?php echo e($s['workrate']); ?> <span class="small-tags" style="padding:0 5px;"><?php echo e($s['interest']); ?></span>
+                                    <?php endif; ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+                            <?php endif; ?>
+                        </p>
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <b>Last Activity</b> <a class="pull-right"><?php echo e(___d(date('Y-m-d', strtotime($user['last_login'])))); ?></a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Registered On</b> <a class="pull-right"><?php echo e(___d(date('Y-m-d', strtotime($user['created'])))); ?></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="panel">
+                    <div class="nav-tabs-custom no-margin">
+                        <ul class="nav nav-tabs">
+                            <li class="<?php echo ($page == '')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,''); ?>">Basic</a></li>
+                            <li class="<?php echo ($page == 'industry')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'&page=industry'); ?>">Indusrty & Skills</a></li>
+                            <li class="<?php echo ($page == 'hiring')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'&page=hiring'); ?>">Availability</a></li>
+                            <li class="<?php echo ($page == 'verify')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'&page=verify'); ?>">Verification</a></li>
+                            <?php if(0): ?>
+                                <li class="<?php echo ($page == 'talent_answer')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'&page=talent_answer'); ?>">Answers</a></li>
+                            <?php endif; ?>
+                            <li class="<?php echo ($page == 'portfolio')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'&page=portfolio'); ?>">Portfolio</a></li>
+
+                            <li class="<?php echo ($page == 'activity_log')?'active':''; ?>"><a href="<?php echo url(sprintf('%s/users/talent/edit/activity_log?user_id=%s', ADMIN_FOLDER, ___encrypt($id_user))); ?>">Activity Log</a></li>
+                        </ul>
+                        <div class="tab-content no-padding">
+                            <div class="tab-pane <?php echo ($page == '')?'active':''; ?>">
+                                <?php if($page == ''): ?>
+                                <?php echo $__env->make('backend.talent.basic', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'industry')?'active':''; ?>">
+                                <?php if($page == 'industry'): ?>
+                                <?php echo $__env->make('backend.talent.industry', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'hiring')?'active':''; ?>">
+                                <?php if($page == 'hiring'): ?>
+                                <?php echo $__env->make('backend.talent.availability', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'verify')?'active':''; ?>">
+                                <?php if($page == 'verify'): ?>
+                                <?php echo $__env->make('backend.talent.verification', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                <?php endif; ?>
+                            </div>
+                            <?php if(0): ?>
+                                <div class="tab-pane <?php echo ($page == 'talent_answer')?'active':''; ?>">
+                                    <?php if($page == 'talent_answer'): ?>
+                                    <?php echo $__env->make('backend.talent.interviews', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="tab-pane <?php echo ($page == 'portfolio')?'active':''; ?>">
+                                <?php if($page == 'portfolio'): ?>
+                                <?php echo $__env->make('backend.talent.portfolio', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'activity_log')?'active':''; ?>">
+                                <?php if($page == 'activity_log'): ?>
+                                <?php echo $__env->make('backend.talent.activity_log', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('inlinescript'); ?>
+<script src="<?php echo e(asset('js/cropper.min.js')); ?>" type="text/javascript"></script>
+    <script type="text/javascript">
+        $('select').trigger('change');
+
+        $(".cropper").SGCropper({
+            viewMode: 1,
+            aspectRatio: "2/3",
+            cropBoxResizable: false,
+            formContainer:{
+                actionURL:"<?php echo e(url(sprintf('ajax/crop?imagename=image&user_id=%s',$user['id_user']))); ?>",
+                modelTitle:"<?php echo e(trans('website.W0261')); ?>",
+                modelSuggestion:"<?php echo e(trans('website.W0263')); ?>",
+                modelDescription:"<?php echo e(trans('website.W0264')); ?>",
+                modelSeperator:"<?php echo e(trans('website.W0265')); ?>",
+                uploadLabel:"<?php echo e(trans('website.W0266')); ?>",
+                fieldLabel:"",
+                fieldName: "image",
+                btnText:"<?php echo e(trans('website.W0262')); ?>",
+                defaultImage: base_url+"/images/product_sample.jpg",
+                loaderImage: base_url+"/images/loader.gif",
+            }
+        });
+    </script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.backend.dashboard', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

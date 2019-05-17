@@ -1,0 +1,1 @@
+Ëw>resources/views/backend/interview/question-type-list.blade.php 2phpX*hr>resources/views/backend/interview/question-type-list.blade.php

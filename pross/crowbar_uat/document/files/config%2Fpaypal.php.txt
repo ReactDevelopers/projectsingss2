@@ -1,0 +1,29 @@
+<?php
+    return [
+    'mode' => 'sandbox',        // Can only be 'sandbox' Or 'live'. If empty or invalid, 'live' will be used.
+    'sandbox' => [
+        'username' => 'santosh_api1.singsys.com',       // Api Username
+        'password' => 'VZEQNNPRML6F54CR',       // Api Password
+        'secret' => 'AFcWxV21C7fd0v3bYYYRCpSSRl31A.t5R0DSvr2VkN.oaimU-BG2UthF',         // This refers to api signature
+        'certificate' => '',    // Link to paypals cert file, storage_path('cert_key_pem.txt')
+        'app_id' => 'APP-80W284485P519543T',
+        'endpoint' => 'https://api-3t.sandbox.paypal.com/nvp', // Can Only Be 'Sale', 'Authorization', 'Order'
+        'auth_token' => null,
+        'auth_signature' => null,
+        'auth_timestamp' => null,
+    ],
+    'live' => [
+        'username' => '',       // Api Username
+        'password' => '',       // Api Password
+        'secret' => '',         // This refers to api signature
+        'certificate' => '',    // Link to paypals cert file, storage_path('cert_key_pem.txt')
+        'app_id' => 'APP-80W284485P519543T',
+        'endpoint' => 'https://api-3t.paypal.com/nvp', // Can Only Be 'Sale', 'Authorization', 'Order'
+        'auth_token' => null,
+        'auth_signature' => null,
+        'auth_timestamp' => null,
+    ],
+    'payment_action' => 'Sale', // Can Only Be 'Sale', 'Authorization', 'Order'
+    'currency' => 'USD',
+    'notify_url' => '',         // Change this accordingly for your application.
+];

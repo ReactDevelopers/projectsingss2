@@ -1,0 +1,53 @@
+<?php $__env->startSection('content'); ?>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <h2 >Article Title</h2>
+                            <h3><?php echo e($article['title']); ?></h3>
+                        </div>
+                        <?php if(!empty($comment)): ?>
+                            <div class="form-group">
+                                <h4 >Comment</h4>
+                                <?php $__currentLoopData = $comment; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $value): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                                    <ul class="">
+                                        <li>
+                                            <?php echo e($value->answer_desp); ?><br/>
+                                            <a href="javascript:;"  data-url="<?php echo e(url('administrator/forum/comment/delete/'.$value->id_article_answer)); ?>" data-request="status" data-ask="Do you really want to delete this comment?"  class="btn btn-danger badge">Delete</a>
+                                            <?php if(count($value->has_child_answer) > 0): ?>
+                                                <?php $__currentLoopData = $value->has_child_answer; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ckey => $cvalue): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                                                    <ul>
+                                                        <li>
+                                                            <?php echo e(($cvalue->answer_desp)); ?>
+
+                                                            <br/>
+                                                            <a href="javascript:;" data-url="<?php echo e(url('administrator/forum/comment/delete/'.$cvalue->id_article_answer)); ?>" data-request="status" data-ask="Do you really want to delete this comment?"  class="btn btn-danger badge" >Delete</a>
+                                                        </li>
+                                                    </ul>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+                                            <?php endif; ?>
+                                        </li>
+                                    </ul>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="form-group">
+                                <p>No Records Found</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="panel-footer">
+                        <a href="<?php echo e($backurl); ?>" class="btn btn-default">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="hire-me" >
+            <div >
+            </div>
+        </div>
+    </section>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.backend.dashboard', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

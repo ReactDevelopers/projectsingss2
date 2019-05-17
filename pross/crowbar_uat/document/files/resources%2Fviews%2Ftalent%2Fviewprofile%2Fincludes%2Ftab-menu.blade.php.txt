@@ -1,0 +1,1 @@
+{!! ___getmenu('talent-view-editprofile-menu','<span class="toggle-menu-wrap"><!-- <buttton class="open-toggle-menu">%s</buttton> --><ul class="user-profile-links">%s</ul></span>','active',true,true) !!}

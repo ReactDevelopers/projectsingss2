@@ -1,0 +1,1 @@
+Òw0resources/views/backend/templates/list.blade.php 2phpX3hr0resources/views/backend/templates/list.blade.php

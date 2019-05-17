@@ -1,0 +1,1 @@
+ºv,resources/views/talent/review/view.blade.php 2phpXnhr,resources/views/talent/review/view.blade.php

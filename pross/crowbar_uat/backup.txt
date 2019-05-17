@@ -1,0 +1,1675 @@
+/* HISTORY */
+#ALTER TABLE  `cb_users` CHANGE  `workrate`  `workrate` FLOAT NULL DEFAULT  '0.0' COMMENT  '(linked with rates table)';
+UPDATE  `crowbar`.`cb_users` SET  `workrate` = 0.0 WHERE  `workrate` = NULL
+
+/* JULY 11 */
+ALTER TABLE  `cb_projects` CHANGE  `project_status`  `project_status` ENUM(  'pending',  'initiated',  'open',  'closed' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'pending';
+
+
+BEGIN
+	DECLARE job_status CHAR(50);
+
+   	IF employment != 'fulltime' THEN
+
+		IF total_proposal > 0 THEN
+
+   			IF project_status = 'initiated'  THEN
+
+				SET job_status = 'start_job';
+				
+			ELSEIF project_status = 'open'  THEN
+
+				SET job_status = 'mark_completed';
+
+			ELSE
+
+				SET job_status = 'job_not_started';
+
+			END IF;
+
+		ELSE
+
+			SET job_status = 'no_proposal_received';
+
+		END IF;
+
+	ELSE
+
+		IF total_proposal > 0 THEN
+
+			SET job_status = 'job_application_received';
+
+		ELSE
+
+			SET job_status = 'no_application_received';
+
+		END IF;
+	
+	END IF;
+	   		
+   	RETURN job_status;
+
+END
+
+ALTER TABLE  `cb_projects` CHANGE  `project_status`  `project_status` ENUM(  'pending',  'initiated',  'open',  'completed',  'closed' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'pending';
+
+ALTER TABLE  `cb_chat_requests` ADD  `is_reported` ENUM(  'yes',  'no' ) NOT NULL DEFAULT  'no',
+ADD  `reported_by` INT NULL;
+
+ALTER TABLE  `cb_chat_requests` CHANGE  `is_reported`  `is_reported` ENUM(  'yes',  'no' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'no' AFTER  `chat_initiated` ,
+CHANGE  `reported_by`  `reported_by` INT( 11 ) NULL DEFAULT NULL AFTER  `chat_initiated` ;
+
+ALTER TABLE  `cb_chat_requests` ADD  `reason` TEXT NULL AFTER  `is_reported` ;
+
+INSERT INTO  `crowbar`.`cb_config` (`key` , `value` ) VALUES ('commission',  '10');
+
+ALTER TABLE  `cb_users` ADD  `commission` FLOAT NOT NULL DEFAULT  '10' AFTER  `trial_ends_at` ;
+
+
+ALTER TABLE  `cb_transactions` CHANGE  `amount`  `transaction_amount` FLOAT NOT NULL ;
+
+ALTER TABLE  `cb_transactions` CHANGE  `user_id`  `transaction_user_id` INT( 11 ) NOT NULL ;
+
+ALTER TABLE  `cb_transactions` CHANGE  `api_transaction_id`  `transaction_reference_id` TINYTEXT NULL ;
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_status` ENUM(  'initiated',  'pending',  'cancelled',  'confirmed',  'refunded',  'reimbursed' ) NOT NULL DEFAULT 'initiated' AFTER  `transaction_reference_id` ;
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_comment` TEXT NULL AFTER  `transaction_reference_id` ;
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_type` ENUM(  'credit',  'debit' ) NULL AFTER  `transaction_comment` ;
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_user_type` ENUM(  'employer',  'talent' ) NULL AFTER  `transaction_user_id` ;
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_project_id` INT NULL AFTER  `transaction_user_type` ;
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_proposal_id` INT NULL AFTER  `transaction_project_id` ;
+
+ALTER TABLE  `cb_transactions` CHANGE  `updated_on`  `updated` DATETIME NOT NULL ;
+
+ALTER TABLE  `cb_transactions` CHANGE  `created_on`  `created` DATETIME NOT NULL ;
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_source` ENUM(  'paypal',  'braintree' ) NOT NULL DEFAULT  'paypal' AFTER  `transaction_amount` ;
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_date` DATETIME NULL AFTER  `transaction_status` ;
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_actual_date` DATETIME NULL AFTER  `transaction_date` ;
+
+ALTER TABLE  `cb_projects` ADD  `transaction` ENUM(  'on-completion',  'monthly' ) NOT NULL DEFAULT  'on-completion' AFTER  `required_qualifications` ;
+
+INSERT INTO `bzr_development`.`config` (`key`, `value`) VALUES ('paypal_adaptive_payment_receiver', 'santosh@singsys.com');
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_commission` FLOAT NULL AFTER  `transaction_actual_date` ;
+
+ALTER TABLE  `cb_projects` CHANGE  `transaction`  `transaction` ENUM(  'on-completion',  'monthly' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+UPDATE  `crowbar`.`cb_projects` SET  `transaction` = NULL WHERE 1
+
+ALTER TABLE  `cb_transactions` CHANGE  `transaction_status`  `transaction_status` ENUM(  'initiated',  'pending',  'failed',  'cancelled',  'confirmed',  'refunded', 'reimbursed' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'initiated';
+
+ALTER TABLE  `cb_users_menu` CHANGE  `section`  `section` ENUM(  'admin',  'employer-top-after-login',  'talent-top-after-login',  'employer-myjobs', 'employer-profile-sidebar-menu',  'employer-view-editprofile-menu',  'talent-view-editprofile-menu',  'talent-profile-sidebar-menu',  'talent-proposal-menu', 'talent-myjobs',  'employer-payments' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'All Payments',  '0',  'employer-payments',  '-1',  '2017-05-13 07:37:31',  'active',  'employer/payments', NULL ,  '',  '1', NULL ,  '0'
+);
+
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+ `id` ,
+ `name` ,
+ `parent` ,
+ `section` ,
+ `created_by` ,
+ `created_date` ,
+ `status` ,
+ `action_url` ,
+ `menu_icon` ,
+ `menu_class` ,
+ `menu_order` ,
+ `callback` ,
+ `disable_list_view`
+)
+VALUES (
+NULL ,  'Paid Payments',  '0',  'employer-payments',  '-1',  '2017-05-13 07:37:31',  'active',  'employer/payments?list=paid', NULL ,  '',  '1', NULL ,  '0'
+);
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Refunded Payments',  '0',  'employer-payments',  '-1',  '2017-05-13 07:37:31',  'active',  'employer/payments?list=refunded', NULL ,  '',  '1', NULL ,  '0'
+);
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_subtotal` FLOAT NULL AFTER  `transaction_amount` ;
+
+ALTER TABLE  `cb_transactions` CHANGE  `transaction_amount`  `transaction_total` FLOAT NULL ;
+
+
+UPDATE  `crowbar`.`cb_users_menu` SET  `action_url` =  'employer/payments' WHERE  `cb_users_menu`.`id` =19;
+
+
+ALTER TABLE  `cb_users_menu` CHANGE  `section`  `section` ENUM(  'admin',  'employer-top-after-login',  'talent-top-after-login',  'employer-myjobs', 'employer-profile-sidebar-menu',  'employer-view-editprofile-menu',  'talent-view-editprofile-menu',  'talent-profile-sidebar-menu',  'talent-proposal-menu', 'talent-myjobs',  'employer-payments',  'talent-wallet' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'All Payments',  '0',  'talent-wallet',  '-1',  '2017-05-13 07:37:31',  'active',  'talent/payments/all', NULL ,  '',  '1', NULL ,  '0'
+);
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Received Payments',  '0',  'talent-wallet',  '-1',  '2017-05-13 07:37:31',  'active',  'talent/payments/received', NULL ,  '',  '1', NULL ,  '0'
+);
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Disputed Payments',  '0',  'talent-wallet',  '-1',  '2017-05-13 07:37:31',  'active',  'talent/payments/disputed', NULL ,  '',  '1', NULL ,  '0'
+);
+
+ALTER TABLE  `cb_transactions` CHANGE  `transaction_status`  `transaction_status` ENUM(  'initiated',  'pending',  'failed',  'cancelled',  'confirmed', 'refunded',  'disputed' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'initiated';
+
+cb_question
+cb_question_relation
+cb_question_type
+cb_talent_answer
+cb_interview_log
+
+ALTER TABLE  `cb_users` CHANGE  `commission`  `commission` FLOAT NULL DEFAULT NULL ;
+
+ALTER TABLE  `cb_users` ADD  `is_subscribed` ENUM(  'false',  'true' ) NOT NULL DEFAULT  'false' AFTER  `commission` ;
+
+
+
+ALTER TABLE  `cb_project_log` CHANGE  `user_id`  `talent_id` INT( 11 ) NULL DEFAULT NULL ;
+ALTER TABLE  `cb_project_log` ADD  `employer_id` INT NULL AFTER  `talent_id` ;
+ALTER TABLE  `cb_project_log` DROP  `user_type` ;
+ALTER TABLE  `cb_project_log` CHANGE  `starttime`  `startdate` DATETIME NULL DEFAULT NULL ;
+ALTER TABLE  `cb_project_log` CHANGE  `endtime`  `enddate` DATETIME NULL DEFAULT NULL ;
+ALTER TABLE  `cb_project_log` ADD  `start` ENUM(  'pending',  'confirmed' ) NOT NULL DEFAULT  'pending' AFTER  `enddate` ;
+ALTER TABLE  `cb_project_log` ADD  `close` ENUM(  'pending',  'confirmed' ) NOT NULL DEFAULT  'pending' AFTER  `start` ;
+
+ALTER TABLE `cb_users` CHANGE `is_subscribed` `is_subscribed` ENUM('yes','no') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'no';
+
+ALTER TABLE  `cb_talent_reviews` CHANGE  `talent_id`  `sender_id` INT( 11 ) NOT NULL ;
+ALTER TABLE  `cb_talent_reviews` CHANGE  `employer_id`  `receiver_id` INT( 11 ) NOT NULL ;
+RENAME TABLE `cb_talent_reviews` TO  `crowbar`.`cb_reviews` ;
+
+ALTER TABLE  `cb_reviews` CHANGE  `review_average`  `category_one` FLOAT NOT NULL ,
+CHANGE  `review_performance`  `category_two` FLOAT NOT NULL ,
+CHANGE  `review_punctuality`  `category_three` FLOAT NOT NULL ,
+CHANGE  `review_quality`  `category_four` FLOAT NOT NULL ,
+CHANGE  `review_skill`  `category_five` FLOAT NOT NULL ,
+CHANGE  `review_support`  `category_six` FLOAT NOT NULL ;
+ALTER TABLE  `cb_reviews` CHANGE  `id_talent_review`  `id_review` INT( 11 ) NOT NULL AUTO_INCREMENT ;
+ALTER TABLE  `cb_reviews` CHANGE  `category_one`  `review_average` FLOAT NOT NULL ;
+
+
+ALTER TABLE `cb_users` ADD `is_interview_popup_appeared` ENUM('Yes','No') NOT NULL DEFAULT 'No' AFTER `is_subscribed`;
+ALTER TABLE `cb_users` CHANGE `is_interview_popup_appeared` `is_interview_popup_appeared` ENUM('yes','no') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'no';
+
+ALTER TABLE `cb_users` ADD `is_interview_popup_appeared` ENUM('Yes','No') NOT NULL DEFAULT 'No' AFTER `is_subscribed`;
+ALTER TABLE `cb_users` CHANGE `is_interview_popup_appeared` `is_interview_popup_appeared` ENUM('yes','no') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'no';
+
+INSERT INTO `cb_config` (`key`, `value`) VALUES ('interview_interval', '14');
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'My Interview', '0', 'talent-top-after-login', '-1', '2017-05-13 07:37:31', 'active', 'talent/my-interview', NULL, NULL, '1', NULL, '0');
+
+UPDATE `cb_users_menu` SET `action_url` = 'talent/interview-summary' WHERE `cb_users_menu`.`id` = 54;
+
+Create raise_dispute table.
+
+ALTER TABLE  `cb_raise_dispute` ADD  `status` ENUM(  'open',  'disputed',  'close' ) NOT NULL AFTER  `reason`;
+ALTER TABLE  `cb_raise_dispute` CHANGE  `status`  `status` ENUM(  'open',  'disputed',  'close' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'open';
+
+
+ALTER TABLE `cb_users` CHANGE `type` `type` ENUM('superadmin','administrator','employer','talent','premium') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+
+/*******************/
+SELECT
+    COUNT(`cb_users`.`id_user`) AS num,
+    `cb_state`.`state_name`,
+    `cb_state`.`id_state`
+FROM
+    `cb_state`
+LEFT JOIN `cb_users` AS `cb_users`
+ON
+    `cb_users`.`state` = `cb_state`.`id_state` and `cb_users`.`id_user` IN(1, 2)
+    
+GROUP BY
+    `cb_state`.`id_state`
+ORDER BY
+    num DESC
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Administrator', '2', 'admin', '-1', '2015-09-21 03:15:58', 'active', 'user-list?page=administrator', '<i class=\"fa fa-circle-o\"></i>', NULL, '1', NULL, '0');
+
+
+
+
+/* 7th AUGUIST 2017 - AMAN VERMA QUERY LOG */
+
+ALTER TABLE  `cb_projects` ADD  `work_hours` FLOAT NOT NULL DEFAULT  '2' AFTER  `transaction` ;
+ALTER TABLE  `cb_projects` CHANGE  `transaction`  `transaction` ENUM(  'on-completion',  'daily',  'weekly',  'monthly' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+
+/* 7th AUGUIST 2017 - ANKUSH SRIVASTAVA QUERY LOG */
+
+ALTER TABLE `cb_degree` CHANGE `degree_statue` `degree_status` ENUM('active','inactive','trashed') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'active';
+
+/* 9th AUGUIST 2017 - AMAN VERMA QUERY LOG */
+ALTER TABLE  `cb_raise_dispute` CHANGE  `user_id`  `receiver_id` INT( 11 ) NULL DEFAULT NULL ;
+ALTER TABLE  `cb_raise_dispute` ADD  `sender_id` INT NULL DEFAULT NULL AFTER  `project_id` ;
+ALTER TABLE  `cb_raise_dispute` DROP  `user_type` ;
+
+
+ALTER TABLE  `cb_chat` CHANGE  `message_type`  `message_type` ENUM(  'text',  'image',  'system' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'text';
+ALTER TABLE  `cb_chat` CHANGE  `message_type`  `message_type` ENUM(  'text',  'image',  'report-abuse',  'raise-dispute' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'text';
+=======
+/* 9th AUGUIST 2017 - ANKUSH SRIVASTAVA QUERY LOG */
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Sub Admin', '2', 'admin', '-1', '2015-09-21 03:15:58', 'active', 'user-list?page=sub-admin', '<i class=\"fa fa-circle-o\"></i>', NULL, '1', NULL, '0');
+
+UPDATE `cb_users_menu_visibility` SET `menu_visibility` = '[\"1\",\"2\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"56\"]' WHERE `cb_users_menu_visibility`.`id_user` = -1;
+
+ALTER TABLE `cb_users` CHANGE `type` `type` ENUM('superadmin','sub-admin','employer','talent','premium') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+EMAIL
+talent_signup_verification_admin
+talent_signup_admin
+employer_signup_admin
+
+/*Rupesh 10/08/2017*/
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Interview',  '0',  'admin',  '-1',  '2015-09-21 03:15:46',  'active',  '#',  '<i class="fa fa-cube"></i>',  '',  '3', NULL ,  '0'
+);
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Question',  '58',  'admin',  '-1',  '2015-09-21 03:15:58',  'active',  'question-list',  '<i class="fa fa-circle-o"></i>', NULL ,  '1', NULL ,  '0'
+);
+
+/* 10th AUGUIST 2017 - AMAN VERMA QUERY LOG */
+ALTER TABLE  `cb_chat_requests` CHANGE  `chat_initiated`  `chat_initiated` ENUM(  'talent',  'employer',  'employer-accepted',  'support' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+
+UPDATE  `crowbar`.`cb_users_menu` SET  `parent` =  '57' WHERE  `cb_users_menu`.`id` =58;
+
+
+ALTER TABLE  `cb_users` CHANGE  `type`  `type` ENUM(  'superadmin',  'sub-admin',  'employer',  'talent',  'premium',  'support' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+
+INSERT INTO `crowbar`.`cb_users` (`id_user`, `type`, `gender`, `first_name`, `last_name`, `name`, `company_name`, `company_website`, `company_work_field`, `company_biography`, `company_profile`, `contact_person_name`, `email`, `website`, `password`, `encryption`, `previous_password`, `birthday`, `secure_key`, `mobile`, `other_mobile`, `otp_password`, `otp_expired`, `otp_created`, `picture`, `country`, `country_code`, `other_country_code`, `state`, `city`, `postal_code`, `address`, `industry`, `subindustry`, `expertise`, `expected_salary`, `other_expectations`, `experience`, `workrate`, `workrate_max`, `workrate_unit`, `workrate_information`, `latitude`, `longitude`, `is_mobile_verified`, `is_email_verified`, `remember_token`, `facebook_id`, `googleplus_id`, `twitter_id`, `linkedin_id`, `instagram_id`, `newsletter_subscribed`, `cover_letter_description`, `agree`, `agree_pricing`, `status`, `last_login`, `api_token`, `current_profile_step`, `percentage_default`, `percentage_step_one`, `percentage_step_two`, `percentage_step_three`, `percentage_step_four`, `percentage_step_five`, `chat_status`, `braintree_id`, `trial_ends_at`, `commission`, `is_subscribed`, `is_interview_popup_appeared`, `updated`, `created`) VALUES (NULL, 'superadmin', 'male', 'Aman', 'Verma', 'Aman Verma', NULL, NULL, NULL, NULL, NULL, NULL, 'aman@singsys.com', NULL, '$2y$10$eVpFAXkV1rdPAhUgmkW4t.uF6Rnp3Y.LgmOWn3V5R4eZ1DrcvnLvi', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'avatar.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'no', 'no', 'lBpceZPum5bYOmXxkrSYBza1QRgYB9HCCId7tMCg9n9LYfMsjlbKZGGtZ6sp', NULL, NULL, NULL, NULL, NULL, 'yes', NULL, 'no', 'no', 'active', '2017-06-05 04:19:41', NULL, 'personal', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'no', 'no', '2017-07-31 07:38:34', '2017-06-05 04:19:41');
+
+
+INSERT INTO `crowbar`.`cb_users` (`id_user`, `type`, `gender`, `first_name`, `last_name`, `name`, `company_name`, `company_website`, `company_work_field`, `company_biography`, `company_profile`, `contact_person_name`, `email`, `website`, `password`, `encryption`, `previous_password`, `birthday`, `secure_key`, `mobile`, `other_mobile`, `otp_password`, `otp_expired`, `otp_created`, `picture`, `country`, `country_code`, `other_country_code`, `state`, `city`, `postal_code`, `address`, `industry`, `subindustry`, `expertise`, `expected_salary`, `other_expectations`, `experience`, `workrate`, `workrate_max`, `workrate_unit`, `workrate_information`, `latitude`, `longitude`, `is_mobile_verified`, `is_email_verified`, `remember_token`, `facebook_id`, `googleplus_id`, `twitter_id`, `linkedin_id`, `instagram_id`, `newsletter_subscribed`, `cover_letter_description`, `agree`, `agree_pricing`, `status`, `last_login`, `api_token`, `current_profile_step`, `percentage_default`, `percentage_step_one`, `percentage_step_two`, `percentage_step_three`, `percentage_step_four`, `percentage_step_five`, `chat_status`, `braintree_id`, `trial_ends_at`, `commission`, `is_subscribed`, `is_interview_popup_appeared`, `updated`, `created`) VALUES (NULL, 'superadmin', 'male', 'Mark', 'Wettasinghe', 'Mark Wettasinghe', NULL, NULL, NULL, NULL, NULL, NULL, 'mark@crowbar.com', NULL, '$2y$10$eVpFAXkV1rdPAhUgmkW4t.uF6Rnp3Y.LgmOWn3V5R4eZ1DrcvnLvi', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'avatar.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'no', 'no', 'lBpceZPum5bYOmXxkrSYBza1QRgYB9HCCId7tMCg9n9LYfMsjlbKZGGtZ6sp', NULL, NULL, NULL, NULL, NULL, 'yes', NULL, 'no', 'no', 'active', '2017-06-05 04:19:41', NULL, 'personal', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'no', 'no', '2017-07-31 07:38:34', '2017-06-05 04:19:41');
+
+INSERT INTO `crowbar`.`cb_users` (`id_user`, `type`, `gender`, `first_name`, `last_name`, `name`, `company_name`, `company_website`, `company_work_field`, `company_biography`, `company_profile`, `contact_person_name`, `email`, `website`, `password`, `encryption`, `previous_password`, `birthday`, `secure_key`, `mobile`, `other_mobile`, `otp_password`, `otp_expired`, `otp_created`, `picture`, `country`, `country_code`, `other_country_code`, `state`, `city`, `postal_code`, `address`, `industry`, `subindustry`, `expertise`, `expected_salary`, `other_expectations`, `experience`, `workrate`, `workrate_max`, `workrate_unit`, `workrate_information`, `latitude`, `longitude`, `is_mobile_verified`, `is_email_verified`, `remember_token`, `facebook_id`, `googleplus_id`, `twitter_id`, `linkedin_id`, `instagram_id`, `newsletter_subscribed`, `cover_letter_description`, `agree`, `agree_pricing`, `status`, `last_login`, `api_token`, `current_profile_step`, `percentage_default`, `percentage_step_one`, `percentage_step_two`, `percentage_step_three`, `percentage_step_four`, `percentage_step_five`, `chat_status`, `braintree_id`, `trial_ends_at`, `commission`, `is_subscribed`, `is_interview_popup_appeared`, `updated`, `created`) VALUES (NULL, 'support', 'male', 'Crowbar', 'Helpdesk', 'Crowbar Helpdesk', NULL, NULL, NULL, NULL, NULL, NULL, 'support@crowbar.com', NULL, '$2y$10$eVpFAXkV1rdPAhUgmkW4t.uF6Rnp3Y.LgmOWn3V5R4eZ1DrcvnLvi', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'avatar.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'no', 'no', 'lBpceZPum5bYOmXxkrSYBza1QRgYB9HCCId7tMCg9n9LYfMsjlbKZGGtZ6sp', NULL, NULL, NULL, NULL, NULL, 'yes', NULL, 'no', 'no', 'active', '2017-06-05 04:19:41', NULL, 'personal', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'no', 'no', '2017-07-31 07:38:34', '2017-06-05 04:19:41');
+
+ALTER TABLE `cb_messages` ADD `sender_name` VARCHAR(255) NOT NULL AFTER `id_sender`;
+
+/* 13th AUGUIST 2017 - AMAN VERMA QUERY LOG */
+ALTER TABLE  `cb_user_card` CHANGE  `default`  `default` ENUM(  'yes',  'no' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+ALTER TABLE  `cb_api_braintree_response` ADD  `type` ENUM(  'card',  'sale',  'subscription',  'refund' ) NULL DEFAULT NULL AFTER  `user_id` ;
+
+/*RUPESH 16-08-2017*/
+Create a new table  cb_plan, cb_features, cb_plan_features
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Plan',  '64',  'admin',  '-1',  '2015-09-21 03:15:58',  'active',  'plan-list',  '<i class="fa fa-circle-o"></i>', NULL ,  '7', NULL ,  '0'
+);
+
+/* 17th AUGUIST 2017 - AMAN VERMA QUERY LOG */
+
+ALTER TABLE  `cb_chat` CHANGE  `message_type`  `message_type` ENUM(  'text',  'image',  'report-abuse',  'report-abuse-resolved',  'raise-dispute' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'text';
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Question Type',  '64',  'admin',  '-1',  '2015-09-21 03:15:58',  'active',  'question-type-list',  '<i class="fa fa-circle-o"></i>', NULL ,  '1', NULL ,  '0'
+);
+
+
+ALTER TABLE  `cb_features` ADD  `status` ENUM(  'active',  'inactive',  'trashed',  '' ) NOT NULL DEFAULT  'active' AFTER  `name` ;
+ALTER TABLE  `cb_plan` ADD  `status` ENUM(  'active',  'inactive',  'trashed',  '' ) NOT NULL DEFAULT  'active' AFTER  `price` ;
+ALTER TABLE  `cb_plan_features` ADD  `status` ENUM(  'active',  'inactive',  'trashed',  '' ) NOT NULL DEFAULT  'active' AFTER  `feature_id` ;
+ALTER TABLE  `cb_state` CHANGE  `active`  `status` ENUM(  'active',  'inactive',  'trashed',  '' ) NOT NULL DEFAULT  'active';
+ALTER TABLE  `cb_city` CHANGE  `status`  `status` ENUM(  'active',  'inactive',  'trashed',  '' ) NOT NULL DEFAULT  'active';
+ALTER TABLE  `cb_abusive_words` ADD  `status` ENUM(  'active',  'inactive',  'trashed' ) NOT NULL DEFAULT  'active' AFTER  `abusive_word` ;
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Plan',  '66',  'admin',  '-1',  '2015-09-21 03:15:58',  'active',  'plan-list',  '<i class="fa fa-circle-o"></i>', NULL ,  '7', NULL ,  '0'
+);
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Features',  '66',  'admin',  '-1',  '2015-09-21 03:15:58',  'active',  'features-list',  '<i class="fa fa-circle-o"></i>', NULL ,  '7', NULL ,  '0'
+);
+
+UPDATE  `crowbar`.`cb_users_menu` SET  `menu_icon` =  '<i class="fa fa-google-wallet"></i>' WHERE  `cb_users_menu`.`id` =66;
+
+
+ANKUSH //22-Aug
+ALTER TABLE `cb_transactions` CHANGE `transaction_type` `transaction_type` ENUM('credit','debit','subscription') CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+ALTER TABLE `cb_transactions` CHANGE `transaction_project_id` `transaction_project_id` INT(11) NULL DEFAULT NULL COMMENT 'project id & plan id';
+
+plan_detail in plan table
+
+CREATE TABLE `cb_user_subscription` (
+  `id_subscription` int(11) NOT NULL,
+  `id_plan` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `balance` decimal(10,2) NOT NULL,
+  `billingDayOfMonth` int(11) NOT NULL,
+  `currentBillingCycle` int(11) NOT NULL,
+  `daysPastDue` varchar(255) DEFAULT NULL,
+  `failureCount` int(11) NOT NULL,
+  `firstBillingDate` datetime NOT NULL,
+  `id` varchar(255) NOT NULL,
+  `merchantAccountId` varchar(255) NOT NULL,
+  `neverExpires` varchar(255) NOT NULL,
+  `nextBillAmount` decimal(10,2) NOT NULL,
+  `nextBillingPeriodAmount` decimal(10,2) NOT NULL,
+  `nextBillingDate` datetime NOT NULL,
+  `numberOfBillingCycles` varchar(255) NOT NULL,
+  `paidThroughDate` datetime NOT NULL,
+  `paymentMethodToken` varchar(255) NOT NULL,
+  `planId` varchar(255) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `status` varchar(255) NOT NULL,
+  `trialDuration` varchar(255) DEFAULT NULL,
+  `trialDurationUnit` varchar(255) DEFAULT NULL,
+  `trialPeriod` varchar(255) NOT NULL,
+  `user` varchar(255) NOT NULL,
+  `updated` datetime NOT NULL,
+  `created` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE  `cb_chat` CHANGE  `message_type`  `message_type` ENUM(  'text',  'image',  'report-abuse',  'report-abuse-resolved',  'raise-dispute', 'raise-dispute-resolved' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'text';
+
+ALTER TABLE  `cb_project_log` CHANGE  `close`  `close` ENUM(  'pending',  'confirmed',  'disputed' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'pending';
+
+
+Ankush //28 Aug
+
+ALTER TABLE  `cb_user_subscription` DROP  `user` ;
+
+ALTER TABLE `cb_user_subscription` CHANGE `id_subscription` `id_subscription` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `id_plan` `id_plan` INT(11) NOT NULL, CHANGE `id_user` `id_user` INT(11) NOT NULL, CHANGE `balance` `balance` DECIMAL(10,2) NULL, CHANGE `billingDayOfMonth` `billingDayOfMonth` INT(11) NULL, CHANGE `currentBillingCycle` `currentBillingCycle` INT(11) NULL, CHANGE `daysPastDue` `daysPastDue` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `failureCount` `failureCount` INT(11) NULL, CHANGE `firstBillingDate` `firstBillingDate` DATETIME NULL, CHANGE `id` `id` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL, CHANGE `merchantAccountId` `merchantAccountId` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL, CHANGE `neverExpires` `neverExpires` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL, CHANGE `nextBillAmount` `nextBillAmount` DECIMAL(10,2) NULL, CHANGE `nextBillingPeriodAmount` `nextBillingPeriodAmount` DECIMAL(10,2) NULL, CHANGE `nextBillingDate` `nextBillingDate` DATETIME NULL, CHANGE `numberOfBillingCycles` `numberOfBillingCycles` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL, CHANGE `paidThroughDate` `paidThroughDate` DATETIME NULL, CHANGE `paymentMethodToken` `paymentMethodToken` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL, CHANGE `planId` `planId` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL, CHANGE `price` `price` DECIMAL(10,2) NULL, CHANGE `status` `status` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL, CHANGE `trialDuration` `trialDuration` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `trialDurationUnit` `trialDurationUnit` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, CHANGE `trialPeriod` `trialPeriod` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL, CHANGE `updated` `updated` DATETIME NOT NULL, CHANGE `created` `created` DATETIME NOT NULL;
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Subscription', '0', 'admin', '-1', '2015-09-21 03:15:46', 'active', '#', '<i class=\"fa fa-cube\"></i>', '', '3', NULL, '0');
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Employer Subscription', '69', 'admin', '-1', '2015-09-21 03:15:58', 'active', 'emaployer/subscription', '<i class=\"fa fa-circle-o\"></i>', NULL, '1', NULL, '0');
+
+UPDATE `cb_users_menu_visibility` SET `menu_visibility` = '[\"1\",\"2\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"56\",\"57\",\"58\",\"59\",\"60\",\"61\",\"62\",\"63\",\"64\",\"65\",\"66\",\"67\",\"68\",\"69\",\"70\"]' WHERE `cb_users_menu_visibility`.`id_user` = -1;
+
+UPDATE `cb_users_menu` SET `action_url` = 'employer/subscription' WHERE `cb_users_menu`.`id` = 70;
+
+ALTER TABLE `cb_users` ADD `braintree_subscription_id` VARCHAR( 255 ) NOT NULL AFTER `is_subscribed`
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Employer', '62', 'admin', '-1', '2015-09-21 03:15:46', 'active', 'newsletter/subscribe', '<i class=\"fa fa-circle-o\"></i>', NULL, '1', NULL, '0');
+
+UPDATE `cb_users_menu` SET `action_url` = 'newsletter/subscriber?page=employer' WHERE `cb_users_menu`.`id` = 71;
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Talent', '62', 'admin', '-1', '2015-09-21 03:15:46', 'active', 'newsletter/subscriber?page=Talent', '<i class=\"fa fa-circle-o\"></i>', NULL, '1', NULL, '0');
+
+UPDATE `cb_users_menu` SET `action_url` = 'newsletter/subscriber?page=talent' WHERE `cb_users_menu`.`id` = 72;
+
+ALTER TABLE  `cb_users` ADD  `newsletter_token` TINYTEXT NOT NULL AFTER  `newsletter_subscribed` ;
+
+
+
+/*AMAN 29 AUGUST 2017*/
+ALTER TABLE  `cb_transactions` ADD  `transaction_done_by` INT NULL AFTER  `transaction_commission` ;
+ALTER TABLE  `cb_raise_dispute` ADD  `dispute_closed_by` INT NULL AFTER  `status` ;
+ALTER TABLE  `cb_raise_dispute` ADD  `dispute_closed_date` DATETIME NULL AFTER  `dispute_closed_by` ;
+ALTER TABLE  `cb_project_log` ADD  `request_payout` ENUM(  'yes',  'no' ) NOT NULL DEFAULT  'no' AFTER  `close` ;
+
+
+/*AMAN 6th SEP*/
+ALTER TABLE  `cb_forum_question` CHANGE  `approve_date`  `approve_date` DATETIME NULL ;
+ALTER TABLE  `cb_projects` CHANGE  `price_unit`  `price_unit` ENUM(  'USD',  'INR',  'IDR',  'CNY' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'USD';
+
+php artisan vendor:publish --provider="Jorenvh\Share\Providers\ShareServiceProvider"
+
+
+/*AMAN 7th SEP*/
+
+INSERT INTO `cb_emails` (`id_email`, `title`, `alias`, `subject`, `content`, `variables`, `status`) VALUES
+(17, 'notification', 'Notification for recent 5 events.', 'You have new update on {site}', '<div style="margin:0;padding:0;width:100%;font-weight:500;font-size:16px;line-height:26px;background:none #fafafa;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\r\n<table align="center" border="0" cellpadding="20" cellspacing="0" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;margin:0;padding:0;line-height:100%;background:none #fafafa">\r\n	<tbody>\r\n		<tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\r\n			<td style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">\r\n			<table align="center" border="0" cellpadding="0" cellspacing="0" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:650px">\r\n				<tbody>\r\n					<tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\r\n						<td style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">\r\n						<table style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%">\r\n							<tbody>\r\n								<tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\r\n									<td align="left" height="45" style="width:50%;color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#11B5C4;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none" target="_blank"> <img alt="{site}" src="{site_link}images/logo.png" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="100" /> </a></td>\r\n									<td align="right" style="width:50%;color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;text-transform: uppercase;font-size:14px" target="_blank">{slogan}</a></td>\r\n								</tr>\r\n							</tbody>\r\n						</table>\r\n\r\n						<table align="left" cellpadding="25" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;background:none #fff;border-radius:2px;border:solid 1px #eee">\r\n							<tbody>\r\n								<tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\r\n									<td style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%;vertical-align:top">\r\n									<h1 style="color:#11B5C4;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:300;line-height:1.1;margin:0 0 20px">Hi {name},</h1>\r\n\r\n									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">You have received {notification_count} notification on<a style="color:#11B5C4;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none" target="_blank">&nbsp;{site}</a>.&nbsp;</p>\r\n\r\n									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">&nbsp;</p>\r\n									{content}\r\n									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">&nbsp;</p>\r\n									<p style="text-align:center;color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px"><a href="{link}" style="background:#4DB8E4;padding:10px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;border-radius:5px;font-size: 22px;color: #ffffff;">Click Here</a></p>\r\n\r\n									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px"><br />\r\n									Cheers,<br />\r\n									Team {site}</p>\r\n									</td>\r\n								</tr>\r\n							</tbody>\r\n						</table>\r\n\r\n						<table style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;padding:24px 0">\r\n							<tbody>\r\n								<tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\r\n									<td align="center" height="150" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">\r\n									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><a style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> <img alt="{site}" src="{site_link}images/small-logo.png" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="32" /> </a></p>\r\n\r\n									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px">This email was sent to <a href="mailto:{email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {email} </a>.<br />\r\n									If you want to unsubscribe the emails from {site}, please drop a email at <a href="mailto:{help_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {help_email} </a>.<br />\r\n									If you have any questions or concerns, please email us at <a href="mailto:{info_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {info_email} </a>.</p>\r\n\r\n									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><span style="color:#b1aca0;text-decoration:none;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;line-height:18px">{office_address} </span></p>\r\n									</td>\r\n								</tr>\r\n							</tbody>\r\n						</table>\r\n						</td>\r\n					</tr>\r\n				</tbody>\r\n			</table>\r\n			</td>\r\n		</tr>\r\n	</tbody>\r\n</table>\r\n</div>\r\n', '{name},{email},{site},{slogan},{link},{notification_count},{content},{help_email},{info_email},{site_link},{office_address}', 'active');
+
+
+ALTER TABLE  `cb_settings` DROP  `email_job_marked_completed` ,
+DROP  `email_message_received` ,
+DROP  `email_chat_request_received` ,
+DROP  `email_chat_request_accepted` ,
+DROP  `email_review_submitted` ,
+DROP  `notification_proposal_submitted` ,
+DROP  `notification_job_started` ,
+DROP  `notification_job_marked_completed` ,
+DROP  `notification_message_received` ,
+DROP  `notification_chat_request_received` ,
+DROP  `notification_chat_request_accepted` ,
+DROP  `notification_review_submitted` ;
+
+ALTER TABLE  `cb_settings` CHANGE  `email_proposal_submission`  `email_notification` VARCHAR( 100 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+ALTER TABLE  `cb_settings` CHANGE  `email_job_started`  `mobile_notification` VARCHAR( 100 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+
+ALTER TABLE  `cb_settings` DROP  `mobile_notification` ;
+ALTER TABLE  `cb_settings` CHANGE  `email_notification`  `setting` VARCHAR( 100 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+ALTER TABLE  `cb_settings` ADD  `type` ENUM(  'email',  'mobile' ) NULL AFTER  `setting` ;
+
+
+
+/ADMIN RECORD/
+INSERT INTO `crowbar`.`cb_users` (`id_user`, `type`, `gender`, `first_name`, `last_name`, `name`, `company_name`, `company_website`, `company_work_field`, `company_biography`, `company_profile`, `contact_person_name`, `email`, `website`, `password`, `encryption`, `previous_password`, `birthday`, `secure_key`, `mobile`, `other_mobile`, `otp_password`, `otp_expired`, `otp_created`, `picture`, `country`, `country_code`, `other_country_code`, `state`, `city`, `postal_code`, `address`, `industry`, `subindustry`, `expertise`, `expected_salary`, `other_expectations`, `experience`, `workrate`, `workrate_max`, `workrate_unit`, `workrate_information`, `latitude`, `longitude`, `is_mobile_verified`, `is_email_verified`, `remember_token`, `facebook_id`, `googleplus_id`, `twitter_id`, `linkedin_id`, `instagram_id`, `newsletter_subscribed`, `newsletter_token`, `cover_letter_description`, `agree`, `agree_pricing`, `status`, `last_login`, `api_token`, `current_profile_step`, `percentage_default`, `percentage_step_one`, `percentage_step_two`, `percentage_step_three`, `percentage_step_four`, `percentage_step_five`, `chat_status`, `braintree_id`, `trial_ends_at`, `commission`, `is_subscribed`, `braintree_subscription_id`, `is_interview_popup_appeared`, `updated`, `created`) VALUES (NULL, 'superadmin', 'male', 'Mark', 'Wettasinghe', 'Mark Wettasinghe', 'Crowbar', 'https://www.crowbar.me', NULL, NULL, NULL, NULL, 'mark@crowbar.com', 'https://www.crowbar.me', '$2y$10$eVpFAXkV1rdPAhUgmkW4t.uF6Rnp3Y.LgmOWn3V5R4eZ1DrcvnLvi', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'avatar.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL, NULL, '0', NULL, NULL, NULL, NULL, NULL, 'no', 'no', 'lBpceZPum5bYOmXxkrSYBza1QRgYB9HCCId7tMCg9n9LYfMsjlbKZGGtZ6sp', NULL, NULL, NULL, NULL, NULL, 'no', '', NULL, 'no', 'no', 'active', '', NULL, 'personal', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'no', '', 'no', '2017-08-24 08:13:18', '2017-08-24 08:13:18');
+
+ALTER TABLE  `cb_users` CHANGE  `last_login`  `last_login` DATETIME NULL ,
+CHANGE  `current_profile_step`  `current_profile_step` ENUM(  'personal',  'industry-skills',  'curriculum-vitae',  'availability',  'general',  'setup',  'verify-account' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+INSERT INTO `crowbar`.`cb_users` (`id_user`, `type`, `gender`, `first_name`, `last_name`, `name`, `company_name`, `company_website`, `company_work_field`, `company_biography`, `company_profile`, `contact_person_name`, `email`, `website`, `password`, `encryption`, `previous_password`, `birthday`, `secure_key`, `mobile`, `other_mobile`, `otp_password`, `otp_expired`, `otp_created`, `picture`, `country`, `country_code`, `other_country_code`, `state`, `city`, `postal_code`, `address`, `industry`, `subindustry`, `expertise`, `expected_salary`, `other_expectations`, `experience`, `workrate`, `workrate_max`, `workrate_unit`, `workrate_information`, `latitude`, `longitude`, `is_mobile_verified`, `is_email_verified`, `remember_token`, `facebook_id`, `googleplus_id`, `twitter_id`, `linkedin_id`, `instagram_id`, `newsletter_subscribed`, `newsletter_token`, `cover_letter_description`, `agree`, `agree_pricing`, `status`, `last_login`, `api_token`, `current_profile_step`, `percentage_default`, `percentage_step_one`, `percentage_step_two`, `percentage_step_three`, `percentage_step_four`, `percentage_step_five`, `chat_status`, `braintree_id`, `trial_ends_at`, `commission`, `is_subscribed`, `braintree_subscription_id`, `is_interview_popup_appeared`, `updated`, `created`) VALUES (NULL, 'superadmin', 'male', 'Aman', 'Verma', 'Aman Verma', 'Singsys', 'https://www.singsys.com', NULL, NULL, NULL, NULL, 'aman+admin@singsys.com', 'https://www.singsys.com', '$2y$10$eVpFAXkV1rdPAhUgmkW4t.uF6Rnp3Y.LgmOWn3V5R4eZ1DrcvnLvi', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'avatar.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL, NULL, '0', NULL, NULL, NULL, NULL, NULL, 'no', 'no', 'lBpceZPum5bYOmXxkrSYBza1QRgYB9HCCId7tMCg9n9LYfMsjlbKZGGtZ6sp', NULL, NULL, NULL, NULL, NULL, 'no', '', NULL, 'no', 'no', 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'no', '', 'no', '2017-08-24 08:13:18', '2017-08-24 08:13:18');
+
+ALTER TABLE  `activity` CHANGE  `user_action`  `action` VARCHAR( 100 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+ALTER TABLE  `activity` CHANGE  `activity_status`  `status` ENUM(  'success',  'failed' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+
+ALTER TABLE  `cb_users_menu` CHANGE  `section`  `section` ENUM(  'admin',  'employer-top-after-login',  'talent-top-after-login',  'employer-myjobs', 'employer-profile-sidebar-menu',  'employer-view-editprofile-menu',  'talent-view-editprofile-menu',  'talent-profile-sidebar-menu',  'talent-proposal-menu', 'talent-myjobs',  'employer-payments',  'talent-wallet',  'employer-talent-profile' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+INSERT INTO  `crowbar`.`cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'user_disable_cron_status',  'yes'
+);
+
+ALTER TABLE  `cb_users` ADD  `touch_login` ENUM(  'yes',  'no' ) NOT NULL DEFAULT  'no' AFTER  `is_interview_popup_appeared` ;
+
+
+
+
+
+
+
+/*AMAN VERMA - FINAL QUERIES*/
+
+
+/*Ankush - 22-Sept-2017*/
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Banner', '0', 'admin', '1', '2017-04-01 09:07:46', 'active', 'banner', '<i class=\"fa fa-dashboard\"></i>', NULL, '1', NULL, '0');
+
+ALTER TABLE  `cb_countries` CHANGE  `country_name`  `en` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ;
+ALTER TABLE  `cb_countries` ADD  `id` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `en` ,
+ADD  `cz` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `id` ,
+ADD  `ta` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `cz` ,
+ADD  `hi` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `ta` ;
+
+ALTER TABLE  `cb_state` CHANGE  `state_name`  `en` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ;
+ALTER TABLE  `cb_state` ADD  `id` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `en` ,
+ADD  `cz` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `id` ,
+ADD  `ta` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `cz` ,
+ADD  `hi` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `ta` ;
+
+ALTER TABLE  `cb_city` CHANGE  `city_name`  `en` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ;
+ALTER TABLE  `cb_city` ADD  `id` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `en` ,
+ADD  `cz` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `id` ,
+ADD  `ta` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `cz` ,
+ADD  `hi` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `ta` ;
+
+ALTER TABLE  `cb_industries` CHANGE  `name`  `en` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ;
+ALTER TABLE  `cb_industries` ADD  `id` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `en` ,
+ADD  `cz` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `id` ,
+ADD  `ta` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `cz` ,
+ADD  `hi` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER  `ta` ;
+
+ALTER TABLE  `cb_countries` ADD  `country_order` INT NOT NULL DEFAULT  '0' AFTER  `hi` ;
+ALTER TABLE  `cb_state` ADD  `state_order` INT NOT NULL DEFAULT  '0' AFTER  `hi` ;
+ALTER TABLE  `cb_city` ADD  `city_order` INT NOT NULL DEFAULT  '0' AFTER  `hi` ;
+ALTER TABLE  `cb_industries` ADD  `industries_order` INT NOT NULL DEFAULT  '0' AFTER  `hi` ;
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Industry Management',  '0',  'admin',  '-1',  '2015-09-21 03:15:46',  'active',  '#',  '<i class="fa fa-circle-o"></i>', NULL ,  '2', NULL ,  '0'
+);
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Industry',  '82',  'admin',  '-1',  '2015-09-21 03:15:46',  'active',  'industry-list',  '<i class="fa fa-circle-o"></i>', NULL ,  '2', NULL ,  '0'
+);
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+ `id` ,
+ `name` ,
+ `parent` ,
+ `section` ,
+ `created_by` ,
+ `created_date` ,
+ `status` ,
+ `action_url` ,
+ `menu_icon` ,
+ `menu_class` ,
+ `menu_order` ,
+ `callback` ,
+ `disable_list_view`
+)
+VALUES (
+NULL ,  'Sub Industry',  '82',  'admin',  '-1',  '2015-09-21 03:15:46',  'active',  'sub-industry-list',  '<i class="fa fa-circle-o"></i>', NULL ,  '2', NULL ,  '0'
+)
+
+ALTER TABLE  `cb_industries` ADD  `image` VARCHAR( 255 ) NOT NULL AFTER  `industries_order` ;
+ALTER TABLE  `cb_industries` CHANGE  `image`  `image` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL ;
+-------------------------------------------------------------------------
+LINKEDIN : Email : aman@singsys.com , Password : amanverma##
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+FACEBOOK : Email : aman@singsys.com , Password : amanverma##
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+TWITTER : Email : aman@singsys.com , Password : amanverma##
+-------------------------------------------------------------------------
+=======
+
+
+
+
+/**
+ * Ankush 27-09-2017
+ */
+ALTER TABLE `cb_forum_question` ADD FULLTEXT(`question_description`);
+
+
+ALTER TABLE  `cb_users` CHANGE  `language`  `currency` VARCHAR( 6 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'USD';
+ALTER TABLE  `cb_users` CHANGE  `touch_login`  `touch_login` ENUM(  'yes',  'no' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'no';
+
+
+ALTER TABLE  `cb_talent_availability` ADD  `availability_type` ENUM(  'unavailable',  'available' ) NOT NULL DEFAULT  'available' AFTER  `user_id` ;
+
+UPDATE  `crowbar_dev`.`cb_users_menu` SET  `name` =  'Find talent' WHERE  `cb_users_menu`.`id` =16;
+
+UPDATE  `crowbar_dev`.`cb_users_menu` SET  `name` =  'Payments Due' WHERE  `cb_users_menu`.`id` =48;
+
+ALTER TABLE  `cb_industries` ADD  `is_tagged` ENUM(  'yes',  'no' ) NOT NULL DEFAULT  'no' AFTER  `parent` ;
+ALTER TABLE  `cb_report_abuse` CHANGE  `updated`  `updated` DATETIME NOT NULL ;
+ALTER TABLE  `cb_report_abuse` CHANGE  `created`  `created` DATETIME NOT NULL ;
+
+
+ALTER TABLE  `cb_abusive_words` ADD UNIQUE (
+`abusive_word`
+);
+ALTER TABLE  `cb_degree` ADD UNIQUE (
+`degree_name`
+);
+
+(skill_id with industry id) unique
+
+
+/*FINAL*/
+ALTER TABLE  `cb_projects` CHANGE  `price_unit`  `price_unit` VARCHAR( 6 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'USD';
+
+REMOVE UNIQUE CONSTRAINT
+
+SKILL : skill_name
+ALTER TABLE  `cb_skill` ADD UNIQUE (
+`skill_name` ,
+`skill_status` ,
+`industry_id`
+);
+
+COLLEGE : college_name
+CERTIFICATE : certificate_name
+ALTER TABLE  `cb_certificate` ADD UNIQUE (
+`certificate_name` ,
+`certificate_status`
+);
+ABUSIVE WORDS : abusive_word
+DEGREE : degree_name
+
+
+INSERT INTO `cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Industry',  '0',  'admin',  '-1',  '2015-09-21 03:15:58',  'active',  '#',  '<i class="fa fa-coffee"></i>', NULL ,  '7', NULL ,  '0'
+);
+
+INSERT INTO `cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Industry',  '82',  'admin',  '-1',  '2015-09-21 03:15:58',  'active',  'industry-list',  '<i class="fa fa-coffee"></i>', NULL ,  '7', NULL ,  '0'
+);
+
+INSERT INTO  `cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Industry',  '82',  'admin',  '-1',  '2015-09-21 03:15:58',  'active',  'sub-industry-list',  '<i class="fa fa-coffee"></i>', NULL ,  '7', NULL ,  '0'
+);
+
+INSERT INTO  `cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Banner',  '0',  'admin',  '-1',  '2015-09-21 03:15:58',  'active',  'banner',  '<i class="fa fa-coffee"></i>', NULL ,  '7', NULL ,  '0'
+);
+
+INSERT INTO `cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Currency',  '0',  'admin',  '-1',  '2015-09-21 03:15:58',  'active',  'currency',  '<i class="fa fa-coffee"></i>', NULL ,  '7', NULL ,  '0'
+);
+UPDATE  `cb_users_menu` SET  `action_url` =  'plan/features-list' WHERE  `cb_users_menu`.`id` =72;
+
+ALTER TABLE  `cb_features` CHANGE  `name`  `en` VARCHAR( 100 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+
+ALTER TABLE  `cb_features` ADD  `id` VARCHAR( 100 ) NOT NULL AFTER  `en` ,
+ADD  `cz` VARCHAR( 100 ) NOT NULL AFTER  `id` ,
+ADD  `ta` VARCHAR( 100 ) NOT NULL AFTER  `cz` ,
+ADD  `hi` VARCHAR( 100 ) NOT NULL AFTER  `ta` ;
+
+INSERT INTO  `cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'ios_version',  ''
+);
+
+INSERT INTO  `cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'android_version',  ''
+);
+
+INSERT INTO  `cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'update_version_message',  ''
+);
+
+/*BOTH SHOULD BE MANAGEABLE FROM ADMIN*/
+ALTER TABLE  `cb_users` CHANGE  `commission`  `commission` FLOAT NULL DEFAULT  '10';
+ALTER TABLE  `cb_projects` CHANGE  `work_hours`  `work_hours` FLOAT NOT NULL DEFAULT  '8';
+ALTER TABLE  `cb_chat` ADD  `local_chat_id` VARCHAR(255) NULL DEFAULT NULL AFTER  `id_chat` ;
+
+ALTER TABLE `cb_chat` ADD `timestamp` VARCHAR(255) NOT NULL AFTER `delete_receiver_status`;
+
+ALTER TABLE `cb_chat` ADD UNIQUE( `sender_id`, `timestamp`);
+
+INSERT INTO  `cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'completing_profile',  'off'
+);
+
+ALTER TABLE  `cb_users` ADD  `completing_profile` DATE NULL DEFAULT NULL AFTER  `currency` ;
+
+INSERT INTO  `cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'completing_profile_notification_counter',  '5'
+);
+
+ALTER TABLE  `cb_users` ADD  `completing_profile_notification_counter` INT NOT NULL DEFAULT  '0' AFTER  `completing_profile` ;
+
+INSERT INTO `cb_emails` (`id_email`, `title`, `alias`, `subject`, `content`, `variables`, `status`) VALUES (NULL, 'completing_profile', 'User Profile Completion', 'Please complete your profile - {site}', '<div style="margin:0;padding:0;width:100%;font-weight:500;font-size:16px;line-height:26px;background:none #fafafa;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+<table align="center" border="0" cellpadding="20" cellspacing="0" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;margin:0;padding:0;line-height:100%;background:none #fafafa">
+	<tbody>
+		<tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+			<td style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+			<table align="center" border="0" cellpadding="0" cellspacing="0" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:650px">
+				<tbody>
+					<tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+						<td style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+						<table style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%">
+							<tbody>
+								<tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td align="left" height="45" style="width:50%;color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#11B5C4;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none" target="_blank"> <img alt="{site}" src="{site_link}images/logo.png" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="100" /> </a></td>
+									<td align="right" style="width:50%;color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;text-transform: uppercase;font-size:14px" target="_blank">{slogan}</a></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table align="left" cellpadding="25" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;background:none #fff;border-radius:2px;border:solid 1px #eee">
+							<tbody>
+								<tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%;vertical-align:top">
+									<h1 style="color:#11B5C4;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:300;line-height:1.1;margin:0 0 20px">Hi {name},</h1>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">We will soon get in touch with you.</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px"><br />
+									Cheers,<br />
+									Team {site}</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;padding:24px 0">
+							<tbody>
+								<tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td align="center" height="150" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><a style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> <img alt="{site}" src="{site_link}images/small-logo.png" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="32" /> </a></p>
+
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px">This email was sent to <a href="mailto:{email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {email} </a>.<br />
+									If you want to unsubscribe the emails from {site}, please drop a email at <a href="mailto:{help_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {help_email} </a>.<br />
+									If you have any questions or concerns, please email us at <a href="mailto:{info_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {info_email} </a>.</p>
+
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><span style="color:#b1aca0;text-decoration:none;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;line-height:18px">{office_address} </span></p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</div>
+', '{name},{email},{site},{slogan},{help_email},{info_email},{site_link},{office_address}', 'active');
+
+/*Ankush - 07-10-2017*/
+ALTER TABLE `cb_users` ADD `commission_type` ENUM('flat','per') NOT NULL DEFAULT 'per' AFTER `commission`;
+
+ALTER TABLE `cb_transactions` ADD `currency` VARCHAR(6) NULL AFTER `transaction_subtotal`;
+
+
+
+ALTER TABLE  `cb_users` ADD  `registration_device` ENUM(  'website',  'android',  'iphone') NOT NULL DEFAULT  'website' AFTER `completing_profile_notification_counter` ;
+
+ALTER TABLE `cb_talent_proposals` CHANGE `price_unit` `price_unit` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'USD';
+
+
+Create Table : cb_viewed_talent
+
+
+Create Table : cb_viewed_talent
+
+ALTER TABLE `cb_languages` ADD `is_default` ENUM('Y','N') NOT NULL DEFAULT 'N' AFTER `status`;
+UPDATE  `crowbar`.`cb_languages` SET  `is_default` =  'Y' WHERE  `cb_languages`.`id_language` =1;
+INSERT INTO  `crowbar`.`cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'google_analytics_code',  '<!-- Global Site Tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-107288710-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments)};
+  gtag(''js'', new Date());
+
+  gtag(''config'', ''UA-107288710-1'');
+</script>'
+);
+
+
+ALTER TABLE  `cb_project_raised_dispute` ADD  `status` ENUM(  'open',  'discarded',  'closed' ) NOT NULL DEFAULT  'open' AFTER  `type` ;
+
+ALTER TABLE  `cb_project_raised_dispute` ADD  `dispute_closed_by` INT NULL AFTER  `status` ,
+ADD  `dispute_closed_date` DATETIME NULL AFTER  `dispute_closed_by` ;
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Skills',  '6',  'admin',  '-1',  '2015-09-20 21:45:58',  'active',  'skills',  '<i class="fa fa-circle-o"></i>', NULL ,  '7', NULL ,  '0'
+);
+
+
+ALTER TABLE  `cb_project_log` ADD  `start_timestamp` DATETIME NULL AFTER  `request_payout` ,
+ADD  `start_confirm_timestamp` DATETIME NULL AFTER  `start_timestamp` ,
+ADD  `end_timestamp` DATETIME NULL AFTER  `start_confirm_timestamp` ,
+ADD  `end_confirm_timestamp` DATETIME NULL AFTER  `end_timestamp`
+
+/*AMAN*/
+INSERT INTO `crowbar`.`cb_config` (`key`, `value`) VALUES ('is_language_enabled', 'N');
+
+ALTER TABLE  `cb_project_raised_dispute` ADD  `initiated_by` INT NOT NULL AFTER  `status` ;
+
+ALTER TABLE  `cb_notification_history` CHANGE  `user_type`  `user_type` ENUM(  'talent',  'employer',  'administrator' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+
+
+
+
+/*28/10/2017*/
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Translation Manager',  '0',  'admin',  '1',  '2017-04-01 03:37:46',  'active',  'translations',  '<i class="fa fa-language"></i>', NULL ,  '1', NULL ,  '0'
+);
+
+UPDATE  `crowbar`.`cb_users_menu_visibility` SET  `menu_visibility` = '["1","2","4","5","6","7","8","9","56","57","58","59","60","61","62","63","64","65","66","67","68","70","71","72","73","74","75","82","83","84","85","86","87","88"]' WHERE  `cb_users_menu_visibility`.`id_user` =1;
+
+/*30-10-2017*/
+ALTER TABLE  `cb_emails` ADD  `language` VARCHAR( 10 ) NOT NULL DEFAULT  'en' AFTER  `id_email` ;
+
+INSERT INTO cb_emails (
+id_email,
+language,
+title,
+alias,
+subject,
+content,
+variables,
+status
+) SELECT 
+'',
+'id',
+title,
+alias,
+subject,
+content,
+variables,
+status
+FROM `cb_emails` WHERE language = 'en'
+
+INSERT INTO cb_emails (
+id_email,
+language,
+title,
+alias,
+subject,
+content,
+variables,
+status
+) SELECT 
+'',
+'cz',
+title,
+alias,
+subject,
+content,
+variables,
+status
+FROM `cb_emails` WHERE language = 'en'
+
+INSERT INTO cb_emails (
+id_email,
+language,
+title,
+alias,
+subject,
+content,
+variables,
+status
+) SELECT 
+'',
+'ta',
+title,
+alias,
+subject,
+content,
+variables,
+status
+FROM `cb_emails` WHERE language = 'en'
+
+INSERT INTO cb_emails (
+id_email,
+language,
+title,
+alias,
+subject,
+content,
+variables,
+status
+) SELECT 
+'',
+'hi',
+title,
+alias,
+subject,
+content,
+variables,
+status
+FROM `cb_emails` WHERE language = 'en'
+
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Help', '0', 'admin', '1', '2017-03-31 22:07:46', 'active', 'help', '<i class=\"fa fa-question-circle-o\"></i>', NULL, '1', NULL, '0');
+
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Change Password', '0', 'admin', '1', '2017-03-31 22:07:46', 'active', 'change-password', '<i class=\"fa fa-hashtag\"></i>', NULL, '1', NULL, '0');
+
+
+
+UPDATE  `cb_emails` SET  `variables` =  '{name},{email},{site},{slogan},{code},{help_email},{info_email},{site_link},{office_address}' WHERE `cb_emails`.`id_email` =4;
+
+UPDATE `cb_emails` SET `content` = '<div style="margin:0;padding:0;width:100%;font-weight:500;font-size:16px;line-height:26px;background:none #fafafa;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+            <table cellspacing="0" cellpadding="20" border="0" align="center" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;margin:0;padding:0;line-height:100%;background:none #fafafa">
+                <tbody>
+                    <tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+                        <td style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+                            <table cellspacing="0" cellpadding="0" border="0" align="center" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:650px">
+                                <tbody>
+                                    <tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+                                        <td style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+                                            <table style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%">
+                                                <tbody>
+                                                    <tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+                                                        <td align="left" height="45" style="width:50%;color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px">
+                                                            <a target="_blank" style="color:#11B5C4;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none">
+                                                                <img width="100" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" alt="{site}" src="{site_link}images/logo.png">
+                                                            </a>
+                                                        </td>
+                                                        <td align="right" style="width:50%;color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px">
+                                                            <a target="_blank" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;text-transform: uppercase;font-size:14px">{slogan}</a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table cellpadding="25" align="left" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;background:none #fff;border-radius:2px;border:solid 1px #eee">
+                                                <tbody>
+                                                    <tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+                                                        <td style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%;vertical-align:top">
+                                                            <h1 style="color:#11B5C4;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:300;line-height:1.1;margin:0 0 20px">Hi {name},</h1>
+                                                            <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Thank you for joining us, we''re really excited to share several services we offer on  
+                                                                <a target="_blank" style="color:#11B5C4;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none">
+                                                                    {site}
+                                                                </a>.
+                                                            </p>
+                                                            <br>
+                                                            <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">To reset your account password please verify yourself by using following verification code:</p>
+                                                            <br>
+                                                            <p style="background:#4DB8E4;padding:10px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;border-radius:5px;font-size: 22px;color: #ffffff;display: block;margin: 0 auto;width: 100px;text-align: center;">
+                                                                {code} 
+                                                            </p>
+                                                            <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px">
+                                                                <br>Cheers, <br>Team {site}
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;padding:24px 0">
+                                                <tbody>
+                                                    <tr style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+                                                        <td align="center" height="150" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+                                                            <p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px">
+                                                                <a target="_blank" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px">
+                                                                    <img width="32" style="color:#FF5B5F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" alt="{site}" src="{site_link}images/small-logo.png">
+                                                                </a>
+                                                            </p>
+                                                            <p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px">
+                                                                This email was sent to 
+                                                                <a target="_blank" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" href="mailto:{email}">
+                                                                    {email}
+                                                                </a>.<br>
+                                                                If you want to unsubscribe the emails from {site}, please drop a email at  
+                                                                <a target="_blank" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" href="mailto:{help_email}">
+                                                                    {help_email}
+                                                                </a>.<br>
+                                                                If you have any questions or concerns, please email us at 
+                                                                <a target="_blank" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" href="mailto:{info_email}">
+                                                                    {info_email}
+                                                                </a>.<br>
+                                                            </p>
+                                                            <p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px">
+                                                                <span style="color:#b1aca0;text-decoration:none;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;line-height:18px">
+                                                                    {office_address}
+                                                                </span>
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>' WHERE `cb_emails`.`id_email` = 4;
+
+ALTER TABLE  `cb_users` ADD  `forgot_otp` VARCHAR( 10 ) NULL DEFAULT NULL AFTER  `registration_device` ;
+
+UPDATE  `crowbar`.`cb_users_menu` SET  `status` =  'deactive' WHERE  `cb_users_menu`.`id` =54;
+
+UPDATE  `crowbar`.`cb_users_menu` SET  `status` =  'deactive' WHERE  `cb_users_menu`.`id` =81;
+
+INSERT INTO `crowbar`.`cb_config` (`key`, `value`) VALUES ('display_pricing_page', 'no');
+
+INSERT INTO `crowbar`.`cb_config` (`key`, `value`) VALUES ('minimum_profile_percentage', '100');
+
+
+
+
+
+
+/*NEW*/
+ALTER TABLE  `cb_projects` ADD  `step` ENUM(  'one',  'two',  'three',  'four',  'five' ) NULL DEFAULT  'one' AFTER  `work_hours` ;
+ALTER TABLE  `cb_projects` CHANGE  `status`  `status` ENUM(  'draft',  'active',  'trash' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'active';
+ALTER TABLE  `cb_talent_interests` ADD  `workrate` FLOAT NOT NULL AFTER  `interest` ;
+#talent_subindustries
+#talent_industries
+#city
+#countries
+#state
+
+#done development
+
+
+ALTER TABLE  `cb_users_menu` CHANGE  `section`  `section` ENUM(  'admin',  'employer-top-after-login',  'talent-top-after-login',  'employer-myjobs', 'employer-profile-sidebar-menu',  'employer-view-editprofile-menu',  'talent-view-editprofile-menu',  'talent-profile-sidebar-menu',  'talent-proposal-menu', 'talent-myjobs',  'employer-payments',  'talent-wallet',  'employer-talent-profile',  'talent-settings' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+
+
+
+/*RUPESH 19th Dec 2017*/
+ALTER TABLE  `cb_college` ADD  `image` VARCHAR( 255 ) NULL DEFAULT NULL AFTER  `college_status` ;
+#company table
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'College',  '6',  'admin',  '-1',  '2015-09-20 21:45:58',  'active',  'college',  '<i class="fa fa-circle-o"></i>', NULL ,  '8', NULL ,  '0'
+);
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Company',  '6',  'admin',  '-1',  '2015-09-20 21:45:58',  'active',  'company',  '<i class="fa fa-circle-o"></i>', NULL ,  '9', NULL ,  '0'
+);
+
+ALTER TABLE  `cb_users_menu` CHANGE  `section`  `section` ENUM(  'admin',  'employer-top-after-login',  'talent-top-after-login',  'employer-myjobs', 'employer-profile-sidebar-menu',  'employer-view-editprofile-menu',  'talent-view-editprofile-menu',  'talent-profile-sidebar-menu',  'talent-proposal-menu', 'talent-myjobs',  'employer-payments',  'talent-wallet',  'employer-talent-profile',  'talent-settings',  'employer-settings' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+ALTER TABLE  `cb_projects` ADD  `talent_id` INT NULL DEFAULT NULL AFTER  `user_id` ;
+
+
+
+/*NEW*/
+ALTER TABLE  `cb_users_menu` CHANGE  `section`  `section` ENUM(  'admin',  'employer-top-after-login',  'talent-top-after-login',  'employer-myjobs', 'employer-profile-sidebar-menu',  'employer-view-editprofile-menu',  'talent-view-editprofile-menu',  'talent-profile-sidebar-menu',  'talent-proposal-menu', 'talent-myjobs',  'employer-payments',  'talent-wallet',  'employer-talent-profile',  'talent-settings',  'employer-settings',  'talent-job-details' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+BY RUPESH:
+/**NEW TABLE FOR FAQ**/
+#cb_faq
+#cb_faq_topic
+#cb_faq_category
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Faq',  '0',  'admin',  '-1',  '2015-09-20 21:45:58',  'active',  '#',  '<i class="fa fa-cogs"></i>', NULL ,  '7', NULL ,  '0'
+);
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Topic',  '97',  'admin',  '-1',  '2015-09-20 21:45:58',  'active',  'topic',  '<i class="fa fa-circle-o"></i>', NULL ,  '0', NULL ,  '0'
+);
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Category',  '97',  'admin',  '-1',  '2015-09-20 21:45:58',  'active',  'category',  '<i class="fa fa-circle-o"></i>', NULL ,  '1', NULL ,  '0'
+);
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Post',  '97',  'admin',  '-1',  '2015-09-20 21:45:58',  'active',  'post',  '<i class="fa fa-circle-o"></i>', NULL ,  '2', NULL ,  '0'
+);
+
+
+/**Rupesh 28/12/2017*/
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Invite Talent',  '0',  'employer-settings',  '-1',  '2017-05-13 02:07:31',  'active',  'employer/settings/invite-talent', NULL ,  'resp-tab-item',  '1', NULL ,  '0'
+);
+
+
+ALTER TABLE  `cb_invite_talent` CHANGE  `status`  `status` ENUM(  'pending',  'active',  'accepted' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'pending';
+
+### New Table -> cb_dispute_concern  
+
+
+
+
+
+
+
+
+
+
+11th Jan 2018
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'Payment Settings',  '0',  'talent-top-after-login',  '-1', NOW( ) ,  'active',  'talent/settings/payments', NULL , NULL ,  '1', NULL ,  '0'
+);
+
+
+INSERT INTO  `crowbar`.`cb_users_menu` (
+`id` ,
+`name` ,
+`parent` ,
+`section` ,
+`created_by` ,
+`created_date` ,
+`status` ,
+`action_url` ,
+`menu_icon` ,
+`menu_class` ,
+`menu_order` ,
+`callback` ,
+`disable_list_view`
+)
+VALUES (
+NULL ,  'My Network',  '0',  'talent-top-after-login',  '-1',  '2018-01-11 10:47:17',  'active',  'talent/networks', NULL , NULL ,  '1', NULL ,  '0'
+);
+
+
+ALTER TABLE  `cb_transactions` CHANGE  `transaction_status`  `transaction_status` ENUM(  'initiated',  'pending',  'failed',  'cancelled',  'confirmed', 'refunded-pending',  'refunded',  'disputed' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'initiated';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/************************START FOR PAYPAL*********************/
+ALTER TABLE  `cb_users` ADD  `paypal_payer_id` VARCHAR( 255 ) NULL AFTER  `paypal_id` ;
+create table cb_api_paypal_response
+create table cb_card_type
+create table cb_user_card_payal
+
+
+INSERT INTO  `crowbar`.`cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'paypal_commission',  '15'
+);
+INSERT INTO  `crowbar`.`cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'paypal_commission_type',  'per'
+);
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_paypal_commission` FLOAT NULL AFTER  `transaction_commission` ;
+/************************END FOR PAYPAL*********************/
+
+======================================= CHAT =====================================
+ALTER TABLE  `cb_chat_requests` ADD  `project_id` INT NOT NULL AFTER  `receiver_id` ;
+ALTER TABLE  `cb_chat` ADD  `group_id` INT NOT NULL AFTER  `id_chat` ;
+ALTER TABLE  `cb_chat_requests` ADD  `is_terminated` ENUM(  'yes',  'no' ) NOT NULL DEFAULT  'no' AFTER  `is_reported` ,
+ADD  `terminated_by` INT NULL AFTER  `is_terminated` ;
+
+
+
+TRUNCATE `cb_activity`;
+TRUNCATE `cb_api_braintree_response`;
+TRUNCATE `cb_api_messages`;
+TRUNCATE `cb_api_paypal_response`;
+TRUNCATE `cb_api_request`;
+TRUNCATE `cb_api_twilio_response`;
+TRUNCATE `cb_chat`;
+TRUNCATE `cb_chat_requests`;
+TRUNCATE `cb_devices`;
+TRUNCATE `cb_employer_certificates`;
+TRUNCATE `cb_faq_response`;
+TRUNCATE `cb_files`;
+TRUNCATE `cb_forum_answer`;
+TRUNCATE `cb_forum_question`;
+TRUNCATE `cb_interview_log`;
+TRUNCATE `cb_invite_talent`;
+TRUNCATE `cb_jobs`;
+TRUNCATE `cb_job_title`;
+TRUNCATE `cb_notifications`;
+TRUNCATE `cb_notification_history`;
+TRUNCATE `cb_password_resets`;
+TRUNCATE `cb_projects`;
+TRUNCATE `cb_projects_dispute`;
+TRUNCATE `cb_projects_dispute_comments`;
+TRUNCATE `cb_projects_industries`;
+TRUNCATE `cb_projects_subindustries`;
+TRUNCATE `cb_project_invitation`;
+TRUNCATE `cb_project_language`;
+TRUNCATE `cb_project_log`;
+TRUNCATE `cb_project_required_qualifications`;
+TRUNCATE `cb_project_required_skills`;
+TRUNCATE `cb_proposal_language`;
+TRUNCATE `cb_question`;
+TRUNCATE `cb_question_relation`;
+TRUNCATE `cb_question_type`;
+TRUNCATE `cb_report_abuse`;
+TRUNCATE `cb_reviews`;
+TRUNCATE `cb_saved_employer`;
+TRUNCATE `cb_saved_jobs`;
+TRUNCATE `cb_saved_talent`;
+TRUNCATE `cb_settings`;
+TRUNCATE `cb_subscriber`;
+TRUNCATE `cb_tagged_proposals`;
+TRUNCATE `cb_talent_answer`;
+TRUNCATE `cb_talent_availability`;
+TRUNCATE `cb_talent_certificates`;
+TRUNCATE `cb_talent_educations`;
+TRUNCATE `cb_talent_industries`;
+TRUNCATE `cb_talent_interests`;
+TRUNCATE `cb_talent_perks`;
+TRUNCATE `cb_talent_portfolio`;
+TRUNCATE `cb_talent_proposals`;
+TRUNCATE `cb_talent_skills`;
+TRUNCATE `cb_talent_subindustries`;
+TRUNCATE `cb_talent_work_experiences`;
+TRUNCATE `cb_thumb_devices`;
+TRUNCATE `cb_transactions`;
+TRUNCATE `cb_user_card`;
+TRUNCATE `cb_user_card_paypal`;
+TRUNCATE `cb_user_subscription`;
+TRUNCATE `cb_viewed_talent`;
+
+
+
+
+ALTER TABLE  `cb_users` CHANGE  `percentage_default`  `percentage_default` FLOAT( 20, 8 ) NULL DEFAULT NULL ,
+CHANGE  `percentage_step_one`  `percentage_step_one` FLOAT( 20, 8 ) NULL DEFAULT NULL ,
+CHANGE  `percentage_step_two`  `percentage_step_two` FLOAT( 20, 8 ) NULL DEFAULT NULL ,
+CHANGE  `percentage_step_three`  `percentage_step_three` FLOAT( 20, 8 ) NULL DEFAULT NULL ,
+CHANGE  `percentage_step_four`  `percentage_step_four` FLOAT( 20, 8 ) NULL DEFAULT NULL ,
+CHANGE  `percentage_step_five`  `percentage_step_five` FLOAT( 20, 8 ) NULL DEFAULT NULL ;
+
+ALTER TABLE  `cb_talent_educations` ADD  `updated` DATETIME NOT NULL AFTER  `degree_country` ,
+ADD  `created` DATETIME NOT NULL AFTER  `updated` ;
+
+ALTER TABLE `cb_talent_educations` CHANGE `updated` `updated` DATETIME NOT NULL, CHANGE `created` `created` DATETIME NOT NULL;
+
+ALTER TABLE  `cb_projects` ADD  `project_status` ENUM(  'pending',  'initiated',  'closed' ) NOT NULL DEFAULT  'pending' AFTER  `awarded` ;
+ALTER TABLE  `cb_projects` ADD  `completedate` DATETIME NULL AFTER  `enddate` ,
+ADD  `closedate` DATETIME NULL AFTER  `completedate` ;
+ALTER TABLE  `cb_users` CHANGE  `experience`  `experience` VARCHAR( 3 ) NULL DEFAULT NULL COMMENT  '(in years)';
+
+ALTER TABLE  `cb_transactions` ADD  `transaction_commission_type` ENUM(  'per',  'flat' ) NULL AFTER  `transaction_commission` ;

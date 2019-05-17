@@ -1,0 +1,1 @@
+þ.Cnode_modules/less/test/less/errors/property-asterisk-only-name.less 2lessXhrCnode_modules/less/test/less/errors/property-asterisk-only-name.less

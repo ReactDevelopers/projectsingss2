@@ -1,0 +1,1 @@
+ªt/resources/views/employer/talent/hired.blade.php 2phpX%hr/resources/views/employer/talent/hired.blade.php

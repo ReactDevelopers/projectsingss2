@@ -1,0 +1,1 @@
+Ötresources/views/layouts/front :Õtrresources/views/layouts/front

@@ -1,0 +1,183 @@
+<?php
+
+namespace App\Console\Commands;
+use DB;
+use Illuminate\Console\Command;
+
+class NewsletterEmployer extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'newsletteremployer';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Send weekly newsletter to employer';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        $employerList = \Models\Users::getUserForNewsLetter('employer');
+
+        foreach ($employerList as $emp) {
+            $where = [];
+            if(!empty($emp['industry'])){
+                $where[] = 'industry = ' . $emp['industry'];
+            }
+            if(!empty($emp['subindustry'])){
+                $where[] = 'subindustry = ' . $emp['subindustry'];
+            }
+
+            $talentList = \Models\Users::getUserForNewsLetter('talent', $where);
+            $htmlLetter = '';
+            if(!empty($talentList)){
+                foreach ($talentList as $list) {
+                    if(empty($list['expertise'])){
+                        $expertise = 'NA';
+                    }
+                    else{
+                        $expertise = $list['expertise'];
+                    }
+                    if(empty($list['skills'])){
+                        $skills = 'NA';
+                    }
+                    else{
+                        $skills = $list['skills'];
+                    }
+                    if(!empty($list['availability_hours'])){
+                        $availability_hours = sprintf(trans('general.M0180'),$list['availability_hours']);
+                    }else{
+                        $availability_hours = N_A;
+                    }
+
+                    $htmlLetter .= sprintf(EMPLOYER_NEWSLETTER_TEMPLATE, $list['name'], $list['rating'], $list['review'], $list['job_completion'], $availability_hours,$expertise,$skills);
+                }
+
+                /*Email to employer*/
+                $email                  = $emp['email'];
+                $emailData              = ___email_settings();
+                $emailData['email']     = $email;
+                $emailData['name']      = $emp['name'];
+                $emailData['table']     = $htmlLetter;
+                $emailData['unsubscribe']      = url(sprintf("newsletter/unsubscribe/%s",$emp['newsletter_token']));
+
+                $template_name = "weekly_newsletter_employer";
+
+                ___mail_sender($email,'',$template_name,$emailData);
+            }
+        }
+        /*
+        $allindustries = \Models\Industries::allindustries('array', 'parent = 0');
+
+        foreach ($allindustries as $ind) {
+            $talentList = \Models\Users::getTalentByIndustry($ind['id_industry']);
+
+            $htmlLetter = '';
+            if(!empty($talentList)){
+                foreach ($talentList as $list) {
+                    if(empty($list['expertise'])){
+                        $expertise = 'NA';
+                    }
+                    else{
+                        $expertise = $list['expertise'];
+                    }
+                    if(empty($list['skills'])){
+                        $skills = 'NA';
+                    }
+                    else{
+                        $skills = $list['skills'];
+                    }
+                    if(!empty($list['availability_hours'])){
+                        $availability_hours = sprintf(trans('general.M0180'),$list['availability_hours']);
+                    }else{
+                        $availability_hours = N_A;
+                    }
+                    $htmlLetter .= sprintf(EMPLOYER_NEWSLETTER_TEMPLATE, $list['name'], $list['rating'], $list['review'], $list['job_completion'], $availability_hours,$expertise,$skills);
+                }
+            }
+
+            $employerList = \Models\Users::getEmployerByIndustry($ind['id_industry']);
+
+            if(!empty($employerList) && !empty($talentList)){
+                foreach ($employerList as $emp) {
+                    $email                  = $emp['email'];
+                    $emailData              = ___email_settings();
+                    $emailData['email']     = $email;
+                    $emailData['name']      = $emp['name'];
+                    $emailData['table']     = $htmlLetter;
+                    $emailData['unsubscribe']      = url(sprintf("newsletter/unsubscribe/%s",$emp['newsletter_token']));
+
+                    $template_name = "weekly_newsletter_employer";
+
+                    ___mail_sender($email,'',$template_name,$emailData);
+                }
+            }
+        }
+
+        $talentList = \Models\Users::getTalentForNewsLetter();
+
+        $htmlLetter = '';
+        if(!empty($talentList)){
+            foreach ($talentList as $list) {
+                if(empty($list['expertise'])){
+                    $expertise = 'NA';
+                }
+                else{
+                    $expertise = $list['expertise'];
+                }
+                if(empty($list['skills'])){
+                    $skills = 'NA';
+                }
+                else{
+                    $skills = $list['skills'];
+                }
+                if(!empty($list['availability_hours'])){
+                    $availability_hours = sprintf(trans('general.M0180'),$list['availability_hours']);
+                }else{
+                    $availability_hours = N_A;
+                }
+
+                $htmlLetter .= sprintf(EMPLOYER_NEWSLETTER_TEMPLATE, $list['name'], $list['rating'], $list['review'], $list['job_completion'], $availability_hours,$expertise,$skills);
+            }
+        }
+
+        $employerList = \Models\Users::getEmployerForNewsLetter();
+
+        if(!empty($employerList) && !empty($talentList)){
+            foreach ($employerList as $emp) {
+                $email                  = $emp['email'];
+                $emailData              = ___email_settings();
+                $emailData['email']     = $email;
+                $emailData['name']      = $emp['name'];
+                $emailData['table']     = $htmlLetter;
+                $emailData['unsubscribe']      = url(sprintf("newsletter/unsubscribe/%s",$emp['newsletter_token']));
+
+                $template_name = "weekly_newsletter_employer";
+
+                ___mail_sender($email,'',$template_name,$emailData);
+            }
+        }
+        */
+    }
+}
+

@@ -1,0 +1,134 @@
+@section('content')
+    <!-- Main Content -->
+    <div class="contentWrapper">
+        <div class="afterlogin-section has-nobanner">
+            <div class="container">
+                @include('employer.includes.user-detail-header',$user)
+                @include('employer.viewprofile.includes.sidebar',$user)
+                <div class="col-md-9 col-sm-8 col-xs-12 right-sidebar">
+                    @include('employer.viewprofile.includes.tab-menu',$user)
+                    <form class="form-horizontal" role="employer_step_one" action="{{url(sprintf('%s/_step_one',EMPLOYER_ROLE_TYPE))}}" method="post" accept-charset="utf-8">
+                        <div class="inner-profile-section">                        
+                            <div class="login-inner-wrapper edit-inner-wrapper">
+                            
+                                {{ csrf_field() }}
+                                <input type="hidden" name="step_type" value="edit">
+
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0142')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" name="first_name" value="{{ old('first_name',$user['first_name']) }}" placeholder="{{trans('website.W0142')}}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0143')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" name="last_name" value="{{ old('last_name',$user['last_name']) }}" placeholder="{{trans('website.W0143')}}" class="form-control">
+                                            </div>
+                                        </div> 
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0144')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" name="email" value="{{ old('email',$user['email']) }}" placeholder="{{trans('website.W0144')}}" class="form-control">
+                                            </div>
+                                        </div>   
+                                        <div class="form-group has-feedback">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0053')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" name="mobile" value="{{ old('mobile',$user['mobile']) }}" placeholder="{{trans('website.W0071')}}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group has-feedback">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12 has-biglabel">Other Phone Number <span>(Optional)</span></label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" name="other_mobile" value="{{ old('other_mobile',$user['other_mobile']) }}" placeholder="{{trans('website.W0071')}}" class="form-control">
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <div class="form-group has-feedback has-biglabel">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">Website <span>(Optional)</span></label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" name="website" value="{{ old('website',$user['website']) }}" placeholder="e.g. http://www.mywebsite.com" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group has-feedback">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0054')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" name="address" value="{{ old('address',$user['address']) }}" placeholder="{{trans('website.W0072')}}" class="form-control">
+                                            </div>
+                                        </div>                                    
+                                        <div class="form-group has-feedback">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{sprintf(trans('website.W0055'),'')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="custom-dropdown">
+                                                    <select class="form-control" name="country" data-request="option" data-url="{{ url('ajax/country-state-list') }}">
+                                                        {!! ___dropdown_options($countries,sprintf(trans('website.W0055'),trans('website.W0067')),old('country',$user['country'])) !!}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group has-feedback">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{sprintf(trans('website.W0056'),'')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="custom-dropdown">
+                                                    <select class="form-control" name="state">
+                                                        {!! ___dropdown_options($states,sprintf(trans('website.W0056'),trans('website.W0067')),old('state',$user['state'])) !!}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group has-feedback">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0057')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" name="postal_code" value="{{ old('postal_code',$user['postal_code']) }}" placeholder="{{trans('website.W0073')}}" class="form-control">
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                       
+
+                        <div class="row form-group button-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="row form-btn-set">                                    
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <button type="button" data-request="ajax-submit" data-target='[role="employer_step_one"]' name="save" class="button" value="Save">
+                                            {{trans('website.W0058')}}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+@push('inlinescript')
+    <style type="text/css">.modal-backdrop{display: none;} #SGCreator-modal{background: rgba(216, 216, 216, 0.7);}</style>
+    <script type="text/javascript">
+        $(".cropper").SGCropper({
+            viewMode: 1,
+            aspectRatio: "2/3",
+            cropBoxResizable: false,
+            formContainer:{
+                actionURL:"{{ url(sprintf('ajax/crop?imagename=image&user_id=%s',Auth::user()->id_user)) }}",
+                modelTitle:"{{ trans('website.W0261') }}",
+                modelSuggestion:"{{ trans('website.W0263') }}",
+                modelDescription:"{{ trans('website.W0264') }}",
+                modelSeperator:"{{ trans('website.W0265') }}",
+                uploadLabel:"{{ trans('website.W0267') }}",
+                fieldLabel:"",
+                fieldName: "image",
+                btnText:"{{ trans('website.W0262') }}",
+                defaultImage: "../images/product_sample.jpg",
+                loaderImage: "../images/loader.gif",
+            }
+        });
+    </script>
+@endpush
+

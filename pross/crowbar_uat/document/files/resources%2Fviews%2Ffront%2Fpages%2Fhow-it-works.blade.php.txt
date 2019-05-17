@@ -1,0 +1,74 @@
+@extends('layouts.front.main')
+
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+    @section('requirecss')
+        <link href="{{ asset('css/owl.carousel.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/owl.theme.default.min.css') }}" rel="stylesheet">
+    @endsection
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinecss')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    @section('requirejs')
+        <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+    @endsection
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinejs')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    @section('content')
+        <!-- Banner Section -->
+        @includeIf('front.includes.banner')
+        <!-- /Banner Section -->
+        <!-- Main Content -->
+        <div class="contentWrapper">
+            <div id="taglineBar" class="taglineBar">
+                <div class="container-fluid">
+                    <h4>How it works</h4>
+                </div>
+            </div>
+            <section class="aboutSection howItWorkSection">
+                <div class="container">
+                    <ul class="how-it-works-listings">
+                        <li class="search-job">
+                            <span class="how-it-works-option">
+                                <h3>{{trans('job.J0099')}}</h3>
+                                <p>Duis vehicula sodales leo, vitae ultrices magna condimentum id. Aenean ullamcorper, eros eget malesuada congue, nunc augue mattis turpis, vitae mattis sem ipsum vitae magna. Aliquam consequat, lacus et congue feugiat, mauris sapien placerat odio, a pulvinar mauris erat ut felis.</p>
+                                <a href="{{ url('/signup/talent') }}" class="button">{{trans('job.J00103')}}</a>
+                            </span>
+                        </li>
+                        <li class="hire-talent-work">
+                            <span class="how-it-works-option">
+                                <h3>{{trans('job.J00100')}}</h3>
+                                <p>Duis vehicula sodales leo, vitae ultrices magna condimentum id. Aenean ullamcorper, eros eget malesuada congue, nunc augue mattis turpis, vitae mattis sem ipsum vitae magna. Aliquam consequat, lacus et congue feugiat, mauris sapien placerat odio, a pulvinar mauris erat ut felis.</p>
+                                <a href="{{ url('/signup/employer') }}" class="button">{{trans('job.J00104')}}</a>
+                            </span>
+                        </li>
+                        <li class="hire-work">
+                            <span class="how-it-works-option">
+                                <h3>{{trans('job.J00101')}}</h3>
+                                <p>Duis vehicula sodales leo, vitae ultrices magna condimentum id. Aenean ullamcorper, eros eget malesuada congue, nunc augue mattis turpis, vitae mattis sem ipsum vitae magna. Aliquam consequat, lacus et congue feugiat, mauris sapien placerat odio, a pulvinar mauris erat ut felis.</p>
+                            </span>
+                        </li>
+                        <li class="work-payment">
+                            <span class="how-it-works-option">
+                                <h3>{{trans('job.J00102')}}</h3>
+                                <p>Duis vehicula sodales leo, vitae ultrices magna condimentum id. Aenean ullamcorper, eros eget malesuada congue, nunc augue mattis turpis, vitae mattis sem ipsum vitae magna. Aliquam consequat, lacus et congue feugiat, mauris sapien placerat odio, a pulvinar mauris erat ut felis.</p>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            @includeIf('front.includes.social')  
+        </div>
+    @endsection
+

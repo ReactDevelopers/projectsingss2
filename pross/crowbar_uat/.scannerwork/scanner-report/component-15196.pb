@@ -1,0 +1,1 @@
+Üv5resources/views/backend/events/article-view.blade.php 2phpX)hr5resources/views/backend/events/article-view.blade.php

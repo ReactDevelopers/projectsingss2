@@ -1,0 +1,56 @@
+@section('content')
+    <div class="contentWrapper settingWrapper">
+        <div class="top-margin-20px">
+            <div class="container">
+                <div class="right-sidebar">
+                    <h2 class="form-heading">{{ trans('website.W0306') }}</h2>   
+                    <div class="row has-vr">
+                        <div class="col-md-8">
+                            <form role="settings" method="POST" action="{{ url(sprintf('%s/__settings',EMPLOYER_ROLE_TYPE)) }}" class="form-horizontal" autocomplete="off">
+                                {{ csrf_field() }}
+                                <div class="login-inner-wrapper">
+                                    <div class="col-md-6 col-sm-6 colxs-12">
+                                        <div class="settingList">
+                                            <h2 class="form-heading">{{ trans('website.W0307') }}</h2>
+                                            <ul>
+                                                @foreach($settings['email'] as $item)
+                                                    <li class="checkbox">
+                                                        <input type="checkbox" value="{{$item['setting']}}" @if($item['status'] == DEFAULT_YES_VALUE) checked="checked" @endif id="email_{{$item['setting']}}" name="email[{{$item['setting']}}]">
+                                                        <label for="email_{{$item['setting']}}"><span class="check"></span> {{ trans(sprintf('general.%s',$item['setting'])) }}</label>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 colxs-12">
+                                        <div class="settingList">
+                                            <h2 class="form-heading">{{ trans('website.W0315') }}</h2>
+                                            <ul>
+                                                @foreach($settings['mobile'] as $item)
+                                                    <li class="checkbox">
+                                                        <input type="checkbox" value="{{$item['setting']}}" @if($item['status'] == DEFAULT_YES_VALUE) checked="checked" @endif id="mobile_{{$item['setting']}}" name="mobile[{{$item['setting']}}]">
+                                                        <label for="mobile_{{$item['setting']}}"><span class="check"></span> {{ trans(sprintf('general.%s',$item['setting'])) }}</label>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="form-group button-group">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="row form-btn-set">
+                                            <div class="col-md-5 col-sm-5 col-xs-6">
+                                                <button type="button" data-request="ajax-submit" data-target='[role="settings"]' class="btn btn-sm redShedBtn pull-right">{{trans('website.W0058')}}</button>
+                                            </div>
+                                        </div>      
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

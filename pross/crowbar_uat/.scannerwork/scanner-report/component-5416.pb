@@ -1,0 +1,1 @@
+¨*>node_modules/node-sass/test/fixtures/sass-path/red/colors.scss 2scssXhr>node_modules/node-sass/test/fixtures/sass-path/red/colors.scss

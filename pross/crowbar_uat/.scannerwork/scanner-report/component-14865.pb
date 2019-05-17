@@ -1,0 +1,1 @@
+‘t6resources/views/employer/jobdetail/proposals.blade.php 2phpXChr6resources/views/employer/jobdetail/proposals.blade.php

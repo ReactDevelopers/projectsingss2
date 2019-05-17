@@ -1,0 +1,44 @@
+<?php $__env->startSection('content'); ?>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel">
+                    <form role="add-question" method="post" enctype="multipart/form-data" action="<?php echo e(url('administrator/question/add')); ?>">
+                        <?php echo e(csrf_field()); ?>
+
+
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label for="id_industry">Industries</label>
+                                <select class="form-control" name="id_industry">
+                                    <?php $__currentLoopData = $subindustries_name; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $item): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                                        <option value="<?php echo e($key); ?>"><?php echo e($item); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+                                </select>
+                            </div>                        
+                            <div class="form-group">
+                                <label for="question">Question</label>
+                                <input type="text" class="form-control" name="question" placeholder="Question" value="<?php echo e(old('question')); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="question_type">Question Type</label>
+                                <select class="form-control" name="question_type">
+                                    <?php $__currentLoopData = $question_type; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $item): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                                        <option value="<?php echo e($item->id); ?>"><?php echo e($item->question_type); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <a href="<?php echo e(url($backurl)); ?>" class="btn btn-default">Back</a>
+                            <button type="button" data-request="ajax-submit" data-target='[role="add-question"]' class="btn btn-default">Save</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.backend.dashboard', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -1,0 +1,61 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <h3 class="modal-title bottom-margin-10px">{{trans('job.J00117')}}</h3>
+        <div class="modal-body bg-white">
+            <div>
+                <div class="messages"></div>
+                <form role="hire-me" method="POST" action="{{url(sprintf('%s/hire/talent',EMPLOYER_ROLE_TYPE))}}"> 
+                    {{ csrf_field() }}
+
+                    <div class="form-group">
+                        <label class="control-label col-md-12 col-sm-12 col-xs-12">{{ trans('job.J00119') }}</label>
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="custom-dropdown">
+                                <select class="form-control" name="project_id">
+                                    {!! 
+                                        ___dropdown_options(
+                                            (array)\App\Lib\Dash::combine(
+                                                json_decode(json_encode($jobs),true),
+                                                '{n}.id_project',
+                                                '{n}.title'
+                                            ),
+                                            trans('job.J00120')
+                                        ) 
+                                    !!}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-12 col-sm-12 col-xs-12">{{ trans('job.J00121') }}</label>
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <textarea rows="6" class="form-control" name="hire_talent_message" placeholder="{{ trans('job.J00122') }}"></textarea>
+                        </div>
+                        <input type="hidden" name="talent_id" value="{{___decrypt(\Request::get('talent_id'))}}" />
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="form-group button-group">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="row form-btn-set">
+                        <div class="col-md-7 col-sm-7 col-xs-6">
+                            <button type="button" class="button-line" value="cancel" data-dismiss="modal">
+                                {{trans('website.W0355')}}
+                            </button>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-xs-6">
+                            <button type="button" class="button" data-request="ajax-submit" data-target='[role="hire-me"]'>
+                                {{trans('website.W0013')}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

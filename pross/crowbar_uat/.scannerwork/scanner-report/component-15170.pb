@@ -1,0 +1,1 @@
+ÂvBresources/views/talent/notification/talent-notifications.blade.php 2phpX'hrBresources/views/talent/notification/talent-notifications.blade.php

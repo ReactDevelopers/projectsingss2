@@ -1,0 +1,148 @@
+@section('content')
+    <!-- Main Content -->
+    <div class="contentWrapper">
+        <div class="afterlogin-section has-nobanner">
+            <div class="container">
+                @include('employer.includes.user-detail-header',$user)
+                @include('employer.viewprofile.includes.sidebar',$user)
+                <div class="col-md-9 col-sm-8 col-xs-12 right-sidebar">
+                    @include('employer.viewprofile.includes.tab-menu',$user)  
+                    <form class="form-horizontal verify-account-form" action="" method="get" accept-charset="utf-8">
+                        <div class="inner-profile-section">
+                            <div class="login-inner-wrapper">
+                                <div class="verify-content">
+                                    <div class="form-group">
+                                        <div class="col-md-7 col-sm-8 col-xs-12">
+                                            <label class="control-label">
+                                                <img src="{{ asset('images/instagram.png') }}" />&nbsp;&nbsp;
+                                                {{sprintf(trans('website.W0115'),trans('website.W0131'))}}
+                                            </label>
+                                        </div>
+                                        <div class="col-md-5 col-sm-4 col-xs-12 social-btn-wrapper">
+                                            @if(!$user['instagram_id'])
+                                                <a href="{{ asset(sprintf('/%s/instagram?type=%s','login','edit')) }}" class="social-red">{{trans('website.W0118')}}</a>
+                                            @else
+                                                <span class="social-grey">{{trans('website.W0272')}}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-7 col-sm-8 col-xs-12">
+                                            <label class="control-label">
+                                                <img src="{{ asset('images/facebook.png') }}" />&nbsp;&nbsp;
+                                                {{sprintf(trans('website.W0115'),trans('website.W0116'))}}
+                                            </label>
+                                        </div>
+                                        <div class="col-md-5 col-sm-4 col-xs-12 social-btn-wrapper">
+                                            @if(!$user['facebook_id'])
+                                                <a href="{{ asset(sprintf('/%s/facebook?type=%s','login','edit')) }}" class="social-red">{{trans('website.W0118')}}</a>
+                                            @else
+                                                <span class="social-grey">{{trans('website.W0272')}}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-7 col-sm-8 col-xs-12">
+                                            <label class="control-label">
+                                                <img src="{{ asset('images/twitter.png') }}" />&nbsp;&nbsp;
+                                                {{sprintf(trans('website.W0115'),trans('website.W0119'))}}
+                                            </label>
+                                        </div>
+                                        <div class="col-md-5 col-sm-4 col-xs-12 social-btn-wrapper">
+                                            @if(!$user['twitter_id'])                            
+                                                <a href="{{ asset(sprintf('/%s/twitter?type=%s','login','edit')) }}" class="social-red">{{trans('website.W0118')}}</a>
+                                            @else
+                                                <span class="social-grey">{{trans('website.W0272')}}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-7 col-sm-8 col-xs-12">
+                                            <label class="control-label">
+                                                <img src="{{ asset('images/linkedin.png') }}" />&nbsp;&nbsp;
+                                                {{sprintf(trans('website.W0115'),trans('website.W0120'))}}
+                                            </label>
+                                        </div>
+                                        <div class="col-md-5 col-sm-4 col-xs-12 social-btn-wrapper">
+                                            @if(!$user['linkedin_id'])                            
+                                                <a href="{{ asset(sprintf('/%s/linkedin?type=%s','login','edit')) }}" class="social-red">{{trans('website.W0118')}}</a>
+                                            @else
+                                                <span class="social-grey">{{trans('website.W0272')}}</span>
+                                            @endif 
+                                        </div>                           
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-7 col-sm-8 col-xs-12">
+                                            <label class="control-label">
+                                                <img src="{{ asset('images/gplus.png') }}" />&nbsp;&nbsp;
+                                                {{sprintf(trans('website.W0115'),trans('website.W0121'))}}
+                                            </label>
+                                        </div>
+                                        <div class="col-md-5 col-sm-4 col-xs-12 social-btn-wrapper">
+                                            @if(!$user['googleplus_id'])
+                                                {{-- <a href="{{ asset(sprintf('/%s/googleplus?type=%s','login','edit')) }}" class="social-red">{{trans('website.W0118')}}</a> --}}
+                                                <span class="social-grey">{{trans('website.W0118')}}</span>
+                                            @else
+                                                <span class="social-grey">{{trans('website.W0272')}}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-7 col-sm-8 col-xs-12">
+                                            <label class="control-label">
+                                                <img src="{{ asset('images/phone.png') }}" />&nbsp;&nbsp;
+                                                {{sprintf(trans('website.W0115'),trans('website.W0122'))}}
+                                            </label>
+                                        </div>
+                                        <div class="col-md-5 col-sm-4 col-xs-12 social-btn-wrapper">
+                                            @if($user['is_mobile_verified'] != 'yes')
+                                                <a href="{{ url('/employer/profile/edit/verify-account/phpne') }}" class="social-red">{{trans('website.W0124')}}</a>
+                                            @else
+                                                <span class="social-grey">{{trans('website.W0123')}}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    
+                                </div>               
+                            </div>
+                        </div>
+
+                        <div class="row form-group button-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="row form-btn-set">                                    
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <a href="{{ url(sprintf('%s/profile',EMPLOYER_ROLE_TYPE)) }}" class="button" value="Submit">{{trans('website.W0058')}}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+@push('inlinescript')
+    <style type="text/css">.modal-backdrop{display: none;}#SGCreator-modal{background: rgba(216, 216, 216, 0.7);}</style>
+    <script type="text/javascript">
+        $(".cropper").SGCropper({
+            viewMode: 1,
+            aspectRatio: "2/3",
+            cropBoxResizable: false,
+            formContainer:{
+                actionURL:"{{ url(sprintf('ajax/crop?imagename=image&user_id=%s',Auth::user()->id_user)) }}",
+                modelTitle:"{{ trans('website.W0261') }}",
+                modelSuggestion:"{{ trans('website.W0263') }}",
+                modelDescription:"{{ trans('website.W0264') }}",
+                modelSeperator:"{{ trans('website.W0265') }}",
+                uploadLabel:"{{ trans('website.W0267') }}",
+                fieldLabel:"",
+                fieldName: "image",
+                btnText:"{{ trans('website.W0262') }}",
+                defaultImage: "../images/product_sample.jpg",
+                loaderImage: "../images/loader.gif",
+            }
+        });
+    </script>
+@endpush
+

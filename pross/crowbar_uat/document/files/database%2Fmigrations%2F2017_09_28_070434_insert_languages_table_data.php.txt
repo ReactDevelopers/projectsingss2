@@ -1,0 +1,73 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class InsertLanguagesTableData extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        /*
+        \DB::table('languages')->insert([
+            [
+                'country_id' => 190,
+                'language_name' => 'English (Default)',
+                'language_code' => 'en',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'country_id' => 89,
+                'language_name' => 'Bahasa Indonesia',
+                'language_code' => 'id',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'country_id' => 41,
+                'language_name' => 'Mandarin',
+                'language_code' => 'cz',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'country_id' => 243,
+                'language_name' => 'Tamil',
+                'language_code' => 'ta',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'country_id' => 243,
+                'language_name' => 'Hindi',
+                'language_code' => 'hi',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+
+        ]);
+        */
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        /*\DB::table('languages')->truncate();*/
+    }
+}
+

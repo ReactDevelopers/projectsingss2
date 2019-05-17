@@ -1,0 +1,1 @@
+‹x8resources/views/backend/currency/currency-list.blade.php 2phpXbhr8resources/views/backend/currency/currency-list.blade.php

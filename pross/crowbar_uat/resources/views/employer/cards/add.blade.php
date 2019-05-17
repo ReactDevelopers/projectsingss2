@@ -1,0 +1,125 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <h2 class="form-heading" style="padding-bottom:20px;">{{trans('website.W0430')}}</h2>
+        <div class="messages"></div>
+        <form class="form-horizontal" role="add_card" action="{{url(sprintf('%s/payment/card/add',EMPLOYER_ROLE_TYPE))}}" method="post" accept-charset="utf-8">
+            <div class="modal-body bg-white">
+                <div class="col-md-12"><br>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0737')}}</label>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="custom-dropdown">
+                                    <select name="credit_card[card_type]" class="form-control">
+                                        {!!
+                                            ___dropdown_options(
+                                                \Cache::get('card_type'),
+                                                trans('website.W0737')
+                                            ) 
+                                        !!}
+                                    </select>
+                                </div>
+                                <input type="hidden" name="card_type" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label col-md-12 col-sm-12 col-xs-12">Card Holder Name</label>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <input type="text" name="credit_card[cardholder_name]" placeholder="Enter card holder's name" class="form-control" />
+                                <input type="hidden" name="cardholder_name" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0744')}}</label>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <input type="text" id="credit_card_number" name="credit_card[number]" placeholder="{{trans('website.W0745')}}" class="form-control" maxlength="{{CARD_LENGTH}}" data-request="numeric"/>
+                                <input type="hidden" name="number" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0738')}}</label>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="custom-dropdown">
+                                    <select name="credit_card[expiry_month]" placeholder="{{sprintf(trans('website.W0739'),trans('website.W0738'))}}" class="form-control">
+                                        {!!
+                                            ___dropdown_options(
+                                                trans('website.W0048'),
+                                                trans('website.W0738')
+                                            ) 
+                                        !!}
+                                    </select>
+                                </div>
+                                <input type="hidden" name="expiry_month" />
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0740')}}</label>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="custom-dropdown">
+                                    <select name="credit_card[expiry_year]" placeholder="{{trans('website.W0741')}}" class="form-control">
+                                        {!!
+                                            ___dropdown_options(
+                                                ___range(
+                                                    range(
+                                                        (int)date('Y')+CREDIT_CARD_MIN_YEAR_LIMIT,
+                                                        (int)date('Y')+CREDIT_CARD_MAX_YEAR_LIMIT
+                                                    )
+                                                ),
+                                                'Expiry Year'
+                                            )
+                                        !!}
+                                    </select>
+                                </div>
+                                <input type="hidden" name="expiry_year" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0742')}}</label>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <input type="text" name="credit_card[cvv]" placeholder="{{trans('website.W0743')}}" class="form-control" maxlength="{{CARD_CVV_LENGTH}}" data-request="numeric"/>
+                                <input type="hidden" name="cvv" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-12">
+                        <div class="checkbox">
+                            <input type="checkbox" id="save_card" name="save_card" value="on">
+                            <label for="save_card"><span class="check"></span>{{trans('website.W0638')}}</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">           
+                <div class="form-group button-group">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <input type="hidden" name="response" value="append_payment_details" />
+                        <div class="row form-btn-set">
+                            <div class="col-md-7 col-sm-7 col-xs-6">
+                                <button type="button" class="button-line" value="cancel" data-dismiss="modal">
+                                        {{trans('website.W0355')}}
+                                </button>
+                            </div>
+                            <div class="col-md-5 col-sm-5 col-xs-6">
+                                 <button type="button" class="button" data-callback='[data-request="ajax-modal"]' data-content="#payment-checkout" data-request="add-card" data-target='[role="add_card"]' value="add_card">Add Card</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,1 @@
+Ÿv8resources/views/talent/community/invite-member.blade.php 2phpX hr8resources/views/talent/community/invite-member.blade.php

@@ -1,0 +1,1 @@
+‡x:resources/views/backend/activity_log/talent/list.blade.php 2phpX¼hr:resources/views/backend/activity_log/talent/list.blade.php

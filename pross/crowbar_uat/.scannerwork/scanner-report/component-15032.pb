@@ -1,0 +1,1 @@
+¸uresources/views/talent/settings :·u¹uÁuÄuÅuÆuÇuÈuÉuÙurresources/views/talent/settings

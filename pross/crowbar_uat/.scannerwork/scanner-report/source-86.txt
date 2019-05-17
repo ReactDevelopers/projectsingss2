@@ -1,0 +1,74 @@
+<?php $__env->startSection('requirejs'); ?>
+<script type="text/javascript">
+    var dataTableInstance = '';
+    $(function(){
+        dataTableInstance = $('#customer-table').DataTable({
+            paging: true,
+            searching: true,
+            processing: true,
+            serverSide: true,
+            ajax: "<?php echo url(sprintf('%s/ajax/emails',$url)); ?>",
+            columns : [
+                { data: null,"className": 'sno',"orderable": false,"defaultContent": '',"searchable": false},
+                { data: 'language', name: 'language' },
+                { data: 'alias', name: 'alias' },
+                { data: 'subject', name: 'subject' },
+                { data: null,"className": 'action',"orderable": false,"defaultContent": '',"searchable": false}
+            ],
+            order:[
+                [1, "ASC"]
+            ],
+            "columnDefs": [{
+                "targets": 0,
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return parseFloat(meta.row) + parseFloat(1) + parseFloat(meta.settings._iDisplayStart);
+                }
+            },{
+                "targets": 4,
+                "data": null,
+                "render": function (data) {
+                    return '<a href="<?php echo e($url); ?>/emails/'+data.id_email+'/edit" class="badge bg-light-blue">Edit</a>'
+                }
+            }],
+        });
+    });
+</script>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+<section class="content">
+    <div class="row">
+        &nbsp;
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <?php if(Session::has('success')): ?>
+                        <div class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <?php echo e(Session::get('success')); ?>
+
+                        </div>
+                    <?php endif; ?>
+                    <div class="table-responsive">
+                        <table id="customer-table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="3%">#</th>
+                                    <th>Language</th>
+                                    <th>Template Name</th>
+                                    <th>Email Subject</th>
+                                    <th width="10">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.backend.dashboard', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

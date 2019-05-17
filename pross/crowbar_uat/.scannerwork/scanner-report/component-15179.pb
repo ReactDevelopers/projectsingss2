@@ -1,0 +1,1 @@
+Ëv3resources/views/talent/availability/index.blade.php 2phpX7hr3resources/views/talent/availability/index.blade.php

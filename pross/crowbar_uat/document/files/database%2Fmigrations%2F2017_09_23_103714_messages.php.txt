@@ -1,0 +1,48 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class Messages extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('messages', function (Blueprint $table) {
+            $table->increments('id_message');
+            $table->integer('message_reply_id')->nullable();
+            $table->string('message_subject', 255);
+            $table->text('message_content');
+            $table->text('message_comment')->nullable();
+            $table->integer('id_sender')->nullable();
+            $table->string('sender_name', 255);
+            $table->string('sender_email', 255)->nullable();
+            $table->integer('id_receiver');
+            $table->enum('sender_type', ['talent', 'employer', 'guest', 'admin']);
+            $table->enum('receiver_type', ['talent', 'employer', 'guest', 'admin']);
+            $table->integer('message_approved_by')->nullable();
+            $table->dateTime('message_approved_date')->nullable();
+            $table->enum('message_status', ['pending', 'approved', 'rejected', 'trashed'])->default('approved');
+            $table->enum('message_type', ['contact-us','request-help','admin-announcement','admin-message'])->nullable();
+            $table->enum('message_ticket_status', ['open', 'closed'])->default('open');
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('messages');
+    }
+}
+

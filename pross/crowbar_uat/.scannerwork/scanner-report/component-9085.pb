@@ -1,0 +1,1 @@
+ıF,node_modules/has-to-string-tag-x/badges.html 2webXhr,node_modules/has-to-string-tag-x/badges.html

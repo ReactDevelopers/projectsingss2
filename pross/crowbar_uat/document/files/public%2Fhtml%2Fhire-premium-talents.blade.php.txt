@@ -1,0 +1,73 @@
+@section('content')
+    <div class="contentWrapper">
+        <div class="postjob-beforesubmit premiumAccount">
+            <div class="container">
+                <div class="right-sidebar">
+                    <h2>Upgrade To Premium Account</h2>
+                    <div class="premiumAccountSec">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Features</th>
+                                    <th><p>Basic Plan</p><h3>0</h3><span>Free for lifetime</span></th>
+                                    <th><p>Basic Plan</p><h3>20</h3><span>Per user Per month</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Find Talents</td>
+                                    <td><span class="tickIcon"></span></td>
+                                    <td><span class="tickIcon"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Recieve Proposals</td>
+                                    <td><span class="tickIcon"></span></td>
+                                    <td><span class="tickIcon"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Post Jobs</td>
+                                    <td><span class="tickIcon"></span></td>
+                                    <td><span class="tickIcon"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Chat with Talents</td>
+                                    <td><span class="tickIcon"></span></td>
+                                    <td><span class="tickIcon"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Chat with Talents</td>
+                                    <td><span class="tickIcon"></span></td>
+                                    <td><span class="tickIcon"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Recieve Proposals</td>
+                                    <td><span class="tickIcon"></span></td>
+                                    <td><span class="tickIcon"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Recieve Premium CVs</td>
+                                    <td><span class="crossIcon"></span></td>
+                                    <td><span class="tickIcon"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Hire Premium Talents</td>
+                                    <td><span class="crossIcon"></span></td>
+                                    <td><span class="tickIcon"></span></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td>
+                                        <button type="button" class="button" value="Submit">Pay To Upgrade</button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

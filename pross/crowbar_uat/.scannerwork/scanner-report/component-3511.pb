@@ -1,0 +1,1 @@
+·-node_modules/has-symbol-support-x/badges.html 2webXhr-node_modules/has-symbol-support-x/badges.html

@@ -1,0 +1,182 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class InsertConfigTableData extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        \DB::table('config')->insert([
+            [
+                'key' => 'android_download_app_url',
+                'value' => 'https://play.google.com/store?hl=en'
+            ],
+            [
+                'key' => 'commission',
+                'value' => 10
+            ],
+            [
+                'key' => 'contact_number',
+                'value' => '+919876543210'
+            ],
+            [
+                'key' => 'copyright_text',
+                'value' => 'Copyright &copy; 2017 Crowbar Pte Ltd'
+            ],
+            [
+                'key' => 'default_latitude',
+                'value' => ''
+            ],
+            [
+                'key' => 'default_longitude',
+                'value' => ''
+            ],
+            [
+                'key' => 'download_app_text',
+                'value' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+            ],
+            [
+                'key' => 'download_app_title',
+                'value' => 'Download App'
+            ],
+            [
+                'key' => 'format_date',
+                'value' => 'd M Y'
+            ],
+            [
+                'key' => 'format_time',
+                'value' => 'h:i A'
+            ],
+            [
+                'key' => 'help_email',
+                'value' => 'support@crowbar.com'
+            ],
+            [
+                'key' => 'info_email',
+                'value' => 'info@crowbar.com'
+            ],
+            [
+                'key' => 'interview_interval',
+                'value' => 14
+            ],
+            [
+                'key' => 'ios_download_app_url',
+                'value' => 'https://www.apple.com/in/itunes/'
+            ],
+            [
+                'key' => 'newsletter_text',
+                'value' => 'Subscribe to our newsletter to get the updates and know what’s happening around We don’t spam.'
+            ],
+            [
+                'key' => 'newsletter_title',
+                'value' => 'Stay In touch'
+            ],
+            [
+                'key' => 'office_address',
+                'value' => '127/15C, Alpha Street, Sector N, Amster Dawn'
+            ],
+            [
+                'key' => 'otp_expired',
+                'value' => '5000'
+            ],
+            [
+                'key' => 'otp_length',
+                'value' => 6
+            ],
+            [
+                'key' => 'otp_message',
+                'value' => 'Thank you for using Crowbar. Your OTP is %s.'
+            ],
+            [
+                'key' => 'otp_shuffle',
+                'value' => '45987343049568802934857637283746574839234567902394856775483929384529384756783293845789'
+            ],
+            [
+                'key' => 'site_description',
+                'value' => 'Find the best talent for your project.'
+            ],
+            [
+                'key' => 'site_email',
+                'value' => 'aman@singsys.com'
+            ],
+            [
+                'key' => 'site_environment',
+                'value' => 'development'
+            ],
+            [
+                'key' => 'site_name',
+                'value' => 'Crowbar'
+            ],
+            [
+                'key' => 'smtp_host',
+                'value' => 'ssl://smtp.googlemail.com'
+            ],
+            [
+                'key' => 'smtp_mode',
+                'value' => 'ssl'
+            ],
+            [
+                'key' => 'smtp_password',
+                'value' => '1Crowbar##'
+            ],
+            [
+                'key' => 'smtp_port',
+                'value' => '465'
+            ],
+            [
+                'key' => 'smtp_username',
+                'value' => 'help.crowbar@gmail.com'
+            ],
+            [
+                'key' => 'social_facebook_url',
+                'value' => 'http://www.facebook.com'
+            ],
+            [
+                'key' => 'social_googleplus_url',
+                'value' => 'https://plus.google.com/'
+            ],
+            [
+                'key' => 'social_instagram_url',
+                'value' => 'http://www.instagram.com'
+            ],
+            [
+                'key' => 'social_linkedin_url',
+                'value' => 'http://www.linkedin.com'
+            ],
+            [
+                'key' => 'social_twitter_url',
+                'value' => 'http://twitter.com'
+            ],
+            [
+                'key' => 'social_youtube_url',
+                'value' => 'http://www.youtube.com'
+            ],
+            [
+                'key' => 'user_disable_cron_status',
+                'value' => 'yes'
+            ],
+            [
+                'key' => 'user_disble_cron_status',
+                'value' => 'yes'
+            ]
+        ]);
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        \DB::table('config')->truncate();
+    }
+}
+

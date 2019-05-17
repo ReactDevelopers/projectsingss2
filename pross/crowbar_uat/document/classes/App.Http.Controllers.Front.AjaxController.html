@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>API Documentation</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+    <link href="../css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/prism.css" rel="stylesheet" media="all"/>
+    <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+    <!--[if lt IE 9]>
+    <script src="../js/html5.js"></script>
+    <![endif]-->
+    <script src="../js/jquery-1.11.0.min.js"></script>
+    <script src="../js/ui/1.10.4/jquery-ui.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.smooth-scroll.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
+    <script type="text/javascript">
+    function loadExternalCodeSnippets() {
+        Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+            var src = pre.getAttribute('data-src');
+            var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+            var language = 'php';
+
+            var code = document.createElement('code');
+            code.className = 'language-' + language;
+
+            pre.textContent = '';
+
+            code.textContent = 'Loading…';
+
+            pre.appendChild(code);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', src, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+
+                    if (xhr.status < 400 && xhr.responseText) {
+                        code.textContent = xhr.responseText;
+
+                        Prism.highlightElement(code);
+                    }
+                    else if (xhr.status >= 400) {
+                        code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                    }
+                    else {
+                        code.textContent = '✖ Error: File does not exist or is empty';
+                    }
+                }
+            };
+
+            xhr.send(null);
+        });
+    }
+
+    $(document).ready(function(){
+        loadExternalCodeSnippets();
+    });
+    $('#source-view').on('shown', function () {
+        loadExternalCodeSnippets();
+    })
+</script>
+
+    <link rel="shortcut icon" href="../images/favicon.ico"/>
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-touch-icon-114x114.png"/>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <i class="icon-ellipsis-vertical"></i>
+            </a>
+            <a class="brand" href="../index.html">API Documentation</a>
+
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                                        <li class="dropdown">
+                        <a href="../index.html" class="dropdown-toggle" data-toggle="dropdown">
+                            API Documentation <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                                                        <li><a href="../namespaces/App.html">\App</a></li>
+                                                        <li><a href="../namespaces/Models.html">\Models</a></li>
+                                                    </ul>
+                    </li>
+                                        <li class="dropdown" id="charts-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Charts <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../graphs/class.html">
+                                    <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" id="reports-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../reports/errors.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">3549</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/markers.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">1</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/deprecated.html">
+                                                                                                            <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<div class="go_to_top">-->
+    <!--<a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>-->
+    <!--</div>-->
+</div>
+
+<div id="___" class="container-fluid">
+        <section class="row-fluid">
+        <div class="span2 sidebar">
+                                <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1112498481"></a>
+                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+            </div>
+            <div id="namespace-1112498481" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1163155103"></a>
+                                <a href="../namespaces/App.html" style="margin-left: 30px; padding-left: 0">App</a>
+            </div>
+            <div id="namespace-1163155103" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1941019744"></a>
+                                <a href="../namespaces/App.Console.html" style="margin-left: 30px; padding-left: 0">Console</a>
+            </div>
+            <div id="namespace-1941019744" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-238947652"></a>
+                                <a href="../namespaces/App.Console.Commands.html" style="margin-left: 30px; padding-left: 0">Commands</a>
+            </div>
+            <div id="namespace-238947652" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Console.Commands.CurrencyConversion.html">CurrencyConversion</a></li>
+                                                    <li class="class"><a href="../classes/App.Console.Commands.DisableUser.html">DisableUser</a></li>
+                                                    <li class="class"><a href="../classes/App.Console.Commands.NewsletterEmployer.html">NewsletterEmployer</a></li>
+                                                    <li class="class"><a href="../classes/App.Console.Commands.NewsletterTalent.html">NewsletterTalent</a></li>
+                                                    <li class="class"><a href="../classes/App.Console.Commands.UpdateProjectStatus.html">UpdateProjectStatus</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Console.Kernel.html">Kernel</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1094926596"></a>
+                                <a href="../namespaces/App.Events.html" style="margin-left: 30px; padding-left: 0">Events</a>
+            </div>
+            <div id="namespace-1094926596" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Events.Activity.html">Activity</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1848904121"></a>
+                                <a href="../namespaces/App.Exceptions.html" style="margin-left: 30px; padding-left: 0">Exceptions</a>
+            </div>
+            <div id="namespace-1848904121" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Exceptions.Handler.html">Handler</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-527401662"></a>
+                                <a href="../namespaces/App.Helper.html" style="margin-left: 30px; padding-left: 0">Helper</a>
+            </div>
+            <div id="namespace-527401662" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Helper.Masspay.html">Masspay</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1302522057"></a>
+                                <a href="../namespaces/App.Http.html" style="margin-left: 30px; padding-left: 0">Http</a>
+            </div>
+            <div id="namespace-1302522057" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-217092161"></a>
+                                <a href="../namespaces/App.Http.Controllers.html" style="margin-left: 30px; padding-left: 0">Controllers</a>
+            </div>
+            <div id="namespace-217092161" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1364522147"></a>
+                                <a href="../namespaces/App.Http.Controllers.Admin.html" style="margin-left: 30px; padding-left: 0">Admin</a>
+            </div>
+            <div id="namespace-1364522147" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Http.Controllers.Admin.AdminController.html">AdminController</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Controllers.Admin.AjaxController.html">AjaxController</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Controllers.Admin.TemplateController.html">TemplateController</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-289904897"></a>
+                                <a href="../namespaces/App.Http.Controllers.Api.html" style="margin-left: 30px; padding-left: 0">Api</a>
+            </div>
+            <div id="namespace-289904897" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Http.Controllers.Api.ApiController.html">ApiController</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Controllers.Api.Employer.html">Employer</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Controllers.Api.Talent.html">Talent</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1917143908"></a>
+                                <a href="../namespaces/App.Http.Controllers.Front.html" style="margin-left: 30px; padding-left: 0">Front</a>
+            </div>
+            <div id="namespace-1917143908" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Http.Controllers.Front.AjaxController.html">AjaxController</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Controllers.Front.ChatController.html">ChatController</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Controllers.Front.EmployerController.html">EmployerController</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Controllers.Front.FrontController.html">FrontController</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Controllers.Front.InterviewController.html">InterviewController</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Controllers.Front.ReviewController.html">ReviewController</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Controllers.Front.TalentController.html">TalentController</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Http.Controllers.Controller.html">Controller</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Controllers.TempController.html">TempController</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1663211545"></a>
+                                <a href="../namespaces/App.Http.Middleware.html" style="margin-left: 30px; padding-left: 0">Middleware</a>
+            </div>
+            <div id="namespace-1663211545" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Http.Middleware.AdminAuth.html">AdminAuth</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Middleware.EmployerAuth.html">EmployerAuth</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Middleware.EncryptCookies.html">EncryptCookies</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Middleware.PublicAuth.html">PublicAuth</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Middleware.RedirectIfAuthenticated.html">RedirectIfAuthenticated</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Middleware.RevalidateBackHistory.html">RevalidateBackHistory</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Middleware.TalentAuth.html">TalentAuth</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Middleware.TempLogin.html">TempLogin</a></li>
+                                                    <li class="class"><a href="../classes/App.Http.Middleware.VerifyCsrfToken.html">VerifyCsrfToken</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Http.Kernel.html">Kernel</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-785635250"></a>
+                                <a href="../namespaces/App.Lib.html" style="margin-left: 30px; padding-left: 0">Lib</a>
+            </div>
+            <div id="namespace-785635250" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Lib.Crop.html">Crop</a></li>
+                                                    <li class="class"><a href="../classes/App.Lib.Dash.html">Dash</a></li>
+                                                    <li class="class"><a href="../classes/App.Lib.Set.html">Set</a></li>
+                                                    <li class="class"><a href="../classes/App.Lib.String.html">String</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1235713778"></a>
+                                <a href="../namespaces/App.Listeners.html" style="margin-left: 30px; padding-left: 0">Listeners</a>
+            </div>
+            <div id="namespace-1235713778" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Listeners.ActivityLog.html">ActivityLog</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1572838430"></a>
+                                <a href="../namespaces/App.Mail.html" style="margin-left: 30px; padding-left: 0">Mail</a>
+            </div>
+            <div id="namespace-1572838430" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Mail.sendmail.html">sendmail</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1638189257"></a>
+                                <a href="../namespaces/App.Models.html" style="margin-left: 30px; padding-left: 0">Models</a>
+            </div>
+            <div id="namespace-1638189257" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Models.Admins.html">Admins</a></li>
+                                                    <li class="class"><a href="../classes/App.Models.Interview.html">Interview</a></li>
+                                                    <li class="class"><a href="../classes/App.Models.Proposals.html">Proposals</a></li>
+                                                    <li class="class"><a href="../classes/App.Models.Templates.html">Templates</a></li>
+                                                    <li class="class"><a href="../classes/App.Models.User.html">User</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1963494311"></a>
+                                <a href="../namespaces/App.Providers.html" style="margin-left: 30px; padding-left: 0">Providers</a>
+            </div>
+            <div id="namespace-1963494311" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Providers.AppServiceProvider.html">AppServiceProvider</a></li>
+                                                    <li class="class"><a href="../classes/App.Providers.AuthServiceProvider.html">AuthServiceProvider</a></li>
+                                                    <li class="class"><a href="../classes/App.Providers.BroadcastServiceProvider.html">BroadcastServiceProvider</a></li>
+                                                    <li class="class"><a href="../classes/App.Providers.EventServiceProvider.html">EventServiceProvider</a></li>
+                                                    <li class="class"><a href="../classes/App.Providers.Request.html">Request</a></li>
+                                                    <li class="class"><a href="../classes/App.Providers.RouteServiceProvider.html">RouteServiceProvider</a></li>
+                                                    <li class="class"><a href="../classes/App.Providers.UrlGenerator.html">UrlGenerator</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1987605646"></a>
+                                <a href="../namespaces/App.Services.html" style="margin-left: 30px; padding-left: 0">Services</a>
+            </div>
+            <div id="namespace-1987605646" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-761683443"></a>
+                                <a href="../namespaces/App.Services.Validation.html" style="margin-left: 30px; padding-left: 0">Validation</a>
+            </div>
+            <div id="namespace-761683443" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/App.Services.Validation.ValidationExtensionServiceProvider.html">ValidationExtensionServiceProvider</a></li>
+                                                    <li class="class"><a href="../classes/App.Services.Validation.ValidatorExtended.html">ValidatorExtended</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1399154159"></a>
+                                <a href="../namespaces/Models.html" style="margin-left: 30px; padding-left: 0">Models</a>
+            </div>
+            <div id="namespace-1399154159" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Models.Abuse.html">Abuse</a></li>
+                                                    <li class="class"><a href="../classes/Models.Administrator.html">Administrator</a></li>
+                                                    <li class="class"><a href="../classes/Models.Banner.html">Banner</a></li>
+                                                    <li class="class"><a href="../classes/Models.Chats.html">Chats</a></li>
+                                                    <li class="class"><a href="../classes/Models.Currency.html">Currency</a></li>
+                                                    <li class="class"><a href="../classes/Models.Customs.html">Customs</a></li>
+                                                    <li class="class"><a href="../classes/Models.Devices.html">Devices</a></li>
+                                                    <li class="class"><a href="../classes/Models.Employers.html">Employers</a></li>
+                                                    <li class="class"><a href="../classes/Models.Faqs.html">Faqs</a></li>
+                                                    <li class="class"><a href="../classes/Models.File.html">File</a></li>
+                                                    <li class="class"><a href="../classes/Models.Forum.html">Forum</a></li>
+                                                    <li class="class"><a href="../classes/Models.Industries.html">Industries</a></li>
+                                                    <li class="class"><a href="../classes/Models.Listings.html">Listings</a></li>
+                                                    <li class="class"><a href="../classes/Models.Messages.html">Messages</a></li>
+                                                    <li class="class"><a href="../classes/Models.Notifications.html">Notifications</a></li>
+                                                    <li class="class"><a href="../classes/Models.Pages.html">Pages</a></li>
+                                                    <li class="class"><a href="../classes/Models.Payments.html">Payments</a></li>
+                                                    <li class="class"><a href="../classes/Models.Plan.html">Plan</a></li>
+                                                    <li class="class"><a href="../classes/Models.Portfolio.html">Portfolio</a></li>
+                                                    <li class="class"><a href="../classes/Models.ProjectInvitations.html">ProjectInvitations</a></li>
+                                                    <li class="class"><a href="../classes/Models.ProjectLogs.html">ProjectLogs</a></li>
+                                                    <li class="class"><a href="../classes/Models.Projects.html">Projects</a></li>
+                                                    <li class="class"><a href="../classes/Models.RaiseDispute.html">RaiseDispute</a></li>
+                                                    <li class="class"><a href="../classes/Models.Reviews.html">Reviews</a></li>
+                                                    <li class="class"><a href="../classes/Models.Settings.html">Settings</a></li>
+                                                    <li class="class"><a href="../classes/Models.Talents.html">Talents</a></li>
+                                                    <li class="class"><a href="../classes/Models.ThumbDevices.html">ThumbDevices</a></li>
+                                                    <li class="class"><a href="../classes/Models.Users.html">Users</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/AbusiveWords.html">AbusiveWords</a></li>
+                                                    <li class="class"><a href="../classes/Activity.html">Activity</a></li>
+                                                    <li class="class"><a href="../classes/ApiBraintreeResponse.html">ApiBraintreeResponse</a></li>
+                                                    <li class="class"><a href="../classes/ApiMessage.html">ApiMessage</a></li>
+                                                    <li class="class"><a href="../classes/ApiRequest.html">ApiRequest</a></li>
+                                                    <li class="class"><a href="../classes/ApiTwilioResponse.html">ApiTwilioResponse</a></li>
+                                                    <li class="class"><a href="../classes/Banner.html">Banner</a></li>
+                                                    <li class="class"><a href="../classes/Certificate.html">Certificate</a></li>
+                                                    <li class="class"><a href="../classes/Chat.html">Chat</a></li>
+                                                    <li class="class"><a href="../classes/ChatRequests.html">ChatRequests</a></li>
+                                                    <li class="class"><a href="../classes/City.html">City</a></li>
+                                                    <li class="class"><a href="../classes/College.html">College</a></li>
+                                                    <li class="class"><a href="../classes/ConfigTable.html">ConfigTable</a></li>
+                                                    <li class="class"><a href="../classes/Countries.html">Countries</a></li>
+                                                    <li class="class"><a href="../classes/CreateIndex.html">CreateIndex</a></li>
+                                                    <li class="class"><a href="../classes/Currencies.html">Currencies</a></li>
+                                                    <li class="class"><a href="../classes/DatabaseSeeder.html">DatabaseSeeder</a></li>
+                                                    <li class="class"><a href="../classes/Degree.html">Degree</a></li>
+                                                    <li class="class"><a href="../classes/Devices.html">Devices</a></li>
+                                                    <li class="class"><a href="../classes/Emails.html">Emails</a></li>
+                                                    <li class="class"><a href="../classes/EmployerCertificates.html">EmployerCertificates</a></li>
+                                                    <li class="class"><a href="../classes/Features.html">Features</a></li>
+                                                    <li class="class"><a href="../classes/Files.html">Files</a></li>
+                                                    <li class="class"><a href="../classes/ForumAnswer.html">ForumAnswer</a></li>
+                                                    <li class="class"><a href="../classes/ForumQuestion.html">ForumQuestion</a></li>
+                                                    <li class="class"><a href="../classes/Industries.html">Industries</a></li>
+                                                    <li class="class"><a href="../classes/InsertConfigTableData.html">InsertConfigTableData</a></li>
+                                                    <li class="class"><a href="../classes/InsertCurrenciesTableData.html">InsertCurrenciesTableData</a></li>
+                                                    <li class="class"><a href="../classes/InsertFeaturesTableData.html">InsertFeaturesTableData</a></li>
+                                                    <li class="class"><a href="../classes/InsertLanguagesTableData.html">InsertLanguagesTableData</a></li>
+                                                    <li class="class"><a href="../classes/InsertPagesTableData.html">InsertPagesTableData</a></li>
+                                                    <li class="class"><a href="../classes/InsertPlanFeaturesTableData.html">InsertPlanFeaturesTableData</a></li>
+                                                    <li class="class"><a href="../classes/InsertPlanTableData.html">InsertPlanTableData</a></li>
+                                                    <li class="class"><a href="../classes/InsertUsersMenuTableData.html">InsertUsersMenuTableData</a></li>
+                                                    <li class="class"><a href="../classes/Jobs.html">Jobs</a></li>
+                                                    <li class="class"><a href="../classes/JobTitle.html">JobTitle</a></li>
+                                                    <li class="class"><a href="../classes/Languages.html">Languages</a></li>
+                                                    <li class="class"><a href="../classes/Messages.html">Messages</a></li>
+                                                    <li class="class"><a href="../classes/NotificationHistory.html">NotificationHistory</a></li>
+                                                    <li class="class"><a href="../classes/Notifications.html">Notifications</a></li>
+                                                    <li class="class"><a href="../classes/Pages.html">Pages</a></li>
+                                                    <li class="class"><a href="../classes/Plan.html">Plan</a></li>
+                                                    <li class="class"><a href="../classes/PlanFeatures.html">PlanFeatures</a></li>
+                                                    <li class="class"><a href="../classes/ProjectInvitation.html">ProjectInvitation</a></li>
+                                                    <li class="class"><a href="../classes/ProjectLanguage.html">ProjectLanguage</a></li>
+                                                    <li class="class"><a href="../classes/ProjectLog.html">ProjectLog</a></li>
+                                                    <li class="class"><a href="../classes/ProjectRequiredQualifications.html">ProjectRequiredQualifications</a></li>
+                                                    <li class="class"><a href="../classes/ProjectRequiredSkills.html">ProjectRequiredSkills</a></li>
+                                                    <li class="class"><a href="../classes/Projects.html">Projects</a></li>
+                                                    <li class="class"><a href="../classes/ProposalLanguage.html">ProposalLanguage</a></li>
+                                                    <li class="class"><a href="../classes/Question.html">Question</a></li>
+                                                    <li class="class"><a href="../classes/QuestionRelation.html">QuestionRelation</a></li>
+                                                    <li class="class"><a href="../classes/QuestionType.html">QuestionType</a></li>
+                                                    <li class="class"><a href="../classes/RaiseDispute.html">RaiseDispute</a></li>
+                                                    <li class="class"><a href="../classes/ReportAbuse.html">ReportAbuse</a></li>
+                                                    <li class="class"><a href="../classes/Reviews.html">Reviews</a></li>
+                                                    <li class="class"><a href="../classes/SavedJobs.html">SavedJobs</a></li>
+                                                    <li class="class"><a href="../classes/SavedTalent.html">SavedTalent</a></li>
+                                                    <li class="class"><a href="../classes/Settings.html">Settings</a></li>
+                                                    <li class="class"><a href="../classes/Skill.html">Skill</a></li>
+                                                    <li class="class"><a href="../classes/State.html">State</a></li>
+                                                    <li class="class"><a href="../classes/StoreFunction.html">StoreFunction</a></li>
+                                                    <li class="class"><a href="../classes/Subscriber.html">Subscriber</a></li>
+                                                    <li class="class"><a href="../classes/TaggedProposals.html">TaggedProposals</a></li>
+                                                    <li class="class"><a href="../classes/TalentAnswer.html">TalentAnswer</a></li>
+                                                    <li class="class"><a href="../classes/TalentAvailability.html">TalentAvailability</a></li>
+                                                    <li class="class"><a href="../classes/TalentCertificates.html">TalentCertificates</a></li>
+                                                    <li class="class"><a href="../classes/TalentEducations.html">TalentEducations</a></li>
+                                                    <li class="class"><a href="../classes/TalentInterests.html">TalentInterests</a></li>
+                                                    <li class="class"><a href="../classes/TalentPerks.html">TalentPerks</a></li>
+                                                    <li class="class"><a href="../classes/TalentPortfolio.html">TalentPortfolio</a></li>
+                                                    <li class="class"><a href="../classes/TalentProposals.html">TalentProposals</a></li>
+                                                    <li class="class"><a href="../classes/TalentSkills.html">TalentSkills</a></li>
+                                                    <li class="class"><a href="../classes/TalentWorkExperiences.html">TalentWorkExperiences</a></li>
+                                                    <li class="class"><a href="../classes/Templates.html">Templates</a></li>
+                                                    <li class="class"><a href="../classes/ThumbDevices.html">ThumbDevices</a></li>
+                                                    <li class="class"><a href="../classes/Transactions.html">Transactions</a></li>
+                                                    <li class="class"><a href="../classes/UserCard.html">UserCard</a></li>
+                                                    <li class="class"><a href="../classes/Users.html">Users</a></li>
+                                                    <li class="class"><a href="../classes/UsersMenu.html">UsersMenu</a></li>
+                                                    <li class="class"><a href="../classes/UsersMenuVisibility.html">UsersMenuVisibility</a></li>
+                                                    <li class="class"><a href="../classes/UserSubscription.html">UserSubscription</a></li>
+                                                    <li class="class"><a href="../classes/Workfield.html">Workfield</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </section>
+    <section class="row-fluid">
+        <div class="span10 offset2">
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <nav>
+                                                <a href="../namespaces/App.Http.Controllers.Front.html">\App\Http\Controllers\Front</a> <i class="icon-level-up"></i>
+                                            </nav>
+                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+                    <h1><small>\App\Http\Controllers\Front</small>AjaxController</h1>
+                    <p><em></em></p>
+                    
+                    
+                                        
+                    <section id="summary">
+                        <h2>Summary</h2>
+                        <section class="row-fluid heading">
+                            <section class="span4">
+                                <a href="#methods">Methods</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#properties">Properties</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#constants">Constants</a>
+                            </section>
+                        </section>
+                        <section class="row-fluid public">
+                            <section class="span4">
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method___construct" class="">__construct()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_resend_activation_link" class="">resend_activation_link()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_delete_talent_education" class="">delete_talent_education()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_edit_talent_education" class="">edit_talent_education()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_delete_talent_experience" class="">delete_talent_experience()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_edit_talent_experience" class="">edit_talent_experience()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_delete_document" class="">delete_document()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_crop" class="">crop()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_validate_calendar" class="">validate_calendar()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_country_state_list" class="">country_state_list()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_state_city_list" class="">state_city_list()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_industry_subindustry_list" class="">industry_subindustry_list()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_subindustry_skill_list" class="">subindustry_skill_list()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_subindustry_skills_list" class="">subindustry_skills_list()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_city_list" class="">city_list()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_state_list" class="">state_list()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_delete_portfolio" class="">delete_portfolio()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_user_state_list" class="">user_state_list()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_get_talent_education" class="">get_talent_education()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_get_talent_experience" class="">get_talent_experience()</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_delete_user_document" class="">delete_user_document()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No public properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No constants found</em>
+                                                            </section>
+                        </section>
+                        <section class="row-fluid protected">
+                            <section class="span4">
+                                                                    <em>No protected methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#property_jwt" class="">$jwt</a><br />
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                        <section class="row-fluid private">
+                            <section class="span4">
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#method_populateresponse" class="">populateresponse()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#property_post" class="">$post</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#property_token" class="">$token</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#property_status" class="">$status</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#property_jsondata" class="">$jsondata</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#property_status_code" class="">$status_code</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#property_prefix" class="">$prefix</a><br />
+                                                                    <a href="../classes/App.Http.Controllers.Front.AjaxController.html#property_language" class="">$language</a><br />
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                    </section>
+                </div>
+                <aside class="span4 detailsbar">
+                                        
+                    
+                    <dl>
+                        <dt>File</dt>
+                            <dd><a href="../files/app.Http.Controllers.Front.AjaxController.html"><div class="path-wrapper">app/Http/Controllers/Front/AjaxController.php</div></a></dd>
+                                                <dt>Package</dt>
+                            <dd><div class="namespace-wrapper">Default</div></dd>
+                                                <dt>Class hierarchy</dt>
+                            <dd class="hierarchy">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                        <div class="namespace-wrapper">\Illuminate\Routing\Controller</div>
+                                                                    
+                                        <div class="namespace-wrapper"><a href="../classes/App.Http.Controllers.Controller.html">\App\Http\Controllers\Controller</a></div>
+                                                                                                    <div class="namespace-wrapper">\App\Http\Controllers\Front\AjaxController</div>
+                            </dd>
+
+                        
+                        
+                        
+                        
+                                                                        </dl>
+                    <h2>Tags</h2>
+                    <table class="table table-condensed">
+                                            <tr><td colspan="2"><em>None found</em></td></tr>
+                                        </table>
+                </aside>
+            </div>
+
+                        
+                                    <a id="properties" name="properties"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Properties</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_jwt" name="property_jwt" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$jwt</h3>
+                <pre class="signature">$jwt : </pre>
+                <p><em>Create a new controller instance.</em></p>
+                
+
+                                <h4>Type</h4>
+                
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            return
+                        </th>
+                        <td>
+                                                            
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_post" name="property_post" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$post</h3>
+                <pre class="signature">$post : </pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_token" name="property_token" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$token</h3>
+                <pre class="signature">$token : </pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_status" name="property_status" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$status</h3>
+                <pre class="signature">$status : </pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_jsondata" name="property_jsondata" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$jsondata</h3>
+                <pre class="signature">$jsondata : </pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_status_code" name="property_status_code" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$status_code</h3>
+                <pre class="signature">$status_code : </pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_prefix" name="property_prefix" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$prefix</h3>
+                <pre class="signature">$prefix : </pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_language" name="property_language" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$language</h3>
+                <pre class="signature">$language : </pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                            
+                                    <a id="methods" name="methods"></a>
+            <div class="row-fluid">
+                <div class="span8 content class"><h2>Methods</h2></div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___construct" name="method___construct" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">__construct()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__construct(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_resend_activation_link" name="method_resend_activation_link" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">resend_activation_link()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">resend_activation_link() </pre>
+                <p><em></em></p>
+                
+
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_delete_talent_education" name="method_delete_talent_education" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">delete_talent_education()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">delete_talent_education(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_edit_talent_education" name="method_edit_talent_education" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">edit_talent_education()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">edit_talent_education(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_delete_talent_experience" name="method_delete_talent_experience" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">delete_talent_experience()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">delete_talent_experience(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_edit_talent_experience" name="method_edit_talent_experience" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">edit_talent_experience()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">edit_talent_experience(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_delete_document" name="method_delete_document" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">delete_document()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">delete_document(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_crop" name="method_crop" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">crop()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">crop(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_validate_calendar" name="method_validate_calendar" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">validate_calendar()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">validate_calendar(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_country_state_list" name="method_country_state_list" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">country_state_list()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">country_state_list(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_state_city_list" name="method_state_city_list" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">state_city_list()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">state_city_list(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_industry_subindustry_list" name="method_industry_subindustry_list" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">industry_subindustry_list()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">industry_subindustry_list(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_subindustry_skill_list" name="method_subindustry_skill_list" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">subindustry_skill_list()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">subindustry_skill_list(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_subindustry_skills_list" name="method_subindustry_skills_list" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">subindustry_skills_list()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">subindustry_skills_list(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_city_list" name="method_city_list" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">city_list()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">city_list(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_state_list" name="method_state_list" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">state_list()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">state_list(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_delete_portfolio" name="method_delete_portfolio" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">delete_portfolio()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">delete_portfolio(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_user_state_list" name="method_user_state_list" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">user_state_list()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">user_state_list(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_get_talent_education" name="method_get_talent_education" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">get_talent_education()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">get_talent_education(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_get_talent_experience" name="method_get_talent_experience" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">get_talent_experience()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">get_talent_experience(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_delete_user_document" name="method_delete_user_document" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">delete_user_document()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">delete_user_document(\Illuminate\Http\Request  <span class="argument">$request</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Illuminate\Http\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_populateresponse" name="method_populateresponse" class="anchor"></a>
+            <article class="method">
+                <h3 class="private ">populateresponse()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">populateresponse(  <span class="argument">$data</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$data </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    </div>
+    </section>
+
+    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="source-view-label">AjaxController.php</h3>
+        </div>
+        <div class="modal-body">
+            <pre data-src="../files/app/Http/Controllers/Front/AjaxController.php.txt" class="language-php line-numbers"></pre>
+        </div>
+    </div>
+
+    <footer class="row-fluid">
+        <section class="span10 offset2">
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <section class="row-fluid footer-sections">
+                        <section class="span4">
+                                                        <h1><i class="icon-code"></i></h1>
+                            <div>
+                                <ul>
+                                                                            <li><a href="../namespaces/App.html">\App</a></li>
+                                                                            <li><a href="../namespaces/Models.html">\Models</a></li>
+                                                                    </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-bar-chart"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-pushpin"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../reports/errors.html">Errors</a></li>
+                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <hr />
+                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                    on October 3rd, 2017 at 16:18.
+                </section>
+            </section>
+        </section>
+    </footer>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class UserSubscription extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('user_subscription', function (Blueprint $table) {
+            $table->increments('id_subscription');
+            $table->integer('id_plan');
+            $table->integer('id_user');
+            $table->decimal('balance', 10, 2)->nullable();
+            $table->integer('billingDayOfMonth')->nullable();
+            $table->integer('currentBillingCycle')->nullable();
+            $table->string('daysPastDue', 255)->nullable();
+            $table->integer('failureCount')->nullable();
+            $table->dateTime('firstBillingDate')->nullable();
+            $table->string('id', 255)->nullable();
+            $table->string('merchantAccountId', 255)->nullable();
+            $table->string('neverExpires', 255)->nullable();
+            $table->decimal('nextBillAmount', 10, 2)->nullable();
+            $table->decimal('nextBillingPeriodAmount', 10, 2)->nullable();
+            $table->dateTime('nextBillingDate')->nullable();
+            $table->string('numberOfBillingCycles', 255)->nullable();
+            $table->dateTime('paidThroughDate')->nullable();
+            $table->string('paymentMethodToken', 255)->nullable();
+            $table->string('planId', 255)->nullable();
+            $table->decimal('price', 10, 2)->nullable();
+            $table->string('status', 255)->nullable();
+            $table->string('trialDuration', 255)->nullable();
+            $table->string('trialDurationUnit', 255)->nullable();
+            $table->string('trialPeriod', 255)->nullable();
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('user_subscription');
+    }
+}
+

@@ -1,0 +1,1 @@
+óv resources/views/talent/community :ñvòvôvövõvúvùvûvüv†v°v¢v£v§v©vr resources/views/talent/community

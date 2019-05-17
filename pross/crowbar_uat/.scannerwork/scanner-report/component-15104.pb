@@ -1,0 +1,1 @@
+€v.resources/views/talent/portfolio/add.blade.php 2phpX`hr.resources/views/talent/portfolio/add.blade.php

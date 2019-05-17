@@ -1,0 +1,49 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class InsertPlanTableData extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        \DB::table('plan')->insert([
+            [
+                'name' => 'Basic Plan',
+                'plan_detail' => 'Basic Plan Detail',
+                'braintree_plan_id' => 'BASICPLAN',
+                'price' => 0,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'Premium Plan',
+                'plan_detail' => 'Premium Plan Detail',
+                'braintree_plan_id' => 'PREMIUMPLAN',
+                'price' => 20,
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+
+        ]);
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        \DB::table('plan')->truncate();
+    }
+}
+

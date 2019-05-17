@@ -1,0 +1,142 @@
+<div class="contentWrapper job-listing-section employer-job-listing-payment">
+    <div class="container">
+        <div class="col-md-10 col-sm-12 col-xs-12">
+            <div class="content-box">
+                <div class="content-box-header clearfix">
+                    <div class="contentbox-header-title">
+                        <h3><a href="javascript:void(0);">{{ @$project['title'] }}</a></h3>
+                        <span class="company-name">{{ @$project['company_name'] }}</span>
+                    </div>
+                    <div class="contentbox-price-range">
+                        <span>{{ ___project_price($project['price'],$project['price_max'],$project['bonus'],$project['price_unit'],$project['employment']) }}</span>
+                        <small>{{ trans(sprintf('general.%s',$project['budget_type'])) }}</small>
+                    </div>    
+                </div>
+                <div class="contentbox-minutes clearfix">
+                    <div class="minutes-left">
+                        <span>{{trans('job.J0003')}}: <strong>{{ @$project['industry_name'] }}</strong></span>
+                        <span>{{trans('job.J0004')}}: <strong>{{ @___date_difference($project['startdate'],$project['enddate']) }}</strong></span>
+                        <span>{{trans('job.J0005')}}: <strong>{{ employment_types('post_job',$project['employment']) }}</strong></span>
+                        <span>
+                            {{trans('job.J0006')}}: 
+                            <strong>
+                                @if(!empty(@$project['expertise'])) 
+                                    {{expertise_levels(@$project['expertise']) }}
+                                @else
+                                    {{ N_A}}
+                                @endif
+                            </strong>
+                        </span>
+                    </div>
+                    <div class="minutes-right">
+                        <span class="posted-time">Posted {{ @$project['created'] }}</span>
+                    </div>
+                </div>
+                <div class="content-box-description">
+                    @if(strlen($project['description']) > READ_MORE_LENGTH)
+                        <p>{!! substr($project['description'], 0,READ_MORE_LENGTH) !!}..</p>
+                    @else
+                        <p>{!! $project['description'] !!}</p>
+                    @endif
+                    
+                    <a href="{{ url(sprintf('%s/my-jobs/job_details?job_id=%s',EMPLOYER_ROLE_TYPE,___encrypt($project['id_project']))) }}" class="more-jobdetail">{{ trans('website.W0520') }} &#8594;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="trnasferAmountList">
+            <div class="no-padding-left clearfix">
+                <div class="col-md-10 col-sm-12 col-xs-12 full-width-element">
+                    <form action="{{ url(sprintf('%s/payment/initiate',EMPLOYER_ROLE_TYPE)) }}" method="post">
+                        <div class="login-inner-wrapper">
+                            {{ csrf_field() }}
+                            <h2 class="form-heading">{{ trans('website.W0356') }}</h2>
+                            <small class="small-heading">{{ trans('website.W0356') }}</small>
+                            <div class="top-margin-20px">{{ ___alert(\Session::get('alert')) }}</div>
+                            <ul>
+                                <li>
+                                    <span class="plan-main-heading">{{ trans('website.W0357') }}</span>
+                                    <span>
+                                        @if($project['employment'] === 'daily' || $project['employment'] === 'hourly')
+                                            <div class="radio radio-inline">
+                                                <input name="repeat" type="radio" checked="checked" id="repeat_daily" value="daily"/>
+                                                <label for="repeat_daily">{{ trans('website.W0036') }}</label>
+                                            </div>
+                                        @elseif($project['employment'] === 'weekly')
+                                            <div class="radio radio-inline">
+                                                <input name="repeat" type="radio" checked="checked" id="repeat_weekly" value="weekly"/>
+                                                <label for="repeat_weekly">{{ trans('website.W0037') }}</label>
+                                            </div>
+                                        @elseif($project['employment'] === 'monthly')
+                                            <div class="radio radio-inline">
+                                                <input name="repeat" type="radio" checked="checked" id="repeat_monthly" value="monthly"/>
+                                                <label for="repeat_monthly">{{ trans('website.W0038') }}</label>
+                                            </div>
+                                        @elseif($project['employment'] === 'fixed')
+                                            <div class="radio radio-inline">                
+                                                <input name="repeat" checked="checked" type="radio" value="on-completion" id="repeat_on_completion">
+                                                <label for="repeat_on_completion">{{ trans('website.W0358') }}</label>
+                                            </div>
+                                        @endif
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="plan-main-heading">{{ trans('website.W0363') }}</span>
+                                    <span>{{ ___format($proposal['quoted_price'],true,true) }}</span>
+                                </li>
+                                <li>
+                                    <div class="row">
+                                        <div class="col-md-7 col-sm-12 col-xs-12" id="payment-checkout">
+                                            <span class="plan-main-heading">{{trans('website.W0498')}}</span>
+                                            @if(!empty($default_card_detail))
+                                                <span>
+                                                    <a href="javascript:void(0);" class="manage-cards" data-target="#add-cards" data-request="ajax-modal" data-url="{{url(sprintf('%s/payment/card/manage',EMPLOYER_ROLE_TYPE))}}">{{trans('website.W0431')}}</a>
+                                                    <img class="selected-card" src="{{$default_card_detail['image_url']}}" />
+                                                    <strong>
+                                                        {{
+                                                            sprintf(
+                                                                "%s%s",
+                                                                wordwrap(str_repeat(".",strlen($default_card_detail['masked_number'])-4),4,' ',true),
+                                                                $default_card_detail['last4']
+                                                            )
+                                                        }}
+                                                    </strong>
+                                                </span>
+                                            @else
+                                                <span>
+                                                    <a class="manage-cards" style="left: 0;" data-target="#add-cards" data-request="ajax-modal" data-url="{{url(sprintf('%s/payment/card/manage',EMPLOYER_ROLE_TYPE))}}">{{trans('website.W0430')}}</a>
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="col-md-5 col-sm-12 col-xs-12 plan-cost-block">
+                                            <span class="total-plan-heading">{{ trans('website.W0362') }}</span>
+                                            <span class="total-plan-price">{{ ___format( ($payment['transaction_subtotal'] + $payment['transaction_commission']),true,true) }}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="form-group button-group row">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="row form-btn-set">
+                                    <div class="col-md-7 col-sm-7 col-xs-6">
+                                        <a class="greybutton-line" href="{{ url(sprintf('%s/proposals/listing?id_project=%s',EMPLOYER_ROLE_TYPE,___encrypt($project['id_project']))) }}">{{ trans('website.W0355') }}</a>
+                                    </div>
+                                    <div class="col-md-5 col-sm-5 col-xs-6">
+                                        <button type="submit" class="button">{{ trans('website.W0364') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade upload-modal-box add-payment-cards" id="add-cards" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"></div>
+
+@push('inlinescript')
+    <style>.trnasferAmountList .right-sidebar{width: inherit;}</style>
+@endpush

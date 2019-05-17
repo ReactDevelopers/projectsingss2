@@ -1,0 +1,1 @@
+øsAresources/views/employer/includes/talent-profile-header.blade.php 2phpX1hrAresources/views/employer/includes/talent-profile-header.blade.php

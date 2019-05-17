@@ -1,0 +1,27 @@
+@extends('layouts.backend.dashboard')
+
+@section('content')
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel">
+                    <form role="add-question-type" method="post" enctype="multipart/form-data" action="{{ url(sprintf('%s/question-type/add',ADMIN_FOLDER)) }}">
+                        {{ csrf_field() }}
+                        <div class="panel-body">                       
+                            <div class="form-group">
+                                <label for="question-type">Question Type</label>
+                                <input type="text" class="form-control" name="question_type" placeholder="Question Type" value="">
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <a href="{{url($backurl)}}" class="btn btn-default">Back</a>
+                            <button type="button" data-request="ajax-submit" data-target='[role="add-question-type"]' class="btn btn-default">Save</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
+

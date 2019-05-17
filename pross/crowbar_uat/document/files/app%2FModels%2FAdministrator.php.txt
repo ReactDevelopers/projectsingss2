@@ -1,0 +1,147 @@
+<?php
+
+	namespace Models;
+
+	use Illuminate\Database\Eloquent\Model;
+	use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Mail;
+
+	class Administrator extends Model
+	{
+	    protected $table = 'users';
+        protected $primaryKey = 'id_user';
+
+        const CREATED_AT = 'created';
+        const UPDATED_AT = 'updated';
+
+        protected $fillable = [
+            'type',
+            'name',
+            'first_name',
+            'last_name',
+            'email',
+            'gender',
+            'password',
+            'status',
+            'last_login',
+        ];
+
+        public static function add_new($insert_data){
+            if(empty($insert_data)){
+                return (bool) false;
+            }else{
+                $insert_data['commission'] = \Cache::get('commission');
+            }
+
+            return self::insertGetId($insert_data);
+        }
+
+	    public static function createSubAdmin($data){
+	        $status         = 'pending';
+	        $token          = bcrypt(__random_string());
+
+	        $insert_data = [
+                'type'                          => SUB_ADMIN_ROLE_TYPE,
+                'name'                          => (string)sprintf("%s %s",$data->first_name,$data->last_name),
+                'first_name'                    => (string)$data->first_name,
+                'last_name'                     => (string)$data->last_name,
+                'email'                         => (string)$data->email,
+                'picture'                       => (string)(!empty($data->social_picture))?$data->social_picture:DEFAULT_AVATAR_IMAGE,
+                'password'                      => bcrypt($data->password),
+                'status'                        => $status,
+                'api_token'                     => $token,
+                'agree'                         => 'yes',
+                'newsletter_subscribed'         => (!empty($data->newsletter))?'yes':'no',
+                'remember_token'                => __random_string(),
+                'percentage_default'            => TALENT_DEFAULT_PROFILE_PERCENTAGE,
+                'last_login'                    => date('Y-m-d H:i:s'),
+                'updated'                       => date('Y-m-d H:i:s'),
+                'created'                       => date('Y-m-d H:i:s'),
+            ];
+
+	        $isInserted = self::add_new($insert_data);
+
+	        if(!empty($isInserted)){
+	            return [
+	                'status' => true,
+	                'message' => 'M0021',
+	                'signup_user_id' => $isInserted,
+	            ];
+	        }else{
+	            return [
+	                'status' => false,
+	                'message' => 'M0022',
+	                'signup_user_id' => false,
+	            ];
+	        }
+	    }
+
+	    public static function getSubAdminPermission($id_user){
+            $menuPermission = DB::table('users_menu_visibility')
+            ->select('menu_visibility')
+            ->where('id_user', $id_user)
+            ->first();
+
+            return json_decode(json_encode($menuPermission), true);
+        }
+
+        public static function createSubAdminPermission($id_user, $permission){
+	    	DB::table('users_menu_visibility')->where('id_user', $id_user)->delete();
+			DB::table('users_menu_visibility')->insert($permission);
+	    }
+
+	    public static function findByToken($token,$keys = []){
+            $table_user = DB::table((new static)->getTable());
+
+            if(!empty($keys)){
+                $table_user->select($keys);
+            }
+
+            return json_decode(
+                json_encode(
+                    $table_user->where(
+                        array(
+                            'remember_token' => $token,
+                        )
+                    )->whereNotIn('type',['employer','talent'])->whereNotIn('status',['trashed'])->first()
+                ),
+                true
+            );
+        }
+
+        public static function getMessageByID($id_message){
+        	$message = DB::table('messages')
+        	->where('id_message', $id_message)
+        	->first();
+
+        	return json_decode(json_encode($message), true);
+        }
+
+        public static function getMessageReplyByID($id_message){
+            $message = DB::table('messages')
+            ->where('message_reply_id', $id_message)
+            ->where('sender_type', 'admin')
+            ->get()
+            ->toArray();
+
+            return json_decode(json_encode($message), true);
+        }
+
+        public static function updateMessage($id_message, $data){
+            DB::table('messages')
+            ->where('id_message',$id_message)
+            ->update($data);
+        }
+
+        public static function addMessage($data){
+            DB::table('messages')->insert($data);
+        }
+
+        public static function deleteMessageById($id_message){
+            DB::table('messages')
+            ->where('id_message',$id_message)
+            ->update(['message_status' => 'trashed']);
+        }
+	}
+

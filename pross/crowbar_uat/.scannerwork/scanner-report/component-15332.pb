@@ -1,0 +1,1 @@
+äw9resources/views/backend/project/proposal-detail.blade.php 2phpX1hr9resources/views/backend/project/proposal-detail.blade.php

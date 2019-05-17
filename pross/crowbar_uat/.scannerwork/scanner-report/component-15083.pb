@@ -1,0 +1,1 @@
+ëu,resources/views/talent/profile/two.blade.php 2phpXÌhr,resources/views/talent/profile/two.blade.php

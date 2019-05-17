@@ -1,0 +1,1 @@
+ît1resources/views/front/includes/gethired.blade.php 2phpXhr1resources/views/front/includes/gethired.blade.php

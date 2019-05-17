@@ -1,0 +1,1 @@
+¾v/resources/views/talent/review/profile.blade.php 2phpX'hr/resources/views/talent/review/profile.blade.php

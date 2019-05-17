@@ -1,0 +1,1 @@
+ûuresources/views/talent/pages :úurresources/views/talent/pages

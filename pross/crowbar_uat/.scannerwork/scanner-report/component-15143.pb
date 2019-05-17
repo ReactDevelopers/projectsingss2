@@ -1,0 +1,1 @@
+§v2resources/views/talent/jobdetail/reviews.blade.php 2phpX1hr2resources/views/talent/jobdetail/reviews.blade.php

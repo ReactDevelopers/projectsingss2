@@ -1,0 +1,1 @@
+óvFresources/views/backend/subscription/org/talent-basic-detail.blade.php 2phpXÿhrFresources/views/backend/subscription/org/talent-basic-detail.blade.php

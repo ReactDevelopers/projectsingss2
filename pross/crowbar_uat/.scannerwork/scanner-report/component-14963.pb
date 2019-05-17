@@ -1,0 +1,1 @@
+ót9resources/views/front/pages/talent_profile/view.blade.php 2phpXOhr9resources/views/front/pages/talent_profile/view.blade.php

@@ -1,0 +1,1 @@
+Èr/app/Http/Controllers/Front/TalentController.php 2phpX¿,hr/app/Http/Controllers/Front/TalentController.php

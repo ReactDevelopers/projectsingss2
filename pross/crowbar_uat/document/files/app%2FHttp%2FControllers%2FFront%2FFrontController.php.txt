@@ -1,0 +1,1954 @@
+<?php
+
+    namespace App\Http\Controllers\Front;
+
+    use Ramsey\Laravel\OAuth2\Instagram\Facades\Instagram;
+    use SammyK\LaravelFacebookSdk\LaravelFacebookSdk;
+    use Artesaos\LinkedIn\Facades\LinkedIn;
+    use Thujohn\Twitter\Facades\Twitter;
+    use Vinkla\Facebook\Facades\Facebook;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Input;
+    use Illuminate\Support\Facades\DB;
+    use App\Http\Controllers\Session;
+    use Illuminate\Validation\Rule;
+    use Illuminate\Http\Request;
+    use Jenssegers\Agent\Agent;
+    use Yajra\Datatables\Html\Builder;
+
+    use Twilio;
+    use Cookie;
+    use Auth;
+     
+    use Models\Users;
+    use Models\Talents;
+    use Models\Employers;
+
+    use App\Http\Controllers\Controller;
+
+    class FrontController extends Controller{
+
+        public function __construct(){
+            $this->jsondata     = [];
+            $this->message      = false;
+            $this->redirect     = false;
+            $this->status       = false;
+
+            \View::share ( 'footer_settings', \Cache::get('configuration') );
+        }
+
+        public function _404(){
+            $data['header'] = 'innerheader';
+            $data['footer'] = 'innerfooter';
+            return view('front.pages.signup')->with($data);
+        }
+
+        public function index(){
+            $data['header'] = 'header';
+            $data['footer'] = 'footer';
+            $data['banner'] = \Models\Banner::getAllBannerBySlug('home-page');
+
+            return view('front.home')->with($data);
+        }
+
+        public function login(Request $request){
+            
+            if (!empty(\Auth::guard('web')->check())) {
+                if(\Auth::guard('web')->user()->type == 'employer'){
+                    return redirect(sprintf('%s/find-talents',EMPLOYER_ROLE_TYPE));
+                }else if(\Auth::guard('web')->user()->type == 'talent'){
+                    return redirect(sprintf('%s/find-jobs',TALENT_ROLE_TYPE));
+                }
+                
+                return redirect('/');
+            }
+
+            $data['header'] = 'innerheader';
+            $data['footer'] = 'innerfooter';
+            $data['back']   = '';
+
+            if(!empty($request->back)){
+                $data['back'] = $request->back;
+            }
+
+            if (!empty(Cookie::get(LOGIN_REMEMBER))) {
+                $email      = base64_decode(Cookie::get(LOGIN_EMAIL));
+                $password   = base64_decode(Cookie::get(LOGIN_PASSWORD));
+                $remember   = Cookie::get(LOGIN_REMEMBER);
+
+                $data[LOGIN_EMAIL]      = $email;
+                $data[LOGIN_PASSWORD]   = $password;
+                $data[LOGIN_REMEMBER]   = $remember;
+            }else{
+                $data[LOGIN_EMAIL]      = "";
+                $data[LOGIN_PASSWORD]   = "";
+                $data[LOGIN_REMEMBER]   = "";
+            }
+
+            if(!empty($request->token) && (!empty($request->action) && $request->action == 'edit')){
+                $data['token']      = $request->token;
+                $result = \Models\Users::findByToken($request->token,['email','first_name','last_name']);
+
+                if(empty(\Session::get('_old_input'))){
+                    \Session::set('_old_input.first_name',$result['first_name']);
+                    \Session::set('_old_input.last_name',$result['last_name']);
+                    \Session::set('_old_input.email',$result['email']);
+                }
+            }else{
+                \Session::forget('_old_input');
+            }
+            
+            return view('front.pages.login')->with($data);
+        }
+
+        public function authenticate(Request $request){
+            $validator = \Validator::make($request->all(), [
+                LOGIN_EMAIL         => 'required|email',
+                LOGIN_PASSWORD      => 'required',
+            ],[
+                LOGIN_EMAIL.".required"         => 'The email address is required.',        
+                LOGIN_EMAIL.".email"            => 'The email address must be a valid email address.',        
+                LOGIN_PASSWORD.".required"      => 'The password is required.',
+            ]);
+            
+            $validator->after(function($validator) use ($request){});
+
+            if ($validator->passes()) {
+                if ($request->{LOGIN_REMEMBER}){
+                    Cookie::queue(LOGIN_EMAIL, base64_encode($request->{LOGIN_EMAIL}));
+                    Cookie::queue(LOGIN_PASSWORD, base64_encode($request->{LOGIN_PASSWORD}));
+                    Cookie::queue(LOGIN_REMEMBER, ($request->{LOGIN_REMEMBER}));
+                } else {
+                    Cookie::queue(LOGIN_EMAIL, '', -100);
+                    Cookie::queue(LOGIN_PASSWORD, '', -100);
+                    Cookie::queue(LOGIN_REMEMBER, '', -100);
+                }
+                
+
+                $result = \Models\Users::findByEmail($request->{LOGIN_EMAIL},['id_user','password','type']);
+                $match = \Hash::check($request->{LOGIN_PASSWORD}, $result['password']);
+                
+                /*Auth::attempt(['email' => $request->{LOGIN_EMAIL}, 'password' => $request->{LOGIN_PASSWORD}, 'type' => 'talent', 'status' => 'active'], $request->{LOGIN_REMEMBER}) || Auth::attempt(['email' => $request->{LOGIN_EMAIL}, 'password' => $request->{LOGIN_PASSWORD}, 'type' => 'employer'], $request->{LOGIN_REMEMBER})*/
+                if(!empty($match)) {
+                    \Auth::loginUsingId($result['id_user'], $request->{LOGIN_REMEMBER});
+                    
+                    if(\Auth::user()->status == 'pending'){
+                        $request->session()->flash(
+                            'alert',
+                            sprintf(
+                                ALERT_INFO,
+                                sprintf(
+                                    trans("website.W0006"),
+                                    '<span class="resend-link"><a href="javascript:;" data-request="inline-ajax" data-target=".message" data-url="'.url('/ajax/resend_activation_link?email='.base64_encode($request->{LOGIN_EMAIL})).'">resend verification link</a></span>'
+                                )
+                            )
+                        );
+                        \Auth::guard('web')->logout();
+                        return redirect()->back();
+                    }else if(\Auth::user()->status == 'inactive'){
+                        $request->session()->flash('alert',sprintf(ALERT_WARNING,trans("general.M0002")));
+
+                        \Auth::guard('web')->logout();
+                    }else if(\Auth::user()->status == 'suspended'){
+                        $request->session()->flash('alert',sprintf(ALERT_WARNING,trans("general.M0003")));
+                        
+                        \Auth::guard('web')->logout();
+                    }else if(\Auth::user()->status == 'trashed'){
+                        $request->session()->flash('alert',sprintf(ALERT_WARNING,trans("general.M0004")));
+                        
+                        \Auth::guard('web')->logout();
+                    }else {
+                        $updateArr = array(
+                            'is_interview_popup_appeared' => 'no',
+                            'last_login' => date('Y-m-d H:i:s')
+                        );
+                        \Models\Talents::change(Auth::user()->id_user, $updateArr);
+
+                        \Session::forget('social');
+                        $redirect_url = '/';
+
+                        if(!empty($request->back) && $request->back == 'forum'){
+                            return redirect('community/forum');
+                        }
+                        elseif(!empty($request->back) && $request->back == 'pricing'){
+                            return redirect('page/pricing');
+                        }
+
+                        if(Auth::user()->type == TALENT_ROLE_TYPE){
+                            $profile_percentage = \Models\Talents::get_profile_percentage(Auth::user()->id_user);
+                            
+                            if($profile_percentage['profile_percentage_count'] < 100){
+                                $redirect = sprintf('%s/profile/%s',TALENT_ROLE_TYPE,'personal');
+                            }else{
+                                $redirect = sprintf('%s/find-jobs',TALENT_ROLE_TYPE);
+                            }
+                        }else if(Auth::user()->type == EMPLOYER_ROLE_TYPE){
+                            $profile_percentage = \Models\Talents::get_profile_percentage(Auth::user()->id_user);
+                            
+                            if($profile_percentage['profile_percentage_count'] < 100){
+                                $redirect = sprintf('%s/profile/%s',EMPLOYER_ROLE_TYPE,'setup');
+                            }else{
+                                $redirect = sprintf('%s/find-talents',EMPLOYER_ROLE_TYPE);
+                            }
+                        }else{
+                            $redirect = '/login';
+                        }
+
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id' => $request->user()->id_user,
+                            'user_type' => $request->user()->type,
+                            'action' => 'login',
+                            'reference_type' => 'users',
+                            'reference_id' => $request->user()->id_user
+                        ]));
+
+                        return redirect($redirect);    
+                    }
+
+                    return redirect()->back();    
+                }else{
+                    $request->session()->flash('alert',sprintf(ALERT_DANGER,trans("general.M0004")));
+                    return redirect()->back()->withErrors($validator)->withInput();
+                }
+            }else{
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+        }
+
+        public function signup(){
+            $data['header'] = 'innerheader';
+            $data['footer'] = 'innerfooter';
+            
+            if (!empty(\Auth::guard('web')->check())) {
+                if(\Auth::guard('web')->user()->type == 'employer'){
+                    return redirect(sprintf('%s/find-talents',EMPLOYER_ROLE_TYPE));
+                }else if(\Auth::guard('web')->user()->type == 'talent'){
+                    return redirect(sprintf('%s/find-jobs',TALENT_ROLE_TYPE));
+                }
+                
+                return redirect('/');
+            }
+
+            return view('front.pages.signup')->with($data);
+        }
+
+        public function signupemployer(Request $request){
+
+            if (!empty(\Auth::guard('web')->check())) {
+                if(\Auth::guard('web')->user()->type == 'employer'){
+                    return redirect(sprintf('%s/find-talents',EMPLOYER_ROLE_TYPE));
+                }else if(\Auth::guard('web')->user()->type == 'talent'){
+                    return redirect(sprintf('%s/find-jobs',TALENT_ROLE_TYPE));
+                }
+                
+                return redirect('/');
+            }
+
+            $data['header'] = 'innerheader';
+            $data['footer'] = 'innerfooter';
+
+            if(!empty($request->token)){
+                $data['token']      = $request->token;
+                $result = \Models\Users::findByToken($request->token,['email','first_name','last_name']);
+                if(empty(\Session::get('_old_input'))){
+                    \Session::set('_old_input.first_name',$result['first_name']);
+                    \Session::set('_old_input.last_name',$result['last_name']);
+                    \Session::set('_old_input.email',$result['email']);
+                }
+            }
+
+            return view('front.pages.signupemployer')->with($data);
+        }
+
+        public function __signupemployer(Request $request){
+            
+            $validator = \Validator::make($request->all(), [
+                'first_name'            => validation('first_name'),
+                'last_name'             => validation('last_name'),
+                'company_name'          => validation('company_name'),
+                'email'                 => ['required','email',Rule::unique('users')->ignore('trashed','status')],
+                'password'              => array_merge(['required'],validation('password')),
+                'confirm_password'      => array_merge(['required'],validation('confirm_password')),
+                /*'g-recaptcha-response'  => validation('recaptcha'),*/
+            ],[
+                /*'g-recaptcha-response.required' => trans('general.recaptcha_required'),*/
+                'password.regex'                => trans('general.password_regex'),
+                'password.digits_between'       => trans('general.password_regex'),
+            ]);
+            
+            $validator->sometimes(['password','confirm_password'], 'required', function($input){
+                return empty($input->social_agree);
+            });
+
+            $validator->after(function($validator) use ($request){
+                if(empty($request->agree)){
+                    $validator->errors()->add('alert', sprintf(ALERT_DANGER,trans('general.agree_required')));
+                }
+            });
+
+            if ($validator->passes()) {
+                if(!empty($request->remember_token)){
+                    $result = \Models\Users::findByToken($request->remember_token,['id_user']);
+
+                    if(!empty($result)){
+                        $email = $request->email;
+                        $code  = bcrypt(__random_string());
+
+                        \Models\Users::change($result['id_user'],[
+                            'first_name' => $request->first_name,
+                            'last_name' => $request->last_name,
+                            'email' => $request->email,
+                            'password' => bcrypt($request->password),
+                            'company_name' => $request->company_name,
+                            'remember_token' => $code,
+                            'agree' => 'yes',
+                            'newsletter_subscribed' => (!empty($request->newsletter))?'yes':'no',
+                            'updated' => date('Y-m-d H:i:s')
+                        ]);
+                        
+                        if(!empty($email)){
+                            $emailData              = ___email_settings();
+                            $emailData['email']     = $email;
+                            $emailData['name']      = $request->first_name;
+                            $emailData['link']      = url(sprintf("activate/account?token=%s",$code));
+
+                            ___mail_sender($email,sprintf("%s %s",$request->first_name,$request->last_name),"employer_signup",$emailData);
+
+                            if($request->newsletter){
+                                self::newsletter_subscription($email,$result['id_user'],'employer');
+                            }
+                        }
+                        
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id' => $result['id_user'],
+                            'user_type' => 'employer',
+                            'action' => 'signup-updated',
+                            'reference_type' => 'users',
+                            'reference_id' => $result['id_user']
+                        ]));
+                        
+                        return redirect(sprintf('/%s/signup/success?token='.($code),EMPLOYER_ROLE_TYPE));
+                    }else{
+                        $request->session()->flash('alert',strip_tags(trans(sprintf('website.%s','W0002'))));
+                        return redirect(sprintf('/signup/%s/',EMPLOYER_ROLE_TYPE));
+                    }
+                }else{
+                    $dosignup = Employers::__dosignup($request);
+
+                    if(!empty($dosignup['status'])){
+                        \Session::forget('social');
+                        $email = $request->email;
+                        if(!empty($email)){
+                            $code                   = bcrypt(__random_string());
+                            $emailData              = ___email_settings();
+                            $emailData['email']     = $email;
+                            $emailData['name']      = $request->first_name;
+                            $emailData['link']      = url(sprintf("activate/account?token=%s",$code));
+                            \Models\Talents::change($dosignup['signup_user_id'],['remember_token' => $code,'updated' => date('Y-m-d H:i:s')]);
+                            ___mail_sender($email,sprintf("%s %s",$request->first_name,$request->last_name),"employer_signup",$emailData);
+                            if($request->newsletter){
+                                self::newsletter_subscription($email,$dosignup['signup_user_id'],'employer');
+                            }
+                        }
+                        $result = \Models\Users::findById($dosignup['signup_user_id'],['remember_token']);
+                        
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id' => $dosignup['signup_user_id'],
+                            'user_type' => 'employer',
+                            'action' => 'signup',
+                            'reference_type' => 'users',
+                            'reference_id' => $dosignup['signup_user_id']
+                        ]));
+
+                        return redirect(sprintf('/%s/signup/success?token='.($result['remember_token']),EMPLOYER_ROLE_TYPE));
+                    }
+
+                    $request->session()->flash('alert',sprintf(ALERT_SUCCESS,trans(sprintf("general.%s",$dosignup['message']))));
+                    
+                    return redirect()->back()->withErrors($validator);
+                }
+            }else{
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+        }
+        
+        public function signuptalent(Request $request){
+            
+            if (!empty(\Auth::guard('web')->check())) {
+                if(\Auth::guard('web')->user()->type == 'employer'){
+                    return redirect(sprintf('%s/find-talents',EMPLOYER_ROLE_TYPE));
+                }else if(\Auth::guard('web')->user()->type == 'talent'){
+                    return redirect(sprintf('%s/find-jobs',TALENT_ROLE_TYPE));
+                }
+                
+                return redirect('/');
+            }
+            
+            $data['header'] = 'innerheader';
+            $data['footer'] = 'innerfooter';
+            $data['social'] = \Session::get('social');
+
+            if(!empty($request->token)){
+                $data['token']      = $request->token;
+                $result = \Models\Users::findByToken($request->token,['email','first_name','last_name']);
+
+                if(empty(\Session::get('_old_input'))){
+                    \Session::set('_old_input.first_name',$result['first_name']);
+                    \Session::set('_old_input.last_name',$result['last_name']);
+                    \Session::set('_old_input.email',$result['email']);
+                }
+            }
+
+            return view('front.pages.signuptalent')->with($data);
+        }
+        
+        public function __signuptalent(Request $request){
+            $social = \Session::get('social');
+            if(!empty($social)){
+                if(empty($request->social_agree)){
+                    \Session::put('social.social_agree','');
+                }else{
+                    \Session::put('social.social_agree','agree');
+                }
+            }
+
+            $validation_password            = validation('password');
+            $validation_confirm_password    = validation('confirm_password');
+
+            $validation_password[0]         = 'sometimes';
+            $validation_confirm_password[0] = 'sometimes';
+
+            $validator = \Validator::make($request->all(), [
+                'first_name'            => validation('first_name'),
+                'last_name'             => validation('last_name'),
+                'email'                 => ['required','email',Rule::unique('users')->ignore('trashed','status')],
+                'password'              => $validation_password,
+                'confirm_password'      => $validation_confirm_password,
+                /*'g-recaptcha-response'  => validation('recaptcha'),*/
+            ],[
+                'first_name.required'               => trans('general.M0006'),
+                'first_name.regex'                  => trans('general.M0007'),
+                'first_name.string'                 => trans('general.M0007'),
+                'first_name.max'                    => trans('general.M0020'),
+                'last_name.required'                => trans('general.M0008'),
+                'last_name.regex'                   => trans('general.M0009'),
+                'last_name.string'                  => trans('general.M0009'),
+                'last_name.max'                     => trans('general.M0019'),
+                'email.required'                    => trans('general.M0010'),
+                'email.email'                       => trans('general.M0011'),
+                'email.unique'                      => trans('general.M0012'),
+                'password.required'                 => trans('general.M0013'),
+                'password.regex'                    => trans('general.M0014'),
+                'password.string'                   => trans('general.M0013'),
+                'password.min'                      => trans('general.M0014'),
+                'password.max'                      => trans('general.M0018'),
+                'confirm_password.required'         => trans('general.M0015'),
+                'confirm_password.same'             => trans('general.M0016'),                
+                /*'g-recaptcha-response.required'     => trans('website.W0005'),*/                
+            ]);
+            
+            $validator->sometimes(['password','confirm_password'], 'required', function($input){
+                return empty($input->social_agree);
+            });
+
+            $validator->after(function($validator) use ($request){
+                if(empty($request->agree)){
+                    $validator->errors()->add('alert', sprintf(ALERT_DANGER,trans('general.M0017')));
+                }
+            });
+
+            if ($validator->passes()) {
+                if(!empty($request->remember_token)){
+                    $result = \Models\Users::findByToken($request->remember_token,['id_user']);
+
+                    if(!empty($result)){
+                        $email = $request->email;
+                        $code  = bcrypt(__random_string());
+
+                        \Models\Users::change($result['id_user'],[
+                            'first_name' => $request->first_name,
+                            'last_name' => $request->last_name,
+                            'email' => $request->email,
+                            'password' => bcrypt($request->password),
+                            'remember_token' => $code,
+                            'agree' => 'yes',
+                            'newsletter_subscribed' => (!empty($request->newsletter))?'yes':'no',
+                            'updated' => date('Y-m-d H:i:s')
+                        ]);
+                        
+                        if(!empty($email)){
+                            $emailData              = ___email_settings();
+                            $emailData['email']     = $email;
+                            $emailData['name']      = $request->first_name;
+                            $emailData['link']      = url(sprintf("activate/account?token=%s",$code));
+
+                            ___mail_sender($email,sprintf("%s %s",$request->first_name,$request->last_name),"talent_signup_verification",$emailData);
+
+                            if($request->newsletter){
+                                self::newsletter_subscription($email,$result['id_user'],'talent');
+                            }
+                        }
+            
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id' => $result['id_user'],
+                            'user_type' => 'talent',
+                            'action' => 'signup-update',
+                            'reference_type' => 'users',
+                            'reference_id' => $result['id_user']
+                        ]));
+                        return redirect(sprintf('/%s/signup/success?token='.($code),TALENT_ROLE_TYPE));
+                    }else{
+                        $request->session()->flash('alert',strip_tags(trans(sprintf('website.%s','W0002'))));
+                        return redirect(sprintf('/signup/%s/',TALENT_ROLE_TYPE));
+                    }
+                }else{
+                    $field          = ['id_user','type','first_name','last_name','name','email','status'];
+                    $email          = (!empty($request->email))?$request->email:"";
+
+                    if(!empty($social['social_key']) && !empty($social['social_id']) && !empty($email)){
+                        $result         = (array) \Models\Talents::findByEmail(trim($email),$field);
+                    }
+
+                    if(empty($result) && !empty($social['social_key']) && !empty($social['social_id'])){
+                        $result         = (array) \Models\Talents::findBySocialId($social['social_key'],$social['social_id'],$field);
+                    }
+
+                    if(empty($result)){
+                        $dosignup = Talents::__dosignup($request);
+
+                        if(!empty($dosignup['status'])){
+                            \Session::forget('social');
+                            $talent = \Models\Talents::findById($dosignup['signup_user_id'],$field);
+
+                            if(!empty($talent) && $talent->status == 'pending'){
+                                if(!empty($email)){
+                                    $code                   = bcrypt(__random_string());
+                                    $emailData              = ___email_settings();
+                                    $emailData['email']     = $email;
+                                    $emailData['name']      = $request->first_name;
+                                    $emailData['link']      = url(sprintf("activate/account?token=%s",$code));
+                                    
+                                    \Models\Talents::change($dosignup['signup_user_id'],['remember_token' => $code,'updated' => date('Y-m-d H:i:s')]);
+
+                                    ___mail_sender($email,sprintf("%s %s",$request->first_name,$request->last_name),"talent_signup_verification",$emailData);
+
+                                    if($request->newsletter){
+                                        self::newsletter_subscription($email,$dosignup['signup_user_id'],'talent');
+                                    }
+                                }
+
+                                $result = \Models\Users::findById($dosignup['signup_user_id'],['remember_token']);
+                                
+                                /* RECORDING ACTIVITY LOG */
+                                event(new \App\Events\Activity([
+                                    'user_id' => $dosignup['signup_user_id'],
+                                    'user_type' => 'talent',
+                                    'action' => 'signup',
+                                    'reference_type' => 'users',
+                                    'reference_id' => $dosignup['signup_user_id']
+                                ]));
+
+                                return redirect(sprintf('/%s/signup/success?token='.($result['remember_token']),TALENT_ROLE_TYPE));
+                            }else{
+                                if(!empty($email)){
+                                    $emailData              = ___email_settings();
+                                    $emailData['email']     = $email;
+                                    $emailData['name']      = $request->first_name;
+                                    ___mail_sender($email,sprintf("%s %s",$request->first_name,$request->last_name),"talent_signup",$emailData);
+
+                                    if($request->newsletter){
+                                        self::newsletter_subscription($email,$dosignup['signup_user_id'],'talent');
+                                    }
+                                }
+                                \Session::forget('social');
+                                return redirect(sprintf('/%s/profile/personal',TALENT_ROLE_TYPE));
+                            }
+                        }else{
+                            $request->session()->flash('alert',trans(sprintf('general.%s',$dosignup['message'])));
+                            return redirect()->back()->withErrors($validator);
+                        }
+                    }else{
+                        if($result['status'] == 'inactive'){
+                            $validator->errors()->add('alert', sprintf(ALERT_DANGER,trans('general.M0002')));
+                        }elseif($result['status'] == 'suspended'){
+                            $validator->errors()->add('alert', sprintf(ALERT_DANGER,trans('general.M0003')));
+                        }else{
+                            $updated_data = array(
+                                $social['social_key']       => $social['social_id'],
+                                'email'                     => $email,
+                                'status'                    => 'active'
+                            );
+
+                            \Session::forget('social');
+                            \Models\Talents::change($result['id_user'],$updated_data);
+                            \Auth::loginUsingId($result['id_user']);
+                            
+                            /* RECORDING ACTIVITY LOG */
+                            event(new \App\Events\Activity([
+                                'user_id' => $result['id_user'],
+                                'user_type' => 'talent',
+                                'action' => 'social-signup',
+                                'reference_type' => 'users',
+                                'reference_id' => $result['id_user']
+                            ]));
+                            return redirect(sprintf('/%s/profile/personal',TALENT_ROLE_TYPE));
+                        }
+                    }
+                }
+            }else{
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+        }
+
+        public function __editsignuptalent(Request $request){
+            $data['header']         = 'innerheader';
+            $data['footer']         = 'innerfooter';
+
+            if(!empty($request->token)){
+                $data['token']      = $request->token;
+                $result = \Models\Users::findByToken($request->token,['email']);
+            }
+
+            if(!empty($result)){
+                $data['email'] = $result['email'];
+            }else{
+                $data['alert'] = trans('website.W0002');
+                $data['email'] = false;
+            }
+
+            return view(sprintf('front.pages.sign-edit-talent'))->with($data);       
+        }
+
+        public function __editsignupemployer(Request $request){
+            $data['header']         = 'innerheader';
+            $data['footer']         = 'innerfooter';
+
+            if(!empty($request->token)){
+                $data['token']      = $request->token;
+                $result = \Models\Users::findByToken($request->token,['email']);
+            }
+
+            if(!empty($result)){
+                $data['email'] = $result['email'];
+            }else{
+                $data['alert'] = trans('website.W0002');
+                $data['email'] = false;
+            }
+
+            return view(sprintf('front.pages.sign-edit-employer'))->with($data);       
+        }
+        
+        public function facebook(LaravelFacebookSdk $fb, Request $request){
+            $login_url = $fb->getLoginUrl(['email']);
+
+            if(!empty($request->type)){
+                \Session::put(['redirect_section' => $request->type]);
+            }
+            /* REDIRCTING FOR AUTHENTICATION */
+            return redirect( $login_url );
+        }
+
+        public function facebook_callback(Request $request, LaravelFacebookSdk $fb){
+            if(\Auth::user()){
+                $profile_type = \Auth::user()->type;
+                if(\Session::get('redirect_section') == 'edit'){
+                    $redirect = $profile_type == 'employer' ? '/employer/profile/edit/verify-account' : '/talent/profile/edit/verify-account';
+                    \Session::forget('redirect_section');
+                }else{
+                    $redirect = $profile_type == 'employer' ? '/employer/profile/verify-account' : '/talent/profile/verify-account';
+                }
+            }else{
+                $redirect = '/signup/talent';
+            }
+            try {
+                $token = $fb->getAccessTokenFromRedirect();
+            } catch (Facebook\Exceptions\FacebookSDKException $e) {
+                return redirect($redirect);
+            }
+            if (! $token) {
+                $helper = $fb->getRedirectLoginHelper();
+
+                if (! $helper->getError()) {
+                    abort(403, 'Unauthorized action.');
+                }
+
+                return redirect($redirect);
+                /*
+                *   $helper->getError()
+                *   $helper->getErrorCode()
+                *   $helper->getErrorReason()
+                *   $helper->getErrorDescription()
+                */
+            }
+            if (! $token->isLongLived()) {
+                $oauth_client = $fb->getOAuth2Client();
+
+                try {
+                    $token = $oauth_client->getLongLivedAccessToken($token);
+                } catch (Facebook\Exceptions\FacebookSDKException $e) {
+                    $request->session()->flash('alert',sprintf(ALERT_DANGER,$e->getMessage()));
+                    return redirect($redirect);
+                }
+            }
+
+            $fb->setDefaultAccessToken($token);
+            \Session::put('fb_user_access_token', (string) $token);
+
+            try {
+                $response = $fb->get('/me?fields=id,first_name,last_name,name,gender,email,picture.type(large)');
+            } catch (Facebook\Exceptions\FacebookSDKException $e) {
+                $request->session()->flash('alert',sprintf(ALERT_DANGER,$e->getMessage()));
+            }
+
+            // Convert the response to a `Facebook/GraphNodes/GraphUser` collection
+            $facebook       = $response->getGraphUser();
+            if(\Auth::user()){
+                $request->request->add(['facebook_id'=>$facebook['id']]);
+                $validator = \Validator::make($request->all(), [
+                    'facebook_id'    => [Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',\Auth::user()->id_user);})],
+                ],[
+                    sprintf('%s.unique','facebook_id')   => trans('general.M0126'),
+                ]);
+
+                if($validator->passes()){
+                    $update             =   ['facebook_id' => $facebook['id']];
+                    $isUpdated          = \Models\Talents::change(\Auth::user()->id_user,$update);
+                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'connected-facebook-account',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));
+
+                    return redirect($redirect);
+                }else{
+                    $request->session()->flash('alert',sprintf(ALERT_DANGER,$validator->errors()->first()));
+                    return redirect($redirect);
+                }
+            }else{
+                $dologin = Talents::__dologin([
+                    'social_agree'      => (string) 'agree',
+                    'social_key'        => (string) 'facebook_id',
+                    'social_id'         => (string) $facebook['id'],
+                    'social_email'      => (string) $facebook['email'],
+                    'social_name'       => (string) $facebook['name'],
+                    'social_first_name' => (string) $facebook['first_name'],
+                    'social_last_name'  => (string) $facebook['last_name'],
+                    'social_gender'     => (string) $facebook['gender'], 
+                    'social_picture'    => (string) $facebook['picture']['url'],
+                    'social_country'    => (string) "",
+                ]);
+
+                $request->session()->flash('alert',$dologin['message']);
+                if(!empty($dologin['status'])){
+                    return redirect($dologin['redirect']);
+                }else{
+                    $request->session()->flash('alert',sprintf(ALERT_DANGER,trans(sprintf("general.%s",$dologin['message']))));
+                    return redirect('/signup/talent');
+                }   
+            }
+        }
+        
+        public function linkedin(Request $request){
+
+            if(!empty($request->type)){
+               \Session::put(['redirect_section' => $request->type]);
+            }            
+            if(\Auth::user()){
+            $profile_type = \Auth::user()->type;
+                if(\Session::get('redirect_section') == 'edit'){
+                    $redirect = $profile_type == 'employer' ? '/employer/profile/edit/verify-account' : '/talent/profile/edit/verify-account';
+                    \Session::forget('redirect_section');
+                }else{
+                    $redirect = $profile_type == 'employer' ? '/employer/profile/verify-account' : '/talent/profile/verify-account';
+                }
+            }else{
+                $redirect = '/signup/talent';
+            }
+
+            if (LinkedIn::isAuthenticated()) {
+                $linkedin = LinkedIn::get('v1/people/~:(id,email-address,first-name,last-name,location,positions,num-connections,picture-url,specialties,public-profile-url)');
+                if(\Auth::user()){
+                    $request->request->add(['linkedin_id'=>$linkedin['id']]);
+                    $validator = \Validator::make($request->all(), [
+                        'linkedin_id'    => [Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',\Auth::user()->id_user);})],
+                    ],[
+                        sprintf('%s.unique','linkedin_id')   => trans('general.M0126'),
+                    ]);
+
+                    if($validator->passes()){
+                        $update             =   ['linkedin_id' => $linkedin['id']];
+                        $isUpdated          = \Models\Talents::change(\Auth::user()->id_user,$update);
+                            
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => \Auth::user()->id_user,
+                            'user_type'         => 'employer',
+                            'action'            => 'connected-linkedin-account',
+                            'reference_type'    => 'users',
+                            'reference_id'      => \Auth::user()->id_user
+                        ]));
+                        
+                        return redirect($redirect);
+                    }else{
+                        $request->session()->flash('alert',sprintf(ALERT_DANGER,$validator->errors()->first()));
+                        return redirect($redirect);
+                    }
+                }else{
+                    $dologin = Talents::__dologin([
+                        'social_agree'      => (string) 'agree',
+                        'social_key'        => (string) 'linkedin_id',
+                        'social_id'         => (string) $linkedin['id'],
+                        'social_email'      => (string) $linkedin['emailAddress'],
+                        'social_name'       => (string) trim(sprintf("%s %s",$linkedin['firstName'],$linkedin['lastName'])),
+                        'social_first_name' => (string) $linkedin['firstName'],
+                        'social_last_name'  => (string) $linkedin['lastName'],
+                        'social_picture'    => (string) $linkedin['publicProfileUrl'],
+                        'social_country'    => (string) $linkedin['location']['country']['code'],
+                        'social_gender'     => (string) "", 
+                    ]);       
+
+                    $request->session()->flash('alert',$dologin['message']);
+                    if(!empty($dologin['status'])){
+                        return redirect($dologin['redirect']);
+                    }else{
+                        return redirect('/signup/talent');
+                    }   
+                }
+            }elseif (LinkedIn::hasError()) {
+                $request->session()->flash('alert',sprintf(ALERT_DANGER,trans('general.instagram_cancel_request')));
+                return redirect('/signup/talent');
+            }
+
+            /* REDIRCTING FOR AUTHENTICATION */
+            return redirect(LinkedIn::getLoginUrl(['rw_groups', 'r_contactinfo', 'r_fullprofile', 'w_messages','r_emailaddress']));
+        }
+        
+        public function instagram(Request $request){
+            if(!empty($request->type)){
+                \Session::put(['redirect_section' => $request->type]);
+            }
+            
+            $authUrl = Instagram::authorize(['/user/self'], function ($url, $provider) use ($request) {
+                $request->session()->put('instagramState', $provider->getState());
+                return $url;
+            });
+
+            /* REDIRCTING FOR AUTHENTICATION */
+            return redirect()->away($authUrl);
+        }
+
+        public function instagram_callback(Request $request){
+            if(!empty($request->type)){
+                \Session::put(['redirect_section' => $request->type]);
+            }
+
+            if(\Auth::user()){
+                $profile_type = \Auth::user()->type;
+                if(\Session::get('redirect_section') == 'edit'){
+                    $redirect = $profile_type == 'employer' ? '/employer/profile/edit/verify-account' : '/talent/profile/edit/verify-account';
+                    \Session::forget('redirect_section');
+                }else{
+                    $redirect = $profile_type == 'employer' ? '/employer/profile/verify-account' : '/talent/profile/verify-account';
+                }
+            }else{
+                $redirect = '/signup/talent';
+            }
+
+            if (!$request->has('state') || $request->state !== $request->session()->get('instagramState')) {
+                abort(400, 'Invalid state');
+            }
+
+            if (!$request->has('code')) {
+                abort(400, 'Authorization code not available');
+            }
+
+            $token = Instagram::getAccessToken('authorization_code', [
+                'code' => $request->code,
+            ]);
+
+            $request->session()->put('instagramToken', $token);
+
+
+            $instagramToken = $request->session()->get('instagramToken');
+
+            $instagram = Instagram::getResourceOwner($instagramToken);
+            
+            if(\Auth::user()){
+                $request->request->add(['instagram_id'=>$instagram->getId()]);
+                $validator = \Validator::make($request->all(), [
+                    'instagram_id'    => [Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',\Auth::user()->id_user);})],
+                ],[
+                    sprintf('%s.unique','instagram_id')   => trans('general.M0126'),
+                ]);
+
+                if($validator->passes()){
+                    $update             =   ['instagram_id' => $instagram->getId()];
+                    $isUpdated          = \Models\Talents::change(\Auth::user()->id_user,$update);                    
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id' => \Auth::user()->id_user,
+                        'user_type' => 'employer',
+                        'action' => 'connected-instagram-account',
+                        'reference_type' => 'users',
+                        'reference_id' => \Auth::user()->id_user
+                    ]));
+                    
+                    
+                    return redirect($redirect);
+                }else{
+                    $request->session()->flash('alert',sprintf(ALERT_DANGER,$validator->errors()->first()));
+                    return redirect($redirect);
+                }
+            }else{
+                $dologin = Talents::__dologin([
+                    'social_agree'      => (string) 'agree',
+                    'social_key'        => (string) 'instagram_id',
+                    'social_id'         => (string) $instagram->getId(),
+                    'social_email'      => (string) "",
+                    'social_name'       => (string) $instagram->getName(),
+                    'social_first_name' => (string) ___firstname($instagram->getName()),
+                    'social_last_name'  => (string) ___lastname($instagram->getName()),
+                    'social_picture'    => (string) $instagram->getImageurl(),
+                    'social_country'    => (string) "",
+                    'social_gender'     => (string) "", 
+                ]);
+
+                $request->session()->flash('alert',$dologin['message']);
+                if(!empty($dologin['status'])){
+                    return redirect($dologin['redirect']);
+                }else{
+                    return redirect('/signup/talent')->withErrors($dologin['validator'])->withInput();
+                }
+            }
+        }
+
+        public function twitter(Request $request){
+            // your SIGN IN WITH TWITTER  button should point to this route
+            if(!empty($request->type)){
+                \Session::put(['redirect_section' => $request->type]);
+            }  
+            $sign_in_twitter = true;
+            $force_login = false;
+            
+            // Make sure we make this request w/o tokens, overwrite the default values in case of login.
+            Twitter::reconfig(['token' => '', 'secret' => '']);
+            $token = Twitter::getRequestToken(url('/login/twitter/callback'));
+
+            if (isset($token['oauth_token_secret'])){
+                $url = Twitter::getAuthorizeURL($token, $sign_in_twitter, $force_login);
+
+                \Session::put('oauth_state', 'start');
+                \Session::put('oauth_request_token', $token['oauth_token']);
+                \Session::put('oauth_request_token_secret', $token['oauth_token_secret']);
+                return redirect($url);
+            }
+
+            /* REDIRCTING FOR AUTHENTICATION */
+            return redirect('/signup/talent');
+        }
+
+        public function twitter_callback(Request $request){
+            // You should set this route on your Twitter Application settings as the callback
+            
+            if(\Auth::user()){
+                $profile_type = \Auth::user()->type;
+                if(\Session::get('redirect_section') == 'edit'){
+                    $redirect = $profile_type == 'employer' ? '/employer/profile/edit/verify-account' : '/talent/profile/edit/verify-account';
+                    \Session::forget('redirect_section');
+                }else{
+                    $redirect = $profile_type == 'employer' ? '/employer/profile/verify-account' : '/talent/profile/verify-account';
+                }
+            }else{
+                $redirect = '/signup/talent';
+            }
+
+            if (\Session::has('oauth_request_token')){
+                $request_token = [
+                    'token'  => \Session::get('oauth_request_token'),
+                    'secret' => \Session::get('oauth_request_token_secret'),
+                ];
+
+                Twitter::reconfig($request_token);
+
+                $oauth_verifier = false;
+
+                if (Input::has('oauth_verifier')){
+                    $oauth_verifier = Input::get('oauth_verifier');
+                }
+
+                // getAccessToken() will reset the token for you
+                $token = Twitter::getAccessToken($oauth_verifier);
+
+                if (!isset($token['oauth_token_secret'])){
+                    return redirect('/login/twitter')->with('flash_error', 'We could not log you in on Twitter.');
+                }
+
+                $twitter = Twitter::getCredentials(['include_email' => 'true']);
+                
+                if (is_object($twitter) && !isset($twitter->error)){
+                    \Session::put('access_token', $token);
+                    
+                    if(\Auth::user()){
+                        $request->request->add(['twitter_id'=>$twitter->id_str]);
+                        $validator = \Validator::make($request->all(), [
+                            'twitter_id'    => [Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',\Auth::user()->id_user);})],
+                        ],[
+                            sprintf('%s.unique','twitter_id')   => trans('general.M0126'),
+                        ]);
+
+                        if($validator->passes()){
+                            $update             =   ['twitter_id' => $twitter->id_str];
+                            $isUpdated          = \Models\Talents::change(\Auth::user()->id_user,$update);
+
+                            /* RECORDING ACTIVITY LOG */
+                            event(new \App\Events\Activity([
+                                'user_id'           => \Auth::user()->id_user,
+                                'user_type'         => 'employer',
+                                'action'            => 'connected-twitter-account',
+                                'reference_type'    => 'users',
+                                'reference_id'      => \Auth::user()->id_user
+                            ]));
+                            
+                            return redirect($redirect);
+                        }else{
+                            $request->session()->flash('alert',sprintf(ALERT_DANGER,$validator->errors()->first()));
+                            return redirect($redirect);
+                        }
+                    }else{  
+                        $dologin = Talents::__dologin([
+                            'social_agree'          => (string) 'agree',
+                            'social_key'            => (string) 'twitter_id',
+                            'social_id'             => (string) $twitter->id_str,
+                            'social_name'           => (string) $twitter->name,
+                            'social_first_name'     => (string) ___firstname($twitter->name),
+                            'social_last_name'      => (string) ___lastname($twitter->name),
+                            'social_picture'        => (string) $twitter->profile_image_url_https,
+                            'social_email'          => (string) "",
+                            'social_gender'         => (string) "",
+                            'social_country'        => (string) "",
+                        ]);       
+
+                        $request->session()->flash('alert',$dologin['message']);
+                        if(!empty($dologin['status'])){
+                            return redirect($dologin['redirect']);
+                        }else{
+                            return redirect('/signup/talent');
+                        }
+                    }
+                }else{
+                    $request->session()->flash('alert',sprintf(ALERT_DANGER,trans(sprintf('general.something_wrong'))));
+                    return redirect('/signup/talent');
+                }
+            }
+        }
+
+        public function googleplus(Request $request)  {
+              
+            if(!empty($request->type)){
+                \Session::put(['redirect_section' => $request->type]);
+            }
+
+            if(\Auth::user()){
+                $profile_type = \Auth::user()->type;  
+                if(\Session::get('redirect_section') == 'edit'){
+                    $redirect = $profile_type == 'employer' ? '/employer/profile/edit/verify-account' : '/talent/profile/edit/verify-account';
+                    \Session::forget('redirect_section');
+                }else{
+                    $redirect = $profile_type == 'employer' ? '/employer/profile/verify-account' : '/talent/profile/verify-account';
+                }
+            }else{
+                $redirect = '/signup/talent';
+            }
+
+            $google_redirect_url = url('login/googleplus');
+            $gClient = new \Google_Client();
+            $gClient->setApplicationName(config('services.google.app_name'));
+            $gClient->setClientId(config('services.google.client_id'));
+            $gClient->setClientSecret(config('services.google.client_secret'));
+            $gClient->setRedirectUri($google_redirect_url);
+            $gClient->setDeveloperKey(config('services.google.api_key'));
+            $gClient->setScopes(array(
+                'https://www.googleapis.com/auth/plus.me',
+                'https://www.googleapis.com/auth/userinfo.email',
+                'https://www.googleapis.com/auth/userinfo.profile',
+            ));
+            
+            $google_oauthV2 = new \Google_Service_Oauth2($gClient);
+            
+            if ($request->get('code')){
+                $gClient->authenticate($request->get('code'));
+                $request->session()->put('token', $gClient->getAccessToken());
+            }
+
+            if ($request->session()->get('token')){
+                $gClient->setAccessToken($request->session()->get('token'));
+            }
+            
+            if ($gClient->getAccessToken()){
+                //For logged in user, get details from google using access token
+                $guser = $google_oauthV2->userinfo->get();
+                if(\Auth::user()){
+                    $request->request->add(['googleplus_id'=>$guser->id]);
+                    $validator = \Validator::make($request->all(), [
+                        'googleplus_id'    => [Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',\Auth::user()->id_user);})],
+                    ],[
+                        sprintf('%s.unique','googleplus_id')   => trans('general.M0126'),
+                    ]);
+
+                    if($validator->passes()){
+                        $update             =   ['googleplus_id' => $guser->id];
+                        $isUpdated          = \Models\Talents::change(\Auth::user()->id_user,$update);
+
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => \Auth::user()->id_user,
+                            'user_type'         => 'employer',
+                            'action'            => 'connected-google-plus-account',
+                            'reference_type'    => 'users',
+                            'reference_id'      => \Auth::user()->id_user
+                        ]));
+                        
+                        return redirect($redirect);
+                    }else{
+                        $request->session()->flash('alert',sprintf(ALERT_DANGER,$validator->errors()->first()));
+                        return redirect($redirect);
+                    }
+                }                  
+            } else{
+                //For Guest user, get google login url
+                $request->session()->flash('alert',sprintf(ALERT_DANGER,trans('general.M0175')));
+                $authUrl = $gClient->createAuthUrl();
+                return redirect()->to($authUrl);
+            }
+        }
+        
+        public function staticpage($slug, Request $request, Builder $htmlBuilder){
+            if($request->stream === 'mobile'){
+                $data['header'] = 'mobile/innerheader';
+                $data['footer'] = 'mobile/innerfooter';
+            }else{
+                $data['header'] = 'innerheader';
+                $data['footer'] = 'innerfooter';
+            }
+            $data['banner'] = \Models\Banner::getBannerBySlug($slug);
+            if($slug == 'about' || $slug == 'contact' || $slug == 'how-it-works'){
+                $data['page'] = \Models\Pages::single($slug,['id','title','excerpt','content']);
+                if($slug === 'about'){
+                    $data['subpage'] = \Models\Pages::single('history',['id','title','excerpt','content']);
+                }
+            }else if($slug == 'community'){
+                $data['latest_question'] = \Models\Forum::latestQuestion();
+
+                if ($request->ajax()) {
+                    $question = \Models\Forum::getQuestionFront();
+                    return \Datatables::of($question)
+                    ->editColumn('question_description',function($question){
+                        if(!empty($question->filename)){
+                            $profilePic = asset($question->filename);
+                        }
+                        else{
+                            $profilePic = asset('images/sdf.png');
+                        }
+                        $html = '<span>
+                                    <a href="'.url('community/forum/question/' . ___encrypt($question->id_question)).'">
+                                        <span class="question-wrap">
+                                            <h5>'.$question->question_description.'</h5>
+                                            <span class="question-author">
+                                                <span class="flex-cell">
+                                                    <img src="'.$profilePic.'" alt="image" class="question-author-image">
+                                                    <span class="question-author-action">
+                                                        <h4>'.$question->person_name.'</h4>
+                                                        <span>'.___ago($question->approve_date).'</span>
+                                                    </span>
+                                                </span>
+                                                <span class="count-wrap">
+                                                    <h6 class="reply-counts">Total replies ('.$question->total_reply.')</h6>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </a>
+                                </span>';
+
+                        return $html;
+                    })
+                    ->make(true);
+                }
+
+                $data['html'] = $htmlBuilder
+                ->parameters(["dom" => "rt <'row'<'col-md-6'i><'col-md-6'p> >"])
+                ->addColumn(['data' => 'question_description', 'name' => 'question_description', 'title' => '&nbsp;', 'width' => '0', 'searchable' => false, 'orderable' => false]);
+
+                return view(sprintf('front.pages.questions'))->with($data);
+            }else if($slug == 'pricing'){
+                return redirect('pricing_page');
+                // $data['plan'] = \Models\Plan::getPlanList();
+                // return view(sprintf('front.pages.%s',$slug))->with($data);
+            }else if($slug == 'developers'){
+                $data['collection'] = (array)json_decode(\Cache::get('configuration')['postman_collection'],true);
+            }else if($slug == 'apireference'){
+                $data['apimessages'] = \Models\Listings::apimessages(['code','message','section']);
+            }else if($slug === 'faq'){
+                $data['faqs'] = \Models\Faqs::all('array',['id_faq','faq_question','faq_answer']);
+            }else{
+                $data['page'] = \Models\Pages::single($slug,['id','title','excerpt','content']);
+                return view(sprintf('front.pages.static',$slug))->with($data);       
+            }
+            
+            return view(sprintf('front.pages.%s',$slug))->with($data);       
+        }
+
+        public function _contactpage(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'name'              => validation('name'),
+                'email'             => ['required','email'],
+                'phone_number'      => validation('phone_number'),
+                'message'           => validation('message'),
+            ],[
+                'name.required'             => trans('general.M0040'),
+                'name.regex'                => trans('general.M0041'),
+                'name.string'               => trans('general.M0041'),
+                'name.max'                  => trans('general.M0042'),
+                'email.required'            => trans('general.M0010'),
+                'email.email'               => trans('general.M0011'),
+                'phone_number.required'     => trans('general.M0030'),
+                'phone_number.regex'        => trans('general.M0031'),
+                'phone_number.string'       => trans('general.M0031'),
+                'phone_number.min'          => trans('general.M0032'),
+                'phone_number.max'          => trans('general.M0033'),
+                'message.required'          => trans('general.M0034'),
+                'message.string'            => trans('general.M0035'),
+                'message.max'               => trans('general.M0036'),
+            ]);
+            
+            if ($validator->passes()) {
+                
+                $configuration      = ___configuration(['site_email','site_name']);
+                $message_subject    = 'Contact';
+                $message_type       = 'contact-us';
+
+                $sender_email       = $request->email;
+                $sender_name       = $request->name;
+                
+                $isUpdated = \Models\Messages::compose($sender_name, $sender_email,$request->message,$message_subject,$message_type);
+
+                if(!empty($isUpdated)){
+                    $emailData              = ___email_settings();
+                    $emailData['email']     = $request->email;
+                    $emailData['name']      = $request->name;
+                    
+                    ___mail_sender($request->email,$request->name,"user_contact",$emailData);
+                    ___mail_sender($configuration['site_email'],$configuration['site_name'],"admin_contact",$emailData);
+                    $request->session()->flash('alert',sprintf(ALERT_SUCCESS,trans("general.M0037")));
+                }else{
+                    $request->session()->flash('alert',sprintf(ALERT_SUCCESS,trans("general.M0037")));
+                }
+
+                return redirect()->back();
+            }
+
+            return redirect()->back()->withErrors($validator)->withInput(); 
+        }
+
+        public function resetpassword(Request $request){
+            $data['header']         = 'innerheader';
+            $data['footer']         = 'innerfooter';
+            $data['token']          = '';
+            $data['message']        = '';
+            
+            if(!empty($request->token)){
+                $data['token']      = $request->token;
+                $result = \Models\Users::findByToken($request->token,['id_user']);
+            }
+
+            if(!empty($result)){
+                $data['link_status']    = 'valid';
+            }else{
+                $data['link_status']    = 'expired';
+                $data['message']        = trans('website.W0002');
+            }
+            
+            return view(sprintf('front.pages.reset'))->with($data);       
+        }
+
+        public function _resetpassword(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'password'                  => validation('password'),
+                'confirm_password'          => validation('confirm_password'),
+            ],[
+                'password.required'         => trans('general.M0013'),
+                'password.regex'            => trans('general.M0014'),
+                'password.string'           => trans('general.M0013'),
+                'password.min'              => trans('general.M0014'),
+                'password.max'              => trans('general.M0018'),
+                'confirm_password.required' => trans('general.M0015'),
+                'confirm_password.same'     => trans('general.M0016'),
+            ]);
+            
+            if ($validator->passes()) {
+                if(!empty($request->token)){
+                    $result = \Models\Users::findByToken($request->token,['id_user','type']);
+
+                    if(!empty($result)){
+                        $isUpdated = \Models\Users::change($result['id_user'],['password' => bcrypt($request->password),'is_email_verified' => 'yes','remember_token' => bcrypt(__random_string()) ,'updated' => date('Y-m-d H:i:s')]);
+
+                        if(!empty($isUpdated)){
+                            $request->session()->flash('alert',sprintf(ALERT_SUCCESS,trans("website.W0003")));
+
+                            /* RECORDING ACTIVITY LOG */
+                            event(new \App\Events\Activity([
+                                'user_id'           => $result['id_user'],
+                                'user_type'         => $result['type'],
+                                'action'            => 'reset-password',
+                                'reference_type'    => 'users',
+                                'reference_id'      => $result['id_user']
+                            ]));
+
+                            return redirect()->back()->with(['success' => true]);
+                        }
+                    }
+                    $request->session()->flash('alert',sprintf(ALERT_DANGER,trans("website.W0002")));
+                }
+                $request->session()->flash('alert',sprintf(ALERT_DANGER,trans("website.W0002")));
+            }
+
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        public function forgotpassword(Request $request){
+            $data['header']         = 'innerheader';
+            $data['footer']         = 'innerfooter';
+
+            return view(sprintf('front.pages.forgot'))->with($data);       
+        }
+
+        public function _forgotpassword(Request $request){
+            $validator = \Validator::make($request->all(), [
+                LOGIN_EMAIL                 => ['required','email'],
+            ],[
+                LOGIN_EMAIL.'.required'     => trans('general.M0010'),
+                LOGIN_EMAIL.'.email'        => trans('general.M0011'),
+            ]);
+            
+            if ($validator->passes()) {
+                $result = \Models\Users::findByEmail($request->{LOGIN_EMAIL},['id_user','type','email','first_name','last_name','status']);
+                
+                if(!empty($result)){
+                    if($result['status'] == 'pending'){
+                        $request->session()->flash(
+                            'alert',
+                            sprintf(
+                                ALERT_INFO,
+                                sprintf(
+                                    trans("website.W0006"),
+                                    '<span class="resend-link"><a href="javascript:;" data-request="inline-ajax" data-target=".message" data-url="'.url('/ajax/resend_activation_link?email='.base64_encode($request->{LOGIN_EMAIL})).'">resend verification link</a></span>'
+                                )
+                            )
+                        ); 
+                        return redirect()->back();
+                    }else if($result['status'] == 'inactive'){
+                        $request->session()->flash('alert',sprintf(ALERT_WARNING,trans("general.M0002")));
+                    }else if($result['status'] == 'suspended'){
+                        $request->session()->flash('alert',sprintf(ALERT_WARNING,trans("general.M0003")));
+                    }else {
+                        $code                   = bcrypt(__random_string());
+
+                        $isUpdated = \Models\Users::change($result['id_user'],[
+                            'remember_token' => $code,
+                            'updated' => date('Y-m-d H:i:s')
+                        ]);
+
+                        if(!empty($isUpdated)){
+                            $emailData              = ___email_settings();
+                            $emailData['email']     = $result['email'];
+                            $emailData['name']      = $result['first_name'];
+                            $emailData['link']      = url(sprintf("reset/password?token=%s",$code));
+
+                            ___mail_sender($result['email'],sprintf("%s %s",$result['first_name'],$result['last_name']),"forgot_password",$emailData);
+                            $request->session()->flash('alert',sprintf(ALERT_SUCCESS,trans("general.M0029")));
+
+                            /* RECORDING ACTIVITY LOG */
+                            event(new \App\Events\Activity([
+                                'user_id'           => $result['id_user'],
+                                'user_type'         => $result['type'],
+                                'action'            => 'forgot-password',
+                                'reference_type'    => 'users',
+                                'reference_id'      => $result['id_user']
+                            ]));
+
+                            return redirect()->back()->with(['success' => true]);
+                        }else{
+                            $request->session()->flash('alert',sprintf(ALERT_SUCCESS,trans("general.M0029")));
+                        }
+                    }
+                }else{
+                    $request->session()->flash('alert',sprintf(ALERT_DANGER,trans("general.M0028")));
+                }
+            }
+
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        public function activateaccount(Request $request){
+            $data['header'] = 'innerheader';
+            $data['footer'] = 'innerfooter';
+            $data['agent']  = new Agent();
+            
+            if(!empty($request->token)){
+                $result = \Models\Users::findByToken($request->token,['id_user']);
+            }
+
+            if(!empty($result)){
+                $isUpdated = \Models\Users::change($result['id_user'],['remember_token' => bcrypt(__random_string()),'status' => 'active', 'is_email_verified' => 'yes', 'updated' => date('Y-m-d H:i:s')]);
+                
+                if(!empty($isUpdated)){
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $result['id_user'],
+                        'user_type'         => 'employer',
+                        'action'            => 'connected-linkedin-account',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $result['id_user'] 
+                    ]));
+                    
+                    $data['message'] = trans('website.W0001');
+                }else{
+                    $data['message'] = trans('website.W0002');
+                }
+            }else{
+                $data['message'] = trans('website.W0002');
+            }
+
+            return view(sprintf('front.pages.activate'))->with($data);       
+        }
+
+        public function download_postman_collection(){
+            return \Response::download(public_path('/uploads/collection/'.'CrowBar.postman_collection.json'));
+        }
+        
+        public function download_file(Request $request){
+            $get_file = \Models\Talents::get_file(
+                sprintf('id_file =%s',___decrypt($request->file_id)),
+                'single',
+                [
+                    \DB::Raw("CONCAT(folder,'',filename) as file_url"),
+                ]
+            );
+            
+            if(!empty($get_file['file_url']) && file_exists(public_path($get_file['file_url']))){
+                return \Response::download(public_path($get_file['file_url']));
+            }else{
+                return redirect('/');
+            }
+        }
+
+        public function redirect(Request $request) {
+            $agent  = new Agent();
+            
+            if($agent->isMobile()){
+                return redirect('crowbar://');
+            }else{
+                return redirect('/');
+            }
+        }
+
+        public function change_language(Request $request) {
+            $previousLocale = \App::getLocale();
+            $previousURL    = \URL::previous();
+            
+            if(!empty($request->language)){
+                \App::setLocale($request->language);
+            }
+            
+            $currentLocale      = \App::getLocale();
+            $preLocaleArr       = explode('/', $previousURL);
+            $previousLocaleArr  = $preLocaleArr[count($preLocaleArr) - 1];
+            $enableLang         = language();
+            
+            if(!empty($enableLang)){
+                if (array_key_exists($previousLocale, $enableLang)){
+                    $language_key                   = array_search($previousLocale,$preLocaleArr);
+                    $preLocaleArr[$language_key]    = $currentLocale;
+                    $preLocaleArr                   = implode('/', $preLocaleArr);
+                    return redirect($preLocaleArr);
+                }
+            }
+
+            $currentURL = str_replace('/' . $previousLocale . '/', '/' . $currentLocale . '/', $previousURL);
+
+            return redirect($currentURL);
+        }
+
+        public function change_currency(Request $request) {
+            $previousCurrency = \Session::get('site_currency');
+            
+            if(!empty($request->currency)){
+                \Session::set('site_currency', $request->currency);
+            }
+            
+            return redirect()->back();
+        }
+
+        public function mark_read_desktop(Request $request) {
+            if(!empty($request->notification_id)){
+                \Models\Notifications::mark_read_desktop($request->notification_id);
+            }
+        }
+
+        /*Complete Account After created from admin*/
+        public function completeAccount(Request $request){
+            $data['header']         = 'innerheader';
+            $data['footer']         = 'innerfooter';
+            $data['token']          = '';
+            $data['message']        = '';
+            $data['agent']          = new Agent();
+
+            if(!empty($request->token)){
+                $data['token']      = $request->token;
+                $result = \Models\Users::findByToken($request->token,['id_user']);
+            }
+
+            if(!empty($result)){
+                $data['link_status']    = 'valid';
+            }else{
+                $data['link_status']    = 'expired';
+                $data['message']        = trans('website.W0002');
+            }
+
+            return view(sprintf('front.pages.complete-account'))->with($data);
+        }
+
+        public function createPassword(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'password'                  => validation('password'),
+                'confirm_password'          => validation('confirm_password'),
+            ],[
+                'password.required'         => trans('general.M0013'),
+                'password.regex'            => trans('general.M0014'),
+                'password.string'           => trans('general.M0013'),
+                'password.min'              => trans('general.M0014'),
+                'password.max'              => trans('general.M0018'),
+                'confirm_password.required' => trans('general.M0015'),
+                'confirm_password.same'     => trans('general.M0016'),
+            ]);
+
+            if ($validator->passes()) {
+                if(!empty($request->token)){
+                    $result = \Models\Users::findByToken($request->token,['id_user']);
+
+                    if(!empty($result)){
+                        $isUpdated = \Models\Users::change($result['id_user'],['password' => bcrypt($request->password),'is_email_verified' => 'yes','status' => 'active','remember_token' => bcrypt(__random_string()) ,'updated' => date('Y-m-d H:i:s')]);
+
+                        if(!empty($isUpdated)){
+                            $request->session()->flash('alert',sprintf(ALERT_SUCCESS,trans("website.W0003")));
+                            return redirect()->back()->with(['success' => true]);
+                        }
+                    }
+                    $request->session()->flash('alert',sprintf(ALERT_DANGER,trans("website.W0002")));
+                }
+                $request->session()->flash('alert',sprintf(ALERT_DANGER,trans("website.W0002")));
+            }
+
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        public function subscribedNewsLetter(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'email' => ['required','email',Rule::unique('subscriber')->ignore('pending','status')]
+            ],[
+                'email.required' => trans('general.M0010'),
+                'email.email' => trans('general.M0011'),
+                'email.unique' => trans('general.M0012'),
+            ]);
+
+            if ($validator->passes()) {
+                $subscribeDetail = \Models\Users::getSubscribeByEmail($request->email);
+
+                if(empty($subscribeDetail)){
+                    $email = $request->email;
+                    $code = bcrypt(__random_string());
+                    $newsletterData = [
+                        'email'             => $request->email, 
+                        'remember_token'    => $code, 
+                        'updated'           => date('Y-m-d H:i:s'), 
+                        'created'           => date('Y-m-d H:i:s')
+                    ];                    
+                    \Models\Users::insertSubscribe($newsletterData);
+                }else{
+                    $email = $subscribeDetail['email'];
+                    $code = $subscribeDetail['remember_token'];
+                }
+
+                if(!empty($email)){
+                    $emailData              = ___email_settings();
+                    $emailData['email']     = $request->email;
+                    $emailData['link']      = url(sprintf("confirm-newsletter?token=%s",$code));
+
+                    ___mail_sender($email,'',"newsletter_subscription",$emailData);
+
+                    $this->status = true;
+                    $this->message = 'You have successfully subscribed. Please check your email';
+                    $this->redirect = url('');
+                }else{
+                    $this->status = false;
+                    $this->message = 'Error.';
+                    $this->redirect = url('');
+                }
+            } else {
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function confirmNewsLetter(Request $request){
+            $data['header']         = 'innerheader';
+            $data['footer']         = 'innerfooter';
+
+            $subscribeDetail = \Models\Users::getSubscribeByToken($request->token);
+            $data['agent']  = new Agent();
+
+            if(empty($subscribeDetail)){
+                $data['link_status'] = 'expired';
+                $data['message']     = trans('website.W0002');
+            }else{
+                \Models\Users::updateSubscribe($subscribeDetail['id_subscriber'], ['status'=>'active','newsletter_token'=>'']);
+                $data['link_status'] = 'valid';
+                $data['message']     = trans('website.W0426');
+            }
+
+            return view(sprintf('front.pages.confirm-newsletter'))->with($data);
+        }
+
+        public function newsletter_subscription($email,$user_id,$user_type){
+            $code = bcrypt(__random_string());
+            $newsletterData = [
+                'email'             => $email, 
+                'newsletter_token'    => $code,
+                'user_id'           => $user_id,
+                'user_type'         => $user_type,
+                'updated'           => date('Y-m-d H:i:s'), 
+                'created'           => date('Y-m-d H:i:s')
+            ];
+
+            \Models\Users::insertSubscribe($newsletterData);
+            if(!empty($email)){
+                $emailData              = ___email_settings();
+                $emailData['email']     = $email;
+                $emailData['link']      = url(sprintf("confirm-newsletter?token=%s",$code));
+                if($user_type == 'talent'){
+                    $template_name = "newsletter_subscription_".$user_type;
+                }else if($user_type == 'talent'){
+                    $template_name = "newsletter_subscription_".$user_type;
+                }else{
+                    $template_name = "newsletter_subscription";
+                }
+                ___mail_sender($email,'',$template_name,$emailData);
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        public function fetchPlan(){
+
+            $plans = \Braintree_Plan::all();
+            dd($plans);
+        }
+
+        public function newsletter_unsubscribe(Request $request){
+            $data['header']         = 'innerheader';
+            $data['footer']         = 'innerfooter';
+
+            $subscribeDetail = \Models\Users::getUserNewsletterToken($request->token);
+            $data['agent']  = new Agent();
+
+            if(empty($subscribeDetail)){
+                $data['link_status'] = 'expired';
+                $data['message']     = trans('website.W0436');
+            }else{
+                \Models\Users::change($subscribeDetail['id_user'], ['newsletter_subscribed'=>'no','newsletter_token'=>'']);
+                $data['link_status'] = 'valid';
+                $data['message']     = trans('website.W0435');
+            }
+
+            return view(sprintf('front.pages.confirm-newsletter'))->with($data);
+        }
+
+        public function sendNewsletterToEmployer(){
+            $employerList = \Models\Users::getUserForNewsLetter('employer');
+
+            foreach ($employerList as $emp) {
+                $where = [];
+                if(!empty($emp['industry'])){
+                    $where[] = 'industry = ' . $emp['industry'];
+                }
+                if(!empty($emp['subindustry'])){
+                    $where[] = 'subindustry = ' . $emp['subindustry'];
+                }
+
+                $talentList = \Models\Users::getUserForNewsLetter('talent', $where);
+                $htmlLetter = '';
+                if(!empty($talentList)){
+                    foreach ($talentList as $list) {
+                        if(empty($list['expertise'])){
+                            $expertise = 'NA';
+                        }
+                        else{
+                            $expertise = $list['expertise'];
+                        }
+                        if(empty($list['skills'])){
+                            $skills = 'NA';
+                        }
+                        else{
+                            $skills = $list['skills'];
+                        }
+                        if(!empty($list['availability_hours'])){
+                            $availability_hours = sprintf(trans('general.M0180'),$list['availability_hours']);
+                        }else{
+                            $availability_hours = N_A;
+                        }
+
+                        $htmlLetter .= sprintf(EMPLOYER_NEWSLETTER_TEMPLATE, $list['name'], $list['rating'], $list['review'], $list['job_completion'], $availability_hours,$expertise,$skills);
+                    }
+
+                    /*Email to employer*/
+                    $email                  = $emp['email'];
+                    $emailData              = ___email_settings();
+                    $emailData['email']     = $email;
+                    $emailData['name']      = $emp['name'];
+                    $emailData['table']     = $htmlLetter;
+                    $emailData['unsubscribe']      = url(sprintf("newsletter/unsubscribe/%s",$emp['newsletter_token']));
+
+                    $template_name = "weekly_newsletter_employer";
+
+                    ___mail_sender($email,'',$template_name,$emailData);
+                }
+            }
+        }
+
+        public function sendNewsletterToTalent(){
+            $talentList = \Models\Users::getUserForNewsLetter();
+
+            foreach ($talentList as $emp) {
+                $where = [];
+                if(!empty($emp['city'])){
+                    $where[] = 'location = ' . $emp['city'];
+                }
+                if(!empty($emp['industry'])){
+                    $where[] = 'industry = ' . $emp['industry'];
+                }
+                if(!empty($emp['subindustry'])){
+                    $where[] = 'subindustry = ' . $emp['subindustry'];
+                }
+
+                $projectList = \Models\Projects::getProjectForNewsLetter($where);
+
+                $htmlLetter = '';
+                if(!empty($projectList)){
+                    foreach ($projectList as $list) {
+                        if($list['price_max'] !== NULL){
+                            $price  = $list['price_max'] .' - '. $list['price'] . ' price range';
+                        }
+                        else{
+                            $price  = $list['price'] . ' price';
+                        }
+                        $htmlLetter .= sprintf(TALENT_NEWSLETTER_TEMPLATE, $list['title'], $list['company_name'], $price .' '. $list['employment'], $list['industry']);
+                    }
+                    /*Email to talent*/
+                    $email                  = $emp['email'];
+                    $emailData              = ___email_settings();
+                    $emailData['email']     = $email;
+                    $emailData['name']      = $emp['name'];
+                    $emailData['table']     = $htmlLetter;
+                    $emailData['unsubscribe']      = url(sprintf("newsletter/unsubscribe/%s",$emp['newsletter_token']));
+
+                    $template_name = "weekly_newsletter_talent";
+
+                    ___mail_sender($email,'',$template_name,$emailData);
+                }
+            }
+        }
+
+        public function share(){
+            $locale = \App::getLocale();
+            dd($locale);
+            #echo \Share::page('http://jorenvanhocht.be')->facebook();
+            echo \Share::page('http://jorenvanhocht.be', 'Share title')
+            ->facebook()
+            ->twitter()
+            ->googlePlus()
+            ->linkedin('Extra linkedin summary can be passed here');
+        }
+
+        public function completeAccountEmail(Request $request){
+            $data['header']         = 'innerheader';
+            $data['footer']         = 'innerfooter';
+            $data['token']          = '';
+            $data['message']        = '';
+            $data['agent']  = new Agent();
+
+            if(!empty($request->token)){
+                $data['token']      = $request->token;
+                $result = \Models\Users::findByToken($request->token,['id_user']);
+            }
+
+            if(!empty($result)){
+                \Models\Users::change($result['id_user'], ['is_email_verified'=>'yes', 'remember_token' => '']);
+                $data['link_status'] = 'valid';
+                $data['message']     = trans('website.W0447');
+            }else{
+                $data['link_status']    = 'expired';
+                $data['message']        = trans('website.W0002');
+            }
+
+            return view(sprintf('front.pages.confirm-newsletter'))->with($data);
+        }
+
+        public function community_forum_add_question(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'question_description'            => ['required']
+            ],[
+                'question_description.required'   => trans('general.question_required')
+            ]);
+
+            if ($validator->passes()) {
+                $insertArr = [
+                'id_user' => \Auth::user()->id_user,
+                'question_description' => $request->question_description,
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+                ];
+                \Models\Forum::saveQuestion($insertArr);
+
+                $this->status = true;
+                $this->message = 'Your question has been successfully added. This will be listed after admin approval.';
+                $this->redirect = url('community/forum');
+            } else {
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function community_forum_add_answer(Request $request){
+            $id_question = ___decrypt($request->id_question);
+            $validator = \Validator::make($request->all(), [
+                'answer_description'            => ['required']
+            ],[
+                'answer_description.required'   => trans('general.answer_required')
+            ]);
+
+            if ($validator->passes()) {
+                $insertArr = [
+                'id_user' => \Auth::user()->id_user,
+                'id_question' => $id_question,
+                'answer_description' => $request->answer_description,
+                'id_parent' => $request->id_parent,
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+                ];
+                \Models\Forum::saveAnswer($insertArr);
+
+                $this->status = true;
+                $this->message = 'Your answer has been successfully added. This will be listed after admin approval.';
+                $this->redirect = url('community/forum/question/' . $request->id_question);
+            } else {
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function community_forum_question(Request $request){
+            $data['id_question'] = $request->id_question;
+            $id_question = ___decrypt($request->id_question);
+            $data['header'] = 'innerheader';
+            $data['footer'] = 'innerfooter';
+
+            $data['related_question'] = \Models\Forum::relatedQuestion($id_question);
+            $data['question'] = \Models\Forum::getQuestionFront($id_question);
+            $data['answer'] = \Models\Forum::getAnswerFrontByQuesId($id_question);
+            $data['answer'] = json_decode(json_encode($data['answer']), true);
+            return view(sprintf('front.pages.question-detail'))->with($data);
+        }
+        public function community_forum(Request $request, Builder $htmlBuilder){
+            $data['header'] = 'innerheader';
+            $data['footer'] = 'innerfooter';
+            $data['latest_question'] = \Models\Forum::latestQuestion();
+
+            if ($request->ajax()) {
+                $question = \Models\Forum::getQuestionFront();
+                return \Datatables::of($question)
+                ->editColumn('question_description',function($question){
+                    if(!empty($question->filename)){
+                        $profilePic = asset($question->filename);
+                    }
+                    else{
+                        $profilePic = asset('images/sdf.png');
+                    }
+                    $html = '<li>
+                                <a href="'.url('community/forum/question/' . ___encrypt($question->id_question)).'">
+                                    <span class="question-wrap">
+                                        <h5>'.$question->question_description.'</h5>
+                                        <span class="question-author">
+                                            <span class="flex-cell">
+                                                <img src="'.$profilePic.'" alt="image" class="question-author-image">
+                                                <span class="question-author-action">
+                                                    <h4>'.$question->person_name.'</h4>
+                                                    <span>'.___ago($question->approve_date).'</span>
+                                                </span>
+                                            </span>
+                                            <span class="count-wrap">
+                                                <h6 class="reply-counts">Total replies ('.$question->total_reply.')</h6>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>';
+
+                    return $html;
+                })
+                ->make(true);
+            }
+
+            $data['html'] = $htmlBuilder
+            ->parameters(["dom" => "rt <'row'<'col-md-6'i><'col-md-6'p> >"])
+            ->addColumn(['data' => 'question_description', 'name' => 'question_description', 'title' => '&nbsp;', 'width' => '0', 'searchable' => false, 'orderable' => false]);
+
+            return view(sprintf('front.pages.questions'))->with($data);
+        }
+
+        public function forum_list_answer(Request $request){
+            $id_reply = $request->id_reply;
+            $id_ques = ___decrypt($request->id_question);
+            $data['answer'] = \Models\Forum::getAnswerByQuesId($id_ques, $id_reply, 'child', 'front');
+
+            return view('front.pages.load-answer')->with($data);
+        }
+    }
+

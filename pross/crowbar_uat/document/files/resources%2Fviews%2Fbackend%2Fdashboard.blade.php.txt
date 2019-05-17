@@ -1,0 +1,267 @@
+@extends('layouts.backend.dashboard')
+
+@section('content')
+    <section class="content">
+
+        <?php if(0){ ?>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-default"><i class="fa fa-envelope-o"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Messages</span>
+                        <span class="info-box-number">{{ $total_message or 0 }}</span>
+                        <span class="info-box-number">Active/Total</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-default"><i class="fa fa-shopping-cart"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Orders</span>
+                        <span class="info-box-number">{{ $total_order or 0 }}</span>
+                        <span class="info-box-number">Pending/Total</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-default"><i class="fa fa-user"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Consumers</span>
+                        <span class="info-box-number">{{ $total_consumer or 0 }}</span>
+                        <span class="info-box-number">Active/Total</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-default"><i class="fa fa-user-secret"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Merchants</span>
+                        <span class="info-box-number">{{ $total_merchant or 0 }}</span>
+                        <span class="info-box-number">Active/Total</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box-footer">
+                    <div class="row">
+                        <div class="col-sm-3 col-xs-6">
+                            <div class="description-block border-right">
+                                <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 17%</span>
+                                <h5 class="description-header">$35,210.43</h5>
+                                <span class="description-text">TOTAL REVENUE</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-xs-6">
+                            <div class="description-block border-right">
+                                <span class="description-percentage text-yellow"><i class="fa fa-caret-left"></i> 0%</span>
+                                <h5 class="description-header">$10,390.90</h5>
+                                <span class="description-text">TOTAL COST</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-xs-6">
+                            <div class="description-block border-right">
+                                <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 20%</span>
+                                <h5 class="description-header">$24,813.53</h5>
+                                <span class="description-text">TOTAL PROFIT</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-xs-6">
+                            <div class="description-block">
+                                <span class="description-percentage text-red"><i class="fa fa-caret-down"></i> 18%</span>
+                                <h5 class="description-header">1200</h5>
+                                <span class="description-text">GOAL COMPLETIONS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="panel">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Latest Members</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="panel-body no-padding" style="display: block;">
+                        <ul class="users-list clearfix">
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Alexander Pierce</a>
+                                <span class="users-list-date">Today</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Norman</a>
+                                <span class="users-list-date">Yesterday</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Jane</a>
+                                <span class="users-list-date">12 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">John</a>
+                                <span class="users-list-date">12 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Alexander</a>
+                                <span class="users-list-date">13 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Sarah</a>
+                                <span class="users-list-date">14 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Nora</a>
+                                <span class="users-list-date">15 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Nadia</a>
+                                <span class="users-list-date">15 Jan</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="box-footer text-center" style="display: block;">
+                        <a href="javascript:void(0)" class="uppercase">View All Users</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Latest Members</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="panel-body no-padding" style="display: block;">
+                        <ul class="users-list clearfix">
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Alexander Pierce</a>
+                                <span class="users-list-date">Today</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Norman</a>
+                                <span class="users-list-date">Yesterday</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Jane</a>
+                                <span class="users-list-date">12 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">John</a>
+                                <span class="users-list-date">12 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Alexander</a>
+                                <span class="users-list-date">13 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Sarah</a>
+                                <span class="users-list-date">14 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Nora</a>
+                                <span class="users-list-date">15 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Nadia</a>
+                                <span class="users-list-date">15 Jan</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="box-footer text-center" style="display: block;">
+                        <a href="javascript:void(0)" class="uppercase">View All Users</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Latest Members</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="panel-body no-padding" style="display: block;">
+                        <ul class="users-list clearfix">
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Alexander Pierce</a>
+                                <span class="users-list-date">Today</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Norman</a>
+                                <span class="users-list-date">Yesterday</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Jane</a>
+                                <span class="users-list-date">12 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">John</a>
+                                <span class="users-list-date">12 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Alexander</a>
+                                <span class="users-list-date">13 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Sarah</a>
+                                <span class="users-list-date">14 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Nora</a>
+                                <span class="users-list-date">15 Jan</span>
+                            </li>
+                            <li>
+                                <img src="{{ asset('images/customer1.png') }}" alt="User Image">
+                                <a class="users-list-name" href="#">Nadia</a>
+                                <span class="users-list-date">15 Jan</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="box-footer text-center" style="display: block;">
+                        <a href="javascript:void(0)" class="uppercase">View All Users</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php } ?>
+    </section>
+@endsection
+

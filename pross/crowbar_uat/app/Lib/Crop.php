@@ -1,0 +1,248 @@
+<?php
+namespace App\Lib;
+
+    class Crop {
+        public $src;
+        public $data;
+        public $dst;
+        public $type;
+        public $extension;
+        public $msg;
+        public $targetFile;
+        public $targetFolder;
+        public $previousFile;
+
+        /*function __construct($option = array()) {
+            if (count($option) > 0){
+                $this->initialize($option);
+            }
+        }*/
+
+        public function initialize($option) {
+            $this->previousFile = $option['src'];
+            if(!empty($option['dst'])){@mkdir($option['dst'],0777);}
+            
+            if(is_dir($option['dst'])){             
+                if(empty($option['data'])){
+                    $size = @getimagesize($option['file']['tmp_name']);
+                    $option['data'] = '{"x":0,"y":0,"height":'.$size[1].',"width":'.$size[0].',"rotate":0}';
+                }
+                
+                $this->setSrc($option['src']);
+                $this->setData($option['data']);
+                $this->targetFolder = $option['dst'];
+                $this->setFile($option['file']);
+                $this->setDst($option['dst'],$option['targetFile']);
+                $this->cropper($this->src, $this->dst, $this->data);
+            }else{
+                $this->msg = 'directory_not_exists';
+            }
+        }
+
+        public function setSrc($src) {
+            if (!empty($src)) {
+                $type = @exif_imagetype($src);
+
+                if ($type) {
+                    $this->src = $src;
+                    $this->type = $type;
+                    $this->extension = image_type_to_extension($type);
+                    $this->setDst($this->dst,$this->targetFile);
+                }
+            }
+        }
+
+        public function setData($data) {
+            if (!empty($data)) {
+                $this->data = json_decode(stripslashes($data));
+            }
+        }
+
+        public function setFile($file) {
+            $errorCode = $file['error'];
+
+            if ($errorCode === UPLOAD_ERR_OK) {
+                if(is_dir($this->targetFolder)){
+                    $type = @exif_imagetype($file['tmp_name']);
+
+                    if ($type) {
+                        $extension = image_type_to_extension($type);
+                        $src = $this->targetFolder.date('Y_m_d_H_i_s') . '.original' . $extension;
+                        if ($type == IMAGETYPE_GIF || $type == IMAGETYPE_JPEG || $type == IMAGETYPE_PNG) {
+                            if(is_writable($this->targetFolder)){   
+                                $result = move_uploaded_file($file['tmp_name'], $src);
+
+                                if ($result) {
+                                    $this->src = $src;
+                                    $this->type = $type;
+                                    $this->extension = $extension;
+                                    $this->setDst($this->dst, $this->targetFile);
+                                    $this->msg = 'image_uploaded';
+                                } else {
+                                    $this->msg = 'uploading_failed';
+                                }
+                            }else{
+                                $this->msg = 'directory_not_exists';            
+                            }
+                        } else {
+                            $this->msg = 'invalid_file_type';
+                        }
+                    } else {
+                        $this->msg = 'image_required';
+                    }
+                }else{
+                    $this->msg = 'directory_not_exists';
+                }
+            } else {
+                $this->msg = $this->codeToMessage($errorCode);
+            }
+        }
+
+        public function setDst($des,$targetFile) {
+            $this->dst = $des.$targetFile;
+        }
+
+        public function cropper($src, $dst, $data) {
+            if (!empty($src) && !empty($dst) && !empty($data)) {
+                switch ($this->type) {
+                    case IMAGETYPE_GIF:
+                        $src_img = @imagecreatefromgif($src);
+                        break;
+
+                    case IMAGETYPE_JPEG:
+                        $src_img = @imagecreatefromjpeg($src);
+                        break;
+
+                    case IMAGETYPE_PNG:
+                        $src_img = @imagecreatefrompng($src);
+                        break;
+                }
+
+                if (!$src_img) {
+                    $this->msg = "invalid_image_file";
+                    return;
+                }
+
+                $size = getimagesize($src);
+                $size_w = $size[0]; // natural width
+                $size_h = $size[1]; // natural height
+
+                $src_img_w = $size_w;
+                $src_img_h = $size_h;
+
+                $degrees = $data->rotate;
+
+                // Rotate the source image
+                if (is_numeric($degrees) && $degrees != 0) {
+                    // PHP's degrees is opposite to CSS's degrees
+                    $new_img = imagerotate( $src_img, -$degrees, imagecolorallocatealpha($src_img, 0, 0, 0, 127) );
+
+                    imagedestroy($src_img);
+                    $src_img = $new_img;
+
+                    $deg = abs($degrees) % 180;
+                    $arc = ($deg > 90 ? (180 - $deg) : $deg) * M_PI / 180;
+
+                    $src_img_w = $size_w * cos($arc) + $size_h * sin($arc);
+                    $src_img_h = $size_w * sin($arc) + $size_h * cos($arc);
+            
+                    // Fix rotated image miss 1px issue when degrees < 0
+                    $src_img_w -= 1;
+                    $src_img_h -= 1;
+                }
+
+                $tmp_img_w = $data->width;
+                $tmp_img_h = $data->height;
+            
+                $dst_img_w = $data->width;
+                $dst_img_h = $data->height;
+
+                $src_x = $data->x;
+                $src_y = $data->y;
+
+                if ($src_x <= -$tmp_img_w || $src_x > $src_img_w) {
+                    $src_x = $src_w = $dst_x = $dst_w = 0;
+                } else if ($src_x <= 0) {
+                    $dst_x = -$src_x;
+                    $src_x = 0;
+                    $src_w = $dst_w = min($src_img_w, $tmp_img_w + $src_x);
+                } else if ($src_x <= $src_img_w) {
+                    $dst_x = 0;
+                    $src_w = $dst_w = min($tmp_img_w, $src_img_w - $src_x);
+                }
+
+                if ($src_w <= 0 || $src_y <= -$tmp_img_h || $src_y > $src_img_h) {
+                    $src_y = $src_h = $dst_y = $dst_h = 0;
+                } else if ($src_y <= 0) {
+                    $dst_y = -$src_y;
+                    $src_y = 0;
+                    $src_h = $dst_h = min($src_img_h, $tmp_img_h + $src_y);
+                } else if ($src_y <= $src_img_h) {
+                    $dst_y = 0;
+                    $src_h = $dst_h = min($tmp_img_h, $src_img_h - $src_y);
+                }
+
+                // Scale to destination position and size
+                $ratio = $tmp_img_w / $dst_img_w;
+                $dst_x /= $ratio;
+                $dst_y /= $ratio;
+                $dst_w /= $ratio;
+                $dst_h /= $ratio;
+
+                $dst_img = imagecreatetruecolor($dst_img_w, $dst_img_h);
+
+                // Add transparent background to destination image
+                imagefill($dst_img, 0, 0, imagecolorallocatealpha($dst_img, 0, 0, 0, 127));
+                imagesavealpha($dst_img, true);
+
+                $result = imagecopyresampled($dst_img, $src_img, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h);
+
+                if ($result) {
+                    if (!imagejpeg($dst_img, $dst,60)) {
+                        $this->msg = "failed_crop_file_saving";
+                    }
+                } else {
+                    $this->msg = "failed_cropping";
+                }
+                
+                @copy($dst,str_replace(["profile/"], ["profile/thumbnail/"], $dst));
+                
+                imagedestroy($src_img);
+                imagedestroy($dst_img);
+
+                if (!empty($src) && file_exists($src)) {
+                    unlink($src);
+                }
+
+                if (!empty($this->previousFile) && file_exists($this->previousFile) && basename($this->previousFile) !== 'avatar.png') {
+                    unlink($this->previousFile);
+                }
+            }
+        }
+
+        public function codeToMessage($code) {
+            $errors = array(
+                UPLOAD_ERR_INI_SIZE     => 'UPLOAD_ERR_INI_SIZE',
+                UPLOAD_ERR_FORM_SIZE    => 'UPLOAD_ERR_FORM_SIZE',
+                UPLOAD_ERR_PARTIAL      => 'UPLOAD_ERR_PARTIAL',
+                UPLOAD_ERR_NO_FILE      => 'UPLOAD_ERR_NO_FILE',
+                UPLOAD_ERR_NO_TMP_DIR   => 'UPLOAD_ERR_NO_TMP_DIR',
+                UPLOAD_ERR_CANT_WRITE   => 'UPLOAD_ERR_CANT_WRITE',
+                UPLOAD_ERR_EXTENSION    => 'UPLOAD_ERR_EXTENSION',
+            );
+
+            if (array_key_exists($code, $errors)) {
+                return $errors[$code];
+            }
+
+            return 'unknown_file_upload_error';
+        }
+
+        public function getResult() {
+            return !empty($this->data) ? $this->dst : $this->src;
+        }
+
+        public function getMsg() {
+            return $this->msg;
+        }
+    }

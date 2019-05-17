@@ -1,0 +1,1 @@
+Ív+resources/views/talent/viewprofile/includes :ÌvÎvr+resources/views/talent/viewprofile/includes

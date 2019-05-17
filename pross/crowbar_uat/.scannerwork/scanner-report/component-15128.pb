@@ -1,0 +1,1 @@
+˜v3resources/views/talent/community/add-note.blade.php 2phpXhr3resources/views/talent/community/add-note.blade.php

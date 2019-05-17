@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class ChatRequests extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('chat_requests', function (Blueprint $table) {
+            $table->increments('id_chat_request');
+            $table->integer('sender_id');
+            $table->integer('receiver_id');
+            $table->enum('request_status', ['pending', 'accepted', 'rejected'])->default('pending');
+            $table->enum('chat_initiated', ['talent','employer','employer-accepted','support'])->nullable();
+            $table->integer('reported_by')->nullable();
+            $table->enum('is_reported', ['yes', 'no']);
+            $table->text('reason')->nullable();
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('chat_requests');
+    }
+}
+

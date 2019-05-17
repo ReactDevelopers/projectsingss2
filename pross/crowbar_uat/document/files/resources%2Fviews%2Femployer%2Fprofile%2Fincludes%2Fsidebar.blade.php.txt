@@ -1,0 +1,23 @@
+<div class="col-md-3 col-sm-4 left-sidebar">
+    <div class="user-display-details">
+        <div class="user-profile-image">
+            <div class="user-display-image cropper" data-request="cropper" data-class="profile" data-width="192" data-height="192" data-folder="{{EMPLOYER_PROFILE_PHOTO_UPLOAD}}" data-record="0" data-column="profile" style="background: url('{{ $user['picture'] }}') no-repeat center center;background-size:100% 100%"></div>
+        </div>
+        <div class="user-name-info">
+            <p>{{ sprintf("%s %s",$user['first_name'],$user['last_name']) }}</p>
+            <span>{{ $user['email'] }}</span>
+        </div>
+    </div>
+    <div class="profile-completion-block">
+        <h3>{{ trans('website.W0018') }} <span>{{ ___decimal($user['profile_percentage_count'],'no-decimal') }}%</span></h3>
+        <div class="completion-bar">
+            <span style="width: {{ ___decimal($user['profile_percentage_count'],'no-decimal') }}%;"></span>
+        </div>
+        <ul class="completion-list-group">
+            <li class="completed">{{ trans('website.W0019') }}</li>
+            <li class="@if(!empty($user['profile_percentage_step_one'])) {{ 'completed'}} @endif"">{{ trans('website.W0269') }}</li>
+            <li class="@if(!empty($user['profile_percentage_step_two'])) {{ 'completed'}} @endif">{{ trans('website.W0268') }}</li>
+            <li class="@if(!empty($user['profile_percentage_step_three'])) {{ 'completed'}} @endif"">{{ trans('website.W0270') }}</li>
+        </ul>
+    </div>
+</div>

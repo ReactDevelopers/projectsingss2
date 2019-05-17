@@ -1,0 +1,123 @@
+@section('content')
+    <div class="contentWrapper settingWrapper">
+        <div class="top-margin-20px">
+            <div class="container">
+                <div class="right-sidebar">
+                    <h2 class="form-heading">{{ trans('website.W0306') }}</h2>   
+                    <div class="row has-vr">
+                        <div class="col-md-8">
+                            <form role="settings" method="POST" action="{{ url(sprintf('%s/__settings',TALENT_ROLE_TYPE)) }}" class="form-horizontal" autocomplete="off">
+                                {{ csrf_field() }}
+                                <div class="login-inner-wrapper">
+                                    <div class="col-md-6 col-sm-6 colxs-12">
+                                        <div class="settingList">
+                                            <h2 class="form-heading">{{ trans('website.W0307') }}</h2>
+                                            <ul>
+                                                @foreach($settings['email'] as $item)
+                                                    <li class="checkbox">
+                                                        <input type="checkbox" value="{{$item['setting']}}" @if($item['status'] == DEFAULT_YES_VALUE) checked="checked" @endif id="email_{{$item['setting']}}" name="email[{{$item['setting']}}]">
+                                                        <label for="email_{{$item['setting']}}"><span class="check"></span> {{ trans(sprintf('general.%s',$item['setting'])) }}</label>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 colxs-12">
+                                        <div class="settingList">
+                                            <h2 class="form-heading">{{ trans('website.W0315') }}</h2>
+                                            <ul>
+                                                @foreach($settings['mobile'] as $item)
+                                                    <li class="checkbox">
+                                                        <input type="checkbox" value="{{$item['setting']}}" @if($item['status'] == DEFAULT_YES_VALUE) checked="checked" @endif id="mobile_{{$item['setting']}}" name="mobile[{{$item['setting']}}]">
+                                                        <label for="mobile_{{$item['setting']}}"><span class="check"></span> {{ trans(sprintf('general.%s',$item['setting'])) }}</label>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="login-inner-wrapper">
+                                    <div class="col-md-12 settingList">
+                                        <h2 class="form-heading">
+                                            {{trans('website.W0490')}}
+                                            <div class="checkbox pull-right bootstrap-toggle-button">
+                                                <label>
+                                                    <input name="newsletter_subscribed" type="checkbox" @if($user['newsletter_subscribed'] == DEFAULT_YES_VALUE) checked @endif data-toggle="toggle" value="{{DEFAULT_YES_VALUE}}" />
+                                                </label>
+                                            </div>
+                                        </h2>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 colxs-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{sprintf(trans('website.W0201'),'')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="custom-dropdown">
+                                                    <select class="form-control" name="city">
+                                                        {!!___dropdown_options(@\Cache::get('cities'),sprintf(trans('website.W0201'),trans('website.W0067')),$user['city'])!!}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 colxs-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0286')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                @foreach(employment_types('talent_personal_information') as $key => $value)
+                                                    <div class="checkbox checkbox-inline small-checkbox" style="margin-left: 0px;min-width: 100px;">                
+                                                        <input type="checkbox" name="interest[]" {{in_array($value['type'],$user['interested']) ? 'checked' : ''}} id="interests-{{$value['type']}}" value="{{$value['type']}}">
+                                                        <label for="interests-{{$value['type']}}"><span class="check"></span>{{$value['type_name']}}</label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 colxs-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{sprintf(trans('website.W0059'),'')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="custom-dropdown">
+                                                    <select name="industry" class="form-control" data-request="option" data-url="{{ url('ajax/industry-subindustry-list') }}">
+                                                        {!!___dropdown_options($industries_name,sprintf(trans('website.W0059'),trans('website.W0068')),$user['industry'],false)!!}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 colxs-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{sprintf(trans('website.W0060'),'')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="custom-dropdown">
+                                                    <select name="subindustry" class="form-control">
+                                                        {!!___dropdown_options($subindustries_name,sprintf(trans('website.W0060'),trans('website.W0068')),$user['subindustry'],false)!!}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="form-group button-group">
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="row form-btn-set">
+                                            <div class="col-md-5 col-sm-5 col-xs-6">
+                                                <button type="button" data-request="ajax-submit" data-target='[role="settings"]' class="btn btn-sm redShedBtn pull-right">{{trans('website.W0058')}}</button>
+                                            </div>
+                                        </div>      
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@push('inlinescript')
+    <link href="{{asset('css/bootstrap-toggle.min.css')}}" rel="stylesheet">
+    <script src="{{asset('js/bootstrap-toggle.min.js')}}"></script>
+@endpush

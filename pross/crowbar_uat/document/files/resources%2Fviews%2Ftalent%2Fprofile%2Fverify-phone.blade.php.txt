@@ -1,0 +1,57 @@
+@section('content')
+    @include('talent.profile.includes.header')
+    <!-- Main Content -->
+    <div class="contentWrapper">
+        <div class="afterlogin-section">
+            <div class="container">
+                @include('talent.profile.includes.sidebar')
+                <div class="col-md-9 col-sm-8 right-sidebar">
+                    <form class="form-horizontal" role="talent_verify_phone" action="{{url(sprintf('%s/connect/_verify_phone',TALENT_ROLE_TYPE))}}" method="post" accept-charset="utf-8">
+                        <div class="login-inner-wrapper">
+                            <h2 class="form-heading">{{trans('website.W0460')}}</h2>
+                            {{ csrf_field() }}
+                            <div class="form-group">
+                                <label class="control-label col-md-12">{{trans('website.W0053')}}</label>
+                                <div class="col-md-6 phonednumber-field close-fields-wrapper">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="custom-dropdown countrycode-dropdown">
+                                                <select name="country_code" class="form-control">
+                                                {!!___dropdown_options($country_phone_codes,'',$user['country_code'])!!}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">    
+                                            <input type="text" name="mobile" value="{{ old('mobile',$user['mobile']) }}" placeholder="{{trans('website.W0071')}}" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="hidden" name="mobile_error">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group button-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="row form-btn-set">
+                                    <div class="col-md-7 col-sm-7 col-xs-6">
+                                        <a href="{{ $skip_url }}" class="greybutton-line">
+                                            {{trans('website.W0186')}}
+                                        </a>
+                                    </div>
+                                    <div class="col-md-5 col-sm-5 col-xs-6">
+                                        <button type="button" data-request="ajax-submit" data-target='[role="talent_verify_phone"]' name="save" class="button" value="Save">
+                                            {{trans('website.W0124')}}
+                                        </button>
+                                    </div>                                
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

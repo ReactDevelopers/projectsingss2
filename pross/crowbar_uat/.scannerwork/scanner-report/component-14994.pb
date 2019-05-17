@@ -1,0 +1,1 @@
+’u,resources/views/front/pages/social.blade.php 2phpXhr,resources/views/front/pages/social.blade.php

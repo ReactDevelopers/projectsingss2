@@ -1,0 +1,1 @@
+øv8resources/views/backend/industry/industry-list.blade.php 2phpX'hr8resources/views/backend/industry/industry-list.blade.php

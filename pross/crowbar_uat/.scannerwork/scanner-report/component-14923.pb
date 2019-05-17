@@ -1,0 +1,1 @@
+Ët>resources/views/vendor/pagination/simple-bootstrap-4.blade.php 2phpXhr>resources/views/vendor/pagination/simple-bootstrap-4.blade.php

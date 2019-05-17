@@ -1,0 +1,1 @@
+¹v1resources/views/talent/viewtalent/index.blade.php 2phpX=hr1resources/views/talent/viewtalent/index.blade.php

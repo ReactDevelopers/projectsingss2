@@ -1,0 +1,114 @@
+LINKEDIN 
+Email: aman@singsys.com
+Password: amanverma##
+URL: https://www.linkedin.com/developer/apps/4929065/auth
+
+#########################################################################
+http://localhost/crowbar/public/login/linkedin
+http://localhost/crowbar/public/talent/settings/social
+http://localhost/crowbar/public/employer/settings/social
+
+http://crowbar.me/login/linkedin
+http://crowbar.me/talent/settings/social
+http://crowbar.me/employer/settings/social
+
+https://crowbar.me/login/linkedin
+https://crowbar.me/talent/settings/social
+https://crowbar.me/employer/settings/social
+
+http://115.249.91.204/crowbar/public/login/linkedin
+http://115.249.91.204/crowbar/public/talent/settings/social
+http://115.249.91.204/crowbar/public/employer/settings/social
+#########################################################################
+
+FACEBOOK 
+Email: aman@singsys.com
+Password: amanverma##
+URL: https://developers.facebook.com/apps/757556561086114/settings/
+
+#########################################################################
+http://localhost/crowbar/public/login/facebook
+http://localhost/crowbar/public/talent/settings/social
+http://localhost/crowbar/public/employer/settings/social
+
+http://crowbar.me/login/facebook
+http://crowbar.me/talent/settings/social
+http://crowbar.me/employer/settings/social
+
+https://crowbar.me/login/facebook
+https://crowbar.me/talent/settings/social
+https://crowbar.me/employer/settings/social
+
+http://115.249.91.204/crowbar/public/login/facebook
+http://115.249.91.204/crowbar/public/talent/settings/social
+http://115.249.91.204/crowbar/public/employer/settings/social
+#########################################################################
+
+TWITTER
+Email: aman@singsys.com
+Password: amanverma##
+URL: https://apps.twitter.com/app/13496421/settings
+
+#########################################################################
+http://localhost/crowbar/public/login/twitter
+http://localhost/crowbar/public/talent/settings/social
+http://localhost/crowbar/public/employer/settings/social
+
+http://crowbar.me/login/twitter
+http://crowbar.me/talent/settings/social
+http://crowbar.me/employer/settings/social
+
+https://crowbar.me/login/twitter
+https://crowbar.me/talent/settings/social
+https://crowbar.me/employer/settings/social
+
+http://115.249.91.204/crowbar/public/login/twitter
+http://115.249.91.204/crowbar/public/talent/settings/social
+http://115.249.91.204/crowbar/public/employer/settings/social
+#########################################################################
+
+INSTAGRAM
+Email: deeksha@singsys.com
+Password: deekshasharma123
+https://www.instagram.com/developer/clients/0ba0dd847b9942dbac91180055f4db56/edit/
+
+http://localhost/crowbar/public/login/instagram
+http://localhost/crowbar/public/talent/settings/social
+http://localhost/crowbar/public/employer/settings/social
+
+http://crowbar.me/login/instagram
+http://crowbar.me/talent/settings/social
+http://crowbar.me/employer/settings/social
+
+https://crowbar.me/login/instagram
+https://crowbar.me/talent/settings/social
+https://crowbar.me/employer/settings/social
+
+http://115.249.91.204/crowbar/public/login/instagram
+http://115.249.91.204/crowbar/public/talent/settings/social
+http://115.249.91.204/crowbar/public/employer/settings/social
+
+GOOGLEPLUS
+Email: aman@singsys.com
+Password: ***************
+https://console.cloud.google.com/apis/credentials/oauthclient/113396961252-ahu4g7burf6lbcqlgmscpscm9pvv8ev1.apps.googleusercontent.com?project=crowbar-165304&organizationId=920809980868
+
+http://localhost/crowbar/public/login/googleplus
+http://localhost/crowbar/public/talent/settings/social
+http://localhost/crowbar/public/employer/settings/social
+
+http://crowbar.me/login/googleplus
+http://crowbar.me/talent/settings/social
+http://crowbar.me/employer/settings/social
+
+https://crowbar.me/login/googleplus
+https://crowbar.me/talent/settings/social
+https://crowbar.me/employer/settings/social
+
+http://115.249.91.204/crowbar/public/login/googleplus
+http://115.249.91.204/crowbar/public/talent/settings/social
+http://115.249.91.204/crowbar/public/employer/settings/social
+
+
+/*MYSQL*/
+SET @GLOBAL sql_mode = '';

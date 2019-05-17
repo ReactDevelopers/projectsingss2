@@ -1,0 +1,18 @@
+<li class="language-selector">
+    <form method="get" action="{{ url('/language') }}">
+        <select name="language" onchange="submit()" class="form-control">
+            @foreach(language() as $code => $language)
+                <option value="{{ $code }}" @if(\App::getLocale() == $code) selected="selected" @endif>{{ strtoupper($code) }}</option>
+            @endforeach
+        </select>
+    </form>
+</li>
+<li class="language-selector currency-selector">
+    <form method="get" action="{{ url('/currency') }}">
+        <select name="currency" onchange="submit()" class="form-control">
+            @foreach(currencies() as $currency => $sign)
+                <option value="{{ $currency }}" @if(\Session::get('site_currency') == $currency) selected="selected" @endif>{{ $currency }}</option>
+            @endforeach
+        </select>
+    </form>
+</li>

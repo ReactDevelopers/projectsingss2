@@ -1,0 +1,1 @@
+âu7resources/views/talent/job/include/job-detail.blade.php 2phpX(hr7resources/views/talent/job/include/job-detail.blade.php

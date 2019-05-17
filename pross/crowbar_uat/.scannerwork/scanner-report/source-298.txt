@@ -1,0 +1,58 @@
+<?php $__env->startSection('content'); ?>
+    <!-- Main Content -->
+    <div class="contentWrapper" data-request="scroll" data-section="<?php echo e(\Request::get('section')); ?>">
+        <div class="afterlogin-section has-nobanner viewProfile">
+            <div class="container">
+                <?php echo $__env->make('employer.includes.talent-profile-header', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                <div class="clearfix"></div>
+                <?php echo $__env->make('employer.job.includes.talent-profile-menu', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                <div class="row mainContentWrapper">
+                    <div class="col-md-9 right-sidebar job-details-left">
+                        <div class="inner-profile-section talent-profile-section top-padding-10px">
+
+                            <?php if($user['is_subscribed'] == 'No'): ?>
+                                <div class="premium-account-msg">
+                                    <div class="premium-account-image">
+                                        <img src="<?php echo e(asset('images/premium-account.png')); ?>" alt="image">
+                                    </div>
+                                    <div class="premium-account-content">
+                                        <h3><?php echo e(trans('website.W0442')); ?></h3>
+                                        <p><?php echo e(trans('website.W0443')); ?></p>
+                                        <div class="premium-account-actions">
+                                            <div class="row">
+                                                <div class="col-md-6 col-sm-6 col-xs-6">
+                                                    <a href="<?php echo e($upgrade_later_url); ?>">
+                                                        <button type="button" class="button-line" value="Cancel"><?php echo e(trans('website.W0444')); ?></button>
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-6 col-sm-6 col-xs-6">
+                                                    <a href="<?php echo e($upgrade_now_url); ?>">
+                                                        <button type="button" class="button" value="Submit"><?php echo e(trans('website.W0445')); ?></button>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <?php if($talentAnswerExist == 1): ?>
+                                    <?php echo $__env->make('employer.interview.summary', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                                <?php else: ?>
+                                    <div class="premium-account-msg">
+                                        <div class="premium-account-content">
+                                            <h2 class="form-heading"><?php echo e(trans('website.W0441')); ?></h2>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="col-md-3 right-sidebar">
+                        <?php echo $__env->make('employer.includes.top-talent-listing', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
+

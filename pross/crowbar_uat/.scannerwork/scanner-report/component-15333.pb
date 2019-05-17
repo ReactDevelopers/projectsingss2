@@ -1,0 +1,1 @@
+åw8resources/views/backend/project/project-detail.blade.php 2phpX_hr8resources/views/backend/project/project-detail.blade.php

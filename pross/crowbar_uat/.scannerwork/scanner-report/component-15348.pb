@@ -1,0 +1,1 @@
+ôw"resources/views/backend/talent/org :ówõwöw’xr"resources/views/backend/talent/org

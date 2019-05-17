@@ -1,0 +1,47 @@
+@extends('layouts.front.main')
+
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+    @section('requirecss')
+
+    @endsection
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinecss')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    @section('requirejs')
+
+    @endsection
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinejs')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    @section('content')
+        <div class="contentWrapper">
+            <div id="taglineBar" class="taglineBar">
+                <div class="container-fluid">
+                    <h4>{!! $page['title'] !!}</h4>
+                </div>
+            </div>
+            <section class="aboutSection termsAndConditonSec">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="aboutContent">
+                                {!! $page['content'] !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section> 
+        </div>
+    @endsection
+

@@ -1,0 +1,1 @@
+Îu7resources/views/talent/talent-connect/connect.blade.php 2phpXhr7resources/views/talent/talent-connect/connect.blade.php

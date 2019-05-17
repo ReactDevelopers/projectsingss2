@@ -1,0 +1,647 @@
+<?php
+
+	/*
+	|--------------------------------------------------------------------------
+	| Web Routes
+	|--------------------------------------------------------------------------
+	|
+	| This file is where you may define all of the routes that are handled
+	| by your application. Just tell Laravel the URIs it should respond
+	| to using a Closure or controller method. Build something great!
+	|
+	*/
+
+	Route::get('/plans','FrontController@fetchPlan');
+	Route::get('/language','Front\FrontController@change_language');
+	Route::get('/currency','Front\FrontController@change_currency');
+	Route::get('/validate-paypalemail','Front\FrontController@validatePayPalEmail');
+	Route::get('/redirect','FrontController@redirect');
+	
+	Route::group(['middleware' => '\App\Http\Middleware\TempLogin'], function () {
+		Route::group(['middleware' => '\App\Http\Middleware\AdminAuth','prefix'=> ADMIN_FOLDER,'namespace' => 'Admin'], function () {
+			Route::get('/', function () { return redirect('/login'); });
+			Route::get('/dashboard','AdminController@index');
+			Route::get('/general','AdminController@general');
+			Route::post('/general/update/setting','AdminController@update_settings');
+			Route::post('/general/upload/collection','AdminController@upload_collection');
+
+			Route::get('/get-availability','AdminController@get_talent_availability');
+
+			/*Subscription listing*/
+			Route::get('/employer/subscription','AdminController@employer_subscription_list');
+			Route::get('/subscription/detail/{id_user}','AdminController@employer_subscription_detail');
+			Route::post('/subscription/delete','AdminController@subscription_delete');
+
+			/*Banner Management*/
+			Route::get('/banner','AdminController@banner_list');
+			Route::put('/banner/image','AdminController@banner_image_upload');
+			Route::get('/banner/edit/{id_banner}','AdminController@banner_edit');
+			Route::put('/banner/edit/{id_banner}','AdminController@banner_update');
+			Route::put('/banner/image/delete','AdminController@banner_image_delete');
+
+			/*Project Management*/
+			Route::get('/project/listing','AdminController@project_list');
+			Route::get('/project/detail/{id_project}','AdminController@project_detail');
+			Route::get('/project/proposal/detail/','AdminController@proposal_detail');
+			Route::post('/project/delete','AdminController@project_delete');
+
+			/*Newsletter*/
+			Route::get('/newsletter/subscriber','AdminController@newsletter_subscriber');
+			Route::post('/newsletter/unsubscribe-user','AdminController@newsletter_unsubscribe_user');
+
+			Route::get('/newsletter/subscribe','AdminController@newsletter_subscribe');
+			Route::post('/newsletter/unsubscribe','AdminController@newsletter_unsubscribe');
+
+			/*REPORT ABUSE*/
+			Route::get('/report-abuse','AdminController@report_abuse');
+			Route::post('/report-abuse/resolve','AdminController@report_abuse_resolve');
+			Route::post('/report-abuse/unlink','AdminController@report_abuse_unlink');
+			
+			/*RAISE DISPUTE*/
+			Route::get('/request/payout','AdminController@listRequestPayout');
+
+			Route::get('/raise-dispute','AdminController@raise_dispute');
+			Route::get('/raise-dispute/detail','AdminController@raise_dispute_detail');
+
+			/*PAYMENT*/
+			Route::post('/payment/refund', 'AdminController@payment_refund');
+			Route::post('/payment/pay', 'AdminController@payment_pay');
+
+			/*Messages Listing*/
+			Route::get('/messages/{messages_status}','AdminController@message_list');
+			Route::get('/ajax/messages/{messages_status}','AjaxController@message_list');
+			Route::get('/messages/detail/{id_message}','AdminController@message_detail');
+			Route::put('/messages/reply/{id_message}','AdminController@message_replay');
+			Route::get('/messages/delete/{id_message}','AdminController@message_delete');
+			/*Messages Listing*/
+
+			/*Forum Section*/
+			Route::get('/forum/question','AdminController@forum_question_list');
+			Route::post('/forum/question/update','AdminController@forum_question_update');
+			Route::post('/forum/question/delete','AdminController@forum_question_delete');
+			Route::get('/forum/question/detail/{id_question}','AdminController@forum_question_detail');
+			Route::get('/forum/question/reply/{id_question}','AdminController@forum_question_reply');
+			Route::put('/forum/question/reply/{id_question}','AdminController@forum_question_reply_insert');
+
+			Route::post('/forum/answer/reply','AdminController@forum_list_answer');
+			Route::post('/forum/answer/delete','AdminController@forum_delete_answer');
+			Route::post('/forum/answer/add','AdminController@forum_add_answer');
+
+
+			Route::get('/currency','AdminController@currency_list');
+			Route::get('/currency/add','AdminController@add_currency');
+			Route::put('/currency/add','AdminController@insert_currency');
+			Route::get('/currency/edit/{id}','AdminController@edit_currency');
+			Route::put('/currency/edit/{id}','AdminController@update_currency');
+			Route::post('/currency/update_currency_status','AdminController@update_currency_status');
+			Route::post('/currency/delete','AdminController@delete_currency');
+
+			/*User Management*/
+			Route::get('/users/talent/edit','AdminController@edit_talent');
+			Route::get('/users/employer/edit','AdminController@edit_employer');
+			Route::get('/users/talent/add','AdminController@add_talent');
+			Route::put('/users/talent/add','AdminController@insert_talent');
+			Route::get('/users/employer/add','AdminController@add_employer');
+			Route::put('/users/employer/add','AdminController@insert_employer');
+
+			Route::post('/users/status','AdminController@users_status');
+			
+			Route::get('/users/sub-admin/edit','AdminController@edit_subadmin');
+			Route::put('/users/sub-admin/update','AdminController@update_subadmin');
+
+			Route::get('/users/sub-admin/add','AdminController@add_subadmin');
+			Route::put('/users/sub-admin/add','AdminController@insert_subadmin');
+
+
+			Route::get('/users/premium/add','AdminController@add_premium');
+			Route::put('/users/premium/add','AdminController@insert_premium');
+			Route::get('/users/premium/edit','AdminController@edit_premium');
+			Route::put('/users/employer/update','AdminController@update_premium');
+
+
+			Route::get('/users/{type}','AdminController@users');
+
+			Route::get('/ajax/users','AjaxController@user_list');
+			Route::post('/ajax/user/status','AjaxController@userstatus');
+			Route::post('/ajax/question/status','AjaxController@questionstatus');
+			Route::post('/ajax/question-type/status','AjaxController@questionTypestatus');
+			Route::post('/ajax/industry/status','AjaxController@industrystatus');
+			Route::post('/ajax/abusive-word/status','AjaxController@abusive_word_status');
+			Route::post('/ajax/degree/status','AjaxController@degreestatus');
+			Route::post('/ajax/certificate/status','AjaxController@certificatestatus');
+			Route::post('/ajax/college/status','AjaxController@collegestatus');
+			Route::post('/ajax/skill/status','AjaxController@skillstatus');
+			Route::post('/ajax/features/status','AjaxController@featurestatus');
+
+			Route::get('/talent-users/{id_user}/edit','AdminController@edit_talent');
+			Route::put('/talent-users/{id_user}/update','AdminController@update_talent');
+			Route::get('/talent/delete-education/{id_education}/{id_user}/','AdminController@delete_education');
+			Route::get('/talent/delete-experience/{id_experience}/{id_user}/','AdminController@delete_talent_experience');
+			Route::post('/talent/doc-submit','AdminController@user_document_upload');
+
+			/*User Management*/
+
+			Route::get('/emails','AdminController@emails');
+			Route::get('/emails/{id_email}/edit','AdminController@editemail');
+			Route::put('/emails/{id_email}/update','AdminController@updateemail');
+			Route::resource('templates','TemplateController');
+
+			/*GENERAL*/
+			Route::post('/general/countries/add','AdminController@add_country');
+			Route::post('/general/states/add','AdminController@add_state');
+			Route::post('/general/city/add','AdminController@add_city');
+			Route::post('/general/industry/add','AdminController@add_industry');
+			Route::post('/general/sub_industry/add','AdminController@add_sub_industry');
+			Route::post('/general/abusive_words/add','AdminController@add_abusive_words');
+			Route::post('/general/degree/add','AdminController@add_degree');
+			Route::post('/general/certificate/add','AdminController@add_certificate');
+			Route::post('/general/college/add','AdminController@add_college');
+			Route::post('/general/skill/add','AdminController@add_skill');
+			
+			Route::post('/general/countries/edit','AdminController@add_country');
+			Route::post('/general/states/edit','AdminController@add_state');
+			Route::post('/general/city/edit','AdminController@add_city');
+			Route::post('/general/industry/edit','AdminController@add_industry');
+			Route::post('/general/sub_industry/edit','AdminController@add_sub_industry');
+			Route::post('/general/abusive_words/edit','AdminController@add_abusive_words');
+			Route::post('/general/degree/edit','AdminController@add_degree');
+			Route::post('/general/certificate/edit','AdminController@add_certificate');
+			Route::post('/general/college/edit','AdminController@add_college');
+			Route::post('/general/skill/edit','AdminController@add_skill');			
+			
+			/*AJAX REQUESTS*/
+			Route::get('/general/ajax/messages','AjaxController@messages');
+			Route::post('/general/ajax/addmessage','AjaxController@addmessage');
+			
+			Route::get('/general/ajax/countries','AjaxController@countries');
+			Route::post('/general/ajax/addcountry','AjaxController@addcountry');
+			Route::post('/ajax/country/status','AjaxController@countrystatus');
+			Route::post('/ajax/state/status','AjaxController@statestatus');
+			Route::post('/ajax/city/status','AjaxController@citystatus');
+			
+			Route::post('/ajax/setting/update','AjaxController@updatesetting');
+			Route::get('/ajax/emails','AjaxController@emails');
+
+			Route::get('/pages','AdminController@page');
+			Route::get('/page/{id_page}/edit','AdminController@editpage');
+			Route::put('/page/{id_page}/update','AdminController@updatepage');
+			Route::get('/ajax/page','AjaxController@pages');
+
+			/*INTERVIEW SECTION*/
+			Route::get('/question-list','AdminController@questionList');
+			Route::get('/interview/question/add','AdminController@add_interview_question');
+			Route::post('/question/add','AdminController@add_question');
+			Route::get('/interview/question/edit','AdminController@edit_interview_question');
+			Route::post('/question/edit','AdminController@edit_question');
+			Route::get('/question-type-list','AdminController@questionTypeList');
+			Route::get('/interview/question-type/add','AdminController@add_interview_questionType');
+			Route::post('/question-type/add','AdminController@add_questionType');
+			Route::get('/interview/question-type/edit','AdminController@edit_interview_questionType');
+			Route::post('/question-type/edit','AdminController@edit_questionType');
+
+			/*PLAN SECTION*/
+			Route::get('/plan-list','AdminController@plan_list');
+			Route::get('/plan/edit','AdminController@plan_edit');
+			Route::post('/plan/edit','AdminController@edit_plan');
+			Route::get('/features-list','AdminController@features_list');
+			Route::post('/plan/add-feature','AdminController@add_feature');			
+			Route::get('/features/edit','AdminController@features_edit');
+			Route::post('/features/edit','AdminController@edit_features');			
+
+			/*LIST ADD*/
+			Route::post('/add-state','AdminController@add_state');
+			Route::post('/add-city','AdminController@add_city');
+			Route::post('/add-industry','AdminController@add_industry');
+			Route::post('/add-sub-industry','AdminController@add_sub_industry');
+			Route::post('/add-abusive-word','AdminController@add_abusive_words');
+			Route::post('/add-degree','AdminController@add_degree');
+			Route::post('/add-certificate','AdminController@add_certificate');
+			Route::post('/add-college','AdminController@add_college');
+			Route::post('/add-skill','AdminController@add_skill');
+
+			/*INDUSTRY MANAGEMENT*/
+			Route::get('/industry-list','AdminController@industry_list');
+			Route::get('/industry/add','AdminController@industry_add_edit');
+			Route::get('/sub-industry/add','AdminController@sub_industry_add_edit');
+			Route::post('/industry/add','AdminController@add_industry');
+			Route::post('/sub-industry/add','AdminController@add_sub_industry');
+			Route::get('/industry/edit','AdminController@industry_add_edit');
+			Route::get('/sub-industry/edit','AdminController@sub_industry_add_edit');
+			Route::get('/sub-industry-list','AdminController@sub_industry_list');
+			Route::post('/industry/image','AdminController@industry_image_upload');
+		});
+
+		Route::get('/'.ADMIN_FOLDER.'/login','Admin\AdminController@login');
+		Route::get('/'.ADMIN_FOLDER.'/logout', 'Admin\AdminController@getLogout');
+		Route::get('/'.ADMIN_FOLDER.'/generatepassword','Admin\AdminController@generatePassword');
+		Route::get('/'.ADMIN_FOLDER.'/decryptPassword','Admin\AdminController@decryptPassword');
+		Route::post('/'.ADMIN_FOLDER.'/authenticate','Admin\AdminController@authenticate');
+
+		Route::get('/'.ADMIN_FOLDER.'/create-subadmin/account','Admin\AdminController@completeAccount');
+		Route::post('/'.ADMIN_FOLDER.'/create-subadmin/account','Admin\AdminController@createPassword');
+
+		Auth::routes();
+		Route::get('/', 'Front\FrontController@index');
+
+		Route::group(['middleware'=>'\App\Http\Middleware\PublicAuth', 'namespace' => 'Front'],function(){
+			Route::get('/share', 'FrontController@share');
+
+			Route::get('/login', 'FrontController@login');			
+			Route::post('/authenticate', 'FrontController@authenticate');			
+			
+			Route::get('/community/forum', 'FrontController@community_forum');
+
+			Route::get('/community/forum/question/{id_question}', 'FrontController@community_forum_question');
+
+			Route::put('/community/forum/answer/add/{id_question}', 'FrontController@community_forum_add_answer');
+
+			Route::post('/community/forum/load/answer/{id_question}', 'FrontController@forum_list_answer');
+
+			Route::put('/community/forum/question/add', 'FrontController@community_forum_add_question');
+
+			Route::get('/newsletter/unsubscribe/{token}', 'FrontController@newsletter_unsubscribe');
+
+			Route::get('/update-project', 'FrontController@updateProjectStatus');
+
+			Route::get('/send-newsletter-employer', 'FrontController@sendNewsletterToEmployer');
+			Route::get('/send-newsletter-talent', 'FrontController@sendNewsletterToTalent');
+
+			Route::get('/signup', 'FrontController@signup');
+			
+			Route::get('/signup/talent', 'FrontController@login');
+			Route::post('/signup/talent/process', 'FrontController@__signuptalent');
+			Route::get('/talent/signup/success', 'FrontController@__editsignuptalent');
+
+			Route::get('/signup/employer', 'FrontController@signupemployer');
+			Route::post('/signup/employer/process', 'FrontController@__signupemployer');
+			Route::get('/employer/signup/success', 'FrontController@__editsignupemployer');
+			
+			Route::get('/download/collection', 'FrontController@download_postman_collection');
+
+			Route::get('/reset/password','FrontController@resetpassword');
+			Route::post('/_resetpassword','FrontController@_resetpassword');
+			Route::get('/activate/account','FrontController@activateaccount');
+			Route::get('/forgot/password','FrontController@forgotpassword');
+			Route::post('/_forgotpassword','FrontController@_forgotpassword');
+
+			Route::get('/create/account','FrontController@completeAccount');
+			Route::post('/create/account','FrontController@createPassword');
+			
+			Route::get('/emailverify/account','FrontController@completeAccountEmail');
+			/*Newsletter*/
+			Route::get('/confirm-newsletter','FrontController@confirmNewsLetter');
+			Route::put('/newsletter-subscribed','FrontController@subscribedNewsLetter');
+		
+			/* SOCIAL CONFIGURATION */
+			Route::get('/login/facebook','FrontController@facebook');
+			Route::get('/login/twitter','FrontController@twitter');
+			Route::get('/login/instagram','FrontController@instagram');
+			Route::get('/login/linkedin','FrontController@linkedin');
+			Route::get('/login/googleplus','FrontController@googleplus');
+
+			Route::get('/facebook/callback','FrontController@facebook_callback');
+			Route::get('/login/instagram/callback','FrontController@instagram_callback');
+			Route::get('/login/twitter/callback','FrontController@twitter_callback');
+
+			/*STATIC PAGES*/
+			Route::get('/page/{slug}','FrontController@staticpage');		
+			Route::post('/page/_contact','FrontController@_contactpage');		
+			Route::get('/pricing_page','EmployerController@hire_premiums_talents');		
+
+		});
+		
+		/*TALENT LOGIN*/		
+		Route::group(['middleware' => ['\App\Http\Middleware\TalentAuth','revalidate'],'prefix'=> TALENT_ROLE_TYPE, 'namespace' => 'Front'], function () {
+
+			/*TALENT SETUP PROFILE STEPS*/
+			Route::get('/profile/personal','TalentController@step_one');
+			Route::post('/_step_one','TalentController@_step_one');
+
+			Route::get('/profile/industry-skills','TalentController@step_two');			
+			Route::post('/_step_two','TalentController@_step_two');
+
+
+			Route::get('/profile/curriculum-vitae','TalentController@step_three');			
+			Route::post('/add-education','TalentController@step_three_education');
+			Route::post('/work-experience','TalentController@step_three_work_experience');
+			Route::post('/cover-letter','TalentController@_step_three');
+			Route::post('/doc-submit','TalentController@step_three_document');
+
+			Route::get('/profile/availability','TalentController@step_four');			
+			Route::post('/_step_four_set_availability','TalentController@_step_four_set_availability');
+			Route::post('/profile/availability/delete','TalentController@_step_four_delete_availability');
+			Route::post('/profile/availability/edit','TalentController@_step_four_edit_availability');
+			Route::get('/profile/verify-account','TalentController@step_five');
+
+			Route::get('/dashboard','TalentController@index');
+			
+			/*VIEW PROFILE*/
+			Route::get('/profile','TalentController@view_profile');
+			Route::get('/profile/view','TalentController@view_profile');
+			Route::get('/profile/reviews','TalentController@view_reviews');
+			Route::get('/profile/availabilities','TalentController@set_availability');
+			Route::get('/availability','TalentController@talent_availability');
+			Route::get('/get-availability','TalentController@get_talent_availability');
+			Route::get('/profile/edit/personal','TalentController@edit_step_one');
+			Route::get('/profile/edit/industry-skills','TalentController@edit_step_two');
+			Route::get('/profile/edit/education','TalentController@edit_step_three');
+			Route::get('/profile/edit/work-experience','TalentController@edit_step_three_work');
+			Route::get('/profile/edit/availability','TalentController@edit_step_step_four');
+			Route::get('/profile/edit/verify-account','TalentController@edit_step_five');
+
+			Route::get('/profile/portfolio','TalentController@view_portfolio');
+			Route::get('/profile/portfolio/add','TalentController@addportfolio');
+			Route::post('/profile/portfolio/__add','TalentController@__addportfolio');
+			Route::get('/profile/portfolio/edit','TalentController@editportfolio');
+			Route::post('/profile/portfolio/image','TalentController@portfolio_image');
+
+			/*JOBS*/
+			Route::get('/find-jobs','TalentController@find_jobs');	
+			Route::post('/_find-jobs','TalentController@_find_jobs');	
+			
+			Route::get('/find-jobs/job-details','TalentController@job_details');
+			Route::get('/jobs/save-job','TalentController@save_job');
+
+			Route::get('/jobs/{review}/job-details','TalentController@job_details');
+			Route::get('/jobs/job-details','TalentController@job_details');
+			Route::get('/jobs/get-talent-reviews','TalentController@get_talent_reviews');
+			Route::get('/jobs/reviews/{type}','TalentController@reviews');
+			Route::get('/jobs/get-employer-reviews','TalentController@get_employer_reviews');
+			Route::get('/jobs/actions/{action}','TalentController@actions');
+			Route::get('/job/actions','TalentController@job_actions');
+
+			Route::get('/my-jobs','TalentController@myjobs');
+			Route::get('/my-jobs/start','TalentController@start_job');
+			Route::get('/my-jobs/close','TalentController@close_job');
+			Route::get('/my-jobs/{type}','TalentController@myjobs');
+			// Route::get('/my-jobs','TalentController@saved_jobs');
+			// Route::get('/my-jobs/saved','TalentController@saved_jobs');
+			// Route::get('/my-jobs/current','TalentController@current_jobs');
+			// Route::get('/my-jobs/scheduled','TalentController@jobs_scheduled');
+			// Route::get('/my-jobs/history','TalentController@past_job_history');
+			
+			/*APPLY JOB*/
+			Route::get('/jobs/apply','TalentController@apply_job');
+			
+
+			/*PROPOSALS*/
+			Route::get('/proposals/submit','TalentController@submit_proposal');
+			Route::post('/proposals/submit','TalentController@submit_proposal');
+			Route::post('/proposals/submit/document','TalentController@proposal_document');
+			
+			Route::get('/proposals','TalentController@proposals');
+			Route::get('/proposals/{type}','TalentController@proposals');
+			
+
+			Route::get('/chat','TalentController@chat');
+			Route::get('/chat/initiate-chat-request','TalentController@initiate_chat_request');
+
+			/* PAYMENT */
+			Route::get('/payment/start','TalentController@payment_talent');
+			Route::post('/payment_method','TalentController@payment_method');
+
+			/* ADDCARD */
+			Route::get('/add/card','TalentController@add_card');
+			Route::post('/add_payment_card','TalentController@add_payment_card');
+			
+			Route::get('/profile/notifications','TalentController@view_notifications');			
+			Route::get('/notifications/list','TalentController@notification_list');
+			Route::get('/notifications/mark/read','TalentController@mark_read_notification');
+
+			/*CHANGE PASSWORD*/
+			Route::get('/change-password','TalentController@change_password');
+			Route::post('/__change-password','TalentController@__change_password');
+
+			/*SETTINGS*/
+			Route::get('/settings','TalentController@settings');
+			Route::post('/__settings','TalentController@__settings');
+
+			/*REPORT ABUSE*/
+			Route::post('/report-abuse','TalentController@report_abuse');
+
+			/*PAYMENT*/
+			Route::get('/wallet','TalentController@wallet');
+			Route::get('/wallet/{all}','TalentController@wallet');
+			Route::get('/wallet/{paid}','TalentController@wallet');
+			Route::get('/wallet/{disputed}','TalentController@wallet');
+			Route::get('/wallet/request/payout','TalentController@payout_request');
+
+			/*INTERVIEW*/
+			Route::get('/my-interview','InterviewController@myInterview');
+			Route::get('/interview','InterviewController@interview_question');
+			Route::post('/interview','InterviewController@save_interview_answer');
+			Route::get('/interview-summary','InterviewController@interviewAnswerReview');
+
+			/*RAISE DISPUTE*/
+			Route::post('/raise/dispute','TalentController@raise_dispute');
+
+			/*RATINGS*/
+			Route::get('/submit/ratings','ReviewController@submit_ratings');
+			Route::post('/submit/ratings','ReviewController@submit_ratings');
+		});
+		
+		/*SOCIAL CONFIGURATION TO CONNECT FOR TALENT*/
+		Route::group(['prefix'=> sprintf('%s/connect',TALENT_ROLE_TYPE)], function () {	
+			Route::post('/_verify_phone','Front\TalentController@_verify_phone');
+			Route::post('/_verify_otp','Front\TalentController@_verify_otp');
+		});
+
+		/*NOTIFICATION*/
+		Route::group(['prefix'=> 'notification', 'namespace' => 'Front'], function () {	
+			Route::get('/desktop/mark/read','FrontController@mark_read_desktop');
+			Route::get('/mark/read','TalentController@mark_read_notification');
+		});
+
+		/*EMPLOYER LOGIN*/		
+		Route::group(['middleware' => ['\App\Http\Middleware\EmployerAuth','revalidate'],'prefix'=> EMPLOYER_ROLE_TYPE, 'namespace' => 'Front'], function () {
+			/*EMPLOYER SETUP PROFILE STEPS*/
+			Route::get('/profile/general','EmployerController@step_one');
+			Route::post('/_step_one','EmployerController@_step_one');
+
+			Route::get('/profile/setup','EmployerController@step_two');
+			Route::post('/_step_two','EmployerController@_step_two');
+
+			Route::get('/profile/verify-account','EmployerController@step_three');
+			Route::post('/_step_three','EmployerController@_step_three');
+
+			Route::get('/dashboard','EmployerController@index');
+
+			Route::get('/post-job','EmployerController@post_job');
+			Route::post('/_post_job','EmployerController@_post_job');
+			
+			/*JOBS*/
+			Route::get('/my-jobs/job_details','EmployerController@job_details');
+			Route::get('/my-jobs/start','EmployerController@start_job');
+			Route::get('/my-jobs/close','EmployerController@close_job');
+			Route::get('/my-jobs','EmployerController@employer_jobs');
+			Route::get('/my-jobs/{type}','EmployerController@employer_jobs');
+			Route::get('/job/actions','EmployerController@job_actions');
+			Route::get('/my-jobs/{page}/job_details','EmployerController@job_details');
+
+			/*RATINGS*/
+			Route::get('/submit/ratings','ReviewController@submit_ratings');
+			Route::post('/submit/ratings','ReviewController@submit_ratings');
+			/*FIND TALENTS*/
+			Route::get('/find-talents','EmployerController@find_talents');
+			Route::post('/_find-talents','EmployerController@_find_talents');
+			Route::get('/find-talents/profile','EmployerController@talent_profile');
+			Route::get('/find-talents/work-history','EmployerController@talent_work_history');
+			Route::get('/find-talents/reviews','EmployerController@talent_reviews');
+			Route::get('/find-talents/portfolio','EmployerController@talent_portfolio');
+			Route::get('/find-talents/interview','EmployerController@talent_interview');
+			Route::get('/save','EmployerController@save_talent');
+			
+			/*AVAILABILITY*/
+			Route::get('/find-talents/availability','EmployerController@talent_availability');
+			Route::get('/get-talents-availability','EmployerController@get_talent_availability');
+
+			Route::get('/proposals','EmployerController@proposals');
+			Route::get('/proposals/listing','EmployerController@proposal_listing');
+			Route::get('/proposals/detail','EmployerController@proposal_details');
+			Route::get('/proposals/accept','EmployerController@proposals_accept');
+			Route::get('/proposals/decline','EmployerController@proposals_decline');
+			Route::get('/proposals/tag','EmployerController@proposals_tag');
+
+			/*View Profile*/
+			Route::get('/profile','EmployerController@view_profile');
+			Route::get('/profile/view','EmployerController@view_profile');
+			Route::get('/profile/reviews','EmployerController@view_reviews');
+			Route::get('/profile/edit/general','EmployerController@edit_general');
+			Route::get('/profile/edit/setup','EmployerController@edit_setup');
+			Route::get('/profile/edit/verify-account','EmployerController@edit_verify_account');
+			
+			Route::get('/chat','EmployerController@chat');
+			Route::get('/chat/employer-chat-request','EmployerController@employer_chat_request');
+
+			/* HIRE  PREMIMUM  TALENTS */
+			Route::get('/plan-purchase/{id_plan}','EmployerController@plan_purchase');
+			Route::post('/plan/payment/initiate/{id_plan}','EmployerController@plan_payment_initiate');
+			Route::get('/hire-premium-talents','EmployerController@hire_premiums_talents');
+			Route::get('/checkout','EmployerController@checkout');
+			Route::post('/proceed_payment','EmployerController@proceed_payment');
+
+			Route::post('/_hire-premium-talents','EmployerController@_hire_premium_talents');
+
+			/* PAYMENT */
+			Route::get('/payment/start','EmployerController@payment_talent');
+			Route::post('/payment_method','EmployerController@payment_method');
+
+			/* ADD CARDS */
+			Route::get('/payment/card/manage','EmployerController@payment_manage_card');
+			Route::post('/payment/card/select','EmployerController@payment_select_card');
+			Route::post('/payment/card/add','EmployerController@payment_add_card');
+			Route::get('/payment/card/delete','EmployerController@payment_delete_card');
+			
+			Route::get('/profile/notifications','EmployerController@view_notifications');
+			Route::get('/notifications/list','EmployerController@notification_list');
+			Route::get('/notifications/mark/read','EmployerController@mark_read_notification');
+			
+			/*CHANGE PASSWORD*/
+			Route::get('/change-password','EmployerController@change_password');
+			Route::post('/__change-password','EmployerController@__change_password');
+
+			/*SETTINGS*/
+			Route::get('/settings','EmployerController@settings');
+			Route::post('/__settings','EmployerController@__settings');
+			
+			Route::get('/transaction','EmployerController@transaction');
+
+			/*REPORT ABUSE*/
+			Route::post('/report-abuse','EmployerController@report_abuse');
+
+			/*PAYMENT*/
+			Route::get('/payments','EmployerController@payments');
+			Route::get('/payments/detail','EmployerController@payments_detail');
+			Route::get('/payments/{all}','EmployerController@payments');
+			Route::get('/payments/{paid}','EmployerController@payments');
+			Route::get('/payments/{refunded}','EmployerController@payments');
+			Route::get('/payment/checkout','EmployerController@payment_checkout');
+			Route::post('/payment/initiate','EmployerController@payment_initiate');
+			Route::get('/payment/success','EmployerController@payment_callback');
+			Route::get('/payment/cancel','EmployerController@payment_callback');
+
+			/*RAISE DISPUTE*/
+			Route::post('/raise/dispute','EmployerController@raise_dispute');
+
+			/*HIRE TALENT*/
+			Route::get('/hire/talent','EmployerController@hire_talent');
+			Route::post('/hire/talent','EmployerController@hire_talent');
+		});
+
+		/*SOCIAL CONFIGURATION TO CONNECT FOR EMPLOYER*/
+		Route::group(['prefix'=> sprintf('%s/connect',EMPLOYER_ROLE_TYPE)], function () {	
+			Route::post('/_verify_phone','Front\EmployerController@_verify_phone');
+			Route::post('/_verify_otp','Front\EmployerController@_verify_otp');
+		});
+
+
+		Route::get(sprintf('%s/profile/phone',TALENT_ROLE_TYPE),'Front\TalentController@verify_phone');
+		Route::get(sprintf('%s/profile/verify-otp',TALENT_ROLE_TYPE),'Front\TalentController@verify_otp');
+		Route::get(sprintf('%s/profile/edit/verify-account/phone',TALENT_ROLE_TYPE),'Front\TalentController@edit_verify_phone');
+		Route::get(sprintf('%s/profile/edit/verify-account/otp',TALENT_ROLE_TYPE),'Front\TalentController@edit_verify_otp');
+
+		Route::get(sprintf('%s/profile/phone',EMPLOYER_ROLE_TYPE),'Front\EmployerController@verify_phone');
+		Route::get(sprintf('%s/profile/verify-otp',EMPLOYER_ROLE_TYPE),'Front\EmployerController@verify_otp');
+		Route::get(sprintf('%s/profile/edit/verify-account/phpne',EMPLOYER_ROLE_TYPE),'Front\EmployerController@edit_verify_phone');
+		Route::get(sprintf('%s/profile/edit/verify-account/otp',EMPLOYER_ROLE_TYPE),'Front\EmployerController@edit_verify_otp');
+
+		Route::group(['middleware'=>'\App\Http\Middleware\PublicAuth', 'prefix' => 'ajax','namespace' => 'Front'],function(){
+			Route::post('edit-talent-education','AjaxController@get_talent_education');
+			Route::post('edit-talent-experience','AjaxController@get_talent_experience');
+			Route::post('delete-user-document','AjaxController@delete_user_document');
+			Route::post('state-list','AjaxController@country_state_list');
+			Route::post('city-list','AjaxController@state_city_list');
+			Route::post('subindustry-list','AjaxController@industry_subindustry_list');
+			Route::post('subindustry-skill-list','AjaxController@subindustry_skill_list');
+			Route::get('subindustry-skills-list','AjaxController@subindustry_skills_list');
+			Route::get('resend_activation_link','AjaxController@resend_activation_link');			
+			Route::post(DELETE_TALENT_EDUCATION,'AjaxController@delete_talent_education');
+			Route::post(EDIT_TALENT_EDUCATION,'AjaxController@edit_talent_education');
+			Route::post(EDIT_TALENT_EXPERIENCE,'AjaxController@edit_talent_experience');
+			Route::post(DELETE_TALENT_EXPERIENCE,'AjaxController@delete_talent_experience');
+			Route::post(DELETE_DOCUMENT,'AjaxController@delete_document');
+			Route::post(DELETE_CARD,'AjaxController@delete_card');
+			Route::post(DELETE_PORTFOLIO,'AjaxController@delete_portfolio');
+			Route::post('crop','AjaxController@crop');
+			Route::post('validate-calendar','AjaxController@validate_calendar');
+			Route::get('find_all_jobs','AjaxController@find_all_jobs');
+			Route::get('country-state-list','AjaxController@country_state_list');
+			Route::get('state-city-list','AjaxController@state_city_list');
+			Route::get('industry-subindustry-list','AjaxController@industry_subindustry_list');
+			Route::get('city-list','AjaxController@city_list');
+			Route::get('state-list','AjaxController@state_list');
+			Route::get('user-state-list','AjaxController@user_state_list');
+		});
+
+		/*DOWNLOAD ATTACHMENT*/
+		Route::get('/download/file','Front\FrontController@download_file');
+
+
+	});
+	
+	/*LOGOUT*/
+	Route::get('/logout', function () { 
+        /* RECORDING ACTIVITY LOG */
+        event(new \App\Events\Activity([
+            'user_id'           => \Auth::user()->id_user,
+            'user_type'         => \Auth::user()->type,
+            'action'            => \Auth::user()->type.'-logout',
+            'reference_type'    => 'users',
+            'reference_id'      => \Auth::user()->id_user
+        ]));
+
+		\Auth::logout();
+		\Session::forget('social'); 
+		Session::forget('front_login');
+
+		return redirect('/login'); 
+	});
+
+	Route::get('/clear-cache', function() {
+	    $exitCode = Artisan::call('cache:clear');
+	});
+
+	#templogin
+	Route::get('templogin', 'TempController@login');
+	Route::post('templogin', 'TempController@auth');
+

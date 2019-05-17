@@ -1,0 +1,26 @@
+@extends('layouts.backend.dashboard')
+
+@section('content')
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel">
+                    <form role="edit-question-type" method="post" enctype="multipart/form-data" action="{{ url(sprintf('%s/question-type/edit?id_question_type=%s',ADMIN_FOLDER,___encrypt($question_type_data->id))) }}">
+                        {{ csrf_field() }}
+                        <div class="panel-body">                       
+                            <div class="form-group">
+                                <label for="question">Question Type</label>
+                                <input type="text" class="form-control" name="question_type" placeholder="Question Type" value="{{ $question_type_data->question_type }}">
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <a href="{{url($backurl)}}" class="btn btn-default">Back</a>
+                            <button type="button" data-request="ajax-submit" data-target='[role="edit-question-type"]' class="btn btn-default">Save</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection

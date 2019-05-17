@@ -1,0 +1,1 @@
+·u?resources/views/talent/settings/transferownershiplist.blade.php 2phpX5hr?resources/views/talent/settings/transferownershiplist.blade.php

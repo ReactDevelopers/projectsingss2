@@ -1,0 +1,57 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class Projects extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('projects', function (Blueprint $table) {
+            $table->increments('id_project');
+            $table->integer('user_id');
+            $table->mediumText('title')->nullable();
+            $table->text('description')->nullable();
+            $table->enum('employment', ['hourly','daily','weekly','monthly','fixed','fulltime'])->nullable();
+            $table->integer('industry')->nullable();
+            $table->integer('subindustry')->nullable();
+            $table->float('price_max')->nullable();
+            $table->string('price_unit', 255);
+            $table->float('bonus')->nullable();
+            $table->float('price')->nullable();
+            $table->enum('expertise', ['novice', 'proficient', 'expert'])->nullable();
+            $table->integer('location')->nullable();
+            $table->dateTime('startdate')->nullable();
+            $table->dateTime('enddate')->nullable();
+            $table->string('timeline', 100)->nullable();
+            $table->enum('project_status', ['pending','initiated','open','completed','closed'])->default('pending');
+            $table->enum('budget_type', ['M0232', 'M0233', 'M0234', 'M0235'])->nullable();
+            $table->text('other_perks')->nullable();
+            $table->integer('price_type')->nullable();
+            $table->integer('budget')->nullable();
+            $table->integer('required_qualifications')->nullable();
+            $table->enum('transaction', ['on-completion','daily','weekly','monthly'])->nullable();
+            $table->float('work_hours')->default(2);
+            $table->enum('status', ['active', 'trashed'])->default('active');
+            $table->dateTime('created')->nullable();
+            $table->dateTime('updated')->nullable();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('projects');
+    }
+}
+

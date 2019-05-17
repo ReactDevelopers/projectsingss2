@@ -1,0 +1,609 @@
+<?php
+
+    namespace App\Http\Controllers;
+
+    use Illuminate\Http\Request;
+    use Session;
+    use App\Http\Requests;
+
+    class TempController extends Controller{
+        
+        public function login(Request $request){
+            $redirectTo = !empty($request->redirect)?$request->redirect:'/';
+            
+            if(Session::get('temp-login') == 'authenticated'){
+        		return redirect($redirectTo);
+            }
+
+        	return view('templogin', compact('redirectTo'));
+        }
+
+        public function auth(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'email'                 => 'required|email',
+                'password'              => 'required',
+            ],[
+                'email.required'        => 'The email address is required.',        
+                'email.email'           => 'The email address must be a valid email address.',        
+                'password.required'     => 'The password is required.',
+            ]);
+            
+            if ($validator->passes()) {
+                if($request->email == 'support@crowbar.com' && $request->password == '1Crowbar##'){
+                    Session::put('temp-login', 'authenticated');
+                    $redirectTo = !empty($request->redirect)?base64_decode($request->redirect):'/';
+                    return redirect($redirectTo);
+                }
+            }else{
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            return redirect('templogin')->with('error', 'Username & Password combination is wrong. Try Again.');
+        } 
+
+        public function uploadimage(Request $request){    	
+            if($_FILES['image']['name']){
+                if(!is_dir(base_path('public/uploads/'.$request->folder))){
+                    mkdir(base_path('public/uploads/'.$request->folder),777,true);
+                }
+                move_uploaded_file($_FILES['image']['tmp_name'], base_path('public/uploads/'.$request->folder.'/'.$_FILES['image']['name']));
+                return response()->json($_FILES['image']['name']);
+            }   
+            else{
+                return response()->json(0);
+            }
+        }
+
+        public function add_card(Request $request){
+            $data['subheader']   = 'employer.includes.top-menu';
+            $data['header']      = 'innerheader';
+            $data['footer']      = 'innerfooter';
+            $data['view']        = 'employer.job.add-card';
+
+            $data['user']        = \Models\Employers::get_user(\Auth::user());
+            $data['user_card']   = \Models\Payments::get_user_card(\Auth::user()->id_user);
+            return view('employer.job.index')->with($data);
+        }
+
+        public function checkout(Request $request){
+            $data['subheader']   = 'employer.includes.top-menu';
+            $data['header']      = 'innerheader';
+            $data['footer']      = 'innerfooter';
+            $data['view']        = 'employer.job.checkout';
+
+            $data['user']        = \Models\Employers::get_user(\Auth::user());
+            $data['user_card']   = \Models\Payments::get_user_card(\Auth::user()->id_user);
+            return view('employer.job.index')->with($data);
+        }
+
+        public function proceed_payment(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'card_id'              => ['required']
+            ],[
+                'card_id.required'     => trans('payment.P0001'),
+            ]);
+
+            if($validator->passes()){
+                $created_date = date('Y-m-d H:i:s');
+                $data['user_card']   = \Models\Payments::get_user_card(\Auth::user()->id_user,$request->card_id,'array',['token']);
+                
+                $payment_result = \Braintree_Subscription::create([
+                    'planId' => "PREMIUM",
+                    'paymentMethodToken' => $data['user_card'][0]['token']
+                ]);
+
+                if($payment_result->success){
+                    \Models\Payments::braintree_response([
+                        'user_id'                   => \Auth::user()->id_user,
+                        'braintree_response_json'   => json_encode($payment_result->subscription),
+                        'status'                    => 'true',
+                        'created'                   => $created_date
+                    ]);
+                    // $transaction = [
+                    //     'transaction_user_id'   => \Auth::user()->id_user,
+                    //     'amount'                => $payment_result->subscription->transactions[0]->amount,
+                    //     'api_transaction_id'    => $payment_result->subscription->transactions[0]->id,
+                    //     'updated_on'            => $created_date,
+                    //     'created_on'            => $created_date
+                    // ];
+                    
+                    // $isInserted = \Models\Payments::save_transaction($transaction); 
+                    $this->status   = true;
+                    $this->redirect = url(sprintf("%s/find-talents",EMPLOYER_ROLE_TYPE));
+                    $this->message  = sprintf(ALERT_SUCCESS,trans("payment.P0019"));
+                }else{
+                    \Models\Payments::braintree_response([
+                        'user_id'                   => \Auth::user()->id_user,
+                        'braintree_response_json'   => json_encode($payment_result->message),
+                        'status'                    => 'false',
+                        'created'                   => $created_date
+                    ]);
+                    $this->status   = false;
+                    $this->redirect = url(sprintf("%s/checkout?page=%s",EMPLOYER_ROLE_TYPE,'subscription'));
+                }
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+            return response()->json([
+                'data'      => (object)$this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]); 
+        }  
+
+        
+        public function saved_jobs(Request $request){
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.job.saved-jobs';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+
+            if ($request->ajax()) {
+                $html = $search = $load_more = "";
+                $page = $request->page;
+                               
+                $where = " {$this->prefix}projects.project_status != 'closed' ";
+
+                $having         = " (is_saved = '".DEFAULT_YES_VALUE."') ";
+                
+                $page           = (!empty($request->page))?$request->page:1;
+                $sort           = (!empty($request->sort))?$request->sort:"";
+                $jobs           = \Models\Talents::find_job($request->user(),'all',$where,$page,$sort,NULL,$having);
+                
+                if(!empty($jobs['result'])){
+                    foreach($jobs['result'] as $keys => $item){
+                        $html .= '<div class="content-box">';
+                            $html .= '<div class="content-box-header clearfix">';
+                                $html .= '<div class="contentbox-header-title">';
+                                    $html .= '<h3><a href="'.url(sprintf('%s/find-jobs/job-details?job_id=%s',TALENT_ROLE_TYPE,$item['id_project'])).'">'.___print($item['title']).'</a></h3>';
+                                    $html .= '<span class="company-name">'.$item['company_name'].'</span>';
+                                $html .= '</div>';
+                                $html .= '<div class="contentbox-price-range">';
+                                    $html .= '<span>'.$item['price_unit'].$item['price'].'</span>';
+                                    $html .= '<small>'.trans('general.'.$item['budget_type']).'</small>';
+                                $html .= '</div>';
+                            $html .= '</div>';
+                            $html .= '<div class="contentbox-minutes clearfix">';
+                                $html .= '<div class="minutes-left">';
+                                    $html .= '<span>'.trans('job.J0003').': <strong>'.___print($item['industry_name']).'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0004').': <strong>'.$item['timeline'].'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0005').': <strong>'.$item['price_type'].'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0006').': <strong>'.___print($item['expertise']).'</strong></span>';
+                                $html .= '</div>';
+                                $html .= '<div class="minutes-right">';
+                                    $html .= '<span class="posted-time">'.$item['created'].'</span>';
+                                $html .= '</div>';
+                            $html .= '</div>';
+                            $html .= '<div class="content-box-description">';
+                                if(strlen($item['description']) > READ_MORE_LENGTH){
+                                    $html .= '<p>'.___e(substr($item['description'], 0,READ_MORE_LENGTH)).'..</p>';
+                                }else{
+                                    $html .= '<p>'.___e($item['description']).'</p>';
+                                }
+
+                                $html .= '<div class="checkbox checkbox-blue">';
+                                    $data_url = url(sprintf('%s/jobs/save-job?job_id=%s',TALENT_ROLE_TYPE,$item['id_project']));
+                                    if($item['is_saved'] == DEFAULT_YES_VALUE){
+                                        $html .= '<input type="checkbox" checked="checked" data-request="inline-ajax" data-url="'.$data_url.'" id="job-'.$item['id_project'].'">';
+                                    }else{
+                                        $html .= '<input type="checkbox" checked="checked" data-request="inline-ajax" data-url="'.$data_url.'" id="job-'.$item['id_project'].'">';
+                                    }
+
+                                    $html .= '<label for="job-'.$item['id_project'].'"><span class="check"></span>Save Job</label>';
+                                $html .= '</div>';
+                            $html .= '</div>';
+                        $html .= '</div>';
+                    }
+                }else{
+                    $html .= '<p class="no-records-found">'.trans('website.W0237').'</p>';
+                }
+
+                if($jobs['total'] == DEFAULT_PAGING_LIMIT){
+                    $load_more = '<span class="btn btn-default btn-block btn-lg" data-request="paginate" data-url="'.url(sprintf('%s/my-jobs/saved?page=%s',TALENT_ROLE_TYPE,$page+1)).'" data-target="#job_listing" data-showing="#paginate_showing" data-loadmore="#loadmore">'.trans('website.W0254').'</span>';
+                }
+
+                return response()->json([
+                    "recordsTotal"      => intval($jobs['total']),
+                    "recordsFiltered"   => intval($jobs['total_filtered_result']),
+                    "loadMore"          => $load_more, 
+                    "data"              => $html,
+                ]);
+            }else{
+                return view('talent.job.index')->with($data);
+            }
+        }
+
+        public function current_jobs(Request $request){
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.job.current-jobs';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            
+            if ($request->ajax()) {
+                $html   = $search = $load_more = "";
+                $page   = $request->page;
+                
+                $having = " 1 ";
+                $where = " ({$this->prefix}proposals.status = 'applied' OR {$this->prefix}proposals.status = 'accepted') ";
+
+                
+                $page           = (!empty($request->page))?$request->page:1;
+                $sort           = (!empty($request->sort))?$request->sort:"";
+                $jobs           = \Models\Talents::find_job($request->user(),'all',$where,$page,$sort,NULL,$having);
+                if(!empty($jobs['result'])){
+                    foreach($jobs['result'] as $keys => $item){
+                        $html .= '<div class="content-box">';
+                            $html .= '<div class="content-box-header clearfix">';
+                                $html .= '<div class="contentbox-header-title">';
+                                    $html .= '<h3><a href="'.url(sprintf('%s/find-jobs/job-details?job_id=%s',TALENT_ROLE_TYPE,$item['id_project'])).'">'.___print($item['title']).'</a></h3>';
+                                    $html .= '<span class="company-name">'.$item['company_name'].'</span>';
+                                $html .= '</div>';
+                                $html .= '<div class="contentbox-price-range">';
+                                    $html .= '<span>'.$item['price_unit'].$item['price'].'</span>';
+                                    $html .= '<small>'.trans('general.'.$item['budget_type']).'</small>';
+                                $html .= '</div>';
+                            $html .= '</div>';
+                            $html .= '<div class="contentbox-minutes clearfix">';
+                                $html .= '<div class="minutes-left">';
+                                    $html .= '<span>'.trans('job.J0003').': <strong>'.___print($item['industry_name']).'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0004').': <strong>'.$item['timeline'].'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0005').': <strong>'.$item['price_type'].'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0006').': <strong>'.___print($item['expertise']).'</strong></span>';
+                                $html .= '</div>';
+                                $html .= '<div class="minutes-right">';
+                                    $html .= '<span class="posted-time">'.$item['created'].'</span>';
+                                $html .= '</div>';
+                            $html .= '</div>';
+                            $html .= '<div class="content-box-description">';
+                                if(strlen($item['description']) > READ_MORE_LENGTH){
+                                    $html .= '<p>'.___e(substr($item['description'], 0,READ_MORE_LENGTH)).'..</p>';
+                                }else{
+                                    $html .= '<p>'.___e($item['description']).'</p>';
+                                }
+
+                                $html .= '<div class="checkbox checkbox-blue">';
+                                    $data_url = url(sprintf('%s/jobs/save-job?job_id=%s',TALENT_ROLE_TYPE,$item['id_project']));
+                                    if($item['is_saved'] == DEFAULT_YES_VALUE){
+                                        $html .= '<input type="checkbox" checked="checked" data-request="inline-ajax" data-url="'.$data_url.'" id="job-'.$item['id_project'].'">';
+                                    }else{
+                                        $html .= '<input type="checkbox" checked="checked" data-request="inline-ajax" data-url="'.$data_url.'" id="job-'.$item['id_project'].'">';
+                                    }
+
+                                    $html .= '<label for="job-'.$item['id_project'].'"><span class="check"></span>Save Job</label>';
+                                $html .= '</div>';
+
+                            $html .= '</div>';
+                        $html .= '</div>';
+                    }
+                }else{
+                    $html .= '<p class="no-records-found">'.trans('website.W0237').'</p>';
+                }                
+
+                if($jobs['total'] == DEFAULT_PAGING_LIMIT){
+                    $load_more = '<span class="btn btn-default btn-block btn-lg" data-request="paginate" data-url="'.url(sprintf('%s/my-jobs/current?page=%s',TALENT_ROLE_TYPE,$page+1)).'" data-target="#job_listing" data-showing="#paginate_showing" data-loadmore="#loadmore">'.trans('website.W0254').'</span>';
+                }
+
+                return response()->json([
+                    "recordsTotal"      => intval($jobs['total']),
+                    "recordsFiltered"   => intval($jobs['total_filtered_result']),
+                    "loadMore"          => $load_more, 
+                    "data"              => $html,
+                ]);
+            }else{
+                return view('talent.job.index')->with($data);
+            }
+        }
+
+        public function jobs_scheduled(Request $request){
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.job.jobs-scheduled';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            
+            if ($request->ajax()) {
+                $html       = $search = $load_more = "";
+                $page       = $request->page;
+                
+                $having = " 1 ";
+                $where = " 
+                    {$this->prefix}projects.project_status = 'pending'
+                    AND ({$this->prefix}proposals.status = 'applied' OR {$this->prefix}proposals.status = 'accepted')
+                ";
+
+                
+                $page           = (!empty($request->page))?$request->page:1;
+                $sort           = (!empty($request->sort))?$request->sort:"";
+                $jobs           = \Models\Talents::find_job($request->user(),'all',$where,$page,$sort,NULL,$having);
+                
+                if(!empty($jobs['result'])){
+                    foreach($jobs['result'] as $keys => $item){
+                        $html .= '<div class="content-box">';
+                            $html .= '<div class="content-box-header clearfix">';
+                                $html .= '<div class="contentbox-header-title">';
+                                    $html .= '<h3><a href="'.url(sprintf('%s/find-jobs/job-details?job_id=%s',TALENT_ROLE_TYPE,$item['id_project'])).'">'.___print($item['title']).'</a></h3>';
+                                    $html .= '<span class="company-name">'.$item['company_name'].'</span>';
+                                $html .= '</div>';
+                                $html .= '<div class="contentbox-price-range">';
+                                    $html .= '<span>'.$item['price_unit'].$item['price'].'</span>';
+                                    $html .= '<small>'.trans('general.'.$item['budget_type']).'</small>';
+                                $html .= '</div>';
+                            $html .= '</div>';
+                            $html .= '<div class="contentbox-minutes clearfix">';
+                                $html .= '<div class="minutes-left">';
+                                    $html .= '<span>'.trans('job.J0003').': <strong>'.___print($item['industry_name']).'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0004').': <strong>'.$item['timeline'].'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0005').': <strong>'.$item['price_type'].'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0006').': <strong>'.___print($item['expertise']).'</strong></span>';
+                                $html .= '</div>';
+                                $html .= '<div class="minutes-right">';
+                                    $html .= '<span class="posted-time">'.$item['created'].'</span>';
+                                $html .= '</div>';
+                            $html .= '</div>';
+                            $html .= '<div class="content-box-description">';
+                                if(strlen($item['description']) > READ_MORE_LENGTH){
+                                    $html .= '<p>'.___e(substr($item['description'], 0,READ_MORE_LENGTH)).'..</p>';
+                                }else{
+                                    $html .= '<p>'.___e($item['description']).'</p>';
+                                }
+                                
+                                
+                                $html .= '<div class="checkbox checkbox-blue">';
+                                    $data_url = url(sprintf('%s/jobs/save-job?job_id=%s',TALENT_ROLE_TYPE,$item['id_project']));
+                                    if($item['is_saved'] == DEFAULT_YES_VALUE){
+                                        $html .= '<input type="checkbox" checked="checked" data-request="inline-ajax" data-url="'.$data_url.'" id="job-'.$item['id_project'].'">';
+                                    }else{
+                                        $html .= '<input type="checkbox" checked="checked" data-request="inline-ajax" data-url="'.$data_url.'" id="job-'.$item['id_project'].'">';
+                                    }
+
+                                    $html .= '<label for="job-'.$item['id_project'].'"><span class="check"></span>Save Job</label>';
+                                $html .= '</div>';
+
+                            $html .= '</div>';
+                        $html .= '</div>';
+                    }
+                }else{
+                    $html .= '<p class="no-records-found">'.trans('website.W0237').'</p>';
+                }                
+
+                if($jobs['total'] == DEFAULT_PAGING_LIMIT){
+                    $load_more = '<span class="btn btn-default btn-block btn-lg" data-request="paginate" data-url="'.url(sprintf('%s/my-jobs/scheduled?page=%s',TALENT_ROLE_TYPE,$page+1)).'" data-target="#job_listing" data-showing="#paginate_showing" data-loadmore="#loadmore">'.trans('website.W0254').'</span>';
+                }
+
+                return response()->json([
+                    "recordsTotal"      => intval($jobs['total']),
+                    "recordsFiltered"   => intval($jobs['total_filtered_result']),
+                    "loadMore"          => $load_more, 
+                    "data"              => $html,
+                ]);
+            }else{
+                return view('talent.job.index')->with($data);
+            }
+        }
+
+        public function past_job_history(Request $request){
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.job.past-job-history';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            
+            if ($request->ajax()) {
+                $html       = $search = $load_more = "";
+                $page       = $request->page;
+                $having     = " 1 ";
+                
+                $where = " 
+                    {$this->prefix}projects.project_status = closed
+                    AND ({$this->prefix}proposals.status = 'applied' OR {$this->prefix}proposals.status = 'accepted')
+                ";
+                
+                $page           = (!empty($request->page))?$request->page:1;
+                $sort           = (!empty($request->sort))?$request->sort:"";
+                $jobs           = \Models\Talents::find_job($request->user(),'all',$where,$page,$sort,NULL,$having);
+                
+                if(!empty($jobs['result'])){
+                    foreach($jobs['result'] as $keys => $item){
+                        $html .= '<div class="content-box">';
+                            $html .= '<div class="content-box-header clearfix">';
+                                $html .= '<div class="contentbox-header-title">';
+                                    $html .= '<h3><a href="'.url(sprintf('%s/find-jobs/job-details?job_id=%s',TALENT_ROLE_TYPE,$item['id_project'])).'">'.___print($item['title']).'</a></h3>';
+                                    $html .= '<span class="company-name">'.$item['company_name'].'</span>';
+                                $html .= '</div>';
+                                $html .= '<div class="contentbox-price-range">';
+                                    $html .= '<span>'.$item['price_unit'].$item['price'].'</span>';
+                                    $html .= '<small>'.trans('general.'.$item['budget_type']).'</small>';
+                                $html .= '</div>';
+                            $html .= '</div>';
+                            $html .= '<div class="contentbox-minutes clearfix">';
+                                $html .= '<div class="minutes-left">';
+                                    $html .= '<span>'.trans('job.J0003').': <strong>'.___print($item['industry_name']).'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0004').': <strong>'.$item['timeline'].'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0005').': <strong>'.$item['price_type'].'</strong></span>';
+                                    $html .= '<span>'.trans('job.J0006').': <strong>'.___print($item['expertise']).'</strong></span>';
+                                $html .= '</div>';
+                                $html .= '<div class="minutes-right">';
+                                    $html .= '<span class="posted-time">'.$item['created'].'</span>';
+                                $html .= '</div>';
+                            $html .= '</div>';
+                            $html .= '<div class="content-box-description">';
+                                if(strlen($item['description']) > READ_MORE_LENGTH){
+                                    $html .= '<p>'.___e(substr($item['description'], 0,READ_MORE_LENGTH)).'..</p>';
+                                }else{
+                                    $html .= '<p>'.___e($item['description']).'</p>';
+                                }
+                            
+                                
+                                $html .= '<div class="checkbox checkbox-blue">';
+                                    $data_url = url(sprintf('%s/jobs/save-job?job_id=%s',TALENT_ROLE_TYPE,$item['id_project']));
+                                    if($item['is_saved'] == DEFAULT_YES_VALUE){
+                                        $html .= '<input type="checkbox" checked="checked" data-request="inline-ajax" data-url="'.$data_url.'" id="job-'.$item['id_project'].'">';
+                                    }else{
+                                        $html .= '<input type="checkbox" checked="checked" data-request="inline-ajax" data-url="'.$data_url.'" id="job-'.$item['id_project'].'">';
+                                    }
+
+                                    $html .= '<label for="job-'.$item['id_project'].'"><span class="check"></span>Save Job</label>';
+                                $html .= '</div>';
+
+                            $html .= '</div>';
+                        $html .= '</div>';
+                    }
+                }else{
+                    $html .= '<p class="no-records-found">'.trans('website.W0237').'</p>';
+                }  
+
+                if($jobs['total'] == DEFAULT_PAGING_LIMIT){
+                    $load_more = '<span class="btn btn-default btn-block btn-lg" data-request="paginate" data-url="'.url(sprintf('%s/my-jobs/history?page=%s',TALENT_ROLE_TYPE,$page+1)).'" data-target="#job_listing" data-showing="#paginate_showing" data-loadmore="#loadmore">'.trans('website.W0254').'</span>';
+                }
+
+                return response()->json([
+                    "recordsTotal"      => intval($jobs['total']),
+                    "recordsFiltered"   => intval($jobs['total_filtered_result']),
+                    "loadMore"          => $load_more, 
+                    "data"              => $html,
+                ]);
+            }else{
+                return view('talent.job.index')->with($data);
+            }
+        }
+
+        public function transaction(Request $request){
+            $result = \Braintree_Transaction::sale([
+                'amount' => '220.00',
+                'merchantAccountId' => env('BRAINTREE_MERCHANT_ACCOUNT_ID'),
+                'paymentMethodToken' => 'fxh4b8',
+                'options' => [
+                    'submitForSettlement' => true,
+                ],
+            ]);
+            dd($result);
+            /*$result = \Braintree_Transaction::sale([
+                'amount' => '100.00',
+                'merchantAccountId' => 'singsyssoft',
+                'paymentMethodToken' => '3zgsyp',
+                'options' => [
+                    'storeInVault' => true,
+                    'submitForSettlement' => true
+                ]
+            ]);*/
+
+
+            /*$result = \Braintree_Transaction::sale([
+                'amount' => "100.00",
+                'merchantAccountId' => 'aman_employer',
+                'creditCard' => [
+                    'number' => "4111111111111111",
+                    'expirationDate' => "12/2020",
+                    'cvv' => "123",
+                ],
+                'options' => [
+                    'submitForSettlement' => true,
+                    'holdInEscrow' => true,
+                ],
+                'serviceFeeAmount' => '1'
+            ]);*/
+
+            /*$merchantAccountParams = [
+                'individual' => [
+                    'firstName' => 'Aman',
+                    'lastName' => 'Verma',
+                    'email' => 'ranjan@singsys.com',
+                    'phone' => '9335515318',
+                    'dateOfBirth' => '1981-11-19',
+                    'ssn' => '456-45-4567',
+                    'address' => [
+                        'streetAddress' => '111 Main St',
+                        'locality' => 'Chicago',
+                        'region' => 'IL',
+                        'postalCode' => '60622'
+                    ]
+                ],
+                // 'business' => [
+                //     'legalName' => 'Jane\'s Ladders',
+                //     'dbaName' => 'Jane\'s Ladders',
+                //     'taxId' => '98-7654321',
+                //     'address' => [
+                //         'streetAddress' => '111 Main St',
+                //         'locality' => 'Chicago',
+                //         'region' => 'IL',
+                //         'postalCode' => '60622'
+                //     ]
+                // ],
+                'funding' => [
+                    'descriptor' => 'Test Company',
+                    'destination' => \Braintree_MerchantAccount::FUNDING_DESTINATION_BANK,
+                    'email' => 'ranjan@singsys.com',
+                    'mobilePhone' => '9335515318',
+                    'accountNumber' => '1123581321',
+                    'routingNumber' => '071101307'
+                ],
+                'tosAccepted' => true,
+                'masterMerchantAccountId' => "singsyspteltd",
+                'id' => "ranjan_employer"
+            ];
+            
+            $result = \Braintree_MerchantAccount::create($merchantAccountParams);*/
+
+            /*$result = \Braintree_Transaction::releaseFromEscrow('mwgghpm3');*/
+
+
+            /*$merchantAccountParams = [
+                'individual' => [
+                    'firstName' => 'Santosh',
+                    'lastName' => 'Singh',
+                    'email' => 'santosh@singsys.com',
+                    'phone' => '9005860241',
+                    'dateOfBirth' => '1987-02-05',
+                    'address' => [
+                        'streetAddress' => 'Unit #4 - #8, Omaxe Avenue',
+                        'locality' => 'Lucknow',
+                        'region' => 'UP',
+                        'postalCode' => '226025'
+                    ]
+                ],
+                'funding' => [
+                    'destination' => \Braintree_MerchantAccount::FUNDING_DESTINATION_BANK,
+                    'accountNumber' => "50100129434660",
+                    'routingNumber' => "HDFC0001136",
+                ],
+                'tosAccepted' => true,
+                'masterMerchantAccountId' => "singsyspteltd",
+                'id' => "santosh_talent"
+            ];
+            
+            $result = \Braintree_MerchantAccount::create($merchantAccountParams);*/
+
+
+            // Change the values accordingly for your application
+
+
+            /*$provider = \PayPal::setProvider('adaptive_payments');
+            $data = [
+                'receivers'  => [
+                    [
+                        'email' => 'santosh@singsys.com',
+                        'amount' => 10,
+                        'primary' => false,
+                    ]
+                ],
+                'payer' => 'SENDER', // (Optional) Describes who pays PayPal fees. Allowed values are: 'SENDER', 'PRIMARYRECEIVER', 'EACHRECEIVER' (Default), 'SECONDARYONLY'
+                'return_url' => url('payment/success'), 
+                'cancel_url' => url('payment/cancel'),
+            ];
+
+            $result = $provider->createPayRequest($data);
+
+            //$result = $provider->getPaymentOptions('AP-09V54237K3263764H','PaymentDetails');
+            $redirect_url = $provider->getRedirectUrl('approved', $result['payKey']);
+
+            return redirect($redirect_url);*/
+            //$result = \Models\Payments::transfer_payment_talent('aman@singsys.com',___format(1));
+            
+
+            //dd($result);
+        }
+    }
+

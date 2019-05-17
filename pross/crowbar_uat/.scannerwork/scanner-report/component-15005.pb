@@ -1,0 +1,1 @@
+ùu%resources/views/front/article/layouts :úur%resources/views/front/article/layouts

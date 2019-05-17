@@ -1,0 +1,43 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class Reviews extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('reviews', function (Blueprint $table) {
+            $table->increments('id_review');
+            $table->integer('project_id');
+            $table->integer('sender_id');
+            $table->integer('receiver_id');
+            $table->text('description')->nullable();
+            $table->float('review_average');
+            $table->float('category_two');
+            $table->float('category_three');
+            $table->float('category_four');
+            $table->float('category_five');
+            $table->float('category_six');
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('reviews');
+    }
+}
+

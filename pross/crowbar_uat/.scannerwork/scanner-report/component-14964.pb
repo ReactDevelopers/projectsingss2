@@ -1,0 +1,1 @@
+ôt*resources/views/front/pages/talent_profile :ót÷tútr*resources/views/front/pages/talent_profile

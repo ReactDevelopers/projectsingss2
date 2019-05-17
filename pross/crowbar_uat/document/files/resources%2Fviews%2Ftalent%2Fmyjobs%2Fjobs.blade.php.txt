@@ -1,0 +1,34 @@
+<!-- Main Content -->
+<div class="contentWrapper job-details-section find-jobs-list-section schedule-job-listing">
+    <div class="container">
+        <div class="col-md-9 job-details-left">
+            <div id="parentHorizontalTab">
+                <div class="heading-filter">
+                    <div class="checkbox" id="hide-description">                
+                        <input type="checkbox" id="loc0612">
+                        <label for="loc0612"><span class="check"></span> {{trans('job.J0036')}}</label>
+                    </div>
+                </div>
+                {!! ___getmenu('talent-myjobs','<span class="hide">%s</span><ul class="user-profile-links">%s</ul>','active',true,true) !!}
+                <div class="shift-up-5px">
+                    <div>
+                        <div class="no-table datatable-listing">
+                            {!! $html->table(); !!}
+                        </div>   
+                    </div>
+                </div>
+            </div>
+                
+        </div>
+        <div class="col-md-3 job-details-right">
+            @includeIf('talent.includes.my-profile-percentage')
+        </div>
+    </div>
+</div>
+@push('inlinescript')
+    <script src="{{ asset('js/jquery.dataTables.js') }}"></script>
+    <script src="{{ asset('js/dataTables.bootstrap.js') }}"></script>
+    {!! $html->scripts() !!}
+    <script type="text/javascript">$(function(){$('#dataTableBuilder_wrapper .row:first').remove();});</script>
+@endpush
+

@@ -1,0 +1,117 @@
+    @extends('layouts.front.main')
+
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+    @section('requirecss')
+        <link href="{{ asset('css/owl.carousel.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/owl.theme.default.min.css') }}" rel="stylesheet">
+    @endsection
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinecss')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    @section('requirejs')
+        <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+        <script src="{{ asset('/js/custom.js') }}"></script>
+    @endsection
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinejs')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    @section('content')
+        <div class="contentWrapper">
+            <div class="job-options">
+                <div class="searchbar-wrap" style="display: none;">
+                    <div class="container-fluid">
+                        <div class="header-searchBar">
+                            <form class="navbar-form">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="{{trans('website.W0500')}}">
+                                    <button type="submit" class="btn searchBtn"><img src="{{ asset('/images/header-search-icon.png') }}" alt="{{trans('website.W0500')}}"></button>
+                                </div>
+                            </form>
+                        </div>  
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <ul class="job-options-list">
+                        <li>
+                            <a href="#">
+                                <span><img src="{{ asset('/images/job_001.png') }}" alt="image"></span>
+                                <h5>Legal</h5>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span><img src="{{ asset('/images/job_002.png') }}" alt="image"></span>
+                                <h5>Finance</h5>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span><img src="{{ asset('/images/job_003.png') }}" alt="image"></span>
+                                <h5>Consulting</h5>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span><img src="{{ asset('/images/job_004.png') }}" alt="image"></span>
+                                <h5>Creative</h5>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span><img src="{{ asset('/images/job_005.png') }}" alt="image"></span>
+                                <h5>Accounting</h5>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span><img src="{{ asset('/images/job_006.png') }}" alt="image"></span>
+                                <h5>Architecture</h5>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span><img src="{{ asset('/images/job_007.png') }}" alt="image"></span>
+                                <h5>IT</h5>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span><img src="{{ asset('/images/job_008.png') }}" alt="image"></span>
+                                <h5>Other</h5>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Tagline Bar -->
+            <div id="taglineBar" class="taglineBar">
+                <div class="container-fluid">
+                    <h4>{{ trans('website.W0260') }}</h4>
+                </div>
+            </div>
+            @includeIf('front.includes.how-it-works')   
+            @includeIf('front.includes.social')   
+        </div>
+    @endsection
+
+    @push('inlinescript')
+        <script type="text/javascript">
+            (function($){
+                $(window).on("load",function(){
+                    $('.searchbar-wrap').fadeIn(100);
+                });
+            })(jQuery);
+        </script>
+    @endpush
+

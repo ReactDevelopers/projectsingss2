@@ -1,0 +1,33 @@
+/* @import "./spark/spark"; */
+@import "./../../vendor/laravel/spark-aurelius/resources/assets/sass/spark";
+@import "./contracts";
+
+body .container,
+body .container-fluid {
+    font-size: 0.8rem;
+}
+
+.form-control {
+    font-size: 0.8rem;
+}
+
+.offline-notification {
+    display: none;
+}
+
+.offline {
+    .offline-notification {
+        display: block;
+        position: fixed;
+        margin: 0 auto;
+        z-index: 999;
+        width: 18%;
+        left: 41%;
+        font-weight: bold;
+        text-align: center;
+    }
+  }
+
+a.disabled-link {
+    pointer-events: none;
+}

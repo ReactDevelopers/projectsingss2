@@ -1,0 +1,66 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class UserCard extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('user_card', function (Blueprint $table) {
+            $table->increments('id_card');
+            $table->integer('user_id');
+            $table->enum('type', ['talent', 'employer']);
+            $table->string('bin', 4)->nullable();
+            $table->string('expiration_month', 2)->nullable();
+            $table->string('expiration_year', 4)->nullable();
+            $table->string('last4', 4)->nullable();
+            $table->string('card_type', 20)->nullable();
+            $table->string('cardholder_name', 255)->nullable();
+            $table->string('commercial', 255)->nullable();
+            $table->string('country_of_issuance', 255)->nullable();
+            $table->string('created_at', 20)->nullable();
+            $table->string('customer_id', 40)->nullable();
+            $table->string('customer_location', 10)->nullable();
+            $table->string('debit', 255)->nullable();
+            $table->enum('default', ['yes', 'no'])->nullable();
+            $table->string('durbin_regulated', 255)->nullable();
+            $table->string('expired', 255)->nullable();
+            $table->string('healthcare', 255)->nullable();
+            $table->string('image_url', 255)->nullable();
+            $table->string('issuing_bank', 255)->nullable();
+            $table->string('payroll', 255)->nullable();
+            $table->string('prepaid', 255)->nullable();
+            $table->string('product_id', 255)->nullable();
+            $table->text('subscriptions')->nullable();
+            $table->string('token', 255)->nullable();
+            $table->string('unique_number_identifier', 255)->nullable();
+            $table->string('updated_at', 25)->nullable();
+            $table->string('venmo_sdk', 255)->nullable();
+            $table->text('verifications')->nullable();
+            $table->string('billing_address', 255)->nullable();
+            $table->string('expiration_date', 25)->nullable();
+            $table->string('masked_number', 20)->nullable();
+            $table->enum('card_status', ['active', 'trashed'])->default('active');
+            $table->dateTime('updated');
+            $table->dateTime('created');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('user_card');
+    }
+}
+

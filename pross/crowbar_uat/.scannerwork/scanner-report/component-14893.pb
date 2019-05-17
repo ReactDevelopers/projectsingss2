@@ -1,0 +1,1 @@
+­t.resources/views/employer/talent/hire.blade.php 2phpX=hr.resources/views/employer/talent/hire.blade.php

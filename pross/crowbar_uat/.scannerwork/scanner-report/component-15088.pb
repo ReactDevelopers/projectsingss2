@@ -1,0 +1,1 @@
+ðuresources/views/talent/wallet :ïuñurresources/views/talent/wallet

@@ -1,0 +1,1 @@
+¶v*resources/views/talent/viewtalent/includes :µv·vr*resources/views/talent/viewtalent/includes

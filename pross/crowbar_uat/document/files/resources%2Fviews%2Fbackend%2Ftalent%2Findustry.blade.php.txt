@@ -1,0 +1,197 @@
+<form role="form" method="post" enctype="multipart/form-data">
+    {{ csrf_field() }}
+
+    <div class="panel-body">
+        <div class="form-group @if ($errors->has('industry'))has-error @endif">
+            <label for="name">Industry</label>
+            <br />{{$user_industry['name']}}
+        </div>
+
+        <div class="form-group @if ($errors->has('subindustry'))has-error @endif">
+            <label for="name">Sub Industry</label>
+            <br />{{$user_subindustry['name']}}
+        </div>
+
+        <div class="form-group @if ($errors->has('skill'))has-error @endif">
+            <label for="name">Skill</label>
+            @foreach($user_skill as $s)
+                <br />{{$s}}
+            @endforeach
+        </div>
+
+        <div class="form-group @if ($errors->has('experience'))has-error @endif">
+            <label for="name">Expertise Level: </label>
+            <br />{{ucfirst($user['expertise'])}}
+        </div>
+        <div class="form-group @if ($errors->has('experience'))has-error @endif">
+            <label for="name">No. of Years(in Years): </label>
+            <br />{{$user['experience']}}
+        </div>
+
+        <div class="form-group @if ($errors->has('experience'))has-error @endif">
+            <label for="name">Interested In</label>
+            @foreach($interested as $s)
+                <br />{{ucfirst($s)}}
+            @endforeach
+        </div>
+
+        <div class="form-group @if ($errors->has('workrate'))has-error @endif">
+            <label for="name">Work Rate</label>
+            <br />{{$user['workrate']}}
+            {{$user['workrate_max']}}
+            {{$user['workrate_unit']}}
+        </div>
+
+
+        <div class="form-group @if ($errors->has('workrate_information'))has-error @endif">
+            <label for="name">Other Details: </label>
+            <br />{{$user['workrate_information']}}
+        </div>
+
+        <div class="form-group @if ($errors->has('certificate'))has-error @endif">
+            <label for="name">Industry Affiliations & Certifications</label>
+            @foreach($user_certificates as $s)
+                <br />{{$s}}
+            @endforeach
+        </div>
+
+        <!---Education section-->
+        <div class="form-group">
+            <label for="name">Education</label>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th width="3%">#</th>
+                            <th>School / College</th>
+                            <th>Year of Graduation</th>
+                            <th>Degree</th>
+                            <th>Country</th>
+                            <th>Area of Study</th>
+                            <th width="10">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                        $counter = 1;
+                        @endphp
+                        @foreach($education_list as $e)
+                            <tr id="list-{{$e['id_education']}}">
+                                <td width="3%">{{$counter++}}</td>
+                                <td>{{$e['college']}}</td>
+                                <td>{{$e['passing_year']}}</td>
+                                <td>{{$e['degree_name']}}</td>
+                                <td>{{$e['degree_country_name']}}</td>
+                                <td>{{$e['area_of_study']}}</td>
+                                <td width="10">
+                                    <a href="javascript:;" data-id-edu="{{$e['id_education']}}" data-url="{{url('administrator/talent/delete-education/'.$e['id_education'].'/'.$id_user)}}" class="badge bg-red delete-edu" >Delete</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!---Work section-->
+        <div class="form-group">
+            <label for="name">Work</label>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th width="3%">#</th>
+                            <th>Job Title</th>
+                            <th>Company Name</th>
+                            <th>Start Date</th>
+                            <th>Currently Working?</th>
+                            <th>Type of Job</th>
+                            <th>End Date</th>
+                            <th>Country</th>
+                            <th>State/ Province</th>
+                            <th width="10">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                        $counter = 1;
+                        @endphp
+                        @foreach($work_experience_list as $e)
+                            <tr id="list-{{$e['id_experience']}}">
+                                <td width="3%">{{$counter++}}</td>
+                                <td>{{$e['jobtitle']}}</td>
+                                <td>{{$e['company_name']}}</td>
+                                <td>{{$e['joining']}}</td>
+
+                                <td>{{$e['is_currently_working'] == 'yes' ? 'Yes' : 'No'}}</td>
+                                <td>{{$e['job_type'] == 'fulltime' ? 'Fulltime' : 'Temporary'}}</td>
+                                <td>{{$e['joining']}}</td>
+
+                                <td>{{$e['country_name']}}</td>
+                                <td>{{$e['state_name']}}</td>
+                                <td width="10">
+                                    <a href="javascript:;" data-url="{{url('administrator/talent/delete-experience/'.$e['id_experience'].'/'.$id_user)}}" data-id-user="{{$id_user}}" data-id-experience="{{$e['id_experience']}}" class="delete-exp badge bg-red" >Delete</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+@push('inlinescript')
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#industry').change(function(){
+        var industry = $('#industry').val();
+        var url = $('#industry').data('url');
+        if(industry > 0){
+            $.ajax({
+            method: "POST",
+            url: url,
+            data: { record_id: industry}
+            })
+            .done(function(data) {
+                $('#subindustry').html(data);
+            });
+        }
+    });
+
+    $('.delete-edu').click(function(){
+        var id_edu = $(this).data('id-edu');
+        var url = $(this).data('url');
+        var res = confirm('Do you really want to continue with this action?');
+
+        if(res){
+            $.ajax({
+            method: "GET",
+            url: url
+            })
+            .done(function(data) {
+                $('#list-'+id_edu).remove();
+            });
+        }
+    });
+
+    $('.delete-exp').click(function(){
+        var id_experience = $(this).data('id-experience');
+        var url = $(this).data('url');
+        var res = confirm('Do you really want to continue with this action?');
+
+        if(res){
+            $.ajax({
+            method: "GET",
+            url: url
+            })
+            .done(function(data) {
+                $('#list-'+id_experience).remove();
+            });
+        }
+    });
+});
+</script>
+@endpush
+

@@ -1,0 +1,1 @@
+…v-resources/views/talent/findjob/view.blade.php 2phpXÄhr-resources/views/talent/findjob/view.blade.php

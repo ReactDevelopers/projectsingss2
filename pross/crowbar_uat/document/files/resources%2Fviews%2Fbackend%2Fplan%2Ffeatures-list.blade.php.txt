@@ -1,0 +1,45 @@
+@extends('layouts.backend.dashboard')
+@section('content')
+	<section class="content">
+	    <div class="row">
+	        <div class="col-md-12">
+	            <div class="panel">
+	                <div class="panel-body">
+	                    @if(Session::has('success'))
+	                        <div class="alert alert-success alert-dismissible">
+	                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	                            {{ Session::get('success') }}
+	                        </div>
+	                    @endif
+	                    <div class="row">
+	                        <div style="padding-top:10px;">
+	                            <form role="form-add-feature" action="{{url(sprintf("%s/%s/%s",ADMIN_FOLDER,'plan','add-feature'))}}" method="post">
+	                                <div class="col-md-1 form-group">
+	                                    <i class="fa fa-save fa-2x"></i>
+	                                </div>                                           
+	                                <div class="col-md-4 form-group">
+	                                    <input type="text" class="form-control" name="feature" placeholder="{{ trans('admin.A0057') }}" style="width:100%;"/>
+	                                </div>
+	                                <div class="col-md-2 form-group">
+	                                    <button type="button" class="btn btn-default btn-block" data-request="inline-submit" data-target="[role=form-add-feature]">Save</button>
+	                                </div>
+	                            </form>
+	                        </div>	                    
+	                    </div>
+		                    <div class="table-responsive">
+								{!! $html->table(); !!}
+		                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</section>
+@endsection
+@section('requirejs')    
+    <script src="{{ asset('js/jquery.dataTables.js') }}"></script>
+    <script src="{{ asset('js/dataTables.bootstrap.js') }}"></script>
+    {!! $html->scripts() !!}
+
+    
+@endsection
+

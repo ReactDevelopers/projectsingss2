@@ -1,0 +1,1 @@
+ˆu6resources/views/front/pages/sign-edit-talent.blade.php 2phpX9hr6resources/views/front/pages/sign-edit-talent.blade.php

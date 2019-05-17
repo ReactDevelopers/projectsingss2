@@ -1,0 +1,1 @@
+ªvresources/views/talent/review :∫vΩvævøv¿v¡vrresources/views/talent/review

@@ -1,0 +1,1 @@
+‘u6resources/views/front/pages/select_user_type.blade.php 2phpX.hr6resources/views/front/pages/select_user_type.blade.php

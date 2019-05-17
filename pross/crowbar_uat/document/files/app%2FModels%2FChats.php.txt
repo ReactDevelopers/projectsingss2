@@ -1,0 +1,574 @@
+<?php
+
+    namespace Models; 
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Mail;
+
+    class Chats extends Model{
+        protected $table = 'chat';
+        protected $primaryKey = 'id_chat';
+        
+        const CREATED_AT = 'created';
+        const UPDATED_AT = 'updated';
+
+        protected $fillable = [];
+
+        protected $hidden = [];
+
+        public static function addmessage($data){
+
+            if(empty($data)){
+                return (bool) false;
+            }
+            
+            $message_type = (!empty($data['message_type']))?$data['message_type']:'text';
+
+            if($message_type == 'text'){
+                $message = ___e($data['message']);
+            }else{
+                $message = $data['message'];
+            }
+
+            $chat_id = self::insertGetId([
+                'message'       => $message,
+                'message_type'  => $message_type,
+                'sender_id'     => $data['sender_id'],
+                'receiver_id'   => $data['receiver_id'],
+                'created'       => date('Y-m-d H:i:s'),
+                'updated'       => date('Y-m-d H:i:s'),
+            ]);
+            
+            if(!empty($chat_id)){
+                $result = json_decode(
+                    json_encode(
+                        \DB::table((new static)->getTable())
+                        ->where('id_chat',$chat_id)
+                        ->get()
+                        ->first()
+                    ),
+                    true
+                );
+
+                $sender_details             = \Models\Users::findById($result['sender_id'],[\DB::raw('TRIM(CONCAT(first_name," ",last_name)) as name'),'type']);
+                $result['sender']           = $sender_details['name'];
+                $result['timestamp']        = strtotime($result['created']);
+                $result['ago']              = ___agoday($result['created']);
+                $result['sender_picture']   = get_file_url(\Models\Talents::get_file(sprintf(" type = 'profile' AND user_id = %s",$result['sender_id']),'single',['filename','folder']));
+                
+                if($sender_details['type'] == 'talent'){
+                    $result['chat']             = \Models\Talents::get_my_chat_list($result['sender_id'],NULL,$result['receiver_id']);
+                }elseif($sender_details['type'] == 'employer'){
+                    $result['chat']             = \Models\Employers::get_my_chat_list($result['sender_id'],NULL,$result['receiver_id']);
+                }
+            }else{
+                $result = [];
+            }
+
+            return $result;
+        }
+
+        public static function updatemessage($data){
+            if(empty($data)){
+                return (bool) false;
+            }
+            
+            $chat_table = \DB::table((new static)->getTable());
+            
+            $chat_table->where('id_chat',$data['chat_id'])->update(['seen_status' => $data['seen_status'], 'updated' => date('Y-m-d H:i:s')]);
+
+
+            if(!empty($data['chat_id'])){
+                $result = json_decode(
+                    json_encode(
+                        $chat_table
+                        ->where('id_chat',$data['chat_id'])
+                        ->get()
+                        ->first()
+                    ),
+                    true
+                );
+                
+                $result['sender']         = \Models\Users::findById($result['sender_id'],[\DB::raw('TRIM(CONCAT(first_name," ",last_name)) as name')])['name'];
+                $result['timestamp']      = strtotime($result['created']);
+                $result['ago']            = ___agoday($result['created']);
+                $result['sender_picture'] = get_file_url(\Models\Talents::get_file(sprintf(" type = 'profile' AND user_id = %s",$result['sender_id']),'single',['filename','folder']));
+            }else{
+                $result = [];
+            }
+
+            return $result;
+        }
+        
+        public static function readall($data){
+            if(empty($data)){
+                return (bool) false;
+            }
+            
+            $chat_table = \DB::table((new static)->getTable());
+            
+            return $chat_table->where('receiver_id',$data['receiver_id'])->where('sender_id',$data['sender_id'])->where('seen_status','!=','read')->update(['seen_status' => $data['seen_status'], 'updated' => date('Y-m-d H:i:s')]);
+        }
+        
+        public static function getmessages($sender_id,$receiver_id,$page = 1,$chat_id = 0,$direction = 'up',$column = 'delete_sender_status'){
+            $table_chat = DB::table((new static)->getTable());
+            $prefix = DB::getTablePrefix();
+
+            $table_chat->select([
+                'id_chat',
+                'message',
+                \DB::Raw("TRIM(CONCAT({$prefix}sender.first_name,' ',{$prefix}sender.last_name)) as sender"),
+                'sender_id',
+                \DB::Raw("'' as sender_picture"),
+                \DB::Raw("TRIM(CONCAT({$prefix}receiver.first_name,' ',{$prefix}receiver.last_name)) as receiver"),
+                'receiver_id',
+                \DB::Raw("'' as receiver_picture"),
+                'message_type',
+                'seen_status',
+                'delete_sender_status',
+                'delete_receiver_status',
+                'chat.created',
+            ]);
+
+            $table_chat->leftjoin('users as sender','sender.id_user','=','chat.sender_id');
+            $table_chat->leftjoin('users as receiver','receiver.id_user','=','chat.receiver_id');
+            $table_chat->where($column,'=','active');
+            
+            if(!empty($chat_id) && $chat_id != -1){
+                if($direction === 'up'){
+                    $table_chat->where('id_chat','<',$chat_id);
+                    $table_chat->limit(CHAT_PAGING_LIMIT);
+                    $table_chat->offset(0); 
+                }else{
+                    $table_chat->where('id_chat','>',$chat_id);
+                }
+            }else{
+                $table_chat->limit(CHAT_PAGING_LIMIT);
+                $table_chat->offset(0); 
+            }
+
+            $table_chat->orderBy('id_chat','DESC');
+
+            $messages = $table_chat->whereRaw("
+                (
+                    (sender_id = {$sender_id} AND receiver_id = {$receiver_id})
+                    OR 
+                    (sender_id = {$receiver_id} AND  receiver_id = {$sender_id})
+                ) 
+            ")->get();
+
+            $result = json_decode(json_encode($messages),true);
+
+            if(!empty($result)){
+                array_walk($result,function(&$item){
+                    $item['sender_picture']     = get_file_url(\Models\Talents::get_file(sprintf(" type = 'profile' AND user_id = %s",$item['sender_id']),'single',['filename','folder']));
+                    $item['receiver_picture']   = get_file_url(\Models\Employers::get_file(sprintf(" type = 'profile' AND user_id = %s",$item['receiver_id']),'single',['filename','folder']));
+                    $item['timestamp']          = ___t($item['created']);
+                });
+            }
+
+            return $result;
+        }  
+
+        public static function getofflinemessages($sender_id,$page = 1,$chat_id = 0,$direction = 'up',$column = 'delete_sender_status',$message_type = 'live'){
+            $table_chat = DB::table((new static)->getTable());
+            $prefix = DB::getTablePrefix();
+
+            $table_chat->select([
+                'id_chat',
+                'message',
+                \DB::Raw("TRIM(CONCAT({$prefix}sender.first_name,' ',{$prefix}sender.last_name)) as sender"),
+                'sender_id',
+                \DB::Raw("'' as sender_picture"),
+                \DB::Raw("TRIM(CONCAT({$prefix}receiver.first_name,' ',{$prefix}receiver.last_name)) as receiver"),
+                'receiver_id',
+                \DB::Raw("'' as receiver_picture"),
+                'message_type',
+                'seen_status',
+                'delete_sender_status',
+                'delete_receiver_status',
+                'chat.created',
+            ]);
+
+            $table_chat->leftjoin('users as sender','sender.id_user','=','chat.sender_id');
+            $table_chat->leftjoin('users as receiver','receiver.id_user','=','chat.receiver_id');
+            
+            if($message_type == 'offline'){
+                $table_chat->where('seen_status','=','delivered');
+            }
+
+            $table_chat->where($column,'=','active');
+            
+            if(!empty($chat_id) && $chat_id != -1){
+                if($direction === 'up'){
+                    $table_chat->where('id_chat','<',$chat_id);
+                    $table_chat->limit(CHAT_PAGING_LIMIT);
+                    $table_chat->offset(0); 
+                }else{
+                    $table_chat->where('id_chat','>',$chat_id);
+                }
+            }else{
+                $table_chat->limit(CHAT_PAGING_LIMIT);
+                $table_chat->offset(0); 
+            }
+
+            $table_chat->orderBy('id_chat','DESC');
+
+            $messages = $table_chat->whereRaw("
+                (
+                    (sender_id = {$sender_id})
+                    OR 
+                    (receiver_id = {$sender_id})
+                ) 
+            ")->get();
+
+            $result = json_decode(json_encode($messages),true);
+
+            if(!empty($result)){
+                array_walk($result,function(&$item){
+                    $item['sender_picture']     = get_file_url(\Models\Talents::get_file(sprintf(" type = 'profile' AND user_id = %s",$item['sender_id']),'single',['filename','folder']));
+                    $item['receiver_picture']   = get_file_url(\Models\Employers::get_file(sprintf(" type = 'profile' AND user_id = %s",$item['receiver_id']),'single',['filename','folder']));
+                    $item['timestamp']          = ___t($item['created']);
+                });
+            }
+
+            return $result;
+        } 
+
+
+        public static function accept($sender_id,$receiver_id){
+            if(empty($sender_id) && empty($receiver_id)){
+                return (bool) false;
+            }
+            
+            $isAlreadyAccepted = \DB::table('chat_requests')->where([
+                'sender_id' => $receiver_id,
+                'receiver_id' => $sender_id,
+                'chat_initiated' => 'employer-accepted',
+            ])->get()->count();
+
+            if(empty($isAlreadyAccepted)){
+                $chat_table = \DB::table('chat_requests');
+                $isAccepted = $chat_table->where([
+                    'sender_id' => $receiver_id,
+                    'receiver_id' => $sender_id,
+                ])->update([
+                    'request_status' => 'accepted',
+                    'chat_initiated' => 'employer-accepted',
+                    'created' => date('Y-m-d H:i:s')
+                ]);
+
+                if(!empty($isAccepted)){
+                    $isNotified = \Models\Notifications::notify(
+                        $receiver_id,
+                        $sender_id,
+                        'JOB_CHAT_REQUEST_ACCEPTED_BY_EMPLOYER',
+                        json_encode([
+                            "receiver_id" => (string) $receiver_id,
+                            "sender_id" => (string) $sender_id,
+                            "chat" => \Models\Talents::get_my_chat_list($receiver_id,NULL,$sender_id)
+                        ])
+                    );
+                }
+
+                return $isAccepted;
+            }else{
+                return true;
+            }
+
+        }    
+
+        public static function reject($sender_id,$receiver_id){
+            if(empty($sender_id) && empty($receiver_id)){
+                return (bool) false;
+            }
+            
+            $chat_table = \DB::table('chat_requests');
+            
+            $isRejected = $chat_table->where([
+                'sender_id' => $receiver_id,
+                'receiver_id' => $sender_id,
+            ])->update([
+                'request_status' => 'pending',
+                'chat_initiated' => NULL,
+                'created' => date('Y-m-d H:i:s')
+            ]);
+            
+            if(!empty($isRejected) && 0){
+                $isNotified = \Models\Notifications::notify(
+                    $receiver_id,
+                    $sender_id,
+                    'JOB_CHAT_REQUEST_REJECTED_BY_EMPLOYER',
+                    json_encode([
+                        "receiver_id" => (string) $receiver_id,
+                        "sender_id" => (string) $sender_id,
+                        "chat" => \Models\Talents::get_my_chat_list($receiver_id,NULL,$sender_id)
+                    ])
+                );
+            }
+        }
+
+        public static function initiate_chat_request($sender_id,$receiver_id){
+            if(empty($sender_id) && empty($receiver_id)){
+                return (bool) false;
+            }
+
+            $chat_table = \DB::table('chat_requests');
+            $chat_table->where([
+                'sender_id' => $sender_id,
+                'receiver_id' => $receiver_id,
+                'request_status' => 'pending',
+                'chat_initiated' => NULL,
+            ]);
+            
+            if($chat_table->count() > 0){
+                $isUpdated = $chat_table->update([
+                    'chat_initiated' => 'talent',
+                    'created' => date('Y-m-d H:i:s')
+                ]);
+            }
+            
+            $chat_table = \DB::table('chat_requests');
+            $chat_table->where([
+                'sender_id' => $sender_id,
+                'receiver_id' => $receiver_id,
+            ]);
+            
+            $result = $chat_table->select(['chat_initiated'])->first();
+
+            $isNotified = \Models\Notifications::notify(
+                $receiver_id,
+                $sender_id,
+                "JOB_CHAT_REQUEST_SENT_BY_TALENT",
+                json_encode([
+                    "sender_id" => (string) $sender_id,
+                    "receiver_id" => (string) $receiver_id,
+                    "chat" => \Models\Employers::get_my_chat_list($receiver_id,NULL,$sender_id)
+                ])
+            );
+
+
+            if(!empty($result->chat_initiated)){
+                if($result->chat_initiated == 'talent'){
+                    return [
+                        'status' => true,
+                        'message' => 'M0280',
+                        'chat_initiated' => 'talent',
+                    ];
+                }else if($result->chat_initiated == 'employer'){
+                    return [
+                        'status' => true,
+                        'message' => 'M0281',
+                        'chat_initiated' => 'employer',
+                    ];
+                }else{
+                    return [
+                        'status' => true,
+                        'message' => 'M0282',
+                        'chat_initiated' => 'employer-accepted',
+                    ];
+                }
+            }else{
+                return [
+                    'status' => false,
+                    'chat_initiated' => NULL
+                ];
+            }
+        }  
+
+        public static function employer_chat_request($sender_id,$receiver_id){
+            $prefix = DB::getTablePrefix();
+
+            if(empty($sender_id) && empty($receiver_id)){
+                return (bool) false;
+            }
+
+            /*$job_details    = \Models\Employers::get_job(" id_project = {$project_id} ","single",[
+                'projects.user_id as company_id',
+                \DB::Raw("{$prefix}proposals.user_id as accepted_talent_id"),
+            ]);*/
+            
+            
+            $chat_table = \DB::table('chat_requests');
+            $chat_table->where([
+                'sender_id' => $receiver_id,
+                'receiver_id' => $sender_id,
+                'request_status' => 'pending',
+                'chat_initiated' => NULL,
+            ]);
+            
+            if($chat_table->count() > 0){
+                $isUpdated = $chat_table->update([
+                    'chat_initiated' => 'employer',
+                    'created' => date('Y-m-d H:i:s')
+                ]);
+            }
+            
+            $chat_table = \DB::table('chat_requests');
+            $chat_table->where([
+                'sender_id' => $receiver_id,
+                'receiver_id' => $sender_id,
+            ]);
+            
+            $result = $chat_table->select(['chat_initiated'])->first();
+            
+            if(!empty($result->chat_initiated)){
+                if($result->chat_initiated == 'talent'){
+                    return [
+                        'status' => true,
+                        'message' => 'M0000',
+                        'chat_initiated' => 'talent',
+                    ];
+                }else if($result->chat_initiated == 'employer'){
+                    return [
+                        'status' => true,
+                        'message' => 'M0284',
+                        'chat_initiated' => 'employer',
+                    ];
+                }else{
+                    return [
+                        'status' => true,
+                        'message' => 'M0286',
+                        'chat_initiated' => 'employer-accepted',
+                    ];
+                }
+            }else{
+                return [
+                    'status' => false,
+                    'message' => 'M0000',
+                    'chat_initiated' => NULL
+                ];
+            }
+        }  
+        
+        public static function delete_all($sender_id,$receiver_id,$column){
+            $chat_table = \DB::table('chat');
+            
+            $isDeleted = $chat_table->whereRaw("(
+                (
+                    sender_id = {$sender_id} 
+                    AND 
+                    receiver_id = {$receiver_id}
+                ) 
+                OR
+                (
+                    sender_id = {$receiver_id} 
+                    AND 
+                    receiver_id = {$sender_id}
+                ) 
+            )")->update([
+                $column => 'trashed', 
+                'updated' => date('Y-m-d H:i:s')
+            ]);
+
+            if(!empty($isDeleted)){
+                return [
+                    'message' => 'deleted_all',
+                    'sender_id' => $sender_id
+                ];
+            }else{
+                return [
+                    'message' => 'unable_to_delete_messages',
+                    'sender_id' => $sender_id
+                ];
+            }
+        }
+
+        public static function support_chat_request($sender_id,$receiver_id){
+            if(empty($sender_id) && empty($receiver_id)){
+                return (bool) false;
+            }
+
+            $chat_table = \DB::table('chat_requests');
+            $chat_table->where([
+                'sender_id' => $sender_id,
+                'receiver_id' => $receiver_id
+            ]);
+            
+            if($chat_table->count() < 1){
+                $isInserted = $chat_table->insert([
+                    'sender_id' => $sender_id,
+                    'receiver_id' => $receiver_id,
+                    'request_status' => 'accepted',
+                    'chat_initiated' => 'employer',
+                    'created' => date('Y-m-d H:i:s')
+                ]);
+            }
+
+            return true;
+        } 
+        
+        public static function add_raise_dispute_topic($sender_id,$receiver_id,$message){
+            if(empty($sender_id) && empty($receiver_id)){
+                return (bool) false;
+            }
+
+            self::addmessage([
+                'sender_id'         => $sender_id,
+                'receiver_id'       => $receiver_id,
+                'message'           => $message,
+                'message_type'      => 'raise-dispute'
+            ]);
+
+            self::addmessage([
+                'sender_id'         => $sender_id,
+                'receiver_id'       => $receiver_id,
+                'message'           => trans('general.M0391'),
+                'message_type'      => 'text'
+            ]);
+        }
+        
+        public static function is_chat_possible_with_employer($talent_id,$employer_id){
+            if(empty($talent_id) && empty($employer_id)){
+                return '';
+            }
+
+            $chat_request = \DB::table('chat_requests')
+            ->where('sender_id','=',$talent_id)
+            ->where('receiver_id','=',$employer_id)
+            ->get()
+            ->first();
+
+            if(!empty($chat_request)){
+                if($chat_request->chat_initiated == 'talent'){
+                    return 'chat_not_accepted';
+                }else if($chat_request->chat_initiated == 'employer'){
+                    return 'yes';
+                }else if($chat_request->chat_initiated == 'employer-accepted'){
+                    return 'yes';
+                }else{
+                    return 'request_for_chat';
+                }
+            }else{
+                return 'request_for_chat';
+            }
+        }
+
+        public static function is_chat_possible_with_talent($employer_id,$talent_id){
+            if(empty($talent_id) && empty($employer_id)){
+                return '';
+            }
+            
+            $chat_request = \DB::table('chat_requests')
+            ->where('sender_id','=',$talent_id)
+            ->where('receiver_id','=',$employer_id)
+            ->get()
+            ->first();
+
+            if(!empty($chat_request)){
+                if($chat_request->chat_initiated == 'talent'){
+                    return 'chat_not_accepted';
+                }else if($chat_request->chat_initiated == 'employer'){
+                    return 'yes';
+                }else if($chat_request->chat_initiated == 'employer-accepted'){
+                    return 'yes';
+                }else{
+                    return 'request_for_chat';
+                }
+            }else{
+                return 'request_for_chat';
+            }
+        }
+    }

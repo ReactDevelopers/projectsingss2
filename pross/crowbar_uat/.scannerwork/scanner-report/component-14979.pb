@@ -1,0 +1,1 @@
+ƒu0resources/views/front/pages/faq-detail.blade.php 2phpX\hr0resources/views/front/pages/faq-detail.blade.php

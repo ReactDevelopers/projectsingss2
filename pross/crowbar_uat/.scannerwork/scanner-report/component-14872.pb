@@ -1,0 +1,1 @@
+˜t4resources/views/employer/jobdetail/details.blade.php 2phpX³hr4resources/views/employer/jobdetail/details.blade.php

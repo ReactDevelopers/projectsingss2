@@ -1,0 +1,1033 @@
+TRUNCATE `cb_activity`;
+TRUNCATE `cb_api_braintree_response`;
+TRUNCATE `cb_api_messages`;
+TRUNCATE `cb_api_paypal_response`;
+TRUNCATE `cb_api_request`;
+TRUNCATE `cb_api_twilio_response`;
+TRUNCATE `cb_chat`;
+TRUNCATE `cb_chat_requests`;
+TRUNCATE `cb_devices`;
+TRUNCATE `cb_employer_certificates`;
+TRUNCATE `cb_faq_response`;
+TRUNCATE `cb_files`;
+TRUNCATE `cb_notifications`;
+TRUNCATE `cb_notification_history`;
+TRUNCATE `cb_projects`;
+TRUNCATE `cb_projects_dispute`;
+TRUNCATE `cb_projects_dispute_comments`;
+TRUNCATE `cb_projects_industries`;
+TRUNCATE `cb_projects_subindustries`;
+TRUNCATE `cb_project_invitation`;
+TRUNCATE `cb_project_language`;
+TRUNCATE `cb_project_log`;
+TRUNCATE `cb_project_required_qualifications`;
+TRUNCATE `cb_project_required_skills`;
+TRUNCATE `cb_proposal_language`;
+TRUNCATE `cb_report_abuse`;
+TRUNCATE `cb_reviews`;
+TRUNCATE `cb_saved_employer`;
+TRUNCATE `cb_saved_jobs`;
+TRUNCATE `cb_saved_talent`;
+TRUNCATE `cb_settings`;
+TRUNCATE `cb_subscriber`;
+TRUNCATE `cb_tagged_proposals`;
+TRUNCATE `cb_talent_answer`;
+TRUNCATE `cb_talent_availability`;
+TRUNCATE `cb_talent_certificates`;
+TRUNCATE `cb_talent_educations`;
+TRUNCATE `cb_talent_industries`;
+TRUNCATE `cb_talent_interests`;
+TRUNCATE `cb_talent_perks`;
+TRUNCATE `cb_talent_portfolio`;
+TRUNCATE `cb_talent_proposals`;
+TRUNCATE `cb_talent_skills`;
+TRUNCATE `cb_talent_subindustries`;
+TRUNCATE `cb_talent_work_experiences`;
+TRUNCATE `cb_thumb_devices`;
+TRUNCATE `cb_transactions`;
+TRUNCATE `cb_user_card`;
+TRUNCATE `cb_user_card_paypal`;
+TRUNCATE `cb_user_subscription`;
+TRUNCATE `cb_viewed_talent`;
+
+ALTER TABLE  `cb_users` ADD  `social_account` ENUM(  'yes',  'no' ) NOT NULL DEFAULT  'no' AFTER  `forgot_otp` ;
+ALTER TABLE  `cb_users` CHANGE  `social_account`  `social_account` ENUM(  'no',  'yes',  'changed' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'no';
+
+INSERT INTO  `crowbar`.`cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'raise_dispute_commission_type',  'per'
+);
+
+INSERT INTO  `crowbar`.`cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'raise_dispute_commission',  '15'
+);
+
+ALTER TABLE  `cb_transactions` ADD  `raise_dispute_commission` FLOAT NULL AFTER  `transaction_paypal_commission` ,
+ADD  `raise_dispute_commission_type` ENUM(  'per',  'flat' ) NULL AFTER  `raise_dispute_commission` ;
+
+
+INSERT INTO  `crowbar`.`cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'add_card_default_payment',  'on'
+);
+
+
+INSERT INTO  `crowbar`.`cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'add_card_default_payment_amount',  '1'
+);
+
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Report', '0', 'admin', '1', '2017-03-31 22:07:46', 'active', 'report', '<i class=\"fa fa-dashboard\"></i>', NULL, '1', NULL, '0');
+
+ALTER TABLE  `cb_talent_proposals` ADD  `working_hours` TEXT NULL AFTER  `payment` ;
+
+
+ALTER TABLE `cb_users` CHANGE `experience` `experience` VARCHAR(5) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL COMMENT '(in years)';
+
+ALTER TABLE  `cb_projects` ADD  `is_cancelable` ENUM(  'yes',  'no' ) NOT NULL DEFAULT  'yes' AFTER  `status` ;
+ALTER TABLE  `cb_projects` ADD  `is_cancelled` ENUM(  'yes',  'no' ) NOT NULL DEFAULT  'no' AFTER  `is_cancelable` ;
+ALTER TABLE  `cb_projects` ADD  `canceldate` DATETIME NULL AFTER  `closedate` ;
+ALTER TABLE  `cb_transactions` ADD  `is_cancelled` ENUM(  'yes',  'no' ) NOT NULL DEFAULT  'no' AFTER  `transaction_done_by` ;
+
+INSERT INTO  `crowbar`.`cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'cancellation_commission',  '5'
+);
+INSERT INTO  `crowbar`.`cb_config` (
+`key` ,
+`value`
+)
+VALUES (
+'cancellation_commission_type',  'per'
+);
+
+
+
+ALTER TABLE  `cb_banner` ADD  `banner_section` ENUM(  'home',  'talent',  'employer',  'how-it-works' ) NULL AFTER  `id_banner` ;
+ALTER TABLE  `cb_banner` CHANGE  `banner_section`  `banner_section` ENUM(  'home',  'talent',  'employer',  'how-it-works',  'help-center' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+ALTER TABLE  `cb_banner` CHANGE  `banner_text`  `banner_text` TINYTEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+ALTER TABLE  `cb_banner` CHANGE  `banner_text`  `banner_text` MEDIUMTEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+
+<span class="about-short-desc">Employers pay the project fees upfront as agreed with the independent worker, subject to a processing fees (S$0.5 + 3.4%).</span>
+
+
+TRUNCATE `cb_activity`;
+TRUNCATE `cb_api_braintree_response`;
+TRUNCATE `cb_api_messages`;
+TRUNCATE `cb_api_paypal_response`;
+TRUNCATE `cb_api_request`;
+TRUNCATE `cb_api_twilio_response`;
+TRUNCATE `cb_chat`;
+TRUNCATE `cb_chat_requests`;
+TRUNCATE `cb_devices`;
+TRUNCATE `cb_employer_certificates`;
+TRUNCATE `cb_files`;
+TRUNCATE `cb_invite_talent`;
+TRUNCATE `cb_notifications`;
+TRUNCATE `cb_notification_history`;
+TRUNCATE `cb_projects`;
+TRUNCATE `cb_projects_dispute`;
+TRUNCATE `cb_projects_dispute_comments`;
+TRUNCATE `cb_projects_industries`;
+TRUNCATE `cb_projects_subindustries`;
+TRUNCATE `cb_project_invitation`;
+TRUNCATE `cb_project_language`;
+TRUNCATE `cb_project_log`;
+TRUNCATE `cb_project_required_qualifications`;
+TRUNCATE `cb_project_required_skills`;
+TRUNCATE `cb_proposal_language`;
+TRUNCATE `cb_question`;
+TRUNCATE `cb_question_relation`;
+TRUNCATE `cb_question_type`;
+TRUNCATE `cb_report_abuse`;
+TRUNCATE `cb_reviews`;
+TRUNCATE `cb_saved_employer`;
+TRUNCATE `cb_saved_jobs`;
+TRUNCATE `cb_saved_talent`;
+TRUNCATE `cb_settings`;
+TRUNCATE `cb_tagged_proposals`;
+TRUNCATE `cb_talent_answer`;
+TRUNCATE `cb_talent_availability`;
+TRUNCATE `cb_talent_certificates`;
+TRUNCATE `cb_talent_educations`;
+TRUNCATE `cb_talent_industries`;
+TRUNCATE `cb_talent_interests`;
+TRUNCATE `cb_talent_perks`;
+TRUNCATE `cb_talent_portfolio`;
+TRUNCATE `cb_talent_proposals`;
+TRUNCATE `cb_talent_skills`;
+TRUNCATE `cb_talent_subindustries`;
+TRUNCATE `cb_talent_work_experiences`;
+TRUNCATE `cb_thumb_devices`;
+TRUNCATE `cb_transactions`;
+TRUNCATE `cb_user_card`;
+TRUNCATE `cb_user_card_paypal`;
+TRUNCATE `cb_user_subscription`;
+TRUNCATE `cb_viewed_talent`;
+
+
+/*NEW 27 feb - Done*/
+ALTER TABLE `cb_skill` CHANGE `skill_name` `skill_name` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+
+ALTER TABLE `cb_industries` CHANGE `en` `en` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL, CHANGE `id` `id` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL, CHANGE `cz` `cz` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL, CHANGE `ta` `ta` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL, CHANGE `hi` `hi` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL;
+
+
+
+/* 8th March 2018*/
+
+ALTER TABLE  `cb_projects` ADD  `expected_hour` TIME NULL DEFAULT NULL AFTER  `is_cancelled` ;
+
+/* 19th March 2018*/
+ALTER TABLE  `cb_talent_proposals` ADD  `edited` DATETIME NULL AFTER  `working_hours` ;
+ALTER TABLE  `cb_talent_proposals` ADD  `start_time` TIME NOT NULL AFTER  `user_id` ,
+ADD  `end_time` TIME NOT NULL AFTER  `start_time` ;
+
+ALTER TABLE  `cb_files` CHANGE  `type`  `type` ENUM(  'profile',  'portfolio',  'cv',  'certificates',  'proposal',  'disputes' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+ALTER TABLE  `cb_projects_dispute` ADD  `last_updated` DATETIME NOT NULL AFTER  `last_commented_by` ;
+
+ALTER TABLE  `cb_projects_dispute` CHANGE  `type`  `type` ENUM(  'initiate',  'sender-comment',  'receiver-comment',  'sender-final-comment', 'receiver-final-comment',  'closed' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'initiate';
+
+ALTER TABLE  `cb_talent_proposals` CHANGE  `start_time`  `from_time` TIME NOT NULL ;
+ALTER TABLE  `cb_talent_proposals` CHANGE  `end_time`  `to_time` TIME NOT NULL ;
+
+
+INSERT INTO `cb_emails` (`id_email`, `language`, `title`, `alias`, `subject`, `content`, `variables`, `status`) VALUES
+(148, 'en', 'existing_job', 'existing_job', 'Existing Job', '<div style="margin:0;padding:0;width:100%;font-weight:500;font-size:16px;line-height:26px;background:none #fafafa;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\n<table align="center" border="0" cellpadding="20" cellspacing="0" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;margin:0;padding:0;line-height:100%;background:none #fafafa">\n <tbody>\n       <tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\n          <td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">\n          <table align="center" border="0" cellpadding="0" cellspacing="0" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:650px">\n             <tbody>\n                   <tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\n                      <td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">\n                      <table style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%">\n                            <tbody>\n                               <tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\n                                  <td align="left" height="45" style="width:50%;color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none" target="_blank"> <img alt="{site}" src="{site_link}images/logo.png" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="100" /> </a></td>\n                                    <td align="right" style="width:50%;color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;text-transform: uppercase;font-size:14px" target="_blank">{slogan}</a></td>\n                              </tr>\n                         </tbody>\n                      </table>\n\n                        <table align="left" cellpadding="25" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;background:none #fff;border-radius:2px;border:solid 1px #eee">\n                         <tbody>\n                               <tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\n                                  <td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%;vertical-align:top">\n                                   <h1 style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:300;line-height:1.1;margin:0 0 20px">Hi {name},</h1>\n\n                                 <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">You are invited for this Job.</p>\n                                 <br />\n\n                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Project Type: {project_type}</p>\n                                  <br />\n\n                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Industry: {industry}</p>\n                                  <br />\n\n                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">SubIndustry: {subindustry}</p>\n                                    <br />\n\n                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Required Skills: {required_skills}</p>\n                                    <br />\n\n                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Expertise Level: {expertise_level}</p>\n                                    <br />\n\n\n                                    <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Timeline: {timeline}</p>\n                                  <br />\n\n                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Description: {description}</p>\n                                    <br />\n\n                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px"><br />\n                                   Cheers,<br />\n                                 Team {site}</p>\n                                   </td>\n                             </tr>\n                         </tbody>\n                      </table>\n\n                        <table style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;padding:24px 0">\n                         <tbody>\n                               <tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">\n                                  <td align="center" height="150" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">\n                                  <p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><a style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> <img alt="{site}" src="{site_link}images/small-logo.png" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="32" /> </a></p>\n\n                                  <p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px">This email was sent to <a href="mailto:{email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {email} </a>.<br />\n                                    If you want to unsubscribe the emails from {site}, please drop a email at <a href="mailto:{help_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {help_email} </a>.<br />\n                                    If you have any questions or concerns, please email us at <a href="mailto:{info_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {info_email} </a>.</p>\n\n                                    <p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><span style="color:#b1aca0;text-decoration:none;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;line-height:18px">{office_address} </span></p>\n                                  </td>\n                             </tr>\n                         </tbody>\n                      </table>\n                      </td>\n                 </tr>\n             </tbody>\n          </table>\n          </td>\n     </tr>\n </tbody>\n</table>\n</div>', '{name},{project_type},{industry},{subindustry},{required_skills},{expertise_level},{timeline},{description},{email},{site},{slogan},{{help_email},{info_email},{site_link},{office_address}', 'active');
+
+Update 03/04/20
+
+1. 
+
+UPDATE `crowbar`.`cb_emails` SET `content` = '<div style="margin:0;padding:0;width:100%;font-weight:500;font-size:16px;line-height:26px;background:none #fafafa;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+<table align="center" border="0" cellpadding="20" cellspacing="0" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;margin:0;padding:0;line-height:100%;background:none #fafafa">
+ <tbody>
+       <tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+          <td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+          <table align="center" border="0" cellpadding="0" cellspacing="0" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:650px">
+             <tbody>
+                   <tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+                      <td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+                      <table style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%">
+                            <tbody>
+                               <tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+                                  <td align="left" height="45" style="width:50%;color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none" target="_blank"> <img alt="{site}" src="{site_link}images/logo.png" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="100" /> </a></td>
+                                    <td align="right" style="width:50%;color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;text-transform: uppercase;font-size:14px" target="_blank">{slogan}</a></td>
+                              </tr>
+                         </tbody>
+                      </table>
+
+                        <table align="left" cellpadding="25" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;background:none #fff;border-radius:2px;border:solid 1px #eee">
+                         <tbody>
+                               <tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+                                  <td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%;vertical-align:top">
+                                   <h1 style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:300;line-height:1.1;margin:0 0 20px">Hi {name},</h1>
+
+                                 <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">You are invited for this Job.</p>
+                                 <br />
+
+                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Project Type: {project_type}</p>
+                                  <br />
+
+                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Profession: {industry}</p>
+                                  <br />
+
+                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Industry: {required_skills}</p>
+                                    <br />
+                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Specialisation: {subindustry}</p>
+                                    <br />
+
+                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Expertise Level: {expertise_level}</p>
+                                    <br />
+
+
+                                    <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Timeline: {timeline}</p>
+                                  <br />
+
+                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Description: {description}</p>
+                                    <br />
+
+                                  <p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px"><br />
+                                   Cheers,<br />
+                                 Team {site}</p>
+                                   </td>
+                             </tr>
+                         </tbody>
+                      </table>
+
+                        <table style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;padding:24px 0">
+                         <tbody>
+                               <tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+                                  <td align="center" height="150" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+                                  <p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><a style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> <img alt="{site}" src="{site_link}images/small-logo.png" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="32" /> </a></p>
+
+                                  <p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px">This email was sent to <a href="mailto:{email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {email} </a>.<br />
+                                    If you want to unsubscribe the emails from {site}, please drop a email at <a href="mailto:{help_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {help_email} </a>.<br />
+                                    If you have any questions or concerns, please email us at <a href="mailto:{info_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {info_email} </a>.</p>
+
+                                    <p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><span style="color:#b1aca0;text-decoration:none;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;line-height:18px">{office_address} </span></p>
+                                  </td>
+                             </tr>
+                         </tbody>
+                      </table>
+                      </td>
+                 </tr>
+             </tbody>
+          </table>
+          </td>
+     </tr>
+ </tbody>
+</table>
+</div>' WHERE `cb_emails`.`id_email` = 148;
+
+# user menu table
+
+ALTER TABLE `cb_users_menu` CHANGE `section` `section` ENUM('admin','employer-top-after-login','talent-top-after-login','employer-myjobs','employer-profile-sidebar-menu','employer-view-editprofile-menu','talent-view-editprofile-menu','talent-profile-sidebar-menu','talent-proposal-menu','talent-myjobs','employer-payments','talent-wallet','employer-talent-profile','talent-settings','employer-settings','talent-job-details','talent-mynetwork') CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+
+# create events email table
+
+CREATE TABLE IF NOT EXISTS `cb_events_rsvp` (
+  `id` int(11) NOT NULL,
+  `event_id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `status` enum('yes','no') NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `cb_events_rsvp`
+--
+ALTER TABLE `cb_events_rsvp`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `cb_events_rsvp`
+--
+ALTER TABLE `cb_events_rsvp`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+# Files query
+
+ALTER TABLE `cb_files` CHANGE `type` `type` ENUM('profile','portfolio','cv','certificates','proposal','disputes','event') CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+
+# Event query
+
+ALTER TABLE `cb_events` ADD `posted_by` INT(11) NOT NULL COMMENT 'id_user' AFTER `id_events`;
+ALTER TABLE `cb_events` ADD `video_url` VARCHAR(255) NOT NULL AFTER `city`;
+ALTER TABLE `cb_events` ADD `location` VARCHAR(255) NOT NULL AFTER `city`;
+ALTER TABLE `cb_events` ADD `status` ENUM('active','inactive','deleted') NOT NULL AFTER `entry_fee`;
+
+# New members table
+
+--
+-- Table structure for table `cb_members`
+--
+
+CREATE TABLE IF NOT EXISTS `cb_members` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `cb_members`
+--
+ALTER TABLE `cb_members`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `cb_members`
+--
+ALTER TABLE `cb_members`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+
+# add column
+ALTER TABLE `cb_members` ADD `note` TEXT NOT NULL AFTER `member_id`;
+
+#add saved event table
+
+--
+-- Table structure for table `cb_saved_event`
+--
+
+CREATE TABLE IF NOT EXISTS `cb_saved_event` (
+  `id` int(11) NOT NULL,
+  `event_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `cb_saved_event`
+--
+ALTER TABLE `cb_saved_event`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `cb_saved_event`
+--
+ALTER TABLE `cb_saved_event`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ # events table
+ALTER TABLE `cb_events` CHANGE `status` `status` ENUM('active','inactive','deleted','draft') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+#email template for accept_event
+ALTER TABLE  `cb_transactions` ADD  `transaction_is_recurring` ENUM(  'true',  'false' ) NULL DEFAULT  'false' AFTER `transaction_paypal_commission` ,
+ADD  `transaction_repeat_till_month` VARCHAR( 100 ) NULL DEFAULT  '0' AFTER  `transaction_is_recurring` ;
+
+#transaction menu
+
+INSERT INTO `crowbar_dev`.`cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Transaction Log', '0', 'admin', '-1', '2017-03-31 22:07:46', 'active', 'transaction/list', '<i class="fa fa-globe"></i>', NULL, '9', NULL, '0');
+
+UPDATE `crowbar_dev`.`cb_users_menu_visibility` SET `menu_visibility` = '["1","2","4","5","6","7","8","9","56","57","58","59","60","61","62","63","64","65","66","67","68","70","71","72","73","74","75","82","83","84","85","86","87","88","95","96","101","102","103","104","105","110","111","116"]' WHERE `cb_users_menu_visibility`.`id_user` = 1;
+
+INSERT INTO `crowbar_dev`.`cb_emails` (`id_email`, `language`, `title`, `alias`, `subject`, `content`, `variables`, `status`) VALUES (NULL, 'en', 'invite_to_crowbar', 'Invite to Crowbar', 'Your are invited to join {site}', '<div style="margin:0;padding:0;width:100%;font-weight:500;font-size:16px;line-height:26px;background:none #fafafa;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+<table align="center" border="0" cellpadding="20" cellspacing="0" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;margin:0;padding:0;line-height:100%;background:none #fafafa">
+	<tbody>
+		<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+			<td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+			<table align="center" border="0" cellpadding="0" cellspacing="0" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:650px">
+				<tbody>
+					<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+						<td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+						<table style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%">
+							<tbody>
+								<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td align="left" height="45" style="width:50%;color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none" target="_blank"> <img alt="{site}" src="{site_link}images/logo.png" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="100" /> </a></td>
+									<td align="right" style="width:50%;color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;text-transform: uppercase;font-size:14px" target="_blank">{slogan}</a></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table align="left" cellpadding="25" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;background:none #fff;border-radius:2px;border:solid 1px #eee">
+							<tbody>
+								<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%;vertical-align:top">
+									<h1 style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:300;line-height:1.1;margin:0 0 20px">Hi {name},</h1>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">&nbsp;</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">You are invited to join Crowbar. Click on the link below to continue:</p>
+									&nbsp;
+
+									<p style="text-align:center;color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px"><a href="{link}" style="background:#9c1556;padding:10px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;border-radius:5px;font-size: 22px;color: #ffffff;">Click Here</a></p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px">&nbsp;</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px">If this doesn&#39;t work you can copy and paste in your browser&nbsp;{link}</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px"><br />
+									Cheers,<br />
+									Team {site}</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;padding:24px 0">
+							<tbody>
+								<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td align="center" height="150" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><a style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> <img alt="{site}" src="{site_link}images/small-logo.png" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="32" /> </a></p>
+
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px">This email was sent to <a href="mailto:{email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {email} </a>.<br />
+									If you want to unsubscribe the emails from {site}, please drop a email at <a href="mailto:{help_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {help_email} </a>.<br />
+									If you have any questions or concerns, please email us at <a href="mailto:{info_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {info_email} </a>.</p>
+
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><span style="color:#b1aca0;text-decoration:none;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;line-height:18px">{office_address} </span></p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</div>', '{name},{email},{site},{slogan},{link},{help_email},{info_email},{site_link},{office_address}', 'active');
+
+04/05/18
+
+UPDATE `crowbar_dev`.`cb_users_menu_visibility` SET `menu_visibility` = '["1","2","4","5","6","7","8","9","56","57","58","59","60","61","62","63","64","65","66","67","68","70","71","72","73","74","75","82","83","84","85","86","87","88","95","96","101","102","103","104","105","110","111","116","117"]' WHERE `cb_users_menu_visibility`.`id_user` = 1;
+
+--
+-- Table structure for table `cb_coupon`
+--
+
+CREATE TABLE IF NOT EXISTS `cb_coupon` (
+  `id` int(11) NOT NULL,
+  `code` varchar(255) NOT NULL,
+  `start_date` datetime NOT NULL,
+  `expiration_date` datetime NOT NULL,
+  `status` enum('active','inactive') NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `cb_coupon`
+--
+ALTER TABLE `cb_coupon`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `cb_coupon`
+--
+ALTER TABLE `cb_coupon`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+08/5/16
+
+ALTER TABLE `cb_users` ADD `coupon_id` INT(11) NOT NULL DEFAULT '0' AFTER `birthday`;
+
+--
+-- Table structure for table `cb_api_coupon_response`
+--
+
+CREATE TABLE IF NOT EXISTS `cb_api_coupon_response` (
+  `id_response` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `response_json` text NOT NULL,
+  `created` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `cb_api_coupon_response`
+--
+ALTER TABLE `cb_api_coupon_response`
+  ADD PRIMARY KEY (`id_response`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `cb_api_coupon_response`
+--
+ALTER TABLE `cb_api_coupon_response`
+  MODIFY `id_response` int(11) NOT NULL AUTO_INCREMENT;
+
+10/05/18
+
+ALTER TABLE `cb_api_coupon_response` ADD `coupon_id` INT(11) NOT NULL AFTER `user_id`;
+
+INSERT INTO `crowbar_dev`.`cb_emails` (`id_email`, `language`, `title`, `alias`, `subject`, `content`, `variables`, `status`) VALUES (NULL, 'en', 'send_coupon_code', 'Code Coupon', 'Received Coupon Code  - {site}', '<div style="margin:0;padding:0;width:100%;font-weight:500;font-size:16px;line-height:26px;background:none #fafafa;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+<table align="center" border="0" cellpadding="20" cellspacing="0" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;margin:0;padding:0;line-height:100%;background:none #fafafa">
+	<tbody>
+		<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+			<td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+			<table align="center" border="0" cellpadding="0" cellspacing="0" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:650px">
+				<tbody>
+					<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+						<td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+						<table style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%">
+							<tbody>
+								<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td align="left" height="45" style="width:50%;color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none" target="_blank"> <img alt="{site}" src="{site_link}images/logo.png" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="100" /> </a></td>
+									<td align="right" style="width:50%;color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;text-transform: uppercase;font-size:14px" target="_blank">{slogan}</a></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table align="left" cellpadding="25" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;background:none #fff;border-radius:2px;border:solid 1px #eee">
+							<tbody>
+								<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%;vertical-align:top">
+									<h1 style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:300;line-height:1.1;margin:0 0 20px">Hi Talent,</h1>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">&nbsp;</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Administrator has sent you a coupon to avail a discount on crowbar fee. Use this coupon code while signing up.</p>
+									&nbsp;
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Your&nbsp;Coupon code is:</p>
+									&nbsp;
+
+									<p style="background:#9c1556;padding:10px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;border-radius:5px;font-size: 22px;color: #ffffff;display: block;margin: 0 auto;width: 100px;text-align: center;">{code}</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px">&nbsp;</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px">Hope you signup soon!</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px"><br />
+									Cheers,<br />
+									Team {site}</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;padding:24px 0">
+							<tbody>
+								<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td align="center" height="150" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><a style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> <img alt="{site}" src="{site_link}images/small-logo.png" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="32" /> </a></p>
+
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px">This email was sent to <a href="mailto:{email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {email} </a>.<br />
+									If you want to unsubscribe the emails from {site}, please drop a email at <a href="mailto:{help_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {help_email} </a>.<br />
+									If you have any questions or concerns, please email us at <a href="mailto:{info_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {info_email} </a>.</p>
+
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><span style="color:#b1aca0;text-decoration:none;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;line-height:18px">{office_address} </span></p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</div>', '{email},{site},{slogan},{code},{help_email},{info_email},{site_link},{office_address}', 'active');
+
+11/5/18
+
+ALTER TABLE `cb_coupon` ADD `code_prefix` VARCHAR(255) NOT NULL AFTER `code`;
+
+15/5/18
+
+ALTER TABLE `cb_user_request` ADD `company` VARCHAR(255) NOT NULL AFTER `profession`, ADD `contact` VARCHAR(255) NOT NULL AFTER `company`;
+
+21/5/18
+
+INSERT INTO `crowbar_dev`.`cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Testimonial', '6', 'admin', '-1', '2015-09-20 21:45:46', 'active', 'testimonial', '<i class="fa fa-circle-o"></i>', NULL, '3', NULL, '0');
+
+UPDATE `crowbar_dev`.`cb_users_menu_visibility` SET `menu_visibility` = '["1","2","4","5","6","7","8","9","56","57","58","59","60","61","62","63","64","65","66","67","68","70","71","72","73","74","75","82","83","84","85","86","87","88","95","96","101","102","103","104","105","110","111","116","117","118"]' WHERE `cb_users_menu_visibility`.`id_user` = 1
+
+create cb_testimonial table
+
+22/6/18 (prod)
+
+ALTER TABLE `cb_users` ADD `percentage_step_paypal_id` FLOAT(20,8) NULL DEFAULT NULL AFTER `percentage_step_five`;
+
+23/6/18 (prod)
+
+ALTER TABLE `cb_messages` ADD `country_code` VARCHAR(255) NULL DEFAULT '' AFTER `sender_email`, ADD `phone_number` VARCHAR(255) NULL DEFAULT '' AFTER `country_code`;
+
+Make Cron log table (prod)
+
+28/6/18 (prod)
+
+ALTER TABLE `cb_talent_availability` CHANGE `availability_type` `availability_type` ENUM('unavailable','available','busy') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'available';
+
+11/7/18 (Stg) (prod)
+
+ALTER TABLE `cb_users` CHANGE `company_work_field` `company_work_field` VARCHAR(255) NULL DEFAULT NULL;
+
+28/8/18 (dev) (stg)
+
+ALTER TABLE `cb_transactions` CHANGE `transaction_status` `transaction_status` ENUM('initiated','pending','failed','cancelled','confirmed','refunded-pending','refunded','disputed','completed') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'initiated';
+
+31/8/18 (dev) (stg)
+
+Admin Menus
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES
+(121, 'Talent', 119, 'admin', -1, '2015-09-20 16:15:58', 'active', 'del-users/talent', '<i class="fa fa-circle-o"></i>', NULL, 1, NULL, 0),
+(120, 'Employer', 119, 'admin', -1, '2015-09-20 16:15:58', 'active', 'del-users/employer', '<i class="fa fa-circle-o"></i>', NULL, 1, NULL, 0),
+(119, 'Deleted User Management', 0, 'admin', -1, '2015-09-20 16:15:46', 'active', '#', '<i class="fa fa-user-times"></i>', '', 2, NULL, 0),
+(118, 'Testimonial', 6, 'admin', -1, '2015-09-20 16:15:46', 'active', 'testimonial', '<i class="fa fa-circle-o"></i>', NULL, 3, NULL, 0),
+(117, 'Coupon Management', 0, 'admin', -1, '2017-03-31 16:37:46', 'active', 'coupon/list', '<i class="fa fa-ticket"></i>', NULL, 9, NULL, 0);
+
+Admin menu visibility 
+
+UPDATE  `crowbar_dev`.`cb_users_menu_visibility` SET  `menu_visibility` = '["1","2","4","5","6","7","8","9","56","57","58","59","60","61","62","63","64","65","66","67","68","70","71","72","73","74","75","82","83","84","85","86","87","88","95","96","101","102","103","104","105","110","111","116","119","120","121"]' WHERE  `cb_users_menu_visibility`.`id_user` =1;
+
+4/8/18
+
+ALTER TABLE `cb_users` ADD `talent_type` ENUM('none','individual','company') NOT NULL DEFAULT 'none' AFTER `type`;
+
+Ankush - 04-Sept
+Add `coupon_id` in `cb_talent_proposals`.
+
+Azm - 05sept (DEV) (STG)
+ALTER TABLE `cb_coupon` ADD `discount` VARCHAR(255) NOT NULL AFTER `code_prefix`;
+
+Azm - 06Sept (DEV) (STG)
+
+ALTER TABLE `cb_coupon` CHANGE `status` `status` ENUM('active','inactive','deleted') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+Azm 8sept (STG)
+
+INSERT INTO `crowbar_dev`.`cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'User Activity log', '0', 'admin', '-1', '2015-09-20 21:45:46', 'active', '#', '<i class="fa fa-user-times"></i>', '', '2', NULL, '0');
+
+INSERT INTO `crowbar_dev`.`cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Talent', '119', 'admin', '-1', '2015-09-20 21:45:58', 'active', 'activity-log/talent', '<i class="fa fa-circle-o"></i>', NULL, '1', NULL, '0');
+
+INSERT INTO `crowbar_dev`.`cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Employer', '119', 'admin', '-1', '2015-09-20 21:45:58', 'active', 'activity-log/employer', '<i class="fa fa-circle-o"></i>', NULL, '1', NULL, '0');
+
+Azm 13 sept (STG)
+
+INSERT INTO `crowbar_dev`.`cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Manual Payout Management', '0', 'admin', '-1', '2015-09-20 21:45:58', 'active', 'payout/management', '<i class="fa fa-circle-o"></i>', NULL, '1', NULL, '0');
+
+Make "cb_payout_mgmt" table
+
+Azm 14 sept (STG)
+
+ALTER TABLE `cb_transactions` CHANGE `transaction_type` `transaction_type` ENUM('credit','debit','subscription','manual') CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+
+Azm 17 sept (STG)
+
+ALTER TABLE `cb_users` ADD `identification_no` VARCHAR(255) NULL DEFAULT NULL AFTER `expertise`;
+
+ALTER TABLE `cb_projects` ADD `payment_type` ENUM('manual','system') NOT NULL DEFAULT 'system' AFTER `price`;
+
+Azm 21 sept (STG)
+
+ALTER TABLE `cb_payout_mgmt` ADD `pay_commision_percent` VARCHAR(255) NOT NULL AFTER `pay_commision`;
+
+Azm 24 sept (STG)
+
+ALTER TABLE `cb_talent_proposals` ADD `accept_escrow` ENUM('yes','no') NOT NULL DEFAULT 'no' AFTER `coupon_id`, ADD `pay_commision_percent` VARCHAR(255) NOT NULL DEFAULT '0.00' AFTER `accept_escrow`;
+
+Ankush 25 Sept
+ALTER TABLE `cb_users` ADD `is_register` ENUM('Y','N') NOT NULL DEFAULT 'N' AFTER `identification_no`;
+
+ALTER TABLE `cb_payout_mgmt` ADD `non_reg_accept_escrow` ENUM('yes', 'no') NOT NULL DEFAULT 'no' AFTER `industry`;
+
+Azm 28 sept
+
+INSERT INTO `crowbar_dev`.`cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Group Management', '0', 'admin', '-1', '2017-03-31 22:07:46', 'active', 'group/list', '<i class="fa fa-list-ul"></i>', NULL, '9', NULL, '0');
+
+Create Group table
+
+Azm 1 Oct
+Create Group Members table
+ALTER TABLE `cb_forum_question` ADD `type` ENUM('individual','firm') NOT NULL AFTER `status`;
+
+chetan 3 oct (Dev) (STG)
+Industry table addcolumn slug
+ALTER TABLE `cb_industries` ADD `slug` VARCHAR(125) NULL DEFAULT NULL AFTER `is_tagged`;
+
+chetan 4 oct (DEV) (STG)
+Article table
+CREATE TABLE `crowbar_azeem`.`cb_article` ( `article_id` INT(11) NOT NULL AUTO_INCREMENT ,  `title` VARCHAR(255) NULL DEFAULT NULL ,  `description` TEXT NULL DEFAULT NULL ,  `created` DATETIME NOT NULL ,  `updated` DATETIME NOT NULL ,    PRIMARY KEY  (`article_id`)) ENGINE = InnoDB;
+ALTER TABLE `cb_article` ADD `id_user` INT(11) NOT NULL AFTER `article_id`;
+
+ALTER TABLE `cb_files` CHANGE `type` `type` ENUM('profile','portfolio','cv','certificates','proposal','disputes','event','article') CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+
+
+Azeem 5 oct
+
+Make cb_network_user_save table (DEV) (STG)
+
+Azm 8 oct
+Make cb_article_answer (DEV) (STG)
+
+Azm 9oct
+Make cb_article_views (DEV) (STG)
+
+cb_forum_answer_vote (DEV) (STG)
+cb_group (DEV) (STG)
+
+chetan 10 Wed
+ALTER TABLE `cb_payout_mgmt` ADD `is_registered_show` ENUM('yes','no') NOT NULL AFTER `status`;
+ALTER TABLE `cb_payout_mgmt` CHANGE `is_registered_show` `is_registered_show` ENUM('yes','no') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'yes';
+=======
+Azm 10oct  > on (DEV) (STG)
+
+ALTER TABLE `cb_forum_answer` ADD `type` ENUM('individual','firm') NOT NULL DEFAULT 'individual' AFTER `status`;
+
+ALTER TABLE `cb_article` ADD `type` ENUM('individual','type') NOT NULL DEFAULT 'individual' AFTER `description`;
+
+ALTER TABLE `cb_article` CHANGE `type` `type` ENUM('individual','firm') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'individual';
+
+ALTER TABLE `cb_article_answer` ADD `type` ENUM('individual','firm') NOT NULL DEFAULT 'individual' AFTER `answer_desp`;
+
+INSERT INTO `crowbar_dev`.`cb_config` (`key`, `value`) VALUES ('article_prevoius_days', '7');
+
+ALTER TABLE `cb_events` ADD `user_type` ENUM('individual','firm') NOT NULL DEFAULT 'individual' AFTER `entry_fee`;
+
+Azm 11 oct > on (DEV) (STG)
+
+ALTER TABLE `cb_network_user_save` CHANGE `save_user_id` `save_user_id` INT(11) NOT NULL COMMENT 'or section_reference_id';
+
+ALTER TABLE `cb_network_user_save` CHANGE `section` `section` ENUM('article','forum_question','question') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+ALTER TABLE `cb_network_user_save` CHANGE `section` `section` ENUM('article','forum_question','question','article_post') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+Azm 12oct (STG)
+
+ALTER TABLE `cb_network_user_save` CHANGE `section` `section` ENUM('article','forum_question','question','article_post','events') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+Azm 12oct (STG) 
+ALTER TABLE `cb_users` ADD `social_picture` VARCHAR(251) NULL AFTER `social_account`;
+
+saher 17oct (stg)
+CREATE TABLE `crowbar`.`cb_connected_talent` ( `id_connect` INT NOT NULL AUTO_INCREMENT ,  `send_by` INT NOT NULL ,  `send_to` INT NOT NULL ,  `is_email_sent` ENUM('0','1') NOT NULL DEFAULT '0' ,  `is_connected` ENUM('0','1') NOT NULL DEFAULT '0' ,  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,  `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ,    PRIMARY KEY  (`id_connect`)) ENGINE = InnoDB;
+ALTER TABLE `cb_connected_talent` CHANGE `send_to` `send_to_email` VARCHAR(251) NOT NULL;
+ALTER TABLE `cb_connected_talent` ADD `send_to_name` VARCHAR(251) NOT NULL AFTER `send_to_email`;
+
+chetan 18oct (stg)
+CREATE TABLE `crowbar_azeem2`.`cb_firm_jurisdiction` ( `id` INT(11) NOT NULL AUTO_INCREMENT , `user_id` INT(11) NOT NULL , `country_id` INT(11) NOT NULL , `created` DATETIME NOT NULL , `updated` DATETIME NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+<<<<<<< HEAD
+INSERT INTO `cb_emails` (`id_email`, `language`, `title`, `alias`, `subject`, `content`, `variables`, `status`) VALUES (NULL, 'en', 'send_transfer_ownership_code', 'Transfer Ownership Code', 'Received Transfer Ownership Code  - {site}', '<div style="margin:0;padding:0;width:100%;font-weight:500;font-size:16px;line-height:26px;background:none #fafafa;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+<table align="center" border="0" cellpadding="20" cellspacing="0" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;margin:0;padding:0;line-height:100%;background:none #fafafa">
+	<tbody>
+		<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+			<td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+			<table align="center" border="0" cellpadding="0" cellspacing="0" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:650px">
+				<tbody>
+					<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+						<td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+						<table style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%">
+							<tbody>
+								<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td align="left" height="45" style="width:50%;color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none" target="_blank"> <img alt="{site}" src="{site_link}images/logo.png" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="100" /> </a></td>
+									<td align="right" style="width:50%;color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;text-transform: uppercase;font-size:14px" target="_blank">{slogan}</a></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table align="left" cellpadding="25" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;background:none #fff;border-radius:2px;border:solid 1px #eee">
+							<tbody>
+								<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%;vertical-align:top">
+									<h1 style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:300;line-height:1.1;margin:0 0 20px">Hi Talent,</h1>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">&nbsp;</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Administrator has sent you a coupon to avail a discount on crowbar fee. Use this coupon code while signing up.</p>
+									&nbsp;
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">Your&nbsp;Coupon code is:</p>
+									&nbsp;
+
+									<p style="background:#9c1556;padding:10px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;border-radius:5px;font-size: 22px;color: #ffffff;display: block;margin: 0 auto;width: 100px;text-align: center;">{code}</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px">&nbsp;</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px">Hope you signup soon!</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:20px"><br />
+									Cheers,<br />
+									Team {site}</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;padding:24px 0">
+							<tbody>
+								<tr style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td align="center" height="150" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><a style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> <img alt="{site}" src="{site_link}images/small-logo.png" style="color:#000000;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="32" /> </a></p>
+
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px">This email was sent to <a href="mailto:{email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {email} </a>.<br />
+									If you want to unsubscribe the emails from {site}, please drop a email at <a href="mailto:{help_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {help_email} </a>.<br />
+									If you have any questions or concerns, please email us at <a href="mailto:{info_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> {info_email} </a>.</p>
+
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><span style="color:#b1aca0;text-decoration:none;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;line-height:18px">{office_address} </span></p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</div>', '{email},{site},{slogan},{code},{help_email},{info_email},{site_link},{office_address}', 'active');
+INSERT INTO `cb_emails` (`id_email`, `language`, `title`, `alias`, `subject`, `content`, `variables`, `status`) VALUES (NULL, 'en', 'transfer_ownership_confirmation', 'Transfer Ownership Confirmation', 'Transfer Ownership Confirmation - {site}', '<div style="margin:0;padding:0;width:100%;font-weight:500;font-size:16px;line-height:26px;background:none #fafafa;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+<table align="center" border="0" cellpadding="20" cellspacing="0" style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;margin:0;padding:0;line-height:100%;background:none #fafafa">
+	<tbody>
+		<tr style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+			<td style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+			<table align="center" border="0" cellpadding="0" cellspacing="0" style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:650px">
+				<tbody>
+					<tr style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+						<td style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+						<table style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%">
+							<tbody>
+								<tr style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td align="left" height="45" style="width:50%;color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px"><a style="color:#D3AD2F;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none" target="_blank"> <img alt="{site}" src="{site_link}/lib/images/small-logo.png" style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="100" /> </a></td>
+									<td align="right" style="width:50%;color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;padding:0 0 15px;text-transform:uppercase;">{slogan}</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table align="left" cellpadding="25" style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;background:none #fff;border-radius:2px;border:solid 1px #eee">
+							<tbody>
+								<tr style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%;vertical-align:top">
+									<h1 style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:300;line-height:1.1;margin:0 0 20px">Hello&nbsp;{name},</h1>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px"><span style="color: rgb(70, 70, 67); font-family: \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 16px;">Forgot your password? That&#39;s okay, it happens. Click on the link below and follow the instructions to reset your password:&nbsp;</span></p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">&nbsp;</p>
+									&nbsp;&nbsp;
+
+									<p style="text-align:center;color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px"><a href="{link}" style="background:#9c1556;padding:10px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;border-radius:5px;font-size: 22px;color: #ffffff;" target="_blank">Reset Password</a></p>
+									&nbsp;
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">&nbsp;</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px">See you back at work soon!</p>
+
+									<p style="color:#464643;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:16px;line-height:160%;font-weight:400;padding:0 0 32px;padding-bottom:0px"><br />
+									Cheers,<br />
+									Team {site}</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:100%;padding:24px 0">
+							<tbody>
+								<tr style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif">
+									<td align="center" height="150" style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;border-collapse:collapse;width:100%">
+									<p style="color:#bcb6aa;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:12px"><img alt="We can\'t wait to see what you build!" src="{site_link}/lib/images/slogan.png" style="max-width:100%;border:none;outline:none;" /></p>
+
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><a style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank"> <img alt="{site}" src="{site_link}/lib/images/small-logo.png" style="color:#cc1556;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;outline:none;text-decoration:none;max-width:100%;border:none" width="32" /> </a></p>
+
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px">This email was sent to <a href="mailto:{email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank">{email}</a>.<br />
+									If you want to unsubscribe the emails from {site}, please drop an email at <a href="mailto:{help_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank">{help_email}</a>.<br />
+									If you have any questions or concerns, please email us at <a href="mailto:{info_email}" style="color:#8f8776;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-decoration:none;font-size:13px;line-height:18px" target="_blank">{info_email}</a>.</p>
+
+									<p style="color:#b1aca0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;font-size:13px;line-height:18px;text-decoration:none;padding-bottom:24px"><span style="color:#b1aca0;text-decoration:none;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;line-height:18px">{office_address}</span></p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</div>
+', '{name},{email},{link},{site},{slogan},{help_email},{info_email},{site_link},{office_address}', 'active');
+
+
+saher 19oct (stg)
+ALTER TABLE `cb_connected_talent` ADD `invite_code` VARCHAR(251) NULL AFTER `is_connected`;
+Insert in email table for templates;
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Connect with Talent', '0', 'talent-settings', '-1', '2017-05-13 02:07:31', 'active', 'talent/connect-with-talent', NULL, 'resp-tab-item', '1', NULL, '0');
+
+chetan 22 oct (stg)
+CREATE TABLE `crowbar`.`cb_talent_company` ( `talent_company_id` INT(11) NOT NULL AUTO_INCREMENT , `company_name` VARCHAR(255) NULL DEFAULT NULL , `created` DATETIME NOT NULL , `updated` DATETIME NOT NULL , PRIMARY KEY (`talent_company_id`)) ENGINE = InnoDB;
+
+CREATE TABLE `crowbar`.`cb_company_connected_talent` ( `id_company_connected_talent` INT(11) NOT NULL AUTO_INCREMENT , `id_talent_company` INT(11) NOT NULL , `id_user` INT(11) NOT NULL , `user_type` ENUM('owner','user') NOT NULL DEFAULT 'user' , `created` DATETIME NOT NULL , `updated` DATETIME NOT NULL , PRIMARY KEY (`id_company_connected_talent`)) ENGINE = InnoDB;
+
+ALTER TABLE `cb_talent_company` ADD `company_website` TINYTEXT NULL DEFAULT NULL AFTER `company_name`, ADD `company_biography` TEXT NULL DEFAULT NULL AFTER `company_website`;
+
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES
+(138, 'Transfer Ownership', 0, 'talent-settings', -1, '2018-01-11 08:01:55', 'active', 'talent/settings/transferownership', NULL, NULL, 1, NULL, 0);
+
+saher 23 Oct (stg)
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Connected Talent', '0', 'employer-talent-profile', '-1', '2017-05-13 02:07:31', 'deactive', 'employer/talent/connected-talent', NULL, 'resp-tab-item', '1', NULL, '0');
+
+chetan 24 oct (stg)
+ALTER TABLE `cb_users` ADD `transfer_ownership_otp` VARCHAR(255) NULL DEFAULT NULL AFTER `otp_created`;
+
+chetan 25 oct (stg)
+ALTER TABLE `cb_article` ADD `follower_status` ENUM('Y','N') NOT NULL DEFAULT 'N' AFTER `type`;
+ALTER TABLE `cb_forum_question` ADD `follower_status` ENUM('Y','N') NOT NULL DEFAULT 'N' AFTER `type`;
+
+saher 26oct  (stg)
+UPDATE `cb_users` SET `company_profile`= 'individual' WHERE company_profile is NULL
+
+
+saher 1 Nov (stg)
+ALTER TABLE `cb_network_user_save` CHANGE `section` `section` ENUM('article','question','user') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+
+saher  29 Oct(local)
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES
+(142, 'Articles', 74, 'admin', -1, '2015-09-20 16:15:46', 'active', 'forum/article', '<i class=\"fa fa-circle-o\"></i>', NULL, 2, NULL, 0),
+(143, 'Events', 74, 'admin', -1, '2015-09-20 16:15:46', 'active', 'forum/event', '<i class=\"fa fa-circle-o\"></i>', NULL, 2, NULL, 0);
+
+saher 1 Nov (stg)
+ALTER TABLE `cb_network_user_save` CHANGE `section` `section` ENUM('article','question','user') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+chetan 2 Nov
+ALTER TABLE `cb_users` ADD `is_notice_period` ENUM('N','Y') NOT NULL DEFAULT 'N' AFTER `social_picture`;
+ALTER TABLE `cb_users` ADD `notice_expired` DATE NULL DEFAULT NULL AFTER `is_notice_period`;
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES
+(146, 'Payments', 0, 'employer-settings', -1, '2017-05-12 20:37:31', 'active', 'employer/settings/payments', NULL, 'resp-tab-item', 1, NULL, 0);
+
+saher 1 Nov (stg)
+ALTER TABLE `cb_users` ADD `show_profile` ENUM('yes','no') NOT NULL DEFAULT 'yes' AFTER `social_picture`;
+
+saher 2 Nov (stg)
+ALTER TABLE `cb_talent_company` ADD `company_logo` VARCHAR(251) NULL AFTER `company_biography`;
+
+chetan 6 Nov
+ALTER TABLE `cb_firm_jurisdiction` CHANGE `user_id` `company_id` INT(11) NOT NULL;
+
+=======
+
+saher 6 Nov (local)
+INSERT INTO `cb_users_menu` (`id`, `name`, `parent`, `section`, `created_by`, `created_date`, `status`, `action_url`, `menu_icon`, `menu_class`, `menu_order`, `callback`, `disable_list_view`) VALUES (NULL, 'Award Management', '0', 'admin', '-1', '2015-09-20 21:45:46', 'active', 'forum/event', '<i class=\"fa fa-circle-o\"></i>', NULL, '2', NULL, '0')
+
+UPDATE `cb_users_menu_visibility` SET `menu_visibility` = '[\"1\",\"125\",\"2\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"56\",\"57\",\"58\",\"59\",\"60\",\"61\",\"62\",\"63\",\"64\",\"65\",\"66\",\"67\",\"68\",\"70\",\"71\",\"72\",\"73\",\"74\",\"75\",\"82\",\"83\",\"84\",\"85\",\"86\",\"87\",\"88\",\"95\",\"96\",\"101\",\"102\",\"103\",\"104\",\"105\",\"110\",\"111\",\"116\",\"117\",\"118\",\"119\",\"120\",\"121\",\"122\",\"123\",\"124\",\"132\",\"142\",\"143\",\"144\"]' WHERE `cb_users_menu_visibility`.`id_user` = 1;
+
+CREATE TABLE `crowbar`.`cb_awards` ( `id_award` INT NOT NULL AUTO_INCREMENT ,  `title` VARCHAR(251) NOT NULL ,  `image` VARCHAR(251) NOT NULL ,  `status` ENUM('active','inactive') NOT NULL DEFAULT 'active' ,  `created_at` TIMESTAMP NULL ,  `updated_at` TIMESTAMP NULL ,    PRIMARY KEY  (`id_award`)) ENGINE = InnoDB;

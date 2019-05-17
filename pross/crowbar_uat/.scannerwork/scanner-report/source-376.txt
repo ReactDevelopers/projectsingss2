@@ -1,0 +1,224 @@
+<?php $__env->startSection('content'); ?>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="name">Question:</label>
+                            <br /><?php echo e($ques->question_description); ?>
+
+
+                            <div>
+                                <a href="javascript:;" id="main-reply" class="add-reply btn-link btn-reply">Add Reply</a>
+                                <?php if($ques->status == 'pending'): ?>
+                                <span id="id-app-ans">
+                                    |
+                                    <a href="javascript:;" data-id_question="<?php echo e($ques->id_question); ?>" id="ques-approve" class="add-reply">Approve</a>
+                                </span>
+                                <?php endif; ?>
+
+                            </div>
+                        </div>
+
+                        <div id="main-reply-area" style="display: none;">
+                            <form role="add-talent" method="post" enctype="multipart/form-data" action="<?php echo e(url(sprintf('%s/forum/question/reply/'.$id_question,ADMIN_FOLDER))); ?>">
+                                <input type="hidden" name="_method" value="PUT">
+                                <?php echo e(csrf_field()); ?>
+
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label for="name">Reply</label>
+                                        <textarea class="form-control" name="answer_description" placeholder="Reply"></textarea>
+                                    </div>
+                                    <button type="button" data-request="ajax-submit" data-target='[role="add-talent"]' class="btn btn-link btn-reply">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                        <?php if(!empty($answer->count())): ?>
+                            <div class="form-group">
+                                <label for="name">Answer: </label>
+                                <br />
+                                <?php $__currentLoopData = $answer; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ans): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                                    <div class="reply-display-area-<?php echo e($ans->id_answer); ?>">
+                                        <?php echo e($ans->answer_description); ?>
+
+                                    </div>
+                                    <div class="reply-display-area-<?php echo e($ans->id_answer); ?>">
+                                        <span class="reply-heading">Reply by: <span><?php echo e($ans->person_name); ?></span></span>
+                                        <span class="reply-heading">Reply on: <span><?php echo e($ans->created); ?></span></span>
+                                    </div>
+                                    <div class="action reply-display-area-<?php echo e($ans->id_answer); ?>">
+                                        <a href="javascript:;" class="btn-link btn-reply add-reply" onclick="addReply(<?php echo e($ans->id_answer); ?>, <?php echo e($ans->id_question); ?>)">Add Reply</a>
+                                        &nbsp;|&nbsp;
+                                        <?php if($ans->has_child == 1): ?>
+                                        <a href="javascript:;" onclick="loadReply(<?php echo e($ans->id_answer); ?>, <?php echo e($ans->id_question); ?>)">View Reply</a>
+                                        &nbsp;|&nbsp;
+                                        <?php endif; ?>
+                                        <?php if($ans->status == 'Pending'): ?>
+                                            <span id="anrwer-<?php echo e($ans->id_answer); ?>">
+                                            <a href="javascript:;" class="approve-reply" data-id_answer="<?php echo e($ans->id_answer); ?>">Approve</a>
+                                            |
+                                            </span>
+                                        <?php endif; ?>
+                                        <a href="javascript:;" class="delete-reply" onclick="deleteReply(<?php echo e($ans->id_answer); ?>, <?php echo e($ans->id_question); ?>)">Delete</a>
+                                    </div>
+                                    <div id="text-reply-area-<?php echo e($ans->id_answer); ?>" style="display: none;">
+                                        <div class="form-group" id="text-reply-section-<?php echo e($ans->id_answer); ?>">
+                                            <label for="name">Reply</label>
+                                            <textarea class="form-control" name="answer_description" id="answer_description_<?php echo e($ans->id_answer); ?>" placeholder="Reply"></textarea>
+                                        </div>
+                                        <button onclick="insertReply(<?php echo e($ans->id_answer); ?>, <?php echo e($ans->id_question); ?>)" type="button" class="btn btn-link btn-reply">Add Reply</button>
+                                    </div>
+                                    <hr class="reply-display-area-<?php echo e($ans->id_answer); ?>">
+                                    <div id="reply-area-<?php echo e($ans->id_answer); ?>"></div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+                            </div>
+                        <?php endif; ?>
+                        <div class="paginationSection">
+                            <nav aria-label="Page navigation example">
+                                <?php echo e($answer->links()); ?>
+
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <a href="<?php echo e($backurl); ?>" class="btn btn-default">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <input type="hidden" id="add-reply" value="<?php echo e(url('administrator/forum/answer/add')); ?>" />
+    <input type="hidden" id="list-reply" value="<?php echo e(url('administrator/forum/answer/reply')); ?>" />
+    <input type="hidden" id="delete-reply" value="<?php echo e(url('administrator/forum/answer/delete')); ?>" />
+    <input type="hidden" id="approve-question" value="<?php echo e(url('administrator/forum/question/update')); ?>" />
+    <input type="hidden" id="approve-answer" value="<?php echo e(url('administrator/forum/answer/update')); ?>" />
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('inlinescript'); ?>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#main-reply').click(function(){
+        $('#main-reply-area').toggle();
+    });
+
+    $(document.body).on('click', '.approve-reply', function(){
+        var id_answer = $(this).data('id_answer');
+        var url = $('#approve-answer').val();
+        var isconfirm = confirm('Do you really want to continue with this action?');
+
+        if(isconfirm && id_answer > 0){
+            $.ajax({
+                method: "POST",
+                url: url,
+                data: { id_answer: id_answer}
+            })
+            .done(function(data) {
+                $('#anrwer-'+id_answer).hide();
+                swal({
+                    title: '',
+                    html: data.message,
+                    showLoaderOnConfirm: false,
+                    showCancelButton: false,
+                    showCloseButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick:false,
+                    confirmButtonText: 'Okay',
+                    cancelButtonText: '<i class="fa fa-times-circle-o"></i> Cancel',
+                    confirmButtonColor: '#0FA1A8',
+                    cancelButtonColor: '#CFCFCF'
+                });
+            });
+        }
+    });
+
+    $(document.body).on('click', '#ques-approve', function(){
+        var id_question = $(this).data('id_question');
+        var url = $('#approve-question').val();
+        var isconfirm = confirm('Do you really want to continue with this action?');
+
+        if(isconfirm && id_question > 0){
+            $.ajax({
+                method: "POST",
+                url: url,
+                data: { id_question: id_question}
+            })
+            .done(function(data) {
+                $('#id-app-ans').hide();
+                swal({
+                    title: '',
+                    html: data.message,
+                    showLoaderOnConfirm: false,
+                    showCancelButton: false,
+                    showCloseButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick:false,
+                    confirmButtonText: 'Okay',
+                    cancelButtonText: '<i class="fa fa-times-circle-o"></i> Cancel',
+                    confirmButtonColor: '#0FA1A8',
+                    cancelButtonColor: '#CFCFCF'
+                });
+            });
+        }
+    });
+});
+function addReply(id_reply, id_ques){
+    $('#text-reply-area-'+id_reply).toggle();
+}
+function insertReply(id_reply, id_ques){
+    var add_reply_url = $('#add-reply').val();
+    var answer_description = $('#answer_description_'+id_reply).val();
+    if(answer_description.length <= 0){
+        $('#text-reply-section-'+id_reply).addClass('has-error');
+        $('#text-reply-section-'+id_reply).append('<div class="help-block">The reply field is required.</div>');
+    }
+    else{
+        $('#text-reply-section-'+id_reply).removeClass('has-error');
+    }
+    if(id_reply > 0 && answer_description.length > 0){
+        $.ajax({
+        method: "POST",
+        url: add_reply_url,
+        data: { id_reply: id_reply, id_ques: id_ques, answer_description: answer_description}
+        })
+        .done(function(data) {
+            $('#text-reply-area-'+id_reply).toggle();
+            $('#answer_description_'+id_reply).val('');
+            loadReply(id_reply, id_ques)
+        });
+    }
+}
+function loadReply(id_reply, id_ques){
+    var reply_list_url = $('#list-reply').val();
+    if(id_reply > 0){
+        $.ajax({
+        method: "POST",
+        url: reply_list_url,
+        data: { id_reply: id_reply, id_ques: id_ques}
+        })
+        .done(function(data) {
+            $("#reply-area-"+id_reply).html(data);
+        });
+    }
+}
+function deleteReply(id_reply, id_ques){
+    var isconfirm = confirm('Do you really want to continue with this action?');
+    if(isconfirm){
+        var reply_delete_url = $('#delete-reply').val();
+        if(id_reply > 0){
+            $.ajax({
+            method: "POST",
+            url: reply_delete_url,
+            data: { id_reply: id_reply, id_ques: id_ques}
+            })
+            .done(function(data) {
+                $(".reply-display-area-"+id_reply).remove();
+            });
+        }
+    }
+}
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.backend.dashboard', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

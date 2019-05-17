@@ -1,0 +1,413 @@
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Laravel\Cashier\Cashier;
+use App\Providers\Request;
+use App\Providers\UrlGenerator;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $language           = \App::getLocale();
+        \Braintree_Configuration::environment(config('services.braintree.environment'));
+        \Braintree_Configuration::merchantId(config('services.braintree.merchant_id'));
+        \Braintree_Configuration::publicKey(config('services.braintree.public_key'));
+        \Braintree_Configuration::privateKey(config('services.braintree.private_key'));
+        
+        Cashier::useCurrency('HKD', 'HK$');
+
+        if(empty(\Cache::get('configuration'))){
+            $configuration = (array)\App\Lib\Dash::combine((array)\DB::table('config')->get()->toArray(),'{n}.key','{n}.value');
+            \Cache::forever('configuration',$configuration);
+        }
+
+        if(empty(\Cache::get('currencies'))){
+            $currencies = (array)\App\Lib\Dash::combine((array)\DB::table('currencies')->get()->toArray(),'{n}.iso_code','{n}.sign');
+            \Cache::forever('currencies',$currencies);
+        }
+
+        if(empty(\Cache::get('languages'))){
+            $languages = (array)\App\Lib\Dash::combine(\Models\Listings::languages(),'{n}.language_code','{n}.language_name');
+            \Cache::forever('languages',$languages);
+        }
+
+        if(empty(\Cache::get('phone_codes'))){
+            $phone_codes = \Models\Listings::countries('array',['phone_country_code'],'status = "active"');
+            \Cache::forever('phone_codes',$phone_codes);
+        }
+        
+        if(empty(\Cache::get('country_name'))){
+            $country_name = \Models\Listings::countries('array',[\DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as country_name")], 'status = "active"');
+            \Cache::forever('country_name',$country_name);
+        }
+        
+        if(empty(\Cache::get('state_name'))){
+            $state_name = \Models\Listings::states('array',[\DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as state_name")], 'status = "active"');
+            \Cache::forever('state_name',$state_name);
+        }
+        
+        if(empty(\Cache::get('industries_name'))){
+            $industries_name = (array)\App\Lib\Dash::combine(
+                \Models\Industries::allindustries(
+                    "array",
+                    " parent = '0' AND status != 'trashed' ",[
+                        'id_industry',
+                        \DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as name"),
+                        'parent'
+                    ],'',true
+                ),
+                '{n}.id_industry',
+                '{n}.name'
+            );
+            \Cache::forever('industries_name',$industries_name);
+        }
+        
+        if(empty(\Cache::get('subindustries_name'))){
+            $subindustries_name = (array)\App\Lib\Dash::combine(
+                \Models\Industries::allindustries(
+                    "array",
+                    " parent != '0' ",
+                    ['id_industry',\DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as name"),'parent']
+                ),
+                '{n}.id_industry',
+                '{n}.name'
+            );
+            \Cache::forever('subindustries_name',$subindustries_name);
+        }
+
+        if(empty(\Cache::get('degree_name'))){
+            $degree = (array)\App\Lib\Dash::combine(
+                \Models\Listings::degrees(
+                    'array',
+                    ['id_degree','degree_name']
+                ),
+                '{n}.id_degree',
+                '{n}.degree_name'
+            );
+            \Cache::forever('degree_name',$degree);
+        }
+
+        if(empty(\Cache::get('countries'))){
+            $countries = (array)\App\Lib\Dash::combine(
+                \Models\Listings::countries(
+                    'array',
+                    [\DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as country_name"),'id_country'],
+                    'status = "active"'
+                ),
+                '{n}.id_country',
+                '{n}.country_name'
+            );
+            
+            \Cache::forever('countries',$countries);
+        }
+        
+        if(1){
+            $job_titles = (array)\App\Lib\Dash::combine(
+                \Models\Listings::job_titles(
+                    'array',
+                    ['id_job_title','job_title_name']
+                ),
+                '{n}.job_title_name',
+                '{n}.job_title_name'
+            );
+            
+            \Cache::forever('job_titles',$job_titles);
+        }
+
+        if(1){
+            $colleges = (array)\App\Lib\Dash::combine(
+                \Models\Listings::colleges(
+                    'array',
+                    ['id_college','college_name']
+                ),
+                '{n}.college_name',
+                '{n}.college_name'
+            );
+            
+            \Cache::forever('colleges',$colleges);
+        }
+        
+        if(empty(\Cache::get('states'))){
+            $states = (array)\App\Lib\Dash::combine(
+                \Models\Listings::states(
+                    'array',
+                    [\DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as state_name"),'id_state'],
+                    'status = "active"'
+                ),
+                '{n}.id_state',
+                '{n}.state_name'
+            );
+            
+            \Cache::forever('states',$states);
+        }
+
+        if(empty(\Cache::get('cities'))){
+            $cities = (array)\App\Lib\Dash::combine(
+                \Models\Listings::cities(
+                    'array',
+                    [\DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as city_name"),'id_city'],'','',
+                    'status = "active"'
+                ),
+                '{n}.id_city',
+                '{n}.city_name'
+            );
+            
+            \Cache::forever('cities',$cities);
+        }
+
+        if(empty(\Cache::get('country_phone_codes'))){
+            $codes = (array)\App\Lib\Dash::combine(
+                \Models\Listings::countries(
+                    'array',
+                    ['phone_country_code'],
+                    'status = "active"'
+                ),
+                '{n}.phone_country_code',
+                '{n}.phone_country_code'
+            );
+            
+            \Cache::forever('country_phone_codes',$codes);
+        }
+
+        if(empty(\Cache::get('work_fields'))){
+            $work_fields = (array)\App\Lib\Dash::combine(
+                \Models\Listings::workfields(
+                    'array',
+                    ['id_workfield','field_name']
+                ),
+                '{n}.id_workfield',
+                '{n}.field_name'
+            );
+            
+            \Cache::forever('work_fields',$work_fields);
+        }
+
+        if(1){
+            $skills = (array)\App\Lib\Dash::combine(
+                \Models\Listings::skills(
+                    'array',
+                    ['skill_name']
+                ),
+                '{n}.skill_name',
+                '{n}.skill_name'
+            );
+            \Cache::forever('skills',$skills);
+        }
+
+        if(1){
+            $certificates = (array)\App\Lib\Dash::combine(
+                \Models\Listings::certificates(
+                    'array',
+                    ['certificate_name']
+                ),
+                '{n}.certificate_name',
+                '{n}.certificate_name'
+            );
+            \Cache::forever('certificates',$certificates);
+        }        
+
+        if(empty(\Cache::get('phone_codes'))){
+            $phone_codes = \Models\Listings::countries(
+                'array',
+                ['phone_country_code']
+            );
+            \Cache::forever('phone_codes',$phone_codes);
+        }
+
+        if(empty(\Cache::get('abusive_words'))){
+            $abusive_words = \Models\Listings::abusive_words('array'," status != 'trashed' ",['abusive_word']);
+            
+            $all_words = [];
+            array_walk($abusive_words, function($item) use(&$all_words){
+                $all_words[$item['abusive_word']] = str_repeat("*", strlen($item['abusive_word']));
+            });
+
+            \Cache::forever('abusive_words',$all_words);
+        }
+
+        \Validator::extend('validate_date_type', function($attribute, $value, $parameters){
+            if(!empty(date_create($parameters['0'])) && !empty($value)){
+                $startdate  = date_create($parameters['0']);
+                $enddate    = date_create($value);
+                $datediff   = date_diff($startdate,$enddate);
+                $daycount   = $datediff->format("%a");
+                if($parameters['1'] == 'weekly' && $daycount < 7){
+                    return false;
+                }else if($parameters['1'] == 'monthly' && $daycount < 30){
+                    return false;
+                }else{
+                    return true;
+                }
+            }else{
+                return false;
+            }
+        });
+
+        \Validator::extend('validate_date', function($attribute, $value, $parameters, $validator){
+            $d = \DateTime::createFromFormat('Y-m-d', $value);
+            return $d && $d->format('Y-m-d') === $value;
+        });        
+
+        \Validator::extend('one_hour_difference', function($attribute, $value, $parameters, $validator){
+
+            $start_time = array_get($validator->getData(), $parameters[0], null);
+            $end_time = $value;
+
+            if(strtotime($start_time) !== false && strtotime($end_time) !== false){
+                if(time_difference_in_hours($start_time,$end_time) >= 1){
+                    return true;
+                }
+            }
+        });
+
+        \Validator::extend('invalid_time_range', function($attribute, $value, $parameters, $validator){
+
+            $start_time = array_get($validator->getData(), $parameters[0], null);
+            $end_time = $value;
+
+            if(strtotime($start_time) !== false && strtotime($end_time) !== false){
+                if(strtotime($start_time) < strtotime($end_time)){
+                    return true;
+                }
+            }
+        });
+
+        \Validator::extend('validate_file_type', function($attribute, $file){
+            $allowed_documents = explode(",",ALLOWED_DOCUMENTS);
+            
+            if(in_array($file->getClientOriginalExtension(), $allowed_documents)){
+                return true;
+            }
+        });
+
+        \Validator::extend('min_age', function($attribute, $value, $parameters){
+            $min_age = ( ! empty($parameters)) ? (int) $parameters[0] : MIN_AGE;
+            $difference = get_time_difference($value,'y');
+
+            return $difference >= $min_age;
+        });
+
+        \Validator::extend('numeric_range', function($attribute, $value, $parameters, $validator){
+            
+            $min    = array_get($validator->getData(), $parameters[0], null);
+            $max    = array_get($validator->getData(), $parameters[1], null);
+            
+            if(!empty($min) && !empty($max)){
+                return $min < $max;
+            }else{
+                return true;
+            }
+        });
+
+        \Validator::extendImplicit('required_range', function($attribute, $value, $parameters, $validator){
+            $field      = (array)array_get($validator->getData(), $parameters[0], null);
+            $selected   = (array)explode("-", $parameters[1]);
+            
+            if(!empty($field)){
+                if(array_intersect($selected, $field)){
+                    if($value == DEFAULT_NO_VALUE){
+                        $value = NULL;
+                    }
+                    return (!empty($value));
+                }else{
+                    return true;
+                }
+            }else{    
+                return true;
+            }
+        });
+
+        \Validator::extend('required_having', function($attribute, $value, $parameters, $validator){
+
+            $required   = array_get($validator->getData(), $parameters[0], null);
+            $field      = array_get($validator->getData(), $parameters[1], null);
+            $selected   = (array)explode("-", $parameters[1]);
+            
+            if(!empty($field)){
+                if(array_intersect($selected, $field)){
+                    return ($required);
+                }else{
+                    return true;
+                }
+            }else{    
+                return true;
+            }
+
+        });
+
+        \Validator::extend('old_password', function ($attribute, $value, $parameters, $validator) {
+            return \Hash::check($value, current($parameters));
+        });
+        defined('Language') || define('Language', config('app.locale'));
+        \App::setLocale(Language);
+
+    }
+
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+        $this->registerUrlGenerator();
+    }
+
+    /**
+     *  Overwriting laravel urlGenerator
+     */
+    protected function registerUrlGenerator()
+    {
+        $this->app['url'] = $this->app->share(function ($app) {
+            $routes = $app['router']->getRoutes();
+            // The URL generator needs the route collection that exists on the router.
+            // Keep in mind this is an object, so we're passing by references here
+            // and all the registered routes will be available to the generator.
+            $app->instance('routes', $routes);
+            $url = new UrlGenerator(
+                $routes, $app->rebinding(
+                    'request', $this->requestRebinder()
+                )
+            );
+            $url->setSessionResolver(function () {
+                return $this->app['session'];
+            });
+            // If the route collection is "rebound", for example, when the routes stay
+            // cached for the application, we will need to rebind the routes on the
+            // URL generator instance so it has the latest version of the routes.
+            $app->rebinding('routes', function ($app, $routes) {
+                $app['url']->setRoutes($routes);
+            });
+            return $url;
+        });
+    }
+    /**
+     * @return \Closure
+     */
+    protected function requestRebinder()
+    {
+        return function ($app, $request) {
+            $app['url']->setRequest($request);
+        };
+    }
+
+    /**
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            'url',
+        ];
+    }
+}
+

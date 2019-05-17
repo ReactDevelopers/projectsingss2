@@ -1,0 +1,1 @@
+øw5resources/views/backend/talent/verification.blade.php 2phpXehr5resources/views/backend/talent/verification.blade.php

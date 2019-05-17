@@ -1,0 +1,308 @@
+/*!
+ * Start Bootstrap - SB Admin Bootstrap Admin Template (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+/* Global Styles */
+
+body {
+    margin-top: 100px;
+    /*background-color: #222;*/
+}
+
+@media(min-width:768px) {
+    body {
+        margin-top: 50px;
+    }
+}
+
+#wrapper {
+    padding-left: 0;
+}
+
+#page-wrapper {
+    width: 100%;
+    padding: 0;
+    background-color: #fff;
+}
+
+.huge {
+    font-size: 50px;
+    line-height: normal;
+}
+
+@media(min-width:768px) {
+    #wrapper {
+        padding-left: 225px;
+    }
+
+    #page-wrapper {
+        padding: 10px;
+    }
+}
+
+/* Top Navigation */
+
+.top-nav {
+    padding: 0 15px;
+}
+
+.top-nav>li {
+    display: inline-block;
+    float: left;
+}
+
+.top-nav>li>a {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    line-height: 20px;
+    color: #999;
+}
+
+.top-nav>li>a:hover,
+.top-nav>li>a:focus,
+.top-nav>.open>a,
+.top-nav>.open>a:hover,
+.top-nav>.open>a:focus {
+    color: #fff;
+    background-color: #000;
+}
+
+.top-nav>.open>.dropdown-menu {
+    float: left;
+    position: absolute;
+    margin-top: 0;
+    border: 1px solid rgba(0,0,0,.15);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    background-color: #fff;
+    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+}
+
+.top-nav>.open>.dropdown-menu>li>a {
+    white-space: normal;
+}
+
+ul.message-dropdown {
+    padding: 0;
+    max-height: 250px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+li.message-preview {
+    width: 275px;
+    border-bottom: 1px solid rgba(0,0,0,.15);
+}
+
+li.message-preview>a {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+li.message-footer {
+    margin: 5px 0;
+}
+
+ul.alert-dropdown {
+    width: 200px;
+}
+
+/* Side Navigation */
+
+@media(min-width:768px) {
+    .side-nav {
+        position: fixed;
+        top: 51px;
+        left: 225px;
+        width: 225px;
+        margin-left: -225px;
+        border: none;
+        border-radius: 0;
+        overflow-y: auto;
+        background-color: #222;
+        bottom: 0;
+        overflow-x: hidden;
+        padding-bottom: 38px;
+    }
+
+    .side-nav>li>a {
+        width: 225px;
+    }
+
+    .side-nav li a:hover,
+    .side-nav li a:focus {
+        outline: none;
+        background-color: #000 !important;
+    }
+}
+
+.side-nav>li>ul {
+    padding: 0;
+}
+
+.side-nav>li>ul>li>a {
+    display: block;
+    padding: 10px 15px 10px 38px;
+    text-decoration: none;
+    color: #999;
+}
+
+.side-nav>li>ul>li>a:hover {
+    color: #fff;
+}
+
+/* Flot Chart Containers */
+
+.flot-chart {
+    display: block;
+    height: 400px;
+}
+
+.flot-chart-content {
+    width: 100%;
+    height: 100%;
+}
+
+/* Custom Colored Panels */
+
+.huge {
+    font-size: 40px;
+}
+
+.panel-green {
+    border-color: #5cb85c;
+}
+
+.panel-green > .panel-heading {
+    border-color: #5cb85c;
+    color: #fff;
+    background-color: #5cb85c;
+}
+
+.panel-green > a {
+    color: #5cb85c;
+}
+
+.panel-green > a:hover {
+    color: #3d8b3d;
+}
+
+.panel-red {
+    border-color: #d9534f;
+}
+
+.panel-red > .panel-heading {
+    border-color: #d9534f;
+    color: #fff;
+    background-color: #d9534f;
+}
+
+.panel-red > a {
+    color: #d9534f;
+}
+
+.panel-red > a:hover {
+    color: #b52b27;
+}
+
+.panel-yellow {
+    border-color: #f0ad4e;
+}
+
+.panel-yellow > .panel-heading {
+    border-color: #f0ad4e;
+    color: #fff;
+    background-color: #f0ad4e;
+}
+
+.panel-yellow > a {
+    color: #f0ad4e;
+}
+
+.panel-yellow > a:hover {
+    color: #df8a13;
+}
+/*login page style*/
+#login-wrapper,
+#login-wrapper > div,
+#login-wrapper > div > div,
+#login-wrapper > div > div > div,
+#login-wrapper > div > div > div > div,
+#login-wrapper > div > div > div > div > div{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+#login-wrapper .login-panel{
+    position: absolute;
+    width: 320px;
+    min-height: 220px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+}
+#login-wrapper .login-panel .bg-danger{
+    background: none;
+    font-size: 13px;
+    color: #f00;
+    margin: 10px 0 -10px;
+    padding: 0 15px;
+}
+
+.error-msg
+{
+    color: #f00;
+}
+
+/** Cover Image Croper Style **/
+
+.cropImgWrapper{ z-index: 9999 !important; }
+.cropContaineroutput_imgUploadForm, .user_profile_image_imgUploadForm{ height: 0; }
+.cropControls{ top: inherit; bottom: -1px; right: 0;z-index: 9999;}
+.cropControls i{ background: #fff; background-position: center !important; background-size: 45% !important; box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.3); -webkit-box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.3); -moz-box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.3); -o-box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.3); margin: 0 -1px;}
+.cropControls i.cropControlUpload{ background: #fff url(../images/edit_icon.png) no-repeat; }
+.cropControls i.cropControlZoomIn{ background: #fff url(../images/zoomin.png) no-repeat; }
+.cropControls i.cropControlZoomOut{ background: #fff url(../images/zoomout.png) no-repeat; }
+.cropControls i.cropControlCrop{ background: #fff url(../images/crop.png) no-repeat; }
+.cropControls i.cropControlReset, .cropControls i.cropControlRemoveCroppedImage{ background: #fff url(../images/cancel.png) no-repeat; }
+.cropControls i:hover{ background-color: #fff; }
+#croppicModal img { max-width: none; }
+.admin_user_profile_image{
+    position: relative;
+    width: 126px;
+    height: 126px;
+    border: 3px solid #fff;
+    overflow: hidden;
+    width: 200px;
+    }
+    
+.admin_user_profile_image:before {
+    content: '';
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+}
+.admin_user_profile_image > img {
+    max-width: 100%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.admin_user_profile_image.banner_image {
+    width: 650px;
+    max-width:100%;
+    border:1px solid #ddd;
+}
+.sublist li.active > a {
+    color: #fff !important;
+}

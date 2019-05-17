@@ -1,0 +1,1 @@
+èu'resources/views/talent/profile/includes :çuéuêur'resources/views/talent/profile/includes

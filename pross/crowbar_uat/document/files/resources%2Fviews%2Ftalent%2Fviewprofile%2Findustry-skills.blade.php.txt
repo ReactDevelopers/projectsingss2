@@ -1,0 +1,206 @@
+@section('content')
+    <!-- Main Content -->
+    <div class="contentWrapper">
+        <div class="afterlogin-section has-nobanner after-login-view">
+            <div class="container">
+                @include('talent.includes.user-detail-header',$user)
+                @include('talent.viewprofile.includes.sidebar',$user)
+                <div class="col-md-9 col-sm-8 col-xs-12 right-sidebar">
+                    @include('talent.viewprofile.includes.tab-menu',$user)
+                    <form class="form-horizontal" role="talent_step_two" action="{{url(sprintf('%s/_step_two',TALENT_ROLE_TYPE))}}" method="POST" accept-charset="utf-8">
+                        <div class="inner-profile-section">
+                            {{ csrf_field() }}
+                            <div class="login-inner-wrapper edit-inner-wrapper">
+                                <input type="hidden" name="step_type" value="edit">
+
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{sprintf(trans('website.W0059'),'')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="custom-dropdown">
+                                                    <select name="industry" class="form-control" data-request="option" data-url="{{ url('ajax/industry-subindustry-list') }}">
+                                                        {!!___dropdown_options($industries_name,sprintf(trans('website.W0059'),trans('website.W0068')),$user['industry'],false)!!}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{sprintf(trans('website.W0060'),'')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="custom-dropdown">
+                                                    <select name="subindustry" class="form-control">
+                                                        {!!___dropdown_options($subindustries_name,sprintf(trans('website.W0060'),trans('website.W0068')),$user['subindustry'],false)!!}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0061')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="custom-dropdown">
+                                                    <select id="skills" name="skills[]" data-request="tags" multiple="true" data-placeholder="{{ trans('website.W0193') }}" class="form-control">
+                                                        {!!___dropdown_options($skills,'',$user['skills'],false)!!}
+                                                    </select>
+                                                    <div class="js-example-tags-container"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0062')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                @foreach(expertise_levels() as $key => $value)
+                                                    <div class="radio radio-inline">                
+                                                        <input name="expertise" type="radio" {{$user['expertise'] == $value['level'] ? 'checked' : ''}} id="expert-{{$value['level']}}" value="{{$value['level']}}">
+                                                        <label for="expert-{{$value['level']}}">{{$value['level_name']}}</label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12 has-biglabel">{!!trans('website.W0066')!!}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" name="experience" value="{{ old('experience',$user['experience']) }}" placeholder="{{trans('website.W0074')}}" class="form-control" />
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0034')}}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                @foreach(employment_types('talent_personal_information') as $key => $value)
+                                                    <div class="checkbox checkbox-inline" style="margin-left: 0px;min-width: 100px;">                
+                                                        <input type="checkbox" data-request="show-hide-multiple" data-condition="fulltime" data-target="[name='interests']" data-true-condition=".salary-section" data-false-condition=".workrate-section" name="interests[]" {{in_array($value['type'],$user['interested']) ? 'checked' : ''}} id="interests-{{$value['type']}}" value="{{$value['type']}}">
+                                                        <label for="interests-{{$value['type']}}"><span class="check"></span>{{$value['type_name']}}</label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <div class="salary-section">
+                                            <div class="form-group">
+                                                <label class="control-label col-md-12 col-sm-12 col-xs-12">{!! sprintf(trans('website.W0040'),$user['currency']) !!}</label>
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <input type="text" name="expected_salary" value="{{ old('expected_salary',$user['expected_salary']) }}" placeholder="{{trans('website.W0069')}}" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0041')}}</label>
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <input type="text" name="other_expectations" value="{{ old('other_expectations',$user['other_expectations']) }}" placeholder="{{trans('website.W0070')}}" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-12 col-sm-12 col-xs-12"></label>
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <div class="checkbox">                
+                                                        <input type="checkbox" id="terms" {{ (DEFAULT_YES_VALUE == $user['agree']) ? 'checked' : ''}} value="{{ DEFAULT_YES_VALUE }}" name="agree">
+                                                        <label for="terms" style="line-height: 16pt;">
+                                                            <span class="check"></span>
+                                                            {!! 
+                                                                sprintf(
+                                                                    trans('website.W0042'),
+                                                                    '<a target="_blank" href="'.url(PRICING_TERMS_AND_CONDITION_PAGE_URL).'">'.trans('website.W0043').'</a>',
+                                                                    '<a target="_blank" href="'.url(POLICY_PAGE_URL).'">'.trans('website.W0044').'</a>'
+                                                                ) 
+                                                            !!}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="workrate-section">
+                                            <div class="form-group">
+                                                <label class="control-label col-md-12 col-sm-12 col-xs-12 has-biglabel">{!!sprintf(trans('website.W0075'), $user['currency'])!!}</label>
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <div class="col-md-4 col-xs-4 col-sm-4">
+                                                        <div class="form-group margin-bottom-none">
+                                                            <input type="text" name="workrate" value="{{ old('workrate',$user['workrate']) }}" placeholder="{{trans('website.W0273')}}" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 col-xs-4 col-sm-4">
+                                                        <div class="form-group margin-bottom-none margin-right-none margin-left-none">
+                                                            <input type="text" name="workrate_max" value="{{ old('workrate_max',$user['workrate_max']) }}" placeholder="{{trans('website.W0274')}}" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 col-xs-4 col-sm-4">
+                                                        <div class="form-group margin-bottom-none">
+                                                            <div class="custom-dropdown">
+                                                                <select name="workrate_unit" class="form-control">
+                                                                    <option value="">{{ trans('general.M0255') }}</option>
+                                                                    <option value="{{ trim(trans('general.M0247')) }}" @if(trim(trans('general.M0247')) == $user['workrate_unit']) selected="selected" @endif>{{ trans('general.M0247') }}</option>
+                                                                    <option value="{{ trim(trans('general.M0248')) }}" @if(trim(trans('general.M0248')) == $user['workrate_unit']) selected="selected" @endif>{{ trans('general.M0248') }}</option>
+                                                                    <option value="{{ trim(trans('general.M0249')) }}" @if(trim(trans('general.M0249')) == $user['workrate_unit']) selected="selected" @endif>{{ trans('general.M0249') }}</option>
+                                                                    <option value="{{ trim(trans('general.M0250')) }}" @if(trim(trans('general.M0250')) == $user['workrate_unit']) selected="selected" @endif>{{ trans('general.M0250') }}</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0077')}}</label>
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <textarea name="workrate_information"  class="form-control" placeholder="{{trans('website.W0078')}}">{{ old('workrate_information',$user['workrate_information']) }}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12 col-sm-12 col-xs-12 has-biglabel">{!!trans('website.W0079')!!}</label>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="custom-dropdown">
+                                                <select id="certificates" name="certificates[]" data-request="tags" multiple="true" data-placeholder="{{trans('website.W0080')}}" class="form-control">
+                                                    {!!___dropdown_options($certificates,'',$user['certificates'],false)!!}
+                                                </select>
+                                                <div class="js-example-tags-container"></div>
+                                            </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                     
+
+                        <div class="row form-group button-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="row form-btn-set">
+                                    <div class="col-md-7 col-sm-7 col-xs-6">
+                                        <a href="{{ $skip_url }}" class="greybutton-line" value="Complete It Later">
+                                            {{trans('website.W0186')}}
+                                        </a>
+                                    </div>
+                                    <div class="col-md-5 col-sm-5 col-xs-6">
+                                        <button type="button" class="button" data-request="ajax-submit" data-target='[role="talent_step_two"]' value="Save">{{trans('website.W0058')}}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                                    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+@push('inlinescript')
+    <style type="text/css">.modal-backdrop{display: none;} #SGCreator-modal{background: rgba(216, 216, 216, 0.7);}</style>
+    <script type="text/javascript">
+        $(".cropper").SGCropper({
+            viewMode: 1,
+            aspectRatio: "2/3",
+            cropBoxResizable: false,
+            formContainer:{
+                actionURL:"{{ url(sprintf('ajax/crop?imagename=image&user_id=%s',Auth::user()->id_user)) }}",
+                modelTitle:"{{ trans('website.W0261') }}",
+                modelSuggestion:"{{ trans('website.W0263') }}",
+                modelDescription:"{{ trans('website.W0264') }}",
+                modelSeperator:"{{ trans('website.W0265') }}",
+                uploadLabel:"{{ trans('website.W0266') }}",
+                fieldLabel:"",
+                fieldName: "image",
+                btnText:"{{ trans('website.W0262') }}",
+                defaultImage: "../images/product_sample.jpg",
+                loaderImage: "../images/loader.gif",
+            }
+        });
+    </script>
+@endpush
+

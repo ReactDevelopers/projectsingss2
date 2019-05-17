@@ -1,0 +1,526 @@
+<?php
+
+    namespace App\Http\Controllers\Front;
+
+    use App\Http\Requests;
+    use Illuminate\Http\Request;
+    use Illuminate\Validation\Rule;
+    use Illuminate\Support\Facades\DB;
+    use App\Http\Controllers\Controller;
+    
+    use Auth;
+    use File;
+    class AjaxController extends Controller{
+        
+        /**
+         * Create a new controller instance.
+         *
+         * @return void
+         */
+        protected $jwt;
+        private $post;
+        private $token;
+        private $status;
+        private $jsondata;
+        private $status_code;
+        private $prefix;
+        private $language;
+
+        public function __construct(Request $request){
+            $this->jsondata     = (object)[];
+            $this->message      = "M0000";
+            $this->status       = false;
+            $this->prefix       = \DB::getTablePrefix();
+            $this->post         = $request->all();
+            $this->language     = \App::getLocale();
+        }
+
+        private function populateresponse($data){
+            $data['message'] = (!empty($data['message']))?"":$this->message;
+            
+            if(empty($data['status'])){
+                $data['status'] = $this->status;
+            }
+            
+            $data = json_decode(json_encode($data),true);
+
+            array_walk_recursive($data, function(&$item){
+                
+                if (gettype($item) == 'integer' || gettype($item) == 'float' || gettype($item) == 'NULL'){
+                    $item = trim($item);
+                }
+            });
+
+            if(empty($data['data'])){
+                $data['data'] = (object) $data['data'];
+            }
+
+            return $data;
+        }
+
+        public function resend_activation_link(){
+            if(!empty($this->post['email'])){
+                $this->post['email'] = base64_decode($this->post['email']);
+            }
+
+            $validate = \Validator::make($this->post, [
+                'email'             => ['required','email']
+            ],[
+                'email.required'            => 'M0010',
+                'email.email'               => 'M0011',
+            ]);
+
+            if($validate->fails()){
+                $this->message = $validate->messages()->first();
+            }else {
+                $this->status = true;
+                $result = \Models\Users::findByEmail($this->post['email'],['id_user','first_name','last_name','email','type']);
+
+                if(!empty($result)){
+                    $code                   = bcrypt(__random_string());
+                    
+                    if($result['type'] == TALENT_ROLE_TYPE){
+                        $emailData              = ___email_settings();
+                        $emailData['email']     = $result['email'];
+                        $emailData['name']      = $result['first_name'];
+                        $emailData['link']      = url(sprintf("activate/account?token=%s",$code));
+                        
+                        \Models\Talents::change($result['id_user'],['remember_token' => $code,'updated' => date('Y-m-d H:i:s')]);
+                        ___mail_sender($result['email'],sprintf("%s %s",$result['first_name'],$result['last_name']),"talent_signup_verification",$emailData);
+                        
+                        $this->message = sprintf(ALERT_SUCCESS,str_replace(['<%s>','\n'], ['',''], trans(sprintf('general.%s','M0021'))));
+                    }else if($result['type'] == EMPLOYER_ROLE_TYPE){
+                        $emailData              = ___email_settings();
+                        $emailData['email']     = $result['email'];
+                        $emailData['name']      = $result['first_name'];
+                        $emailData['link']      = url(sprintf("activate/account?token=%s",$code));
+
+                        \Models\Employers::change($result['id_user'],['remember_token' => $code,'updated' => date('Y-m-d H:i:s')]);
+                        ___mail_sender($result['email'],sprintf("%s %s",$result['first_name'],$result['last_name']),"employer_signup",$emailData);
+
+                        $this->message = sprintf(ALERT_SUCCESS,str_replace(['<%s>','\n'], ['',''], trans(sprintf('general.%s','M0021'))));
+                    }else{
+                        $this->message = sprintf(ALERT_DANGER,trans(sprintf('general.%s','M0028')));
+                    }
+                }else{
+                    $this->message = sprintf(ALERT_DANGER,trans(sprintf('general.%s','M0028')));
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function delete_talent_education(Request $request){
+            $isDeleted = \Models\Talents::delete_education(sprintf(" id_education = %s AND user_id = %s ",$request->id_education, $request->user()->id_user));
+            if($isDeleted){
+                $this->status = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+            }
+            return response()->json([
+                'status'    => $this->status,
+                'message'   => $this->message
+            ]);
+        }
+
+        public function edit_talent_education(Request $request){
+            $this->jsondata = \Models\Talents::get_education(sprintf(" id_education = %s AND user_id = %s ",$request->id_education, $request->user()->id_user),'single');
+            return response()->json([
+                'status'    => $this->status,
+                'data'      => $this->jsondata,
+                'message'   => $this->message
+            ]);
+        }
+
+        public function delete_talent_experience(Request $request){
+            $isDeleted = \Models\Talents::delete_experience(sprintf(" id_experience = %s AND user_id = %s ",$request->id_experience, $request->user()->id_user));
+            if($isDeleted){
+                $this->status = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+            }
+            return response()->json([
+                'status'    => $this->status,
+                'message'   => $this->message
+            ]);
+        }
+
+        public function edit_talent_experience(Request $request){
+            $this->jsondata = \Models\Talents::get_experience(sprintf(" id_experience = %s AND user_id = %s ",$this->post['id_experience'], $request->user()->id_user),'single');
+            return response()->json([
+                'status'    => $this->status,
+                'data'      => $this->jsondata,
+                'message'   => $this->message
+            ]);
+        }
+
+        public function delete_document(Request $request){
+            $isDeleted = \Models\Talents::delete_file(sprintf(" id_file = %s AND user_id = %s ",$this->post['id_file'], $request->user()->id_user));
+
+            if($isDeleted){
+                $this->status = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+            }
+            return response()->json([
+                'status'    => $this->status,
+                'message'   => $this->message
+            ]);            
+        }
+
+        public function crop(Request $request){
+            $file               = $request->file($request->imagename);
+            $folder             = ltrim($request->SGCreator_folder, '/');
+            $destination        = public_path($folder);
+            $extension          = $file->getClientOriginalExtension();
+            $file_size          = get_file_size($file->getClientSize(),'KB');
+            $filename           = file_name($file->getClientOriginalName(),'jpeg');
+
+            $crop = new \App\Lib\Crop();
+            $crop->initialize(
+                array(
+                    'src'           => null,
+                    'data'          => $request->SGCreator_data,
+                    'dst'           => $destination,
+                    'file'          => $_FILES[$request->imagename],
+                    'targetFile'    => $filename
+                )
+            );
+
+            $isUploaded = $crop->getMsg();
+
+            if($isUploaded == 'image_uploaded'){
+                $data = [
+                    'user_id' => empty($request->user_id) ? \Auth::user()->id_user : $request->user_id,
+                    'reference' => 'users',
+                    'filename' => $filename,
+                    'extension' => $extension,
+                    'folder' => $folder,
+                    'type' => 'profile',
+                    'size' => $file_size,
+                    'is_default' => DEFAULT_NO_VALUE,
+                    'created' => date('Y-m-d H:i:s'),
+                    'updated' => date('Y-m-d H:i:s'),
+                ];
+
+                $isInserted = \Models\Talents::create_file($data,false,true);
+                
+                if(!empty($isInserted)){
+                    return response()->json([
+                        'state'  => true,
+                        'message' => $isUploaded,
+                        'result' => asset(sprintf("%s%s",$folder,$filename)),
+                        'filename' => $filename
+                    ]);
+                }else{
+                    return response()->json([
+                        'state'  => false,
+                        'message' => $isUploaded,
+                    ]);    
+                }
+            }else{
+                return response()->json([
+                    'state'  => false,
+                    'message' => $isUploaded,
+                ]);
+            }
+        } 
+
+        public function validate_calendar(Request $request){
+            if(!empty($request->year) && !empty($request->month) && !empty($request->day)){
+                $request->request->add(['availability_date' => sprintf('%s-%s-%s',$request->year,$request->month,$request->day)]);
+            }
+
+            $validate = \Validator::make($request->all(), [
+                "availability_date"             => array_merge(['required'],validation('birthday')),
+            ],[
+                'availability_date.required'    => trans('general.M0155'),
+                'availability_date.string'      => trans('general.M0156'),
+                'availability_date.regex'       => trans('general.M0156'),
+            ]);
+
+            if(!$validate->fails()){
+                if(strtotime(date('Y-m-d')) > strtotime($request->availability_date)){
+                    return [
+                        'data' => [
+                            'selected_date' => ___d($request->availability_date),
+                            'dates_html' => "",
+                        ],
+                        'status' => false,
+                        'message' => trans('general.M0174')
+                    ];
+                }else{
+                    $dates_html = "";
+                    
+                    foreach(range(1,date('t',strtotime($request->availability_date))) as $item){ 
+                        $selected = (sprintf('%\'.02d',$item) == date('d',strtotime($request->availability_date)))?'active':'';
+                        $checked = (sprintf('%\'.02d',$item) == date('d',strtotime($request->availability_date)))?'checked="checked"':'';
+
+                        $dates_html .= '<label class="btn '.$selected.'"><input type="radio" name="day" data-request="calendar" data-url="'.url('ajax/validate-calendar').'" value="'.sprintf('%\'.02d',$item).'" id="day-'.sprintf('%\'.02d',$item).'" '.$checked.' autocomplete="off"><span class="input-value">'.$item.'</span></label>';
+                    }
+
+                    return [
+                        'data' => [
+                            'selected_date' => ___d($request->availability_date),
+                            'dates_html' => $dates_html,
+                        ],
+                        'status' => true,
+                        'message' => trans('general.M0000')
+                    ];
+                }
+            }    
+        }
+
+        public function country_state_list(Request $request){
+            if(empty($request->record_id)){
+                echo sprintf("<option value=''>%s</option>",sprintf(trans('website.W0056'),trans('website.W0067')));
+            }
+
+            $state_list = \Models\Listings::country_state_list($request->record_id);
+            if(!empty($state_list)){
+                $states = (array)\App\Lib\Dash::combine(
+                    $state_list,
+                    '{n}.id_state',
+                    '{n}.state_name'
+                );
+
+                echo ___dropdown_options($states,sprintf(trans('website.W0056'),trans('website.W0067')));
+            }else{
+                echo sprintf("<option value=''>%s</option>",sprintf(trans('website.W0056'),trans('website.W0067')));
+            }
+        }
+
+        public function state_city_list(Request $request){
+            if(empty($request->record_id)){
+                ___dropdown_options(@\Cache::get('cities'),sprintf(trans('website.W0294'),trans('website.W0067')));
+            }
+
+            $city_list = \Models\Listings::state_city_list($request->record_id);
+            if(!empty($city_list)){
+                $cities = (array)\App\Lib\Dash::combine(
+                    $city_list,
+                    '{n}.id_city',
+                    '{n}.city_name'
+                );
+                
+                echo ___dropdown_options($cities,sprintf(trans('website.W0294'),trans('website.W0067')));
+            }else{
+                echo sprintf("<option value=''>%s</option>",sprintf(trans('website.W0294'),trans('website.W0067')));
+            }
+        }
+
+        public function industry_subindustry_list(Request $request){
+            if(!empty($request->record_id)){
+                $industries = \Models\Listings::industry_subindustry_list($request->record_id);
+
+                if(!empty($industries)){
+                    $industries = (array)\App\Lib\Dash::combine(
+                        $industries,
+                        '{n}.id_industry',
+                        '{n}.name'
+                    );
+
+                    echo ___dropdown_options($industries,sprintf(trans('website.W0059'),trans('website.W0068')));
+                }else{
+                    echo sprintf("<option value=''>%s</option>",sprintf(trans('website.W0056'),trans('website.W0068')));
+                }
+            }else{
+                echo sprintf("<option value=''>%s</option>",sprintf(trans('website.W0056'),trans('website.W0068')));
+            }
+        }
+
+        public function subindustry_skill_list(Request $request){
+
+            if(!empty($request->record_id)){
+                $where = "industry_id = " . $request->record_id . " AND skill_status='active'";
+                $skill = \Models\Listings::skills('array', ['id_skill','skill_name'], $where);
+
+                if(!empty($skill)){
+                    $skill = (array)\App\Lib\Dash::combine(
+                        $skill,
+                        '{n}.id_skill',
+                        '{n}.skill_name'
+                    );
+                    echo ___dropdown_options($skill,sprintf(trans('website.W0059'),trans('website.W0068')));
+                }else{
+                    echo sprintf("<option value=''>%s</option>",sprintf(trans('website.W0056'),trans('website.W0068')));
+                }
+            }else{
+                echo sprintf("<option value=''>%s</option>",sprintf(trans('website.W0056'),trans('website.W0068')));
+            }
+        }
+
+        public function subindustry_skills_list(Request $request){
+
+            if(!empty($request->record_id)){
+                $where = "industry_id = " . $request->record_id . " AND skill_status='active'";
+                $skill = \Models\Listings::skills('array', ['id_skill','skill_name'], $where);
+
+                if(!empty($skill)){
+                    $skill = (array)\App\Lib\Dash::combine(
+                        $skill,
+                        '{n}.skill_name',
+                        '{n}.skill_name'
+                    );
+                    echo ___dropdown_options($skill,sprintf(trans('website.W0059'),trans('website.W0068')));
+                }else{
+                    echo sprintf("<option value=''>%s</option>",sprintf(trans('website.W0056'),trans('website.W0068')));
+                }
+            }else{
+                echo sprintf("<option value=''>%s</option>",sprintf(trans('website.W0056'),trans('website.W0068')));
+            }
+        }        
+
+        public function city_list(Request $request){
+            $html           = "";
+            $selected_city  = explode(',',$request->selected);
+
+            if(!empty($request->search)){
+                $where = "IF(({$this->language} != ''),`{$this->language}`, `en`)  like '%{$request->search}%' ";
+            }else{
+                $where = " 1 ";
+            }
+
+            $cities = \Models\Listings::city_list($where,['id_city',\DB::Raw("IF(({$this->language} != ''),`{$this->language}`, `en`) as city_name")]);
+
+            if(!empty($cities)){
+                array_walk($cities,function($item) use(&$html,$selected_city){
+                    $checked = '';
+                    if(in_array($item['id_city'],$selected_city)){
+                        $checked='checked="true"';
+                    }
+
+                    $html .= '<li>
+                        <div class="checkbox">                
+                            <input data-request="save-city-filter" data-action="filter" type="checkbox" id="city-'.$item['id_city'].'" name="city_filter[]" '.$checked.' value="'.$item['id_city'].'">
+                            <label for="city-'.$item['id_city'].'"><span class="check"></span> '.$item['city_name'].'</label>
+                        </div>
+                    </li>';
+                });
+            }else{
+                $html = '<li>
+                    <div class="checkbox">                
+                        '.trans('general.M0194').'
+                    </div>
+                </li>';
+            }
+
+            echo $html;
+        }     
+
+        public function state_list(Request $request){
+            $html           = "";
+            if(!empty($request->search)){
+                $where = " IF(({$this->language} != ''),`{$this->language}`, `en`) like '%{$request->search}%' ";
+            }else{
+                $where = " 1 ";
+            }
+
+            $cities = \Models\Listings::state_list($where,['id_state',\DB::Raw("IF(({$this->language} != ''),`{$this->language}`, `en`) as state_name")]);
+
+            if(!empty($cities)){
+                array_walk($cities,function($item) use(&$html){
+                    $html .= '<li>
+                        <div class="checkbox">                
+                            <input data-action="filter" type="checkbox" id="state-'.$item['id_state'].'" name="state_filter[]" value="'.$item['id_state'].'">
+                            <label for="state-'.$item['id_state'].'"><span class="check"></span> '.$item['state_name'].'</label>
+                        </div>
+                    </li>';
+                });
+            }else{
+                $html = '<li>
+                    <div class="checkbox">                
+                        '.trans('general.M0194').'
+                    </div>
+                </li>';
+            }
+
+            echo $html;
+        }
+
+        public function delete_portfolio(Request $request){
+            $isDeleted = \Models\Portfolio::delete_portfolio($this->post['id_portfolio'], $request->user()->id_user);
+            if($isDeleted){
+                $this->status = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0313"));
+            }
+            return response()->json([
+                'status'    => $this->status,
+                'message'   => $this->message
+            ]);            
+        }
+
+        public function user_state_list(Request $request){
+            $html = "";
+
+            $keys = [
+                'users.id_user',
+            ];
+
+            $talents =  \Models\Employers::get_premium_talents($keys);
+            $id_talent = [];
+            foreach ($talents as $value) {
+                $id_talent[] = $value->id_user;
+            }
+
+            if(!empty($request->search)){
+                $where = " IF(({$this->prefix}{$this->language} != ''),`{$this->prefix}{$this->language}`, {$this->prefix}`en`) like '%{$request->search}%' ";
+            }else{
+                $where = " 1 ";
+            }
+            $location =  \Models\Employers::getUserLocation($id_talent, $where);
+            $location_html = '';
+            if(!empty($location)){
+                foreach ($location as $item) {
+                    $location_html .= '<li>
+                        <div class="checkbox ">
+                            <input data-action="filter" type="checkbox" id="state-'.$item->id_city.'" name="state_filter[]" value="'.$item->id_city.'">
+                            <label for="state-'.$item->id_city.'"><span class="check"></span> '.$item->city_name.' ('.$item->num.')</label>
+                        </div>
+                    </li>';
+                }
+            }else{
+                $location_html = '<li>
+                    <div class="checkbox ">
+                        '.trans('general.M0194').'
+                    </div>
+                </li>';
+            }
+
+            echo $location_html;
+        }
+
+        public function get_talent_education(Request $request){
+
+            $this->jsondata = \Models\Talents::get_education(sprintf(" id_education = %s AND user_id = %s ",$request->id_education, $request->id_user),'single');
+            return response()->json([
+                'data'      => $this->jsondata,
+                'message'   => $this->message
+            ]);
+        }
+
+        public function get_talent_experience(Request $request){
+
+            $this->jsondata = \Models\Talents::get_experience(sprintf(" id_experience = %s AND user_id = %s ",$request->id_experience, $request->id_user),'single');
+            return response()->json([
+                'data'      => $this->jsondata,
+                'message'   => $this->message
+            ]);
+        }
+
+        public function delete_user_document(Request $request){
+            $isDeleted = \Models\Talents::delete_file(sprintf(" id_file = %s AND user_id = %s ",$request->id_file, $request->id_user));
+
+            if($isDeleted){
+                $this->status = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+            }
+            return response()->json([
+                'status'    => $this->status,
+                'message'   => $this->message
+            ]);
+        }
+    }   
+

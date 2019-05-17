@@ -1,0 +1,1 @@
+ÿw-resources/views/backend/talent/list.blade.php 2phpX9hr-resources/views/backend/talent/list.blade.php

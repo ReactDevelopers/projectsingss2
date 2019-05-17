@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class Currencies extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('currencies', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 255);
+            $table->string('iso_code', 3);
+            $table->string('sign', 8);
+            $table->integer('id_country');
+            $table->decimal('conversion_rate', 13,6);
+            $table->enum('default_currency', ['Y', 'N'])->default('N');
+            $table->enum('status', ['active', 'inactive', 'trashed'])->default('active');
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('currencies');
+    }
+}
+

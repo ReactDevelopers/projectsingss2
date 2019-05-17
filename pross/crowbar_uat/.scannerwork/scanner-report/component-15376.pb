@@ -1,0 +1,1 @@
+êx,resources/views/backend/talent/add.blade.php 2phpX,hr,resources/views/backend/talent/add.blade.php

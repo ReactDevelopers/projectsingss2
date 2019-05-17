@@ -1,0 +1,1 @@
+Ït0resources/views/vendor/cashier/receipt.blade.php 2phpX·hr0resources/views/vendor/cashier/receipt.blade.php

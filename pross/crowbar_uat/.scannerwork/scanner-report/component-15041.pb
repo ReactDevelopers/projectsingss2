@@ -1,0 +1,1 @@
+Áu2resources/views/talent/settings/payments.blade.php 2phpXKhr2resources/views/talent/settings/payments.blade.php

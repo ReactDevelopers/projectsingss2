@@ -1,0 +1,108 @@
+<div class="contentWrapper job-details-section job-details-section-list">
+    <div class="container">
+        <div class="row mainContentWrapper">
+            <div class="col-md-9 job-details-left">
+                <h2 class="form-heading">
+                    {{ $job_details['title'] }}
+                    @if($page == 'detail')
+                        @if(substr(url()->previous(), strrpos(url()->previous(), '/') + 1) == 'find-jobs')
+                            <a href="{{ url()->previous() }}" class="back-to-results">
+                                {{trans('job.J00105')}}
+                            </a>
+                        @elseif(substr(url()->previous(), strrpos(url()->previous(), '/') + 1) == 'current' || substr(url()->previous(), strrpos(url()->previous(), '/') + 1) == 'my-jobs')
+                            <a href="{{ url()->previous() }}" class="back-to-results">
+                                {{trans('job.J00107')}}
+                            </a>
+                        @elseif(substr(url()->previous(), strrpos(url()->previous(), '/') + 1) == 'scheduled')
+                            <a href="{{ url()->previous() }}" class="back-to-results">
+                                {{trans('job.J00108')}}
+                            </a>
+                        @elseif(substr(url()->previous(), strrpos(url()->previous(), '/') + 1) == 'completed')
+                            <a href="{{ url()->previous() }}" class="back-to-results">
+                                {{trans('job.J00114')}}
+                            </a>
+                        @elseif(substr(url()->previous(), strrpos(url()->previous(), '/') + 1) == 'submitted')
+                            <a href="{{ url()->previous() }}" class="back-to-results">
+                                {{trans('job.J00115')}}
+                            </a>
+                        @endif
+                    @endif
+                </h2>
+                <div class="content-box">
+                    <img src="{{asset($user['picture'])}}" alt="profile" class="job-profile-image">
+                    <div class="content-box-header clearfix">
+                        <div class="contentbox-header-title">
+                            <h3>
+                                <a href="javascript:void(0);">{{ $job_details['title'] }}</a>
+                            </h3>
+
+                            @if($job_details['employment'] == 'fulltime')
+                                <span class="label-green">{{ $job_details['employment'] }}</span>
+                            @endif                        
+                            <span class="company-name">{{ $job_details['company_name'] }}</span>
+                        </div>
+                        <div class="contentbox-price-range">
+                            <span>
+                                {{ ___format($job_details['price'],true,true) }}
+                                @if(!empty($job_details['price_max']))
+                                    {{ ' - '.___format($job_details['price_max'],true,true) }}
+                                @endif
+                                {{ job_types_rates_postfix($job_details['employment']) }}
+                            </span>
+                            <small>{{ trans(sprintf('general.%s',$job_details['budget_type'])) }}</small>
+                            @if(0)
+                                <a href="javascript:void(0);" class="proposal-status proposal-completed">{{ trans('job.J0058') }}</a>
+                            @elseif(0)
+                                <a href="javascript:void(0);" class="proposal-status proposal-completed">{{ trans('job.J0059') }}</a>
+                            @endif
+                        </div>    
+                    </div>
+                    <div class="contentbox-minutes clearfix">
+                        <div class="minutes-left">
+                            <span>{{trans('job.J0003')}}: <strong>{{ $job_details['industry_name'] }}</strong></span>
+                            
+                            @if($job_details['employment'] !== 'fulltime') 
+                                <span>{{trans('job.J0004')}}: <strong>{{ ___d($job_details['startdate']).' - '.___d($job_details['enddate']) }}</strong></span>
+                            @else
+                                @if(!empty($job_details['bonus']))
+                                    <span>{{ trans('website.W0292') }}: <strong>{{ ___format($job_details['bonus'],true,true) }}</strong></span>
+                                @endif
+
+                                @if(!empty($job_details['location_name']))
+                                    <span>{{ trans('website.W0291') }}: <strong>{{ $job_details['location_name'] }}</strong></span>
+                                @endif
+                            @endif
+
+                            <span>{{ trans('website.W0293') }}: <strong>{{ employment_types('post_job',$job_details['employment']) }}</strong></span>
+                            
+                            @if(!empty($job_details['expertise'])) 
+                                <span>
+                                    {{trans('job.J0006')}}: 
+                                    <strong>
+                                        {{expertise_levels($job_details['expertise']) }}
+                                    </strong>
+                                </span>
+                            @endif
+                        </div>
+                        <div class="minutes-right">
+                            <span class="posted-time">{{ ___ago($job_details['created']) }}</span>
+                        </div>
+                    </div>
+                    <div class="content-box-description">
+                        <p>{!! $job_details['description'] !!}</p>
+                    </div>
+                </div>
+
+                @if($page == 'review')
+                    @includeIf('employer.review.view')
+                @endif
+            </div>
+            <div class="col-md-3 job-details-right">
+                @if($page == 'detail')
+                    <div data-request="job-actions" data-url="{{ url(sprintf('%s/job/actions?job_id=%s',EMPLOYER_ROLE_TYPE,___encrypt($job_details['id_project']))) }}"></div>
+                @endif
+            </div>            
+        </div>
+    </div>
+</div>
+@includeIf('employer.job.raise-dispute-popup')

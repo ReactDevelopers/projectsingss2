@@ -1,0 +1,1 @@
+ùuresources/views/talent/payment :øurresources/views/talent/payment

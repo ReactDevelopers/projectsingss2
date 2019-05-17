@@ -1,0 +1,35 @@
+<?php
+
+namespace Models;
+
+use Illuminate\Database\Eloquent\Model;
+use DB;
+
+class TalentCompany extends Model
+{
+	protected $table = 'talent_company';
+	protected $primaryKey = 'talent_company_id';
+
+	/**
+     * [This method is used to save article] 
+     * @param [Array]$article [Used for answer]
+     * @return Boolean
+     */
+
+    public static function saveTalentCompany($talentCompany)
+    {
+        $talent_company_id = \DB::table('talent_company')->insertGetId($talentCompany);
+        return $talent_company_id;
+    }
+
+    public static function updateTalentCompany($talentCompany,$id)
+    {
+        $talent_company_id = \DB::table('talent_company')->where('talent_company_id','=',$id)->update($talentCompany);
+        return $talent_company_id;
+    }
+
+    public function jurisdiction(){
+        return $this->hasMany('\Models\FirmJurisdiction','company_id','talent_company_id');
+    }
+
+}

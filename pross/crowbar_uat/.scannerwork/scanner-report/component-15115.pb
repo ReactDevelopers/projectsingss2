@@ -1,0 +1,1 @@
+‹v resources/views/talent/proposals :Šv¨vr resources/views/talent/proposals

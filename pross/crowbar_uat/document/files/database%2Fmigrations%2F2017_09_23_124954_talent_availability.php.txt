@@ -1,0 +1,42 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class TalentAvailability extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('talent_availability', function (Blueprint $table) {
+            $table->increments('id_availability');
+            $table->integer('user_id');
+            $table->enum('availability_type', ['unavailable', 'available'])->default('available');
+            $table->date('availability_date');
+            $table->enum('availability_day', ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'])->nullable();
+            $table->time('from_time')->nullable();
+            $table->time('to_time')->nullable();
+            $table->enum('repeat', ['hourly', 'daily', 'weekly', 'monthly']);
+            $table->bigInteger('repeat_group');
+            $table->date('deadline');
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('talent_availability');
+    }
+}
+

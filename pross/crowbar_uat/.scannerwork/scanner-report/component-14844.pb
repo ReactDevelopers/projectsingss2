@@ -1,0 +1,1 @@
+üs>resources/views/employer/includes/top-talent-listing.blade.php 2phpXhr>resources/views/employer/includes/top-talent-listing.blade.php

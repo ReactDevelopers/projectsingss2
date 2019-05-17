@@ -1,0 +1,6 @@
+projectKey=PHP::crowbar
+serverUrl=http://192.168.1.100:9000/sonar
+serverVersion=7.1.0.11001
+dashboardUrl=http://192.168.1.100:9000/sonar/dashboard/index/PHP::crowbar
+ceTaskId=AWbkJP9rW9Rq3CGVsdrg
+ceTaskUrl=http://192.168.1.100:9000/sonar/api/ce/task?id=AWbkJP9rW9Rq3CGVsdrg

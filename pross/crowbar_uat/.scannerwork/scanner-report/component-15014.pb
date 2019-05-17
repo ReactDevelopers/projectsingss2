@@ -1,0 +1,1 @@
+¦u)resources/views/front/home/home.blade.php 2phpX–hr)resources/views/front/home/home.blade.php

@@ -1,0 +1,1 @@
+Åvresources/views/talent/invite :ÄvÆvÇvrresources/views/talent/invite

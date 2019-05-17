@@ -1,0 +1,85 @@
+<?php
+
+    namespace Models; 
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Mail;
+
+    class Abuse extends Model{
+        public static function  report($sender_id, $receiver_id, $reason, $type){
+            $table_report_abuse = \DB::table('report_abuse');
+            
+            $isReported = $table_report_abuse->insert([
+                'sender_id' => $sender_id,
+                'receiver_id' => $receiver_id,
+                'message' => $reason,
+                'type' => $type,
+                'updated' => date('Y-m-d H:i:s'),
+                'created' => date('Y-m-d H:i:s'),
+            ]);
+
+            return $isReported;
+        }
+
+        public static function  get_all_report_abuses(){
+            $prefix = \DB::getTablePrefix();
+
+            \DB::statement(\DB::raw('set @row_number=0'));
+            $table_report_abuse = \DB::table('report_abuse')
+            ->select([
+                \DB::raw('@row_number  := @row_number  + 1 AS row_number'),
+                'report_abuse.id_report',
+                'report_abuse.sender_id',
+                'report_abuse.receiver_id',
+                'report_abuse.message',
+                'report_abuse.type',
+                'report_abuse.status',
+                'report_abuse.created',
+                \DB::Raw("TRIM(CONCAT({$prefix}sender.first_name,' ',{$prefix}sender.last_name)) as sender_name"),
+                \DB::Raw("TRIM(CONCAT({$prefix}receiver.first_name,' ',{$prefix}receiver.last_name)) as receiver_name"),
+            ])
+            ->leftJoin('users as sender','sender.id_user','=','report_abuse.sender_id')
+            ->leftJoin('users as receiver','receiver.id_user','=','report_abuse.receiver_id');
+
+            return $table_report_abuse->get();
+        }
+
+        public static function resolve_report_abuse($id_report, $closeConnection = false){
+            $report_abuse = \DB::table('report_abuse')
+            ->where('id_report', $id_report)
+            ->first();
+            
+            if($closeConnection){
+                /*if(!empty($report_abuse)){
+                    \DB::table('chat_requests')
+                    ->where('receiver_id', $report_abuse->sender_id)
+                    ->orWhere('receiver_id', $report_abuse->receiver_id)
+                    ->update(['request_status' => 'rejected']);
+                }*/
+                /*$message = trans('admin.report_abuse_unlink_message');*/
+                /*$status = 'disputed';*/
+                
+                $message = trans('admin.report_abuse_resolve_message');
+                $status = 'closed';
+            }else{
+                $message = trans('admin.report_abuse_resolve_message');
+                $status = 'closed';
+            }
+
+            $isStatusUpdated = \DB::table('report_abuse')->where('id_report', $id_report)->update(['status' => $status]);
+
+            if(!empty($isStatusUpdated)){
+                $isSaved = \Models\Chats::addmessage([
+                    'message'       => $message,
+                    'sender_id'     => $report_abuse->sender_id,
+                    'receiver_id'   => $report_abuse->receiver_id,
+                    'message_type'  => 'report-abuse-resolved',
+                ]);
+
+                if(!empty($isSaved)){
+                    return true;
+                }
+            }
+        }
+    }

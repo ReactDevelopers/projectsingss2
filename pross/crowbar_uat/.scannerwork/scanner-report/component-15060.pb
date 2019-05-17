@@ -1,0 +1,1 @@
+Ôu,resources/views/talent/job/payment.blade.php 2phpXNhr,resources/views/talent/job/payment.blade.php

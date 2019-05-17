@@ -1,0 +1,146 @@
+@section('content')
+	<div class="contentWrapper job-details-section">
+	    <div class="container">
+			<h4 class="form-heading blue-text heading-inbox">
+				{{trans('website.W0556')}}
+				<span class="heading-count" data-target="chat-count"></span>
+				<span id="list-toggle-btn" class="chat-list-toggle">{{trans('website.W0557')}}</span>
+			</h4>
+	    	<div id="chat-body" class="row">
+				<div class="chat-holder" style="display: none;">
+					<div class="col-md-3 col-sm-4 col-xs-12 names-holder" id="chat-left-box">
+						<div class="chat-list-wrapper">
+							<div class="search-box">
+								<div class="afterlogin-searchbox">
+						            <div class="form-group">
+						                <input type="text" name="search-friend" class="form-control" placeholder="Search for people">
+						                <button type="submit" class="btn searchBtn">Search</button>
+						            </div>
+						        </div>
+					        </div>
+							<ul class="names-list"></ul>
+						</div>
+					</div>
+					@includeIf('chat.chatbox')
+				</div>
+				<div class="no-chat-connection">
+					@includeIf('chat.placeholder')
+				</div>
+			</div>
+	    </div>
+	</div>
+	<div class="modal fade upload-modal-box" id="report-abuse" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <h3 class="modal-title">{{ trans('website.W0350') }}</h3>
+            <div class="modal-body bg-white">
+                <div>
+                	<p><b data-target="reported-user"></b></p>
+	                <p>{{ sprintf(trans('website.W0353')) }}</p>
+	                <br>
+	                <form role="report-abuse" action="{{url(sprintf('%s/report-abuse',$user['type'])) }}" method="POST" accept-charset="utf-8">
+	                    {{ csrf_field() }}
+	                    <div class="form-group">
+	                        <textarea rows="12" class="form-control" name="reason" placeholder="{{ trans('website.W0354') }}"></textarea>
+	                    	<input type="hidden" name="message">
+	                    </div>
+
+	                    <input type="hidden" name="receiver_id" data-target="receiver-id">
+	                </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+	            <div class="button-group">
+	                <button type="button" class="button-line" data-dismiss="modal">{{ trans('website.W0355') }}</button>
+	                @if(0)
+	                <button type="button" class="button" data-request="ajax-submit" data-target='[role="report-abuse"]'>{{ trans('website.W0350') }}</button>
+	                @endif
+	                <button type="button" class="button" data-request="report-abuse">{{ trans('website.W0350') }}</button>
+	            </div>
+            </div>
+        </div>
+      </div>
+    </div><!-- /.Modal Window for Upload -->
+@endsection
+
+@push('inlinescript')
+    <link rel="stylesheet" href="{{ asset('css/jquery.mCustomScrollbar.min.css') }}" media="all" type="text/css" />
+    <script src="{{ asset('js/jquery.mCustomScrollbar.min.js') }}" type="text/javascript"></script>
+	<script>
+		var current_time    = moment.tz(new Date(), "{{ date_default_timezone_get() }}");
+		var timezone 		= current_time.clone().tz("{{ ___current_timezone() }}");
+		var socket						= new io.connect(
+			'{!!env('SOCKET_CONNECTION_URL')!!}:{!!env('SOCKET_CONNECTION_POST')!!}', {
+			'reconnection': true,
+			'reconnectionDelay': 2000,
+			'reconnectionDelayMax' : 5000,
+			'secure':false
+		});
+
+		var chat_save_url 				= '{{ url(sprintf("%s/chat-save","chat")) }}';
+		var chat_history_url			= '{{ url(sprintf("%s/chat-history","chat")) }}';
+		var chat_users_list_url 		= '{{ url(sprintf("%s/chat-list","chat")) }}';
+		var sender_details				= {!! json_encode(['sender' => $user['sender'], 'sender_picture' => $user['sender_picture'], 'type' => $user['type'], 'id_user' => $user['id_user'], 'sender_id' => $user['sender_id']]) !!};
+		var chat_left_box				= '#chat-left-box';
+		var chat_right_box				= '#chat-right-box';
+		
+		var message_box 				= 'ul.messages';
+		var profile_text 				= '{{ trans("general.M0268") }}';
+		var message_box_text 			= '{{ trans("general.M0269") }}';
+		var chat_accept_button_text 	= '{{ trans("general.M0272") }}';
+		var chat_reject_button_text 	= '{{ trans("general.M0273") }}';
+		var chat_request_postfix 		= '{{ trans("general.M0274") }}';
+		var chat_request_prefix 		= '{{ trans("general.M0275") }}';
+		var chat_not_available 			= '{{ trans("general.M0276") }}';
+		var sender_tag 					= '{{ trans("general.M0277") }}';
+		var new_message_tag 			= '{{ trans("general.M0278") }}';
+		var connecting_text 			= '{{ trans("general.M0279") }}';
+		var report_abuse_text 			= '{{ trans("website.W0350") }}';
+		var delete_all_text 			= '{{ trans("website.W0351") }}';
+		var reported_abuse_text 		= '{{ trans("website.W0352") }}';
+		var image_text 					= '{{ trans("website.W0423") }}';
+		var support_chat_user_id 		= '{{ SUPPORT_CHAT_USER_ID }}';
+		var help_desk_tagline 			= '{{ trans("website.W0425") }}';
+		var chat_box_title 				= '{{ trans("website.W0434") }}';
+
+		@if($user['type'] == EMPLOYER_ROLE_TYPE)
+		var no_chat_list 			= "{!!sprintf(NO_CHAT_CONNECTION_TEMPLATE,trans('website.W0559'),trans('website.W0560'),url(sprintf('%s/find-talents',EMPLOYER_ROLE_TYPE)),trans('website.W0558'),trans('website.W0342'))!!}";
+		@elseif($user['type'] == TALENT_ROLE_TYPE)
+		var no_chat_list 			= "{!!sprintf(NO_CHAT_CONNECTION_TEMPLATE,trans('website.W0559'),trans('website.W0561'),url(sprintf('%s/find-jobs',TALENT_ROLE_TYPE)),trans('website.W0500'),trans('website.W0342'))!!}";
+		@else
+		var no_chat_list 			= '{{ trans("website.W0297") }}';
+		@endif
+
+
+		var chat = new chat({
+			'socket'					: socket,
+			'chat_box_title'			: chat_box_title,
+			'chat_save_url'				: chat_save_url,
+			'sender_details'			: sender_details,
+			'chat_left_box'				: chat_left_box,
+			'chat_right_box'			: chat_right_box,
+			'profile_text'				: profile_text,
+			'message_box'				: message_box,
+			'message_box_text'			: message_box_text,
+			'chat_accept_button_text'	: chat_accept_button_text,
+			'chat_reject_button_text'	: chat_reject_button_text,
+			'chat_request_postfix'		: chat_request_postfix,
+			'chat_request_prefix'		: chat_request_prefix,
+			'chat_not_available'		: chat_not_available,
+			'sender_tag'				: sender_tag,
+			'new_message_tag'			: new_message_tag,
+			'connecting_text'			: connecting_text,
+			'no_chat_list'				: no_chat_list,
+			'report_abuse_text'			: report_abuse_text,
+			'delete_all_text'			: delete_all_text,
+			'reported_abuse_text'		: reported_abuse_text,
+			'image_text'				: image_text,
+			'timezone'					: timezone,
+			'support_chat_user_id'		: support_chat_user_id,
+			'help_desk_tagline'			: help_desk_tagline
+		});
+
+		/* INITIATING CHAT APPLICATION */
+		chat.initiate();
+	</script>
+@endpush

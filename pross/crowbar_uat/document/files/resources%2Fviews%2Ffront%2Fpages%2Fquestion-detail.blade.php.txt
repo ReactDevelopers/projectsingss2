@@ -1,0 +1,244 @@
+@extends('layouts.front.main')
+
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+    @section('requirecss')
+        <link href="{{ asset('css/owl.carousel.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/owl.theme.default.min.css') }}" rel="stylesheet">
+    @endsection
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinecss')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    @section('requirejs')
+        <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+        <script type="text/javascript">
+        function addReply(id_reply){
+            $('#text-reply-area-'+id_reply).toggle();
+            $("#reply-area-"+id_reply).hide();
+        }
+        function insertReply(id_reply){
+            var add_reply_url = $('#add-reply').val();
+            var answer_description = $('#answer_description_'+id_reply).val();
+            if(answer_description.length <= 0){
+                alert(id_reply);
+                $('#text-reply-section-'+id_reply).addClass('has-error');
+                $('#text-reply-section-'+id_reply).append('<div class="help-block">The reply field is required.</div>');
+            }
+            else{
+                $('#text-reply-section-'+id_reply).removeClass('has-error');
+            }
+            if(id_reply > 0 && answer_description.length > 0){
+                $.ajax({
+                method: "PUT",
+                url: add_reply_url,
+                data: { id_parent: id_reply, answer_description: answer_description}
+                })
+                .done(function(data) {
+                    $('#text-reply-area-'+id_reply).toggle();
+                    $('#answer_description_'+id_reply).val('');
+                    $('#add-reply-response-'+id_reply).html(data.message);
+                    $('#add-reply-response-'+id_reply).fadeIn('slow');
+                    $('#add-reply-response-'+id_reply).fadeOut(9000);
+                });
+            }
+        }
+        function loadReply(id_reply){
+            var reply_list_url = $('#list-reply').val();
+            if(id_reply > 0){
+                $.ajax({
+                method: "POST",
+                url: reply_list_url,
+                data: { id_reply: id_reply}
+                })
+                .done(function(data) {
+                    $("#reply-area-"+id_reply).html(data);
+                    $("#reply-area-"+id_reply).show();
+                    $('#text-reply-area-'+id_reply).hide();
+                });
+            }
+        }
+        function closeReplyArea(id_reply){
+            $('#text-reply-area-'+id_reply).hide();
+        }
+        </script>
+    @endsection
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinejs')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    @section('content')
+        <!-- Banner Section -->
+        @if(Request::get('stream') != 'mobile')
+            <div class="static-heading-sec">
+                <div class="container-fluid">
+                    <div class="static Heading">                    
+                        <h1>{{trans('website.W0447')}}</h1>                        
+                    </div>                    
+                </div>
+            </div>
+        @endif
+        <!-- /Banner Section -->
+        <!-- Main Content -->
+        <div class="contentWrapper">
+            <section class="aboutSection questions-listing">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-9 col-sm-8 col-xs-12">
+                            <div class="left-question-section">
+                                <ul class="general-questions-list">
+                                    <li>
+                                        <a href="#">
+                                            <span class="question-wrap">
+                                                <h5>{{$question['question_description']}}</h5>
+                                                <span class="question-author">
+                                                    <span class="flex-cell">
+                                                        @if(!empty($question['filename']))
+                                                            <img src="{{asset($question['filename'])}}" alt="image" class="question-author-image">
+                                                        @else
+                                                            <img src="{{asset('images/sdf.png')}}" alt="image" class="question-author-image">
+                                                        @endif
+
+                                                        <span class="question-author-action">
+                                                            <h4>{{$question['person_name']}}</h4>
+                                                            <span>{{___ago($question['approve_date'])}}</span>
+                                                        </span>
+                                                    </span>                                                
+                                                    <span class="count-wrap">
+                                                        <h6 class="reply-counts">Total replies ({{$question['total_reply']}})</h6>
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </a>
+                                    </li>                               
+                                </ul>
+                                <div class="answers-list">
+                                    
+                                    <ul class="answer-chat">
+                                        @foreach($answer as $a)
+                                        <li class="promoted-answer">
+                                            <div class="answer-wrapper">
+                                                <div class="answer-level">
+                                                    <p> {{$a['answer_description']}}</p>
+                                                    <span class="question-author">
+                                                        <span class="flex-cell">
+                                                            @if(!empty($a['filename']))
+                                                            <img src="{{asset($a['filename'])}}" alt="image" class="question-author-image">
+                                                            @else
+                                                            <img src="{{asset('images/sdf.png')}}" alt="image" class="question-author-image">
+                                                            @endif
+                                                            <span class="question-author-action">
+                                                                <h4>{{$a['person_name']}}</h4>
+                                                                <span>{{___ago($a['approve_date'])}}</span>
+                                                            </span>
+                                                        </span>                                              
+                                                    </span>
+                                                </div>
+                                                @if(!empty(\Auth::user()))
+                                                <a href="javascript:;" onclick="addReply({{$a['id_answer']}});" class="reply-answer">{{trans('website.W0452')}}</a>
+                                                @endif
+                                                @if(!empty(\Auth::user()) && $a['has_child'] == 1)
+                                                 |
+                                                @endif
+                                                @if($a['has_child'] == 1)
+                                                <a href="javascript:;" onclick="loadReply({{$a['id_answer']}})" class="reply-answer">view reply</a>
+                                                @endif
+                                            </div>
+                                            <div id="add-reply-response-{{$a['id_answer']}}"></div>
+                                            <div id="reply-area-{{$a['id_answer']}}"></div>
+                                        </li>
+                                        @if(!empty(\Auth::user()))
+                                        <div id="text-reply-area-{{$a['id_answer']}}" style="display: none;">
+                                            <div class="questionform-box">
+                                                <h2 class="form-heading">{{trans('website.W0451')}}</h2>
+                                                <div class="form-element">
+                                                    <textarea id="answer_description_{{$a['id_answer']}}" name="answer_description_{{$a['id_answer']}}" class="form-control" placeholder="{{trans('website.W0449')}}"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group button-group">
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <div class="row form-btn-set">
+                                                        <div class="col-md-7 col-sm-7 col-xs-6">
+                                                            <a href="javascript:;" onclick="closeReplyArea({{$a['id_answer']}})" class="greybutton-line" value="{{trans('website.W0196')}}">
+                                                                {{trans('website.W0355')}}
+                                                            </a>
+                                                        </div>
+                                                        <div class="col-md-5 col-sm-5 col-xs-6">
+                                                            <input onclick="insertReply({{$a['id_answer']}});" type="button" class="button" value="{{ trans('website.W0393') }}" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                @if(!empty(\Auth::user()))
+                                <form role="add-talent" action="{{url('community/forum/answer/add/'.$id_question)}}" method="POST" class="question-form">
+                                    <input type="hidden" name="_method" value="PUT">
+                                    {{ csrf_field() }}
+                                    <input type="hidden" name="id_parent" value="0">
+                                    <div class="questionform-box">
+                                        <h2 class="form-heading">{{trans('website.W0451')}}</h2>
+                                        <div class="form-element">
+                                            <textarea name="answer_description" class="form-control" placeholder="{{trans('website.W0449')}}"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group button-group">
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="row form-btn-set">
+                                                <div class="col-md-7 col-sm-7 col-xs-6">
+                                                    <a href="{{url('community/forum')}}" class="greybutton-line" value="{{trans('website.W0196')}}">
+                                                        {{trans('website.W0355')}}
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-5 col-sm-5 col-xs-6">
+                                                    <input data-request="ajax-submit" data-target='[role="add-talent"]' type="button" class="button" value="{{ trans('website.W0393') }}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                
+                                </form>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="related-questions">
+                                @if(empty(\Auth::user()))
+                                <h3 class="form-heading">
+                                    <a href="{{url('login?back=forum')}}">
+                                        Ask Question
+                                    </a>
+                                </h3>
+                                @endif
+                                @if(!empty($related_question))
+                                <h3 class="form-heading">{{ trans('website.W0450') }}</h3>
+                                <ul>
+                                    @foreach($related_question as $r)
+                                    <li>
+                                        <a href="{{url('community/forum/question/' . ___encrypt($r['id_question']))}}">
+                                            <h4>{{$r['question_description']}}</h4>
+                                        </a>
+                                    </li>
+                                    @endforeach
+                                </ul>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section> 
+        </div>
+        <input type="hidden" id="add-reply" value="{{url('community/forum/answer/add/'.$id_question)}}" />
+        <input type="hidden" id="list-reply" value="{{url('community/forum/load/answer/'.$id_question)}}" />
+    @endsection
+

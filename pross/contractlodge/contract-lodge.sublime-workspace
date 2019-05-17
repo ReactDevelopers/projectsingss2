@@ -1,0 +1,1851 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"a",
+				"a\t<a>"
+			],
+			[
+				"b4col",
+				"b4:grid:col\tcol"
+			],
+			[
+				"edit",
+				"editPackage"
+			],
+			[
+				"image",
+				"image_home_url"
+			],
+			[
+				"addAccou",
+				"addAccountClick\t(index.js)"
+			],
+			[
+				"Atrium",
+				"AtriumPHP\t(CreateUserGuid.php)"
+			],
+			[
+				"isatleast",
+				"isAtLeastOneRoomNightRateOffered"
+			],
+			[
+				"isatlest",
+				"isAtLeastOneRoomNightRateOffered"
+			],
+			[
+				"propsalreques",
+				"proposal_request_id\t(ProposalRequestRepository.php)"
+			],
+			[
+				"addClass",
+				"addClass\t(budgetsetter.js)"
+			],
+			[
+				"withdraw",
+				"withdrawal"
+			],
+			[
+				"componen",
+				"components\t(app.js)"
+			],
+			[
+				"incomeperbudg",
+				"income_per_budget_period\t(index.js)"
+			],
+			[
+				"incomeperbudgetper",
+				"income_per_budget_period"
+			],
+			[
+				"income",
+				"incomePerPayPeriod"
+			],
+			[
+				"incomePer",
+				"incomePerPayPeriod\t(index.js)"
+			],
+			[
+				"fa-folder",
+				"fa-folder-open-o\t(home.blade.php)"
+			],
+			[
+				"current",
+				"currentRouteName\t(app.blade.php)"
+			],
+			[
+				"Spark",
+				"spark"
+			],
+			[
+				"totalroom",
+				"totalRoomsAvailable"
+			],
+			[
+				"filtred",
+				"filteredRequests"
+			],
+			[
+				"getre",
+				"getBlankReservation"
+			],
+			[
+				"accpeted_by",
+				"accepted_by_owner_at\t(show.js)"
+			],
+			[
+				"getPropsa",
+				"getProposalRequest"
+			],
+			[
+				"actingAs",
+				"actingAsLicensee\t(AcceptanceTestCase.php)"
+			],
+			[
+				"selectedHote",
+				"selectedHotel"
+			],
+			[
+				"_find",
+				"_findWhere\tUnderscore.js findWhere"
+			],
+			[
+				"fetchandupdategoo",
+				"fetchAndUpdateGooglePlaceDetails"
+			],
+			[
+				"fetchandu",
+				"fetchAndUpdateGooglePlaceImages"
+			],
+			[
+				"filter",
+				"filter\t.filter()"
+			],
+			[
+				"fa-chevron",
+				"fa-chevron-down\t(arbirob.js)"
+			],
+			[
+				"map",
+				"map\t.map()"
+			],
+			[
+				"uc",
+				"ucwords()"
+			],
+			[
+				"YYYY",
+				"YYYY-MM-DD"
+			],
+			[
+				"getProposal",
+				"getProposalStatus"
+			],
+			[
+				"stageAnd",
+				"stageAndStatuses"
+			],
+			[
+				"getReu",
+				"getRequestStatus\t(index.blade.php)"
+			],
+			[
+				"getReq",
+				"getRequestStatus\t(resbeat.js)"
+			],
+			[
+				"getPropoa",
+				"getProposalStatus\t(resbeat.js)"
+			],
+			[
+				"stage",
+				"stageAndStatuses"
+			],
+			[
+				"getStage",
+				"getStageAndStatus\t(resbeat.js)"
+			],
+			[
+				"getcontr",
+				"getContractStatus"
+			],
+			[
+				"getPropos",
+				"getProposalStatus"
+			],
+			[
+				"isRequ",
+				"isRequestPastCutoffDate"
+			],
+			[
+				"daterang",
+				"date_ranges"
+			],
+			[
+				"ispropsoalda",
+				"isProposalDateRangeDeclined"
+			],
+			[
+				"notifi",
+				"notification"
+			],
+			[
+				"curre",
+				"currencySymbol"
+			],
+			[
+				"converte",
+				"convertQuestionGroups"
+			],
+			[
+				"Accommo",
+				"AccommodationsMixin"
+			],
+			[
+				"declined",
+				"declinedDateRangesIds\t(decline.js)"
+			],
+			[
+				"format",
+				"formatSingleDate\t(contract.blade.php)"
+			],
+			[
+				"stringify",
+				"stringify"
+			],
+			[
+				"slugifyhote",
+				"slugifyProposalHotelsHref\t(review.blade.php)"
+			],
+			[
+				"slugifyqu",
+				"slugifyProposalQuestionsHref\t(review.blade.php)"
+			],
+			[
+				"uniq",
+				"uniqBy"
+			],
+			[
+				"recipie",
+				"recipients"
+			],
+			[
+				"proposal",
+				"proposal-requests"
+			],
+			[
+				"conver",
+				"convertGooglePlace"
+			],
+			[
+				"convert",
+				"convertGooglePlace\t(resbeat.js)"
+			],
+			[
+				"min_",
+				"min_largest_meeting_room_sq_ft\t(hotels.js)"
+			],
+			[
+				"min",
+				"min_sleeping_rooms"
+			],
+			[
+				"stringif",
+				"stringify"
+			],
+			[
+				"promise",
+				"promiseArray"
+			],
+			[
+				"string",
+				"stringify"
+			],
+			[
+				"cuto",
+				"cutoff_date\t(event-details.js)"
+			],
+			[
+				"proposalrequ",
+				"proposalRequest.id\t(accommodations.vue)"
+			],
+			[
+				"cancel",
+				"cancellation_policy"
+			],
+			[
+				"Licensee",
+				"LicenseeEventFatheader"
+			],
+			[
+				"transpare",
+				"transparent"
+			],
+			[
+				"selected",
+				"selectedEquipments"
+			],
+			[
+				"foodandbev",
+				"foodAndBeverageFile"
+			],
+			[
+				"food_",
+				"food_and_beverage"
+			],
+			[
+				"meeting_spa",
+				"meeting_space"
+			],
+			[
+				"skip",
+				"skipRequestMeetingSpace\t(create.js)"
+			],
+			[
+				"waitforel",
+				"waitForElement"
+			],
+			[
+				"waitor",
+				"waitForElement"
+			],
+			[
+				"fetch",
+				"fetchEventGroups"
+			],
+			[
+				"initi",
+				"initializeDateRangePicker"
+			],
+			[
+				"init",
+				"initializeDateRangePicker"
+			],
+			[
+				"formatStage",
+				"formatStageAndStatus\t(index.blade.php)"
+			],
+			[
+				"placehol",
+				"placeholder-gray\t(_palette.scss)"
+			],
+			[
+				"text-",
+				"text-transform\t(_buttons.scss)"
+			],
+			[
+				"gradien",
+				"gradient-left\t(_palette.scss)"
+			],
+			[
+				"own",
+				"ownedTeams"
+			],
+			[
+				"recip",
+				"recipient_id\t(Friendable.php)"
+			],
+			[
+				"str_replace",
+				"str_replace()"
+			],
+			[
+				"daily_repor",
+				"daily_report_id"
+			],
+			[
+				"notifySparkOf",
+				"notifySparkOfNeedMet"
+			],
+			[
+				"additiona",
+				"additional-guests-0-last-name"
+			],
+			[
+				"cancellationPolic",
+				"cancellationPolicyDays"
+			],
+			[
+				"cancellation_poli",
+				"cancellation_policy_days"
+			],
+			[
+				"additioanlfee",
+				"additionalFeesUnits"
+			],
+			[
+				"additionalfee",
+				"additional_fees_units"
+			],
+			[
+				"additioanl",
+				"additional_fees"
+			],
+			[
+				"minageto",
+				"min_age_to_check_in"
+			],
+			[
+				"additionalcha",
+				"additional_charge_per_adult"
+			],
+			[
+				"foodandbeverspa",
+				"food_and_beverage_spaces"
+			],
+			[
+				"convertMee",
+				"convertMeetingSpacesForSubmission"
+			],
+			[
+				"preferred_",
+				"preferred_rate_min"
+			],
+			[
+				"preferre",
+				"preferred_rate_min"
+			],
+			[
+				"preferred_rate",
+				"preferred_rate_max"
+			],
+			[
+				"preferr",
+				"preferredRateArr"
+			],
+			[
+				"deposi",
+				"depositPolicy"
+			],
+			[
+				"currentdate",
+				"currentDateRange.id\t(detail.blade.php)"
+			],
+			[
+				"accommoda",
+				"accommodationTab\t(detail.blade.php)"
+			],
+			[
+				"formatProposalRe",
+				"formatProposalRequestStatus"
+			],
+			[
+				"numbe",
+				"numberBetween"
+			],
+			[
+				"UpdateUserProfileAs",
+				"UpdateUserProfileAsHotelTest.php"
+			],
+			[
+				"eventDateRange",
+				"eventDateRangeId"
+			],
+			[
+				"room_reuqes",
+				"room_request_dates"
+			],
+			[
+				"convertedateran",
+				"convertedDateRanges"
+			],
+			[
+				"_inde",
+				"_indexOf\tUnderscore.js indexOf"
+			],
+			[
+				"prefer",
+				"preferred_rate_min"
+			],
+			[
+				"consoe",
+				"console.debug"
+			],
+			[
+				"convertedD",
+				"convertedDateRanges"
+			],
+			[
+				"dateRag",
+				"dateRangeIndex"
+			],
+			[
+				"roomRequestDat",
+				"roomRequestDateColumn"
+			],
+			[
+				"prefe",
+				"preferred_rate_min"
+			],
+			[
+				"proposalre",
+				"proposalRequest.date_ranges"
+			],
+			[
+				"room_request",
+				"room_request_dates"
+			],
+			[
+				"waitfore",
+				"waitForElement"
+			],
+			[
+				"event_date_ran",
+				"event_date_range_id"
+			],
+			[
+				"waitforeleme",
+				"waitForElementVisible"
+			],
+			[
+				"waitforele",
+				"waitForElementVisible"
+			],
+			[
+				"additional",
+				"additional_fees_units"
+			],
+			[
+				"numberform",
+				"number_format\t(ProposalRequestCest.php)"
+			],
+			[
+				"admin",
+				"administrative_area_level_2"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 71.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"package insta",
+				"Package Control: Install Package"
+			],
+			[
+				"dele",
+				"File: Delete"
+			],
+			[
+				"xml",
+				"Set Syntax: XML"
+			],
+			[
+				"javasc",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"wrap",
+				"Word Wrap: Toggle"
+			],
+			[
+				"json vali",
+				"Pretty JSON: Validate"
+			],
+			[
+				"html5",
+				"Snippet: html5"
+			],
+			[
+				"javas",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"javascr",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"renam",
+				"File: Rename"
+			],
+			[
+				"new file",
+				"File: New File Relative to Project Root"
+			],
+			[
+				"dupli",
+				"File: Duplicate"
+			],
+			[
+				"json",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"sql syn",
+				"Set Syntax: SQL"
+			],
+			[
+				"syntax css",
+				"Set Syntax: CSS"
+			],
+			[
+				"use",
+				"PHPCompanion:Find Use"
+			],
+			[
+				"btn link",
+				"Snippet: bs3-link-button"
+			],
+			[
+				"del",
+				"File: Delete"
+			],
+			[
+				"rename",
+				"File: Rename"
+			],
+			[
+				"indent xml",
+				"Indent XML"
+			],
+			[
+				"install pac",
+				"Package Control: Install Package"
+			],
+			[
+				"php",
+				"Set Syntax: PHP"
+			],
+			[
+				"dupc",
+				"File: Duplicate"
+			],
+			[
+				"move",
+				"File: Move"
+			],
+			[
+				"ren",
+				"File: Rename"
+			],
+			[
+				"list",
+				"Snippet: list"
+			],
+			[
+				"dup",
+				"File: Duplicate"
+			],
+			[
+				"snippet: row",
+				"Snippet: row"
+			],
+			[
+				"snippet: form",
+				"Snippet: form_controls"
+			],
+			[
+				"form",
+				"Laravel Generate: Form"
+			],
+			[
+				"button",
+				"Snippet: button"
+			],
+			[
+				"table",
+				"Snippet: table_responsive"
+			],
+			[
+				"codeintel",
+				"SublimeCodeIntel: Enable Live Autocompletion for Current Language"
+			],
+			[
+				"enable",
+				"Package Control: Enable Package"
+			],
+			[
+				"disable",
+				"Package Control: Disable Package"
+			],
+			[
+				"enable ",
+				"Package Control: Enable Package"
+			],
+			[
+				"installp",
+				"Package Control: Install Package"
+			],
+			[
+				"disab",
+				"Package Control: Disable Package"
+			],
+			[
+				"enable p",
+				"Package Control: Enable Package"
+			],
+			[
+				"enable pack",
+				"Package Control: Enable Package"
+			],
+			[
+				"dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"disable pack",
+				"Package Control: Disable Package"
+			],
+			[
+				"disable pa",
+				"Package Control: Disable Package"
+			],
+			[
+				"disable ",
+				"Package Control: Disable Package"
+			],
+			[
+				"ena",
+				"Package Control: Enable Package"
+			],
+			[
+				"disablepa",
+				"Package Control: Disable Package"
+			],
+			[
+				"enable pa",
+				"Package Control: Enable Package"
+			],
+			[
+				"disable p",
+				"Package Control: Disable Package"
+			],
+			[
+				"tabs",
+				"Snippet: tabs"
+			],
+			[
+				"install pa",
+				"Package Control: Install Package"
+			],
+			[
+				"bs3tabs",
+				"Snippet: bs3-tabs"
+			],
+			[
+				"bs3list",
+				"Snippet: bs3-list-group"
+			],
+			[
+				"dupl",
+				"File: Duplicate"
+			],
+			[
+				"duplic",
+				"File: Duplicate"
+			],
+			[
+				"bs3button",
+				"Snippet: bs3-button-warning"
+			],
+			[
+				"bs3textar",
+				"Snippet: bs3-textarea"
+			],
+			[
+				"bs3button\t",
+				"Snippet: bs3-button-primary"
+			],
+			[
+				"bs3but\t",
+				"Snippet: bs3-button-primary"
+			],
+			[
+				"bs3alertwar",
+				"Snippet: bs3-alert-warning"
+			],
+			[
+				"bs3info",
+				"Snippet: bs3-alert-info"
+			],
+			[
+				"bs3selec",
+				"Snippet: bs3-select"
+			],
+			[
+				"bs3tabl",
+				"Snippet: bs3-table-responsive"
+			],
+			[
+				"pretty",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"mvoe",
+				"File: Move"
+			],
+			[
+				"bs3but",
+				"Snippet: bs3-button-primary"
+			],
+			[
+				"bs3html",
+				"Snippet: bs3-html5-template"
+			],
+			[
+				"rene",
+				"File: Rename"
+			],
+			[
+				"prettyjson",
+				"Pretty JSON: Minify (compress) JSON"
+			],
+			[
+				"dpu",
+				"File: Duplicate"
+			],
+			[
+				"bs3buttondef\t",
+				"Snippet: bs3-button-default"
+			],
+			[
+				"bs3butto",
+				"Snippet: bs3-button-primary"
+			],
+			[
+				"bs3butt\t",
+				"Snippet: bs3-button-primary"
+			],
+			[
+				"bu",
+				"Snippet: bs3-button"
+			],
+			[
+				"bs3group",
+				"Snippet: bs3-input-group"
+			],
+			[
+				"bs3input\t",
+				"Snippet: bs3-input-text"
+			],
+			[
+				"bs3bu\t",
+				"Snippet: bs3-button-success"
+			],
+			[
+				"bs3tablec",
+				"Snippet: bs3-table-condensed"
+			],
+			[
+				"bs3table",
+				"Snippet: bs3-table-responsive"
+			],
+			[
+				"bs3inputtex",
+				"Snippet: bs3-input-group-addon-text"
+			],
+			[
+				"bs3inputgroupadd",
+				"Snippet: bs3-input-group-addon"
+			],
+			[
+				"bs3inputtexth",
+				"Snippet: bs3-input-text-h"
+			],
+			[
+				"bs3input",
+				"Snippet: bs3-input-text"
+			],
+			[
+				"bs3sel",
+				"Snippet: bs3-select"
+			],
+			[
+				"bs3check",
+				"Snippet: bs3-input-checkbox"
+			],
+			[
+				"php ",
+				"Set Syntax: PHP"
+			],
+			[
+				"word",
+				"Word Wrap: Toggle"
+			],
+			[
+				"mo",
+				"File: Move"
+			],
+			[
+				"wra",
+				"Word Wrap: Toggle"
+			],
+			[
+				"word ",
+				"Word Wrap: Toggle"
+			],
+			[
+				"wod",
+				"Word Wrap: Toggle"
+			],
+			[
+				"settimeo",
+				"Snippet: setTimeout function"
+			],
+			[
+				"import",
+				"PHPCompanion:Import Namespace"
+			],
+			[
+				"rena",
+				"File: Rename"
+			],
+			[
+				"snake",
+				"Convert Case: snake_case"
+			],
+			[
+				"snake_",
+				"Convert Case: snake_case"
+			],
+			[
+				"snakeca",
+				"Convert Case: snake_case"
+			],
+			[
+				"snake ca",
+				"Convert Case: snake_case"
+			],
+			[
+				"constru",
+				"Snippet: function __construct"
+			],
+			[
+				"format css",
+				"CodeFormatter: Format as CSS Syntax"
+			],
+			[
+				"bs3-",
+				"Snippet: bs3-alert-danger"
+			],
+			[
+				"bs3inputhidd",
+				"Snippet: bs3-input-hidden"
+			],
+			[
+				"butt",
+				"Snippet: bs3-button"
+			],
+			[
+				"bs3-aler",
+				"Snippet: bs3-alert-danger"
+			],
+			[
+				"bs3-select",
+				"Snippet: bs3-select"
+			],
+			[
+				"bs3alert",
+				"Snippet: bs3-alert-info"
+			],
+			[
+				"mvo",
+				"File: Move"
+			],
+			[
+				"du",
+				"File: Duplicate"
+			],
+			[
+				"dupcl",
+				"File: Duplicate"
+			],
+			[
+				"duplc",
+				"File: Duplicate"
+			],
+			[
+				"blame",
+				"Git: Blame"
+			],
+			[
+				"mov",
+				"File: Move"
+			],
+			[
+				"de",
+				"File: Delete"
+			],
+			[
+				"camelc",
+				"Convert Case: camelCase"
+			],
+			[
+				"json prett",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"camelca",
+				"Convert Case: camelCase"
+			],
+			[
+				"camel",
+				"Convert Case: camelCase"
+			],
+			[
+				"jsonfor",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"bs3alertinf",
+				"Snippet: bs3-alert-info"
+			],
+			[
+				"bs3alertinfo",
+				"Snippet: bs3-alert-info"
+			],
+			[
+				"json pre",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"new fiel",
+				"File: New File Relative to Current View"
+			],
+			[
+				"wrpa",
+				"Emmet: Wrap With Abbreviation"
+			],
+			[
+				"cam",
+				"Convert Case: camelCase"
+			],
+			[
+				"open ",
+				"File: Open In Browser - Testing Server"
+			],
+			[
+				"json pret",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"prett",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"format css exp",
+				"Format CSS: Expanded (Break Selectors)"
+			],
+			[
+				"install packa",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 547.0
+	},
+	"console":
+	{
+		"height": 214.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			" import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) ",
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/nateritter/Sites/contract-lodge/resources/views/home.blade.php",
+		"/Users/nateritter/Sites/contract-lodge/tests/Feature/HoldsTest.php",
+		"/Users/nateritter/Sites/contract-lodge/resources/views/vendor/spark/nav/user-left.blade.php",
+		"/Users/nateritter/Sites/contract-lodge/app/Providers/SparkServiceProvider.php",
+		"/Users/nateritter/Sites/contract-lodge/vendor/laravel/framework/src/Illuminate/Database/Eloquent/FactoryBuilder.php",
+		"/Users/nateritter/Sites/contract-lodge/app/User.php",
+		"/Users/nateritter/Sites/contract-lodge/spark/src/User.php",
+		"/Users/nateritter/Sites/contract-lodge/vendor/hamcrest/hamcrest-php/generator/FactoryGenerator.php",
+		"/Users/nateritter/Sites/contract-lodge/contract-lodge.sublime-project",
+		"/Users/nateritter/Sites/contract-lodge/resources/lang/en.json",
+		"/Users/nateritter/Sites/contract-lodge/.env",
+		"/Users/nateritter/Sites/spark-installer/composer.json",
+		"/Volumes/Keybase (nateritter)/team/h4h_platinium/sftp-credentials.txt",
+		"/Users/nateritter/.ssh/wp-config.php",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/F78BEEC7-A9FD-421E-A1F3-9FA51764BEB6/wp-config.php",
+		"/Users/nateritter/Downloads/editlayer-alpha6.1/scripts/open.js",
+		"/Users/nateritter/Downloads/editlayer-alpha6.1/scripts/cors.js",
+		"/Users/nateritter/Downloads/editlayer-alpha6.1/scripts/deploy.js",
+		"/Users/nateritter/Desktop/private_key.txt",
+		"/Users/nateritter/Desktop/bookrooms_formula1_com.pem",
+		"/Users/nateritter/Downloads/bookrooms_formula1_com-1/bookrooms_formula1_com.pem",
+		"/Users/nateritter/Downloads/hotels_f1erewards_com.pem",
+		"/Users/nateritter/Downloads/bookrooms_formula1_com-1/bookrooms_formula1_com.p7b",
+		"/Users/nateritter/Downloads/bookrooms_formula1_com-1/bookrooms_formula1_com.ca-bundle",
+		"/Users/nateritter/Sites/slate.hotelsforhope/source/index.html.md",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/controllers/leads_controller.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/views/groups/edit.ctp",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/models/leads_market.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/views/leads/retrieve.ctp",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/views/widget/script.ctp",
+		"/Users/nateritter/Sites/resbeat/database/seeds/HotelsTableSeeder.php",
+		"/Users/nateritter/Sites/pingbid.dev/branches/web-widget/app/models/zero_parallel_v2.php",
+		"/Users/nateritter/Sites/roomsteals/resources/views/carts/checkout.blade.php",
+		"/Users/nateritter/Sites/roomsteals/webpack.mix.js",
+		"/Users/nateritter/Sites/roomsteals/spark/resources/views/kiosk.blade.php",
+		"/Users/nateritter/Sites/roomsteals/resources/views/vendor/spark/kiosk.blade.php",
+		"/Users/nateritter/Sites/roomsteals/resources/assets/js/app.js",
+		"/Users/nateritter/Sites/roomsteals/resources/assets/js/components/kiosk/promos.js",
+		"/Users/nateritter/Sites/roomsteals/resources/assets/js/components/carts/checkout.js",
+		"/Users/nateritter/Sites/pingbid-iframe-test/index.php",
+		"/Users/nateritter/.ssh/known_hosts",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/Vagrantfile",
+		"/Users/nateritter/Sites/pingbid.dev/branches/web-widget/app/config/database.php",
+		"/Users/nateritter/Sites/pingbid.dev/branches/web-widget/app/config/core.php",
+		"/Users/nateritter/Sites/pingbid.dev/branches/web-widget/app/config/config.php",
+		"/Users/nateritter/Sites/pingbid.dev/branches/web-widget/app/config/database.php.default",
+		"/Users/nateritter/Sites/roomsteals/app/Providers/SparkServiceProvider.php",
+		"/Users/nateritter/Sites/roomsteals/.env",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/A6D39C40-83EA-4AD0-849C-1AEDB0989664/index.php",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/7AFFDF10-C5C9-41FC-B358-317BC9BB54C1/index.php",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/2704DBDC-2A27-421C-8222-07723614CEE8/basic.css",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/D4F5F52E-2275-4191-86FB-54B3E0BE83D6/index.php",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/5C9B8648-4993-4667-A113-7B39D3A6DB5A/index.html",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/5F8963F2-11BA-4544-A998-0827B3A25FEF/index.php",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/9A7443F5-5582-4723-B784-3769593A2542/index.php",
+		"/Users/nateritter/Downloads/-.js",
+		"/Users/nateritter/.zshrc",
+		"/Users/nateritter/Sites/cm/resources/assets/js/components/change-orders.js",
+		"/Users/nateritter/Sites/cm/resources/assets/js/components/partials/AttachmentUpload.vue",
+		"/Users/nateritter/Sites/cm/readme.md",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/319CC0AA-FCEE-4F5D-B7E0-023B8EFAFE35/.htaccess",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/config/config.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/webroot/js/pings/common.js",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/models/net_credit_a_d_f.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/models/enova_adf_installment.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/models/enova_adf_short_term.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/models/enova_adf_all.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/models/base_lead.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/models/lead_economy.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/models/acquire_interactive.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/tests/fixtures/network_fixture.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/tests/fixtures/test_suite_network_fixture.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/models/lead.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/models/ping.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/tests/cases/models/acquire_interactive.test.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/tests/cases/models/partner_weekly.test.php",
+		"/Users/nateritter/Sites/pingbid.dev/trunk/app/vendors/shells/process_pw_weeklies.php",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/C733E66F-74E5-4A72-9AC1-77B4EC4FE1FA/.htaccess",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/18C392E8-02B0-4EC1-8B88-A387BC49F02C/wp-config.php",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/0D12B99B-E5B6-4D3C-A52E-DCC5DA47B580/.htaccess",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/5B5B3EB4-82FB-4B78-BC13-6E8DE42F1280/.htaccess",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/B593FBBC-524B-40A8-B6CF-445551E3C6BD/.htaccess",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/7D6EDB34-A3CB-4C6F-BB25-8DEB5E170BED/index.php",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/53BB4402-4A8F-42F3-BB9B-94B6DA4400C0/.htaccess",
+		"/Users/nateritter/Library/Caches/Cleanup At Startup/Transmit/0DADCACF-9858-4711-B3C1-2658C64B1FD7/.htaccess",
+		"/Users/nateritter/Downloads/Archive-1/sample_xml/bids/BidExample.xml",
+		"/Users/nateritter/Sites/freshbot/vendor/nateritter/laravel-binance-wrapper/src/BinanceServiceProvider.php",
+		"/Users/nateritter/Sites/bittrex/vendor/nateritter/laravel-binance-wrapper/src/BinanceAPI.php",
+		"/Users/nateritter/Sites/bittrex/composer.json",
+		"/Users/nateritter/Sites/bittrex/app/Setup.php",
+		"/Users/nateritter/Sites/bittrex/app/Http/Controllers/SetupController.php",
+		"/Users/nateritter/Sites/bittrex/resources/views/shared/setups.blade.php",
+		"/Users/nateritter/Sites/bittrex/config/binance.php",
+		"/Users/nateritter/Sites/bittrex/.env",
+		"/Users/nateritter/Sites/bittrex/app/Support/helpers.php",
+		"/Users/nateritter/Sites/bittrex/resources/views/setups/create.blade.php",
+		"/Users/nateritter/Sites/bittrex/resources/views/shared/fractals.blade.php",
+		"/Users/nateritter/Sites/bittrex/app/Console/Commands/BittrexSell.php",
+		"/Users/nateritter/Sites/bittrex/storage/logs/bittrex.log",
+		"/Users/nateritter/Sites/bittrex/resources/views/shared/forms/setup.blade.php",
+		"/Users/nateritter/Sites/bittrex/resources/views/home.blade.php",
+		"/Users/nateritter/Sites/bittrex/app/Http/Controllers/HomeController.php",
+		"/Users/nateritter/Sites/bittrex/app/Console/Kernel.php",
+		"/Users/nateritter/Sites/bittrex/database/migrations/2018_02_28_072352_add_sell_order_uuid_to_setups_table.php",
+		"/Users/nateritter/Sites/bittrex/app/Providers/AppServiceProvider.php",
+		"/Users/nateritter/Sites/bittrex/app/Jobs/RetrievePrices.php",
+		"/Users/nateritter/Sites/bittrex/resources/assets/js/bootstrap.js",
+		"/Users/nateritter/Sites/bittrex/resources/views/layouts/app.blade.php",
+		"/Users/nateritter/Sites/bittrex/routes/web.php",
+		"/Users/nateritter/Sites/bittrex/database/migrations/2018_02_27_232224_create_setups_table.php",
+		"/Users/nateritter/Sites/bittrex/routes/api.php",
+		"/Users/nateritter/Sites/bittrex/database/factories/SetupFactory.php",
+		"/Users/nateritter/Sites/bittrex/database/migrations/2018_02_27_233333_add_closed_at_timestamp_to_setups_table.php",
+		"/Users/nateritter/Sites/bittrex/config/model-status.php",
+		"/Users/nateritter/Sites/bittrex/app/Http/Resources/Setup.php",
+		"/Users/nateritter/Sites/bittrex/config/bittrex.php",
+		"/Users/nateritter/Sites/bittrex/bittrex.sublime-project",
+		"/Users/nateritter/Library/Application Support/Sublime Text 3/Packages/SublimeCodeIntel/SublimeCodeIntel.sublime-settings",
+		"/Users/nateritter/Sites/packages/bittrex.sublime-project",
+		"/Users/nateritter/Sites/bittrex/resources/views/welcome.blade.php",
+		"/Users/nateritter/Sites/bittrex/app/Http/Controllers/Auth/LoginController.php",
+		"/Users/nateritter/Sites/packages/webpack.mix.js",
+		"/Users/nateritter/Sites/packages/public/css/cart.css",
+		"/Users/nateritter/Sites/packages/resources/views/welcome.blade.php",
+		"/Users/nateritter/Sites/packages/app/Http/Controllers/Api/PackageController.php",
+		"/Users/nateritter/Sites/packages/routes/api.php",
+		"/Users/nateritter/Sites/packages/app/Http/Controllers/Api/HotelPhotoController.php",
+		"/Users/nateritter/Sites/packages/app/Contracts/UpdatePackageHotelPhoto.php"
+	],
+	"find":
+	{
+		"height": 27.0
+	},
+	"find_in_files":
+	{
+		"height": 143.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"email_",
+			"email",
+			"Your application's Dashboard"
+		],
+		"highlight": false,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 43.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.SublimeLinter Messages":
+	{
+		"height": 118.0
+	},
+	"output.exec":
+	{
+		"height": 112.0
+	},
+	"output.find_results":
+	{
+		"height": 110.0
+	},
+	"output.markdown":
+	{
+		"height": 118.0
+	},
+	"pinned_build_system": "",
+	"project": "contract-lodge.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"factorybiul",
+				"vendor/laravel/framework/src/Illuminate/Database/Eloquent/FactoryBuilder.php"
+			],
+			[
+				"sparkuser",
+				"spark/src/User.php"
+			],
+			[
+				"app/user",
+				"app/User.php"
+			],
+			[
+				"factoryge",
+				"vendor/hamcrest/hamcrest-php/generator/FactoryGenerator.php"
+			],
+			[
+				"appuser",
+				"app/User.php"
+			],
+			[
+				"hold",
+				"tests/Feature/HoldsTest.php"
+			],
+			[
+				"en.js",
+				"resources/lang/en.json"
+			],
+			[
+				"home.blade",
+				"resources/views/home.blade.php"
+			],
+			[
+				"spark",
+				"app/Providers/SparkServiceProvider.php"
+			],
+			[
+				"sparkser",
+				"app/Providers/SparkServiceProvider.php"
+			],
+			[
+				".env",
+				".env"
+			],
+			[
+				"rules/cors.json",
+				"rules/cors.json"
+			],
+			[
+				"depl",
+				"scripts/deploy.js"
+			],
+			[
+				"pack",
+				"package.json"
+			],
+			[
+				"lead",
+				"models/lead.php"
+			],
+			[
+				"adf",
+				"models/a_d_f.php"
+			],
+			[
+				"leadscont",
+				"controllers/leads_controller.php"
+			],
+			[
+				"lead.php",
+				"models/lead.php"
+			],
+			[
+				"leadcont",
+				"controllers/leads_controller.php"
+			],
+			[
+				"leadsmark",
+				"models/leads_market.php"
+			],
+			[
+				"script.",
+				"views/widget/script.ctp"
+			],
+			[
+				"zeropar",
+				"app/models/zero_parallel_v2.php"
+			],
+			[
+				"kiosk.blade",
+				"resources/views/vendor/spark/kiosk.blade.php"
+			],
+			[
+				"kiosk",
+				"spark/resources/views/kiosk.blade.php"
+			],
+			[
+				"checkout.blade",
+				"resources/views/carts/checkout.blade.php"
+			],
+			[
+				"promos.js",
+				"resources/assets/js/components/kiosk/promos.js"
+			],
+			[
+				"checkout.js",
+				"resources/assets/js/components/carts/checkout.js"
+			],
+			[
+				"resources/app.js",
+				"resources/assets/js/app.js"
+			],
+			[
+				"web",
+				"webpack.mix.js"
+			],
+			[
+				"kiosk.bl",
+				"spark/resources/views/kiosk.blade.php"
+			],
+			[
+				"data",
+				"config/database.php"
+			],
+			[
+				"core",
+				"config/core.php"
+			],
+			[
+				"datab",
+				"config/database.php"
+			],
+			[
+				"core.php",
+				"config/core.php"
+			],
+			[
+				"",
+				"config.php"
+			],
+			[
+				"ind",
+				"source/index.html.md"
+			],
+			[
+				".en",
+				".env"
+			],
+			[
+				"inde.xmd",
+				"source/index.html.md"
+			],
+			[
+				"versi",
+				"lib/Cake/VERSION.txt"
+			],
+			[
+				"components/projec",
+				"resources/assets/js/components/projects.js"
+			],
+			[
+				"projectstat",
+				"resources/assets/js/components/partials/ProjectStats.vue"
+			],
+			[
+				"attachmentup",
+				"resources/assets/js/components/partials/AttachmentUpload.vue"
+			],
+			[
+				"readme",
+				"readme.md"
+			],
+			[
+				"api/projec",
+				"app/Http/Controllers/Api/ProjectsController.php"
+			],
+			[
+				"projects/show-docs",
+				"resources/views/projects/show-docs.blade.php"
+			],
+			[
+				"routes.php",
+				"app/Http/routes.php"
+			],
+			[
+				"net credit",
+				"models/net_credit_a_d_f.php"
+			],
+			[
+				"leadecon",
+				"models/lead_economy_short_term.php"
+			],
+			[
+				"enova",
+				"models/enova_adf_installment.php"
+			],
+			[
+				"leadec",
+				"models/lead_economy.php"
+			],
+			[
+				"api/",
+				"app/Http/Controllers/Api/BitcoinController.php"
+			],
+			[
+				"binan",
+				"config/binance.php"
+			],
+			[
+				"api",
+				"src/BinanceAPI.php"
+			],
+			[
+				"bitcoincon",
+				"app/Http/Controllers/Api/BitcoinController.php"
+			],
+			[
+				"nateritter/",
+				"nateritter/laravel-binance-wrapper/src/BinanceAPI.php"
+			],
+			[
+				"composer",
+				"composer.json"
+			],
+			[
+				"comp",
+				"composer.json"
+			],
+			[
+				"homecont",
+				"app/Http/Controllers/HomeController.php"
+			],
+			[
+				"shared/fra",
+				"resources/views/shared/fractals.blade.php"
+			],
+			[
+				"setup",
+				"app/Setup.php"
+			],
+			[
+				"hoem.b",
+				"resources/views/home.blade.php"
+			],
+			[
+				"homecon",
+				"app/Http/Controllers/HomeController.php"
+			],
+			[
+				"home",
+				"resources/views/home.blade.php"
+			],
+			[
+				"help",
+				"app/Support/helpers.php"
+			],
+			[
+				"ker",
+				"app/Console/Kernel.php"
+			],
+			[
+				"addsell",
+				"database/migrations/2018_02_28_072352_add_sell_order_uuid_to_setups_table.php"
+			],
+			[
+				"como",
+				"composer.json"
+			],
+			[
+				"appserv",
+				"app/Providers/AppServiceProvider.php"
+			],
+			[
+				"appsetup",
+				"app/Setup.php"
+			],
+			[
+				"retrievepri",
+				"app/Jobs/RetrievePricesJob.php"
+			],
+			[
+				"kern",
+				"app/Console/Kernel.php"
+			],
+			[
+				"prices",
+				"app/Console/Commands/PricesRetrieve.php"
+			],
+			[
+				"setupcreate",
+				"resources/views/setups/create.blade.php"
+			],
+			[
+				"bootstrap.js",
+				"resources/assets/js/bootstrap.js"
+			],
+			[
+				"home.b",
+				"resources/views/home.blade.php"
+			],
+			[
+				"shared/set",
+				"resources/views/shared/setups.blade.php"
+			],
+			[
+				"seutps/",
+				"resources/views/setups/create.blade.php"
+			],
+			[
+				"routes/web",
+				"routes/web.php"
+			],
+			[
+				"setupcont",
+				"app/Http/Controllers/SetupController.php"
+			],
+			[
+				"setupsta",
+				"database/migrations/2018_02_27_233333_add_closed_at_timestamp_to_setups_table.php"
+			],
+			[
+				"model",
+				"config/model-status.php"
+			],
+			[
+				"bittrex",
+				"config/bittrex.php"
+			],
+			[
+				"routes/api",
+				"routes/api.php"
+			],
+			[
+				"home.",
+				"resources/views/home.blade.php"
+			],
+			[
+				"hoem",
+				"resources/views/home.blade.php"
+			],
+			[
+				"config/app",
+				"config/app.php"
+			],
+			[
+				"authcont",
+				"app/Http/Controllers/Auth/LoginController.php"
+			],
+			[
+				"carts/show",
+				"resources/views/carts/show.blade.php"
+			],
+			[
+				"welcome",
+				"resources/views/welcome.blade.php"
+			],
+			[
+				"packages.js",
+				"resources/assets/js/components/kiosk/packages.js"
+			],
+			[
+				"updatepackagehotelphoto",
+				"app/Contracts/UpdatePackageHotelPhoto.php"
+			],
+			[
+				"upatepackagehotel",
+				"app/Contracts/UpdatePackageHotelPhoto.php"
+			],
+			[
+				"updatepackagehotelpho",
+				"app/Jobs/UpdatePackageHotelPhoto.php"
+			],
+			[
+				"updatepackagepho",
+				"app/Jobs/UpdatePackagePhoto.php"
+			],
+			[
+				"updatepackag",
+				"app/Contracts/UpdatePackagePhoto.php"
+			],
+			[
+				"hotelph",
+				"app/HotelPhotos.php"
+			],
+			[
+				"photocon",
+				"app/Http/Controllers/Api/PhotoController.php"
+			],
+			[
+				"package.php",
+				"app/Package.php"
+			],
+			[
+				"kiosk/package",
+				"resources/assets/js/components/kiosk/packages.js"
+			],
+			[
+				"packagecont",
+				"app/Http/Controllers/Api/PackageController.php"
+			],
+			[
+				"createhotel",
+				"database/migrations/2018_02_22_225534_create_hotel_photos_table.php"
+			],
+			[
+				"itinerary",
+				"database/migrations/2018_02_16_231515_create_itinerary_photos_table.php"
+			],
+			[
+				"packag.php",
+				"app/Package.php"
+			],
+			[
+				"loader.scss",
+				"public/css/loader.scss"
+			],
+			[
+				"register-stripeblade",
+				"spark/resources/views/auth/register-stripe.blade.php"
+			],
+			[
+				"guest.blad",
+				"vendor/laravel/spark/resources/views/nav/guest.blade.php"
+			],
+			[
+				"guest.blade",
+				"resources/views/vendor/spark/nav/guest.blade.php"
+			],
+			[
+				"nav.blade",
+				"spark/resources/views/nav/guest.blade.php"
+			],
+			[
+				"cart.css",
+				"public/css/cart.css"
+			],
+			[
+				"app.css",
+				"public/css/app.css"
+			],
+			[
+				"main.css",
+				"public/css/main.css"
+			],
+			[
+				"main",
+				"public/css/main.css"
+			],
+			[
+				"main.cs",
+				"public/css/main.css"
+			],
+			[
+				"layouts/app.bl",
+				"spark/resources/views/layouts/app.blade.php"
+			],
+			[
+				"packagecon",
+				"app/Http/Controllers/Api/PackageController.php"
+			],
+			[
+				"main.",
+				"public/css/main.css"
+			],
+			[
+				"package",
+				"app/Http/Controllers/PackageController.php"
+			],
+			[
+				"packages/show",
+				"resources/views/packages/show.blade.php"
+			],
+			[
+				"welcome.b",
+				"resources/views/welcome.blade.php"
+			],
+			[
+				"contracts/updatepacka",
+				"app/Contracts/UpdatePackagePhoto.php"
+			],
+			[
+				"app/contracts/updatepackagephoto",
+				"app/Contracts/UpdatePackagePhoto.php"
+			],
+			[
+				"laravel/spark/contracts/interactions/settings/profile/updateprofilephoto",
+				"vendor/laravel/spark/src/Contracts/Interactions/Settings/Profile/UpdateProfilePhoto.php"
+			],
+			[
+				"contracts/interactions/settings/profile/updateprofilephoto",
+				"spark/src/Contracts/Interactions/Settings/Profile/UpdateProfilePhoto.php"
+			],
+			[
+				"updateprofilepoho",
+				"spark/src/Interactions/Settings/Profile/UpdateProfilePhoto.php"
+			],
+			[
+				"settingcontroller",
+				"vendor/laravel/spark/src/Http/Controllers/Settings/Profile/PhotoController.php"
+			],
+			[
+				"updateprofilephotojs",
+				"spark/resources/assets/js/settings/profile/update-profile-photo.js"
+			],
+			[
+				"addimagehome",
+				"database/migrations/2018_02_19_190733_add_image_home_field_to_packages_table.php"
+			],
+			[
+				"cart/checkout",
+				"resources/views/carts/checkout.blade.php"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 243.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

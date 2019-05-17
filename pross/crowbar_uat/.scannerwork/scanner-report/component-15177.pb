@@ -1,0 +1,1 @@
+Év#resources/views/talent/availability :ÈvÊvËvr#resources/views/talent/availability

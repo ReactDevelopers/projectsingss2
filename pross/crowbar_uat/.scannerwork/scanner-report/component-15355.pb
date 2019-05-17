@@ -1,0 +1,1 @@
+ûw4resources/views/backend/talent/firm_detail.blade.php 2phpX#hr4resources/views/backend/talent/firm_detail.blade.php

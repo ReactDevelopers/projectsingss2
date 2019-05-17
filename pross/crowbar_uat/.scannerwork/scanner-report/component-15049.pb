@@ -1,0 +1,1 @@
+Éu8resources/views/talent/settings/changepassword.blade.php 2phpX/hr8resources/views/talent/settings/changepassword.blade.php

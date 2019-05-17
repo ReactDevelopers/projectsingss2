@@ -1,0 +1,3326 @@
+<?php 
+    namespace App\Http\Controllers\Front;
+
+    use App\Http\Requests;
+    use Illuminate\Support\Facades\DB;
+    use App\Models\Proposals;
+    use App\Http\Controllers\Controller;
+    
+    use Illuminate\Support\Facades\Cookie;
+    use Illuminate\Validation\Rule;
+    use Illuminate\Http\Request;
+    use Yajra\Datatables\Html\Builder;
+    use Crypt;
+
+    use App\Models\Interview as Interview;
+    
+    class TalentController extends Controller {
+
+        private $jsondata;
+        private $redirect;
+        private $message;
+        private $status; 
+        private $prefix;
+        private $language;
+
+        public function __construct(){
+            $this->jsondata     = [];
+            $this->message      = false;
+            $this->redirect     = false;
+            $this->status       = false;
+            $this->prefix       = \DB::getTablePrefix();
+            $this->language     = \App::getLocale();
+            \View::share ( 'footer_settings', \Cache::get('configuration') );
+        }
+
+        public function step_one(){
+            $data['title']                  = trans('website.W0455');
+            $data['subheader']              = false;
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.profile.personal';
+            
+            $data['steps']                  = ['personal'];
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['country_phone_codes']    = \Cache::get('country_phone_codes');
+            $data['countries']              = \Cache::get('countries');
+            $data['states']                 = \Cache::get('states');
+            $data['skip_url']               = url(sprintf("%s/find-jobs",TALENT_ROLE_TYPE));
+            
+            return view('talent.profile.index')->with($data);
+        }
+
+        public function _step_one(Request $request){
+            if(!empty($request->birthyear)  && !empty($request->birthmonth) && !empty($request->birthdate)){
+                $request->request->add(['birthday'=>sprintf('%s-%s-%s',$request->birthyear, $request->birthmonth, $request->birthdate)]);
+            }
+            $user = \Models\Talents::get_user(\Auth::user());
+            
+            $validator = \Validator::make($request->all(), [
+                'first_name'                => validation('first_name'),
+                'last_name'                 => validation('last_name'),
+                'email'                     => ['required','email',Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],
+                'birthday'                  => array_merge(['min_age:14'],validation('birthday')),
+                'gender'                    => validation('gender'),
+                'mobile'                    => array_merge([Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],validation('mobile')),
+                'address'                   => validation('address'),
+                'country'                   => validation('country'),
+                'country_code'              => $request->mobile ? array_merge(['required'], validation('country_code')) : validation('country_code'),
+                'state'                     => validation('state'),
+                'city'                      => validation('city'),
+                'postal_code'               => validation('postal_code'),
+            ],[
+                'first_name.required'       => trans('general.M0006'),
+                'first_name.regex'          => trans('general.M0007'),
+                'first_name.string'         => trans('general.M0007'),
+                'first_name.max'            => trans('general.M0020'),
+                'last_name.required'        => trans('general.M0008'),
+                'last_name.regex'           => trans('general.M0009'),
+                'last_name.string'          => trans('general.M0009'),
+                'last_name.max'             => trans('general.M0019'),
+                'email.required'            => trans('general.M0010'),
+                'email.email'               => trans('general.M0011'),
+                'email.unique'              => trans('general.M0047'),            
+                'birthday.string'           => trans('general.M0054'),
+                'birthday.regex'            => trans('general.M0054'),
+                'birthday.min_age'          => trans('general.M0055'),
+                'gender.string'             => trans('general.M0056'),
+                'mobile.required'           => trans('general.M0030'),
+                'mobile.regex'              => trans('general.M0031'),
+                'mobile.string'             => trans('general.M0031'),
+                'mobile.min'                => trans('general.M0032'),
+                'mobile.max'                => trans('general.M0033'),
+                'mobile.unique'             => trans('general.M0197'),
+                'address.string'            => trans('general.M0057'),
+                'address.regex'             => trans('general.M0057'),
+                'address.max'               => trans('general.M0058'),
+                'country.integer'           => trans('general.M0059'),
+                'country_code.string'       => trans('general.M0074'),
+                'state.integer'             => trans('general.M0060'),
+                'city.integer'              => trans('general.M0254'),
+                'postal_code.string'        => trans('general.M0061'),
+            ]);
+
+            // $validator->after(function($v) use($request){
+            //     $res = validatePayPalEmail($request->email);
+            //     if($res == 'Failure'){
+            //         $v->errors()->add('email',trans('general.valid_paypal_email'));
+            //     }
+            // });
+            if($validator->passes()){
+
+                $update = array_intersect_key(
+                    json_decode(json_encode($request->all()),true), 
+                    array_flip(
+                        array(
+                            'first_name',
+                            'last_name',
+                            'email',
+                            'birthday',
+                            'gender',
+                            'mobile',
+                            'address',
+                            'country',
+                            'country_code',
+                            'state',
+                            'city',
+                            'postal_code',                            
+                        )
+                    )
+                );
+
+                ___filter_null($update);
+
+                if($update['mobile'] != \Auth::user()->mobile){
+                    $update['is_mobile_verified'] = DEFAULT_NO_VALUE;
+                }
+                $code = '';
+                if($request->email != $user['email']){
+                    $code = bcrypt(__random_string());
+                    $update['remember_token'] = $code;
+                    $update['is_email_verified'] = DEFAULT_NO_VALUE;
+                }
+
+                $isUpdated      = \Models\Talents::change(\Auth::user()->id_user,$update);
+
+                if($request->email != $user['email']){
+                    if(!empty($request->email)){
+                        $emailData              = ___email_settings();
+                        $emailData['email']     = $request->email;
+                        $emailData['name']      = $request->first_name;
+                        $emailData['link']      = url(sprintf("emailverify/account?token=%s",$code));
+
+                        ___mail_sender($request->email,sprintf("%s %s",$request->first_name,$request->last_name),"update_email_verification",$emailData);
+                    }
+                }
+                
+                $this->status   = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+                
+                if($request->step_type == 'edit'){
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-update-step-one',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));
+                    $this->redirect = url(sprintf("%s/profile/edit/industry-skills",TALENT_ROLE_TYPE));
+                }else{
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-step-one',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));                    
+                    $this->redirect = url(sprintf("%s/profile/industry-skills",TALENT_ROLE_TYPE));
+                }
+            }else{
+                $this->jsondata = json_decode(json_encode(___error_sanatizer($validator->errors())),true);
+                
+                if(!empty($this->jsondata['country_code'])){
+                    $this->jsondata['mobile'][0] = $this->jsondata['country_code'][0];
+                    unset($this->jsondata['country_code']);
+                }
+
+                $this->jsondata = (object)$this->jsondata;
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        } 
+
+        public function step_two(){
+            $data['title']                  = trans('website.W0456');
+            $data['subheader']              = false;
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.profile.industry-skills';
+
+            $data['currency_list']          = \Models\Currency::getCurrencyList();
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['steps']                  = ['personal','industry-skills'];
+            $data['industries_name']        = \Cache::get('industries_name');
+            $data['subindustries_name']     = \Cache::get('subindustries_name');
+            $data['skills']                 = \Cache::get('skills');
+            $data['certificates']           = \Cache::get('certificates');
+            $data['skip_url']               = url(sprintf("%s/find-jobs",TALENT_ROLE_TYPE));
+            return view('talent.profile.index')->with($data);
+        }
+
+        public function _step_two(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'interests'                         => validation('interests'),
+                'expected_salary'                   => validation('expected_salary'),
+                'other_expectations'                => validation('other_expectations'),
+                'agree'                             => validation('agree_pricing'),
+                'industry'                          => validation('industry'),
+                'subindustry'                       => validation('subindustry'),
+                'skills'                            => validation('skills'),
+                'expertise'                         => validation('expertise'),
+                'experience'                        => validation('experience'),
+                'workrate'                          => validation('workrate'),
+                'workrate_max'                      => validation('workrate_max'),
+                'workrate_unit'                     => validation('workrate_unit'),
+                'workrate_information'              => validation('workrate_information'),
+                'certificates'                      => validation('certificates'),
+            ],[
+                'expected_salary.required_range'    => trans('general.M0264'),
+                'expected_salary.integer'           => trans('general.M0049'),
+                'expected_salary.max'               => trans('general.M0050'),
+                'expected_salary.min'               => trans('general.M0051'),
+                'other_expectations.max'            => trans('general.M0052'),
+                'other_expectations.min'            => trans('general.M0053'),
+                'agree.required_range'              => trans('general.M0253'),
+                'agree.required'                    => trans('general.M0253'),
+                'industry.integer'                  => trans('general.M0064'),
+                'subindustry.integer'               => trans('general.M0065'),
+                'skills.array'                      => trans('general.M0142'),
+                'expertise.string'                  => trans('general.M0066'),
+                'experience.numeric'                => trans('general.M0067'),
+                'experience.max'                    => trans('general.M0068'),
+                'experience.min'                    => trans('general.M0069'),
+                'experience.regex'                  => trans('general.M0067'),
+                'workrate.min'                      => trans('general.M0261'),
+                'workrate.numeric'                  => trans('general.M0070'),
+                'workrate.different'                => trans('general.M0263'),
+                'workrate.required_range'           => trans('general.M0259'),
+                'workrate.numeric_range'            => trans('general.M0263'),
+                'workrate.required_having'          => trans('general.M0259'),
+                'workrate_max.numeric'              => trans('general.M0256'),
+                'workrate_max.min'                  => trans('general.M0262'),
+                'workrate_unit.string'              => trans('general.M0257'),
+                'workrate_unit.required_with'       => trans('general.M0260'),
+                'workrate_information.string'       => trans('general.M0071'),
+                'workrate_information.regex'        => trans('general.M0071'),
+                'workrate_information.max'          => trans('general.M0072'),
+                'workrate_information.min'          => trans('general.M0073'),
+            ]);
+
+            if($validator->passes()){
+                $update = array_intersect_key(
+                    json_decode(json_encode($request->all()),true), 
+                    array_flip(
+                        array(
+                            'expected_salary',
+                            'other_expectations',
+                            'agree',
+                            'industry',
+                            'subindustry',
+                            'expertise',
+                            'experience',
+                            'workrate',
+                            'workrate_max',
+                            'workrate_unit',
+                            'workrate_information'                           
+                        )
+                    )
+                );
+                
+                /*
+                *   REPLACING ALL BLANK STRING WITH 
+                *   NULL BECAUSE OF LARAVEL MYSQL 
+                *   DRIVER ASKING FOR INTEGER VALUE 
+                *   FOR INTEGER COLUMN TYPE
+                */
+                if(!empty($update['workrate'])){
+                    $update['workrate'] = ___format($update['workrate'],false,false,false,false);
+                }
+
+                if(!empty($update['expected_salary'])){
+                    $update['expected_salary'] = ___format($update['expected_salary'],false,false,false,false);
+                }
+
+                if(!empty($update['workrate_max'])){
+                    $update['workrate_max'] = ___format($update['workrate_max'],false,false,false,false);
+                }
+                
+                if(!empty($update['agree'])){
+                    $update['agree_pricing'] = $update['agree'];
+                }
+                
+                ___filter_null($update);
+                
+                $isUpdated = \Models\Talents::change(\Auth::user()->id_user,$update);
+                
+                /*REMOVE AND ADD NEWLY SELECTED INTERESTS*/
+                \Models\Talents::update_interest($request->user()->id_user,$request->interests);
+
+                /*REMOVE AND ADD NEWLY SELECTED SKILLS*/
+                \Models\Talents::update_skill(\Auth::user()->id_user,$request->skills,$update['subindustry']);    
+                
+                /*REMOVE AND ADD NEWLY SELECTED CERTIFICATES*/
+                \Models\Talents::update_certificate(\Auth::user()->id_user,$request->certificates);
+            
+                $this->status   = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+                
+                if($request->step_type == "edit"){
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-update-step-two',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));                    
+                    $this->redirect = url(sprintf("%s/profile/edit/education",TALENT_ROLE_TYPE));
+                }else{
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-step-two',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));                    
+                    $this->redirect = url(sprintf("%s/profile/curriculum-vitae",TALENT_ROLE_TYPE));
+                }
+
+            }else{
+                 $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        } 
+
+        public function step_three(){
+            $data['title']                  = trans('website.W0457');
+            $data['subheader']              = false;
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.profile.curriculum-vitae';
+            
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['steps']                  = ['personal','industry-skills','curriculum-vitae'];
+            $data['countries']              = \Cache::get('countries');
+            $data['colleges']               = \Cache::get('colleges');
+            $data['states']                 = \Cache::get('states');
+            $data['degree_name']            = \Cache::get('degree_name');
+            $data['education_list']         = \Models\Talents::educations(\Auth::user()->id_user);
+            $data['work_experience_list']   = \Models\Talents::work_experiences(\Auth::user()->id_user);
+            $data['get_files']              = \Models\Talents::get_file(sprintf("user_id = %s AND type = 'certificates' ", \Auth::user()->id_user));
+            $data['skip_url']               = url(sprintf("%s/find-jobs",TALENT_ROLE_TYPE));
+            return view('talent.profile.index')->with($data);
+        }
+
+        public function step_three_document(Request $request){
+            $validator = \Validator::make($request->all(), [
+                "file"            => validation('document'),
+            ],[
+                'file.validate_file_type'  => trans('general.M0119'),
+            ]);
+            if($validator->passes()){
+                $folder = 'uploads/certificates/';
+
+                $uploaded_file = upload_file($request,'file',$folder);
+                $data = [
+                    'user_id' => \Auth::user()->id_user,
+                    'record_id' => \Auth::user()->id_user,
+                    'reference' => 'users',
+                    'filename' => $uploaded_file['filename'],
+                    'extension' => $uploaded_file['extension'],
+                    'folder' => $folder,
+                    'type' => 'certificates',
+                    'size' => $uploaded_file['size'],
+                    'is_default' => DEFAULT_NO_VALUE,
+                    'created' => date('Y-m-d H:i:s'),
+                    'updated' => date('Y-m-d H:i:s'),
+                ];
+
+                $isInserted = \Models\Talents::create_file($data,true,true);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-step-three document',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));
+                
+                if(!empty($isInserted)){
+                    if(!empty($isInserted['folder'])){
+                        $isInserted['file_url'] = url(sprintf("%s/%s",$isInserted['folder'],$isInserted['filename']));
+                    }
+                    
+                    $url_delete = sprintf(
+                        url('ajax/%s?id_file=%s'),
+                        DELETE_DOCUMENT,
+                        $isInserted['id_file']
+                    );
+
+                    $this->jsondata = sprintf(RESUME_TEMPLATE,
+                        $isInserted['id_file'],
+                        url(sprintf('/download/file?file_id=%s',___encrypt($isInserted['id_file']))),
+                        asset('/'),
+                        substr($uploaded_file['filename'], 0,3),
+                        $uploaded_file['size'],
+                        $url_delete,
+                        $isInserted['id_file'],
+                        asset('/')
+                    );
+                    
+                    $this->status = true;
+                    $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+                }                
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function step_three_education(Request $request){
+            $validator = \Validator::make($request->all(), [
+                "college"                           => validation('college'),
+                "degree"                            => validation('degree'),
+                "passing_year"                      => validation('passing_year'),
+                "area_of_study"                     => validation('area_of_study'),
+                "degree_status"                     => validation('degree_status'),
+                "degree_country"                    => array_merge(['required'],validation('country')),
+            ],[
+                'college.required'                  => trans('general.M0078'),
+                'college.string'                    => trans('general.M0079'),
+                'college.regex'                     => trans('general.M0079'),
+                'college.max'                       => trans('general.M0080'),
+                'degree.required'                   => trans('general.M0081'),
+                'degree.integer'                    => trans('general.M0082'),
+                'passing_year.required'             => trans('general.M0083'),
+                'passing_year.integer'              => trans('general.M0084'),
+                'area_of_study.required'            => trans('general.M0085'),
+                'area_of_study.integer'             => trans('general.M0086'),
+                'degree_status.required'            => trans('general.M0087'),
+                'degree_status.integer'             => trans('general.M0088'),
+                'degree_country.required'           => trans('general.M0089'),
+                'degree_country.integer'            => trans('general.M0059'),
+            ]);
+
+            if($validator->passes()){
+                $update = array_intersect_key(
+                    json_decode(json_encode($request->all()),true), 
+                    array_flip(
+                        array(
+                            'college',
+                            'degree',
+                            'passing_year',
+                            'area_of_study',
+                            'degree_status',
+                            'degree_country',
+                        )
+                    )
+                );
+                ___filter_null($update);
+                
+                if($request->id_education){
+                    \Models\Talents::update_education($request->id_education,$update);
+                    $inserted_education_id = $request->id_education;
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-update-step-three-education',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));
+                }else{
+                    $inserted_education_id = \Models\Talents::add_education($request->user()->id_user,$update);
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-step-three-education',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));                    
+                }
+
+                $url_edit = sprintf(
+                    url('ajax/%s?id_education=%s'),
+                    EDIT_TALENT_EDUCATION,
+                    $inserted_education_id
+                );
+
+                $url_delete = sprintf(
+                    url('ajax/%s?id_education=%s'),
+                    DELETE_TALENT_EDUCATION,
+                    $inserted_education_id
+                );
+
+                $this->status   = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+         
+                $this->jsondata = sprintf(
+                    EDUCATION_TEMPLATE,
+                    $inserted_education_id,
+                    $url_edit,
+                    $inserted_education_id,
+                    asset('/'),
+                    $url_delete,
+                    $inserted_education_id,
+                    asset('/'),
+                    trans('website.W0082'),
+                    $request->college,
+                    trans('website.W0086'),
+                    $request->passing_year,
+                    trans('website.W0084'),
+                    \Cache::get('degree_name')[$request->degree],
+                    sprintf(trans('website.W0092'),''),
+                    \Cache::get('countries')[$request->degree_country],
+                    trans('website.W0088'),
+                    $request->area_of_study,
+                    trans('website.W0090'),
+                    $request->degree_status
+                );
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function step_three_work_experience(Request $request){
+            $request->request->add(['startdate' => sprintf("%s-%s",$request->joining_year,$request->joining_month)]);
+
+            if(!empty($request->relieving_year) && !empty($request->relieving_month)){
+                $request->request->add(['enddate' => sprintf("%s-%s",$request->relieving_year,$request->relieving_month)]);
+            }
+            
+            $validator = \Validator::make($request->all(), [
+                "jobtitle"                          => validation('jobtitle'),
+                "company_name"                      => validation('company_name'),
+                "joining_month"                     => validation('joining_month'),
+                "joining_year"                      => validation('joining_year'),
+                "is_currently_working"              => validation('is_currently_working'),
+                "job_type"                          => validation('job_type'),
+                "relieving_month"                   => array_merge(['sometimes'],validation('relieving_month')),
+                "relieving_year"                    => array_merge(['sometimes'],validation('relieving_year')),
+                "country"                           => array_merge(['required'],validation('country')),
+                "state"                             => validation('state'),
+            ],[
+                'jobtitle.required'                 => trans('general.M0090'),
+                'jobtitle.string'                   => trans('general.M0091'),
+                'jobtitle.regex'                    => trans('general.M0091'),
+                'jobtitle.max'                      => trans('general.M0092'),
+                'jobtitle.min'                      => trans('general.M0093'),
+                'company_name.required'             => trans('general.M0023'),
+                'company_name.regex'                => trans('general.M0024'),
+                'company_name.string'               => trans('general.M0024'),
+                'company_name.max'                  => trans('general.M0025'),
+                'joining_month.required'            => trans('general.M0094'),
+                'joining_month.string'              => trans('general.M0095'),
+                'joining_year.required'             => trans('general.M0096'),
+                'joining_year.string'               => trans('general.M0097'),
+                'is_currently_working.required'     => trans('general.M0098'),
+                'is_currently_working.string'       => trans('general.M0099'),
+                'job_type.required'                 => trans('general.M0100'),
+                'job_type.string'                   => trans('general.M0101'),
+                'relieving_month.required'          => trans('general.M0102'),
+                'relieving_month.string'            => trans('general.M0103'),
+                'relieving_year.required'           => trans('general.M0104'),
+                'relieving_year.string'             => trans('general.M0105'),
+                'country.required'                  => trans('general.M0106'),
+                'country.integer'                   => trans('general.M0059'),
+                'state.integer'                     => trans('general.M0060'),
+                'state.required'                    => trans('general.M0107'),
+            ]);
+            
+            $validator->sometimes(['relieving_month','relieving_year'], 'required', function($input){
+                return ($input->is_currently_working == DEFAULT_YES_VALUE);
+            });
+
+            if($validator->passes()){
+                if(!empty($request->startdate) && !empty($request->enddate) && (strtotime($request->startdate) > strtotime($request->enddate))){
+                    $this->jsondata = (object)['relieving_month' => trans('general.M0190')];
+                }else{
+                    $update = array_intersect_key(
+                        json_decode(json_encode($request->all()),true), 
+                        array_flip(
+                            array(
+                                "jobtitle",
+                                "company_name",
+                                "joining_month",
+                                "joining_year",
+                                "is_currently_working",
+                                "job_type",
+                                "relieving_month",
+                                "relieving_year",
+                                "country",
+                                "state",
+                            )
+                        )
+                    );
+                    ___filter_null($update);
+
+                    if($request->is_currently_working == DEFAULT_YES_VALUE){
+                        unset($update['relieving_month']);
+                        unset($update['relieving_year']);
+                    }
+
+                    if($request->id_experience){
+                        \Models\Talents::update_experience($request->id_experience,$update);
+                        $inserted_experience_id = $request->id_experience;
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => \Auth::user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'talent-update-step-three-work-experience',
+                            'reference_type'    => 'users',
+                            'reference_id'      => \Auth::user()->id_user
+                        ]));                        
+                    }else{
+                        $inserted_experience_id = \Models\Talents::add_experience($request->user()->id_user,$update);
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => \Auth::user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'talent-step-three-work-experience',
+                            'reference_type'    => 'users',
+                            'reference_id'      => \Auth::user()->id_user
+                        ]));
+                    }
+             
+                    $url_edit = sprintf(
+                        url('ajax/%s?id_experience=%s'),
+                        EDIT_TALENT_EXPERIENCE,
+                        $inserted_experience_id
+                    );
+
+                    $url_delete = sprintf(
+                        url('ajax/%s?id_experience=%s'),
+                        DELETE_TALENT_EXPERIENCE,
+                        $inserted_experience_id
+                    );
+
+                    $this->status   = true;
+                    $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+             
+                    $this->jsondata = sprintf(
+                        EXPERIENCE_TEMPLATE,
+                        $inserted_experience_id,
+                        $url_edit,
+                        $inserted_experience_id,
+                        asset('/'),
+                        $url_delete,
+                        $inserted_experience_id,
+                        asset('/'),
+                        trans('website.W0094'),
+                        $request->jobtitle,
+                        trans('website.W0096'),
+                        $request->company_name,
+                        trans('website.W0098'),
+                        sprintf("%s %s",___d($request->joining_month,'F'),$request->joining_year),
+                        trans('website.W0099'),
+                        ucfirst($request->is_currently_working),
+                        trans('website.W0104'),
+                        employment_types('talent_curriculum_vitae',$request->job_type),
+                        trans('website.W0107'),
+                        ($request->is_currently_working != DEFAULT_YES_VALUE) ? sprintf("%s %s",___d($request->relieving_month,'F'),$request->relieving_year) : trans('website.W0259'),
+                        sprintf(trans('website.W0092'),''),
+                        \Cache::get('countries')[$request->country],
+                        sprintf(trans('website.W0056'),''),
+                        (!empty($request->state))?\Cache::get('states')[$request->state]:N_A
+                    );
+                }
+            
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function _step_three(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'cover_letter_description'          => validation('cover_letter_description'),
+            ],[
+                'cover_letter_description.string'   => trans('general.M0075'),
+                'cover_letter_description.regex'    => trans('general.M0075'),
+                'cover_letter_description.max'      => trans('general.M0076'),
+                'cover_letter_description.min'      => trans('general.M0077'),
+            ]);
+
+
+            if($validator->passes()){   
+                $update = array_intersect_key(
+                    json_decode(json_encode($request->all()),true), 
+                    array_flip(
+                        array(
+                            'cover_letter_description',
+                        )
+                    )
+                );
+
+                /*
+                *   REPLACING ALL BLANK STRING WITH 
+                *   NULL BECAUSE OF LARAVEL MYSQL 
+                *   DRIVER ASKING FOR INTEGER VALUE 
+                *   FOR INTEGER COLUMN TYPE
+                */
+
+                ___filter_null($update);
+                
+                $isUpdated = \Models\Talents::change($request->user()->id_user,$update);
+
+                $this->status = true;
+                $this->jsondata = [
+                    'user' => \Models\Talents::get_user($request->user(),true)
+                ];
+
+
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+
+                if($request->step_type == 'edit'){
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-update-step-three',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));
+                    $this->redirect = url(sprintf("%s/profile/edit/verify-account",TALENT_ROLE_TYPE));
+                }else{
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-step-three',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));
+                    $this->redirect = url(sprintf("%s/profile/availability",TALENT_ROLE_TYPE));
+                }
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function verify_phone(Request $request){
+            $data['title']                  = trans('website.W0460');
+            $data['subheader']              = false;
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.profile.verify-phone';
+            $data['steps']                  = ['personal','industry-skills','availability','curriculum-vitae','verify-account'];
+
+            $data['country_phone_codes']    = \Cache::get('country_phone_codes');
+            $data['states']                 = \Cache::get('states');            
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['skip_url']               = url(sprintf("%s/find-jobs",TALENT_ROLE_TYPE));
+            return view('talent.profile.index')->with($data);
+        }
+
+        public function _verify_phone(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'mobile'                    => array_merge([Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],validation('phone_number')),
+                'country_code'              => array_merge(['required'],validation('country_code')),                
+            ],[
+                'country_code.string'       => trans('general.M0074'),
+                'country_code.required'     => trans('general.M0164'),
+                'mobile.required'           => trans('general.M0030'),
+                'mobile.regex'              => trans('general.M0031'),
+                'mobile.string'             => trans('general.M0031'),
+                'mobile.min'                => trans('general.M0032'),
+                'mobile.max'                => trans('general.M0033'),
+                'mobile.unique'             => trans('general.M0197'),
+            ]);
+
+            if($validator->passes()){   
+                $created_date               = date('Y-m-d H:i:s');
+                $otp_shuffle                = \Cache::get('configuration')['otp_shuffle'];
+                $otp_length                 = \Cache::get('configuration')['otp_length'];
+                $otp_expired                = \Cache::get('configuration')['otp_expired'];
+
+                $otp_password               = substr(str_shuffle($otp_shuffle), 2, $otp_length);
+                $otp_message                = sprintf(\Cache::get('configuration')['otp_message'],$otp_password);
+                $otp_expired                = date('Y-m-d H:i:s',strtotime("+".$otp_expired." minutes", strtotime($created_date)));
+
+                $isUpdated = \Models\Talents::change(
+                    \Auth::user()->id_user,[
+                        'country_code'          => $request->country_code, 
+                        'mobile'                => $request->mobile, 
+                        'otp_password'          => $otp_password,
+                        'otp_created'           => $created_date,
+                        'otp_expired'           => $otp_expired,
+                        'is_mobile_verified'    => DEFAULT_NO_VALUE,
+                        'updated'               => date('Y-m-d H:i:s')
+                    ]
+                );
+
+                try{
+                    $response = \Twilio::message(sprintf("%s%s",$request->country_code,$request->mobile), $otp_message);
+                    $this->status = true;
+                    $this->message = $this->message  = sprintf(ALERT_SUCCESS,sprintf(str_replace('\n','',trans('general.M0129')),$request->mobile));
+                    $this->jsondata = [
+                        'mobile' => $request->mobile,
+                        'country_code' => $request->country_code
+                    ];
+                    
+                    if($request->step_type == 'edit'){
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => \Auth::user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'talent-update-verify-phone',
+                            'reference_type'    => 'users',
+                            'reference_id'      => \Auth::user()->id_user
+                        ]));
+                        $this->redirect = url(sprintf("%s/profile/edit/verify-account/otp",TALENT_ROLE_TYPE));
+                    }else{
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => \Auth::user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'talent-verify-phone',
+                            'reference_type'    => 'users',
+                            'reference_id'      => \Auth::user()->id_user
+                        ]));                        
+                        $this->redirect = url(sprintf("%s/profile/verify-otp",TALENT_ROLE_TYPE));
+                    }
+
+                    \Models\Listings::twilio_response([
+                        'user_id' => \Auth::user()->id_user,
+                        'twilio_response_json' => json_encode($response->client->last_response),
+                        'created' => $created_date
+                    ]);
+                }catch ( \Services_Twilio_RestException $e ) {
+                    $this->message = trans('general.M0128');
+                    \Models\Listings::twilio_response([
+                        'user_id' => \Auth::user()->id_user,
+                        'twilio_response_json' => json_encode(['body' => $e->getMessage()]),
+                        'created' => $created_date
+                    ]);                    
+                    $this->jsondata = (object) ['mobile_error' => $e->getMessage()];
+                }                
+            }else{
+                $errors = json_decode(json_encode(___error_sanatizer($validator->errors())),true);
+
+                if(!empty($errors['country_code'][0])){
+                    $errors['mobile'][0] = $errors['country_code'][0];
+                    unset($errors['country_code']);
+                }
+
+                $this->jsondata = (object)$errors;
+            }
+            
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);          
+        }
+
+        public function verify_otp(Request $request){
+            $data['title']                  = trans('website.W0460');
+            $data['subheader']              = false;
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.profile.verify-otp';
+            $data['steps']                  = ['personal','industry-skills','availability','curriculum-vitae','verify-account'];
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['edit_url']               = url(sprintf("%s/profile/phone",TALENT_ROLE_TYPE));
+            $data['skip_url']               = url(sprintf("%s/profile/verify-account",TALENT_ROLE_TYPE));
+            return view('talent.profile.index')->with($data);
+        }
+
+        public function _verify_otp(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'otp_password'              => ['required']
+            ],[
+                'otp_password.required'     => trans('general.M0130'),
+            ]);
+
+            if($validator->passes()){
+                $result = (array) \Models\Talents::findById(\Auth::user()->id_user,['otp_password']);
+
+                if($result['otp_password'] == $request->otp_password){
+                    $created_date               = date('Y-m-d H:i:s');
+                    $otp_shuffle                = \Cache::get('configuration')['otp_shuffle'];
+                    $otp_length                 = \Cache::get('configuration')['otp_length'];
+                    $otp_expired                = \Cache::get('configuration')['otp_expired'];
+
+                    $otp_password               = substr(str_shuffle($otp_shuffle), 2, $otp_length);
+                    $otp_expired                = date('Y-m-d H:i:s',strtotime("+".$otp_expired." minutes", strtotime($created_date)));
+                    if($request->step_type == 'edit'){
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => \Auth::user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'talent-update-verify-otp',
+                            'reference_type'    => 'users',
+                            'reference_id'      => \Auth::user()->id_user
+                        ]));                         
+                        $this->redirect = url(sprintf("%s/profile/edit/verify-account",TALENT_ROLE_TYPE));
+                    }else{
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => \Auth::user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'talent-verify-otp',
+                            'reference_type'    => 'users',
+                            'reference_id'      => \Auth::user()->id_user
+                        ]));                         
+                        $this->redirect = url(sprintf("%s/profile/verify-account",TALENT_ROLE_TYPE));
+                    }
+                    $this->message = sprintf(ALERT_SUCCESS,trans('general.M0132'));
+                    $this->status = true;
+                    $isUpdated = \Models\Talents::change(
+                        \Auth::user()->id_user,[
+                            'otp_password'          => $otp_password,
+                            'otp_created'           => $created_date,
+                            'otp_expired'           => $otp_expired,
+                            'is_mobile_verified'    => DEFAULT_YES_VALUE,
+                            'updated'               => date('Y-m-d H:i:s')
+                        ]
+                    );
+                }else{
+                    $this->jsondata = (object)['otp_password' => trans('general.M0131')];
+                }
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => (object)$this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);              
+        }
+
+        public function step_four(){
+            $data['title']                  = trans('website.W0458');
+            $data['subheader']              = false;
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.profile.availability';
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['steps']                  = ['personal','industry-skills','curriculum-vitae','availability'];
+            $data['skip_url']               = url(sprintf("%s/find-jobs",TALENT_ROLE_TYPE));
+            $data['selected_date']          = date('Y-m-d H:i:s');
+
+            return view('talent.profile.index')->with($data);
+        } 
+
+        public function _step_four_set_availability(Request $request){
+            if(!empty($request->availability_date)){
+                $request->request->add(['availability_date' => ___convert_date($request->availability_date)]);
+            }else if(!empty($request->year) && !empty($request->month) && !empty($request->day)){
+                $request->request->add(['availability_date' => sprintf('%s-%s-%s',$request->year,$request->month,$request->day)]);
+            }
+
+            if(!empty($request->from_time_hour) && !empty($request->from_time_minute) && !empty($request->from_time_meridian)){
+                $request->request->add(['from_time' => date('H:i:s',strtotime(sprintf('%s:%s %s',$request->from_time_hour,$request->from_time_minute,$request->from_time_meridian)))]);
+            }
+
+            if(!empty($request->to_time_hour) && !empty($request->to_time_minute) && !empty($request->to_time_meridian)){
+                $request->request->add(['to_time' => date('H:i:s',strtotime(sprintf('%s:%s %s',$request->to_time_hour,$request->to_time_minute,$request->to_time_meridian)))]);
+            }
+
+            if(!empty($request->deadline)){
+                $request->request->add(['deadline' => date('Y-m-d',strtotime(str_replace('/', '-', $request->deadline)))]);
+            }
+
+            $validate = \Validator::make($request->all(), [
+                "availability_type"             => array_merge(['required']),
+                "availability_date"             => array_merge(['required'],validation('birthday')),
+                "from_time"                     => array_merge(['required'],validation('time')),
+                "to_time"                       => array_merge(['required','different:from_time','one_hour_difference:from_time','invalid_time_range:from_time'],validation('time')),
+                "repeat"                        => validation('repeat'),
+                "deadline"                      => array_merge(['required'],validation('birthday')),
+            ],[
+                'availability_type.required'    => trans('general.M0473'),
+                'availability_date.required'    => trans('general.M0155'),
+                'availability_date.string'      => trans('general.M0156'),
+                'availability_date.regex'       => trans('general.M0156'),
+                "from_time.required"            => trans('general.M0159'),
+                "from_time.string"              => trans('general.M0160'),
+                "from_time.regex"               => trans('general.M0160'),
+                "to_time.required"              => trans('general.M0161'),
+                "to_time.string"                => trans('general.M0162'),
+                "to_time.regex"                 => trans('general.M0162'),
+                "to_time.different"             => trans('general.M0222'),
+                "to_time.one_hour_difference"   => trans('general.M0223'),
+                "to_time.invalid_time_range"    => trans('general.M0224'),
+                "repeat.string"                 => trans('general.M0163'),
+                'deadline.required'             => trans('general.M0157'),
+                'deadline.string'               => trans('general.M0158'),
+                'deadline.regex'                => trans('general.M0158'),
+            ]);
+
+            $validate->after(function ($validate) use($request) {
+                if($request->repeat == 'weekly') {
+                    if(empty($request->availability_day)){
+                        $validate->errors()->add('availability_day[]', trans('general.M0170'));
+                    }else if(!is_array($request->availability_day)){
+                        $validate->errors()->add('availability_day[]', trans('general.M0171'));
+                    }
+                }
+            });
+            
+            if($validate->passes()){
+                $valid_employment_types = employment_types('talent_personal_information','keys');
+
+                if(!in_array($request->repeat, $valid_employment_types)){
+                    $this->message = trans('general.M0169');
+                }else{
+                    if($request->deadline < $request->availability_date){
+                        $this->jsondata = (object)[
+                            'deadline' => trans('general.M0173'),
+                        ];  
+                    }else{
+                        $availability_id = NULL;
+                        
+                        if(!empty($request->id_availability)){
+                            $availability_id = $request->id_availability;
+                        }
+
+                        if($request->availability_type == 'unavailable'){
+                            $isAvailable = true;
+                        }
+                        else{
+                            $isAvailable = \Models\Talents::check_availability(\Auth::user()->id_user,$request->availability_date,$request->from_time,$request->to_time,$request->deadline,$request->availability_day,$request->repeat,$availability_id);
+                        }
+                        
+                        if($isAvailable === true){
+                            $table_talent_availability = DB::table('talent_availability');
+                            $max_repeat_group = (int)$table_talent_availability->max('repeat_group')+1;
+                            $data = [];
+                            if($request->repeat == 'daily' || $request->repeat == 'monthly'){
+                                $begin = new \DateTime( $request->availability_date );
+
+                                $endDate = date('Y-m-d', strtotime("+1 day", strtotime($request->deadline)));
+
+                                $end = new \DateTime( $endDate );
+
+                                if($request->repeat == 'daily'){
+                                    $repeat_type = '1 day';
+                                }
+                                elseif($request->repeat == 'monthly'){
+                                    $repeat_type = '1 month';
+                                }
+                                $interval = \DateInterval::createFromDateString($repeat_type);
+                                $period = new \DatePeriod($begin, $interval, $end);
+
+                                foreach ( $period as $dt ){
+                                    $data[] = [
+                                        'user_id' => \Auth::user()->id_user,
+                                        'availability_type' => $request->availability_type,
+                                        'availability_date' => $dt->format( "Y-m-d" ),
+                                        'from_time' => $request->from_time,
+                                        'to_time' => $request->to_time,
+                                        'repeat' => $request->repeat,
+                                        'deadline' => $request->deadline,
+                                        'repeat_group' => $availability_id ? $availability_id : $max_repeat_group,
+                                        'created' => date('Y-m-d H:i:s'),
+                                        'updated' => date('Y-m-d H:i:s'),
+                                    ];
+                                }
+                            }
+                            elseif($request->repeat == 'weekly'){
+                                $date = ___days_between($request->availability_date, $request->deadline, $request->availability_day);
+
+                                foreach ($date as $d) {
+                                    $data[] = [
+                                        'user_id' => \Auth::user()->id_user,
+                                        'availability_type' => $request->availability_type,
+                                        'availability_date' => $d,
+                                        'from_time' => $request->from_time,
+                                        'to_time' => $request->to_time,
+                                        'repeat' => $request->repeat,
+                                        'deadline' => $request->deadline,
+                                        'repeat_group' => $availability_id ? $availability_id : $max_repeat_group,
+                                        'availability_day' => date('l', strtotime($d)),
+                                        'created' => date('Y-m-d H:i:s'),
+                                        'updated' => date('Y-m-d H:i:s'),
+                                    ];
+                                }
+                            }
+
+                            if(!empty($data)){
+                                $isInserted = \Models\Talents::setTalentAvailability(\Auth::user()->id_user, $max_repeat_group, $data, $availability_id, $request->availability_date, $request->deadline, $request->availability_type);
+                            }
+
+                            /* RECORDING ACTIVITY LOG */
+                            event(new \App\Events\Activity([
+                                'user_id'           => \Auth::user()->id_user,
+                                'user_type'         => 'talent',
+                                'action'            => 'talent-set-availability',
+                                'reference_type'    => 'users',
+                                'reference_id'      => \Auth::user()->id_user
+                            ]));
+
+                            if(!empty($isInserted)){
+                                $this->status = true;
+                                $this->message = trans('general.M0000');
+                                $this->jsondata = ___availability_list($isInserted);
+                            }
+
+                        }else{
+                            $this->jsondata = (object)[];
+                            $this->message = sprintf(ALERT_DANGER,trans('general.M0172'));
+                        }
+                    }
+                }
+            }else{
+                $this->jsondata = (object)___error_sanatizer($validate->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);  
+        } 
+
+        public function _step_four_edit_availability(Request $request){
+            $availability = \Models\Talents::get_availability(\Auth::user()->id_user,$request->id_availability);
+            
+            if(!empty($availability)){
+                $this->jsondata = [
+                    'id_availability'       => $availability[0]['repeat_group'],
+                    'year'                  => date('Y',strtotime($availability[0]['availability_date'])),
+                    'month'                 => date('m',strtotime($availability[0]['availability_date'])),
+                    'month_txt'             => date('M',strtotime($availability[0]['availability_date'])),
+                    'day'                   => date('d',strtotime($availability[0]['availability_date'])),
+                    'from_time_hour'        => date('H',strtotime($availability[0]['from_time'])),
+                    'from_time_minute'      => date('i',strtotime($availability[0]['from_time'])),
+                    'from_time_meridian'    => date('A',strtotime($availability[0]['from_time'])),
+                    'to_time_hour'          => date('H',strtotime($availability[0]['to_time'])),
+                    'to_time_minute'        => date('i',strtotime($availability[0]['to_time'])),
+                    'to_time_meridian'      => date('A',strtotime($availability[0]['to_time'])),
+                    'repeat'                => $availability[0]['repeat'],
+                    'deadline'              => $availability[0]['deadline'],
+                    'selected_date'         => ___d($availability[0]['availability_date']),
+                    'availability_day'      => $availability[0]['availability_day'],
+                    'availability_type'      => $availability[0]['availability_type'],
+                ];
+            }
+
+            return response()->json([
+                'status'    => $this->status,
+                'data'      => $this->jsondata,
+                'message'   => $this->message
+            ]);
+        } 
+
+        public function _step_four_delete_availability(Request $request){
+            if(empty($request->id_availability)){
+                $this->message = sprintf(ALERT_DANGER,sprintf(trans(sprintf('general.%s',$this->message)),'id_availability'));
+            }else{ 
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-delete-availability',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));   
+                $isInserted = \Models\Talents::delete_availability($request->user()->id_user,$request->id_availability);
+                $this->message = sprintf(ALERT_SUCCESS,trans('general.M0000'));
+                $this->status = true;
+            }
+            
+            return response()->json([
+                'status' => $this->status,
+                'message' => $this->message
+            ]);
+        }
+
+        public function step_five(){
+            $data['title']                  = trans('website.W0459');
+            $data['subheader']              = false;
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.profile.verify-account';
+            
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['steps']                  = ['personal','industry-skills','availability','curriculum-vitae','verify-account'];
+            $data['skip_url']               = url(sprintf("%s/find-jobs",TALENT_ROLE_TYPE));
+            
+            return view('talent.profile.index')->with($data);
+        }
+
+        public function index(){
+            $data['header']             = 'innerheader';
+            $data['footer']             = 'innerfooter';
+            $data['phone_codes']        = array_flatten(\Cache::get('phone_codes'));
+            $data['country_name']       = array_flatten(\Cache::get('country_name'));
+            $data['state_name']         = array_flatten(\Cache::get('state_name'));
+            $data['industries_name']    = array_flatten(\Cache::get('industries_name'));
+            $data['degree_name']        = array_flatten(\Cache::get('degree_name'));
+            return view('talent.dashboard')->with($data);
+        }
+
+        public function view_profile(){
+            $data['title']                  = trans('website.W0461');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.viewprofile.view';
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['submenu']                = 'profile';
+            $data['country_phone_codes']    = \Cache::get('country_phone_codes');
+            $data['countries']              = \Cache::get('countries');
+            $data['states']                 = \Cache::get('states');
+            $data['degree_name']            = \Cache::get('degree_name');
+            $data['education_list']         = \Models\Talents::educations(\Auth::user()->id_user);
+            $data['work_experience_list']   = \Models\Talents::work_experiences(\Auth::user()->id_user);
+            $data['get_files']              = \Models\Talents::get_file(sprintf("user_id = %s AND type = 'certificates' ", \Auth::user()->id_user));
+
+            $data['interview_url']          = url(sprintf("%s/interview",TALENT_ROLE_TYPE));
+            $updateArr = array(
+                'is_interview_popup_appeared' => 'yes'
+                );
+            \Models\Talents::change(\Auth::user()->id_user, $updateArr);
+
+            $datetime2 = date_create(date('Y-m-d', strtotime($data['user']['created'])));
+            $datetime1 = date_create(date('Y-m-d'));
+            $interval = date_diff($datetime1, $datetime2);
+            $days_interval = $interval->format('%a');
+            $interview_interval = \Cache::get('configuration')['interview_interval'];
+            $data['remaining_day'] = $interview_interval - $days_interval;
+
+            $talentAnswerExist = Interview::talentAnswerExist(\Auth::user()->id_user);
+
+            if(!empty($talentAnswerExist)){
+                $data['talentAnswerExist'] = 1;
+            }
+            else{
+                $data['talentAnswerExist'] = 0;
+            }
+
+            return view('talent.viewprofile.index')->with($data);
+        }
+
+        public function view_portfolio(){
+            $data['title']                  = trans('website.W0462');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.portfolio.view';
+
+            $data['get_file']               = \Models\Portfolio::get_portfolio(\Auth::user()->id_user); 
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['submenu']                = 'portfolio';
+            return view('talent.viewprofile.index')->with($data);
+        }
+        
+        public function addportfolio(){
+            $data['title']                  = trans('website.W0463');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.portfolio.add';
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['submenu']                = 'portfolio';
+            return view('talent.viewprofile.index')->with($data);
+        }
+
+        public function editportfolio(Request $request){
+            if(!empty($request->portfolio_id)){
+                $portfolio_id = ___decrypt($request->portfolio_id);
+            }else{
+                return redirect(url(sprintf('%s/portfolio',TALENT_ROLE_TYPE)));
+            }
+            $data['title']                  = trans('website.W0464');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.portfolio.edit';
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['portfolio']              = \Models\Portfolio::get_portfolio(\Auth::user()->id_user," id_portfolio = {$portfolio_id} ",'single');
+            $data['submenu']                = 'portfolio';
+            return view('talent.viewprofile.index')->with($data);
+        }
+
+        public function portfolio_image(Request $request){
+            $validator = \Validator::make($request->all(), [
+                "file"                      => array_merge(validation('document'),['required']),
+            ],[
+                'file.validate_file_type'   => trans('general.M0119'),
+            ]);
+            
+            if($validator->passes()){
+                $folder = 'uploads/portfolio/';
+                $uploaded_file = upload_file($request,'file',$folder,true);
+                $data = [
+                    'user_id' => $request->user()->id_user,
+                    'record_id' => "",
+                    'reference' => 'users',
+                    'filename' => $uploaded_file['filename'],
+                    'extension' => $uploaded_file['extension'],
+                    'folder' => $folder,
+                    'type' => 'portfolio',
+                    'size' => $uploaded_file['size'],
+                    'is_default' => DEFAULT_NO_VALUE,
+                    'created' => date('Y-m-d H:i:s'),
+                    'updated' => date('Y-m-d H:i:s'),
+                ];
+                $isInserted = \Models\Talents::create_file($data,true,true);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-add-portfolio-image',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));
+
+                if(!empty($isInserted)){
+                    if(!empty($isInserted['folder'])){
+                        $isInserted['file_url'] = url(sprintf("%s/%s",$isInserted['folder'],$isInserted['filename']));
+                    }
+                    
+                    $url_delete = sprintf(
+                        url('ajax/%s?id_file=%s'),
+                        DELETE_DOCUMENT,
+                        $isInserted['id_file']
+                    );
+
+                    $this->jsondata = sprintf(PORTFOLIO_TEMPLATE,
+                        $isInserted['id_file'],
+                        asset(sprintf("%s%s",$isInserted['folder'],$isInserted['filename'])),
+                        asset(sprintf("%s%s%s",$isInserted['folder'],'thumbnail/',$isInserted['filename'])),
+                        $url_delete,
+                        $isInserted['id_file'],
+                        trans('website.W0454'),
+                        asset('/'),
+                        $isInserted['id_file']
+                    );
+                    
+                    $this->status = true;
+                    $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+                }
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function __addportfolio(Request $request){
+
+            $validator = \Validator::make($request->all(), [
+                "portfolio"        => validation('portfolio'),
+                "description"      => validation('portfolio_description'),
+                "portfolio_docs"   => ['required'],
+            ],[
+                'portfolio.required'        => trans('general.M0312'),
+                'portfolio.string'          => trans('general.M0304'),
+                'portfolio.regex'           => trans('general.M0304'),
+                'portfolio.max'             => trans('general.M0305'),
+                'portfolio.min'             => trans('general.M0306'),
+                'description.required'      => trans('general.M0303'),
+                'description.string'        => trans('general.M0307'),
+                'description.regex'         => trans('general.M0307'),
+                'description.max'           => trans('general.M0308'),
+                'description.min'           => trans('general.M0309'),
+                'portfolio_docs.required'   => trans('general.M0310'),
+            ]);
+
+            if($validator->passes()){
+                $insertArr = [
+                    'user_id' => \Auth::user()->id_user,
+                    'portfolio' => $request->portfolio,
+                    'description' => $request->description,
+                    'created' => date('Y-m-d H:i:s'),
+                    'updated' => date('Y-m-d H:i:s')
+                ];
+
+                if(!empty($request->portfolio_id)){
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-update-portfolio',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));
+                    $portfolio_id = \Models\Portfolio::save_portfolio($insertArr,$request->portfolio_id);
+                }else{
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-add-portfolio',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));
+
+                    $portfolio_id = \Models\Portfolio::save_portfolio($insertArr);
+                }
+                
+                if(!empty($portfolio_id)){
+                    $file_ids = (array) explode(",", $request->portfolio_docs);
+                    \Models\File::update_file($file_ids,['record_id' => $portfolio_id]);
+                    \Models\Talents::delete_file(sprintf(" record_id = 0 AND type = 'portfolio' AND  user_id = %s", \Auth::user()->id_user));
+
+                    if(!empty($request->removed_portfolio)){
+                        \Models\Talents::delete_file(sprintf(" id_file IN(%s) AND  user_id = %s",$request->removed_portfolio,\Auth::user()->id_user));                        
+                    }
+                }
+                $this->redirect = url(sprintf('%s/profile/portfolio',TALENT_ROLE_TYPE));
+                $this->status = true;
+                $this->message = trans("website.W0323");
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function set_availability(Request $request, Builder $htmlBuilder){
+            $data['title']                  = trans('website.W0173');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.viewprofile.setavailability';
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['submenu']                = 'availabilities';
+            $data['selected_date']          = date('Y-m-d H:i:s');
+            $data['skip_url']               = url(sprintf("%s/profile",TALENT_ROLE_TYPE));
+            
+            return view('talent.viewprofile.index')->with($data);
+        }
+
+        public function view_reviews(Request $request, Builder $htmlBuilder){
+            $data['title']                  = trans('website.W0465');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.viewprofile.view-reviews';
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['submenu']                = 'reviews';
+
+            if ($request->ajax()) {
+                $type       = (!empty($request->type))?$request->type:'receiver';
+                $reviews    = \Models\Reviews::listing($type,$data['user']['id_user']);
+
+                return \Datatables::of($reviews)
+                ->editColumn('review',function($item){
+                    $html ='<div class="review-content-block clearfix">';
+                        $html .='<div class="review-content-display"><img src="'.asset($item->receiver_picture).'" /></div>';
+                        $html .='<div class="review-content-info">';                            
+                            $html .='<h4>'.$item->receiver_name.'</h4>';
+                            $html .='<div class="rating-review"><span class="rating-block">'.___ratingstar($item->review_average).'</span></div>';
+                        $html .='</div>';
+                    $html .='</div>'; 
+                    $html .='<div class="review-desc"><p>'.$item->description.'</p></div>';
+                    return $html;
+                })
+                ->make(true);
+            }
+
+            $data['html'] = $htmlBuilder
+            ->parameters(["dom" => "<'row' <'col-md-6 table-heading'> <'col-md-3'> <'col-md-3 filter-option'>> rt <'row'<'col-md-6'><'col-md-6'p> >"])
+            ->addColumn(['data' => 'review', 'name' => 'review', 'title' => '&nbsp;', 'width' => '0', 'searchable' => false, 'orderable' => false]);
+
+            return view('talent.viewprofile.index')->with($data);
+        }
+
+        public function view_notifications(){
+            $data['title']                  = trans('website.W0466');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.viewprofile.view-notifications';
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['submenu']                = 'notifications';
+            return view('talent.viewprofile.index')->with($data);
+        }
+
+        public function edit_step_one(){
+            $data['title']                  = trans('website.W0467');
+            $data['subheader']              = 'talent.includes.top-menu';;
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.viewprofile.personal';
+            
+            $data['submenu']                = 'profile';
+            $data['tabmenu']                = 'personal';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['country_phone_codes']    = \Cache::get('country_phone_codes');
+            $data['countries']              = \Cache::get('countries');
+            $data['states']                 = \Cache::get('states');
+            $data['skip_url']               = url(sprintf("%s/profile",TALENT_ROLE_TYPE));
+            
+            return view('talent.viewprofile.index')->with($data);
+        }        
+
+        public function edit_step_two(){
+            $data['title']                  = trans('website.W0468');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.viewprofile.industry-skills';
+
+            $data['submenu']                = 'profile';
+            $data['tabmenu']                = 'industry_skills';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['industries_name']        = \Cache::get('industries_name');
+            $data['subindustries_name']     = \Cache::get('subindustries_name');
+            $skills = $data['user']['skills'];
+            $skills = (array)\App\Lib\Dash::combine($skills,
+                '{n}',
+                '{n}'
+            );
+            $data['skills']                 = array_merge($skills,\Cache::get('skills'));
+            $data['certificates']           = \Cache::get('certificates');
+            $data['skip_url']               = url(sprintf("%s/profile",TALENT_ROLE_TYPE));
+            
+            return view('talent.viewprofile.index')->with($data);
+        }
+
+        public function edit_step_three(){
+            $data['title']                  = trans('website.W0469');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.viewprofile.curriculum-vitae';
+            
+            $data['submenu']                = 'profile';
+            $data['tabmenu']                = 'education';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['countries']              = \Cache::get('countries');
+            $data['states']                 = \Cache::get('states');
+            $data['colleges']               = \Cache::get('colleges');
+            $data['degree_name']            = \Cache::get('degree_name');
+            $data['education_list']         = \Models\Talents::educations(\Auth::user()->id_user);
+            $data['get_files']              = \Models\Talents::get_file(sprintf("user_id = %s AND type = 'certificates' ", \Auth::user()->id_user));
+            $data['skip_url']               = url(sprintf("%s/profile",TALENT_ROLE_TYPE));
+            return view('talent.viewprofile.index')->with($data);
+        }
+
+        public function edit_step_three_work(){
+            $data['title']                  = trans('website.W0470');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.viewprofile.work-experience';
+            
+            $data['submenu']                = 'profile';
+            $data['tabmenu']                = 'work_experience';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['countries']              = \Cache::get('countries');
+            $data['states']                 = \Cache::get('states');
+            $data['degree_name']            = \Cache::get('degree_name');
+            $data['work_experience_list']   = \Models\Talents::work_experiences(\Auth::user()->id_user);
+            $data['get_files']              = \Models\Talents::get_file(sprintf("user_id = %s AND type = 'certificates' ", \Auth::user()->id_user));
+            
+            $data['skip_url']               = url(sprintf("%s/profile",TALENT_ROLE_TYPE));
+            return view('talent.viewprofile.index')->with($data);
+        }
+
+        public function edit_step_five(){
+            $data['title']                  = trans('website.W0459');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            
+            $data['submenu']                = 'profile';
+            $data['tabmenu']                = 'verify_account';
+            $data['view']                   = 'talent.viewprofile.verify-account';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['skip_url']               = url(sprintf("%s/profile",TALENT_ROLE_TYPE));
+            
+
+            return view('talent.profile.index')->with($data);
+        }
+
+        public function edit_verify_phone(Request $request){
+            $data['title']                  = trans('website.W0460');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.viewprofile.verify-phone';
+            
+            $data['submenu']                = 'profile';
+            $data['tabmenu']                = 'verify_account';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['country_phone_codes']    = \Cache::get('country_phone_codes');
+            $data['states']                 = \Cache::get('states');
+            $data['skip_url']               = url(sprintf("%s/profile/edit/verify-account",TALENT_ROLE_TYPE));
+            return view('talent.viewprofile.index')->with($data);
+        }
+
+        public function _edit_verify_phone(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'mobile'                    => array_merge([Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],validation('phone_number')),
+                'country_code'              => array_merge(['required'],validation('country_code')),                
+            ],[
+                'country_code.string'       => trans('general.M0074'),
+                'country_code.required'     => trans('general.M0164'),
+                'mobile.required'           => trans('general.M0030'),
+                'mobile.regex'              => trans('general.M0031'),
+                'mobile.string'             => trans('general.M0031'),
+                'mobile.min'                => trans('general.M0032'),
+                'mobile.max'                => trans('general.M0033'),
+                'mobile.unique'             => trans('general.M0197'),
+            ]);
+            if($validator->passes()){
+                $created_date               = date('Y-m-d H:i:s');
+                $otp_shuffle                = \Cache::get('configuration')['otp_shuffle'];
+                $otp_length                 = \Cache::get('configuration')['otp_length'];
+                $otp_expired                = \Cache::get('configuration')['otp_expired'];
+
+                $otp_password               = substr(str_shuffle($otp_shuffle), 2, $otp_length);
+                $otp_message                = sprintf(\Cache::get('configuration')['otp_message'],$otp_password);
+                $otp_expired                = date('Y-m-d H:i:s',strtotime("+".$otp_expired." minutes", strtotime($created_date)));
+
+                $isUpdated = \Models\Talents::change(
+                \Auth::user()->id_user,[
+                        'country_code'          => $request->country_code, 
+                        'mobile'                => $request->mobile, 
+                        'otp_password'          => $otp_password,
+                        'otp_created'           => $created_date,
+                        'otp_expired'           => $otp_expired,
+                        'is_mobile_verified'    => DEFAULT_NO_VALUE,
+                        'updated'               => date('Y-m-d H:i:s')
+                    ]
+                );
+
+                try{
+                    $response = \Twilio::message(sprintf("%s%s",$request->country_code,$request->mobile), $otp_message);
+                    $this->status = true;
+                    $this->message = $this->message  = sprintf(ALERT_SUCCESS,sprintf(str_replace('\n','',trans('general.M0129')),$request->mobile));
+                    $this->jsondata = [
+                        'mobile' => $request->mobile,
+                        'country_code' => $request->country_code
+                    ];
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-update-verify-phone',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));
+                    $this->redirect = url(sprintf("%s/connect/verify-otp",TALENT_ROLE_TYPE));
+
+                    \Models\Listings::twilio_response([
+                        'user_id' => \Auth::user()->id_user,
+                        'twilio_response_json' => json_encode($response->client->last_response),
+                        'created' => $created_date
+                    ]);
+                }catch ( \Services_Twilio_RestException $e ) {
+                    $this->message = trans('general.M0128');
+                    \Models\Listings::twilio_response([
+                        'user_id' => \Auth::user()->id_user,
+                        'twilio_response_json' => json_encode(['body' => $e->getMessage()]),
+                        'created' => $created_date
+                    ]);
+                }                
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+            
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);          
+        }
+
+        public function edit_verify_otp(Request $request){
+            $data['title']                  = trans('website.W0460');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.viewprofile.verify-otp';
+            
+            $data['submenu']                = 'profile';
+            $data['tabmenu']                = 'verify_account';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['edit_url']               = url(sprintf("%s/profile/edit/verify-account/phone",TALENT_ROLE_TYPE));
+            $data['skip_url']               = url(sprintf("%s/profile/edit/verify-account",TALENT_ROLE_TYPE));
+            return view('talent.profile.index')->with($data);
+        }
+
+        public function _edit_verify_otp(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'otp_password'              => ['required']
+            ],[
+                'otp_password.required'     => trans('general.M0130'),
+            ]);
+
+            if($validator->passes()){
+                $result = (array) \Models\Talents::findById(\Auth::user()->id_user,['otp_password']);
+
+                if($result['otp_password'] == $request->otp_password){
+                    $created_date               = date('Y-m-d H:i:s');
+                    $otp_shuffle                = \Cache::get('configuration')['otp_shuffle'];
+                    $otp_length                 = \Cache::get('configuration')['otp_length'];
+                    $otp_expired                = \Cache::get('configuration')['otp_expired'];
+
+                    $otp_password               = substr(str_shuffle($otp_shuffle), 2, $otp_length);
+                    $otp_expired                = date('Y-m-d H:i:s',strtotime("+".$otp_expired." minutes", strtotime($created_date)));
+                    $this->redirect = url(sprintf("%s/profile/verify-account",TALENT_ROLE_TYPE));
+                    $this->message = sprintf(ALERT_SUCCESS,trans('general.M0132'));
+                    $this->status = true;
+                    $isUpdated = \Models\Talents::change(
+                        \Auth::user()->id_user,[
+                            'otp_password'          => $otp_password,
+                            'otp_created'           => $created_date,
+                            'otp_expired'           => $otp_expired,
+                            'is_mobile_verified'    => DEFAULT_YES_VALUE,
+                            'updated'               => date('Y-m-d H:i:s')
+                        ]
+                    );
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-update-verify-otp',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));                    
+                }else{
+                    $this->message = sprintf(ALERT_DANGER,trans('general.M0131'));
+                }
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => (object)$this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);              
+        }
+
+        public function find_jobs(){
+            $data['title']                  = trans('website.W0471');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.job.find-jobs';
+            
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['industries_name']        = \Cache::get('industries_name');
+            $data['subindustries_name']     = \Cache::get('subindustries_name');
+            $data['skills']                 = \Cache::get('skills');
+            $data['type']                   = 'my_jobs';
+            $data['search']                 = (!empty($request->search))?$request->search:"";
+            
+            return view('talent.job.index')->with($data);
+        }
+
+        public function _find_jobs(Request $request){
+            $this->status   = true;
+            
+            $load_more      = "";
+            $search         = "";
+            $html           = "";
+            $page           = (!empty($request->page))?$request->page:1;
+            $sort           = "";
+            if($request->sortby_filter){
+                $sort       = ___decodefilter($request->sortby_filter);
+            }
+
+            if(!empty($request->employment_type_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.employment IN ('%s') ",implode("','", $request->employment_type_filter)); 
+            }
+            
+            if(!empty($request->expertise_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.expertise IN ('%s') ", implode("','",$request->expertise_filter)); 
+            }
+
+            if(!empty($request->industry_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.industry = {$request->industry_filter} "); 
+            }
+
+            if(!empty($request->subindustry_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.subindustry = {$request->subindustry_filter} "); 
+            }
+
+            if(!empty($request->skills_filter)){
+                $search .= sprintf(" AND {$this->prefix}skills.skill IN ('%s') ",implode("','", $request->skills_filter)); 
+            }
+            
+            if(!empty($request->city_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.location IN (%s) ",implode(",", $request->city_filter));  
+            }
+
+            if(!empty($request->location_filter)){
+                $search .= sprintf(\DB::Raw("
+                        AND (
+                            IF(
+                                ({$this->prefix}city.`{$this->language}` != ''),
+                                {$this->prefix}city.`{$this->language}`, 
+                                {$this->prefix}city.`en` 
+                            ) LIKE '%%%s%%'
+                        )"
+                    ),$request->location_filter
+                );  
+            }
+
+            if(!empty($request->startdate_filter)){
+                $search .= sprintf(" AND date({$this->prefix}projects.startdate) >= '%s' ",___convert_date($request->startdate_filter)); 
+            }
+
+            if(!empty($request->enddate_filter)){
+                $search .= sprintf(" AND date({$this->prefix}projects.enddate) <= '%s' ",___convert_date($request->enddate_filter)); 
+            }
+
+            /*$search .= sprintf(" AND (
+                (
+
+                    {$this->prefix}projects.price >= {$request->temporary_salary_low_filter} 
+                    AND 
+                    {$this->prefix}projects.price <= {$request->temporary_salary_high_filter} 
+                )
+                OR (
+                    {$this->prefix}projects.price >= {$request->permanent_salary_low_filter} 
+                    AND 
+                    {$this->prefix}projects.price <= {$request->permanent_salary_high_filter} 
+                )
+            )"); */
+
+
+            if(!empty($request->employment_type_filter) && (count($request->employment_type_filter) === 1) && in_array('fulltime', $request->employment_type_filter)){
+                $search .= sprintf(" AND (
+                    {$this->prefix}projects.price >= {$request->permanent_salary_low_filter} 
+                    AND 
+                    {$this->prefix}projects.price <= {$request->permanent_salary_high_filter} 
+                )");                 
+            }else {
+                $search .= sprintf(" AND (
+                    {$this->prefix}projects.price >= {$request->temporary_salary_low_filter} 
+                    AND 
+                    {$this->prefix}projects.price <= {$request->temporary_salary_high_filter} 
+                )"); 
+            }
+
+            if(!empty($request->search)){
+                $search .= " AND ({$this->prefix}projects.title LIKE '%".$request->search."%' OR {$this->prefix}projects.description LIKE '%".$request->search."%' OR {$this->prefix}projects.employment LIKE '%".$request->search."%' OR {$this->prefix}projects.price_type LIKE '%".$request->search."%' OR {$this->prefix}projects.expertise LIKE '%".$request->search."%' OR {$this->prefix}projects.budget_type LIKE '%".$request->search."%' )";
+            }
+
+            if(!empty(trim($request->__search))){
+                $search .= " AND ({$this->prefix}projects.title LIKE '%".$request->__search."%' OR {$this->prefix}projects.description LIKE '%".$request->__search."%' OR {$this->prefix}projects.employment LIKE '%".$request->__search."%' OR {$this->prefix}projects.price_type LIKE '%".$request->__search."%' OR {$this->prefix}projects.expertise LIKE '%".$request->__search."%' OR {$this->prefix}projects.budget_type LIKE '%".$request->__search."%' )";
+            }
+
+            $current_date   = date('Y-m-d');
+            $user_detail    = \Models\Talents::get_user($request->user(),true);
+
+            $where = " 
+                (
+                    (
+                        {$this->prefix}projects.project_status = 'pending'
+                        OR 
+                        {$this->prefix}projects.employment = 'fulltime'
+                    )
+                ) {$search}
+            ";
+            
+            $having = " (job_listing_status IS NULL) ";
+            $jobs =  \Models\Talents::find_job(\Auth::user(),'all',$where,$page,$sort,NULL,$having);
+            
+            if(!empty($jobs['result'])){
+                foreach($jobs['result'] as $keys => $value){
+                    $html .= '<div class="content-box">';
+                        $html .= '<div class="content-box-header clearfix">';
+                            $html .= '<img src="'.asset($value['company_logo']).'" alt="profile" class="job-profile-image"><div class="contentbox-header-title">';
+                                $html .= '<h3><a href="'.url(sprintf('%s/find-jobs/job-details?job_id=%s',TALENT_ROLE_TYPE,___encrypt($value['id_project']))).'">'.___ellipsis($value['title'],60).'</a></h3>';
+                                
+                                if($value['employment'] == 'fulltime'){
+                                    $html .= '<span class="label-green">'.$value['timeline'].'</span>';
+                                }
+                                
+                                $html .= '<span class="company-name">'.$value['company_name'].'</span>';
+                            $html .= '</div>';
+                            $html .= '<div class="contentbox-price-range">';
+                                $html .= '<span>';
+                                $html .= ___format($value['price'],true,true);
+
+                                if(!empty($value['price_max'])){
+                                    $html .= ' - '.___format($value['price_max'],true,true);
+                                }
+                                
+                                $html .= job_types_rates_postfix($value['employment']);
+                                $html .= '</span>';
+                                $html .= '<small>'.trans(sprintf('general.%s',$value['budget_type'])).'</small>';
+                            $html .= '</div>';
+                        $html .= '</div>';
+                        $html .= '<div class="contentbox-minutes clearfix">';
+                            $html .= '<div class="minutes-left">';
+                                $html .= '<span>'.trans('website.W0200').': <strong>'.$value['industry_name'].'</strong></span>';
+                                
+                                if(!empty($value['bonus'])){
+                                    $html .= '<span>'.trans('website.W0292').': <strong>'.___format($value['bonus'],true,true).'</strong></span>';
+                                }
+                                
+                                if(!empty($value['location_name'])){
+                                    $html .= '<span>'.trans('website.W0291').': <strong>'.$value['location_name'].'</strong></span>';
+                                }
+
+                                if(!empty($value['employment'] !== 'fulltime')){
+                                    $html .= '<span>'.trans('job.J0004').': <strong>'.$value['timeline'].'</strong></span>';
+                                }
+
+                                $html .= '<span>'.trans('website.W0293').': <strong>'.employment_types('post_job',$value['employment']).'</strong></span>';
+                                
+                                if(!empty($value['expertise'])){
+                                    $html .= '<span>'.trans('website.W0062').': <strong>'.expertise_levels($value['expertise']).'</strong></span>';
+                                }
+
+                            $html .= '</div>';
+                            $html .= '<div class="minutes-right">';
+                                $html .= '<span class="posted-time">'.$value['created'].'</span>';
+                            $html .= '</div>';
+                        $html .= '</div>';
+                        $html .= '<div class="content-box-description">';
+                            
+                            if(strlen($value['description']) > READ_MORE_LENGTH){
+                                $html .= '<p style="display:none;">'.substr($value['description'], 0,READ_MORE_LENGTH).'..</p>';
+                            }else{
+                                $html .= '<p style="display:none;">'.$value['description'].'</p>';
+                            }
+
+                            $html .= '<div class="checkbox">';
+                                if($value['is_saved'] == DEFAULT_YES_VALUE){
+                                    $html .= '<input type="checkbox" checked="checked" data-request="inline-ajax" data-url="'.url(sprintf('%s/jobs/save-job?job_id=%s',TALENT_ROLE_TYPE,$value['id_project'])).'" id="job-'.$value['id_project'].'">';
+                                }else{
+                                    $html .= '<input type="checkbox" data-request="inline-ajax" data-url="'.url(sprintf('%s/jobs/save-job?job_id=%s',TALENT_ROLE_TYPE,$value['id_project'])).'" id="job-'.$value['id_project'].'">';
+                                }
+                                $html .= '<label for="job-'.$value['id_project'].'"><span class="check"></span>Save Job</label>';
+                            $html .= '</div>';
+                        $html .= '</div>';
+                    $html .= '</div>';
+                }
+            }
+
+            if($jobs['total_filtered_result'] == DEFAULT_PAGING_LIMIT){
+                $load_more = '<button type="button" class="btn btn-default btn-block btn-lg" data-request="filter-paginate" data-url="'.url(sprintf('%s/_find-jobs',TALENT_ROLE_TYPE)).'" data-target="#job_listing" data-showing="#paginate_showing" data-loadmore="#loadmore" data-form="[role=\'find-jobs\']">'.trans('website.W0254').'</button>';
+            }else{
+                $load_more = '<button type="button" class="btn btn-default btn-block btn-lg hide" data-request="filter-paginate" data-url="'.url(sprintf('%s/_find-jobs',TALENT_ROLE_TYPE)).'" data-target="#job_listing" data-showing="#paginate_showing" data-loadmore="#loadmore" data-form="[role=\'find-jobs\']">'.trans('website.W0254').'</button>';
+            }
+            echo json_encode(
+                array(
+                    "filter_title"      => sprintf(trans('general.M0215'),$jobs['total']),
+                    "paging"            => ($request->page == 1)?false:true,
+                    "recordsFiltered"   => $jobs['total_filtered_result'],
+                    "recordsTotal"      => $jobs['total'],
+                    "loadMore"          => $load_more, 
+                    "data"              => $html,
+                )
+            );            
+        }
+
+        public function myjobs(Request $request, Builder $htmlBuilder, $type = 'saved'){
+            $data['title']                  = trans('website.W0472');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.myjobs.jobs';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+
+            if ($request->ajax()) {
+                $projects = \Models\Projects::talent_jobs($data['user']['id_user'],$type);
+                
+                return \Datatables::of($projects)->filter(function ($instance) use ($request) {
+                    if ($request->has('search')) {
+                        if(!empty($request->search['value'])){
+                            $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                return (\Str::contains($row->title, $request->search['value']) || \Str::contains($row->company_name, $request->search['value']) || \Str::contains($row->description, $request->search['value'])) ? true : false;
+                            });
+                        } 
+                    }
+                })
+                ->editColumn('title',function($project){
+                    return get_project_template($project,'talent');
+                })
+                ->make(true);
+            }
+
+            $data['html'] = $htmlBuilder
+            ->parameters(["dom" => "<'row' <'col-md-6 table-heading'> <'col-md-3'f> <'col-md-3 filter-option'>> rt <'row'<'col-md-6'i><'col-md-6'p> >"])
+            ->addColumn(['data' => 'title', 'name' => 'title', 'title' => '&nbsp;', 'width' => '0', 'searchable' => false, 'orderable' => false]);
+
+            return view('talent.myjobs.index')->with($data);
+        }
+
+        public function job_details(Request $request,Builder $htmlBuilder, $page = 'detail'){
+            if(!empty($request->job_id)){
+                $data['project_id'] = $request->job_id;
+                $job_id             = ___decrypt($request->job_id);
+            }
+
+            if(empty($job_id)){
+                return redirect(sprintf('%s/find-jobs',TALENT_ROLE_TYPE));
+            }
+
+            $data['subheader']      = 'talent.includes.top-menu';
+            $data['header']         = 'innerheader';
+            $data['footer']         = 'innerfooter';
+            $data['view']           = 'talent.job.job-details';
+            $data['page']           = $page;
+            $data['user']           = \Models\Talents::get_user(\Auth::user());
+            $data['job_details']    = \Models\Projects::detail($job_id,\Auth::user()->id_user);
+            $data['invitation']     = \Models\ProjectInvitations::findById($job_id,\Auth::user()->id_user);
+            $data['title']          = sprintf(trans('website.W0473'),$data['job_details']['title']);
+            
+            if($page == 'review'){
+                $data['review']     = \Models\Reviews::listing('sender',\Auth::user()->id_user,$job_id)->first();
+            }
+
+            if(!empty($data['job_details']['company_id'])){
+                $data['job_details']['employer']            = \Models\Employers::employer_sidebar_widget_details($data['job_details']['company_id']);
+                $data['job_details']['employer']['picture'] = get_file_url(\Models\Employers::get_file(sprintf(" type = 'profile' AND user_id = %s",$data['job_details']['company_id']),'single',['filename','folder']));
+                $data['job_details']['employer_other_jobs'] = \Models\Employers::employer_other_jobs($job_id,$data['job_details']['company_id'],\Auth::user());
+                $projects_id                                = array_column($data['job_details']['employer_other_jobs'],'id_project');
+                $data['job_details']['similar_jobs']        = \Models\Employers::similar_jobs($job_id,$data['job_details']['industry'],\Auth::user(),$projects_id);
+            }
+
+            if ($request->ajax()) {
+                $user_id    = (!empty($request->user_id))?$request->user_id:$data['job_details']['company_id'];
+                $reviews    = \Models\Reviews::listing('receiver',$user_id);
+
+                return \Datatables::of($reviews)
+                ->editColumn('review',function($item){
+                    $html ='<div class="review-content-block clearfix">';
+                        $html .='<div class="review-content-display"><img src="'.asset($item->receiver_picture).'" /></div>';
+                        $html .='<div class="review-content-info">';                            
+                            $html .='<h4>'.$item->receiver_name.'</h4>';
+                            $html .='<div class="rating-review"><span class="rating-block">'.___ratingstar($item->review_average,'unfilled').'</span></div>';
+                        $html .='</div>';
+                    $html .='</div>'; 
+                    $html .='<div class="review-desc"><p>'.$item->description.'</p></div>';
+
+                    return $html;
+                })
+                ->make(true);
+            }
+
+            $data['html'] = $htmlBuilder
+            ->parameters(["dom" => "<'row' <'col-md-6 table-heading'> <'col-md-3'> <'col-md-3 filter-option'>> rt <'row'<'col-md-6'><'col-md-6'p> >"])
+            ->addColumn(['data' => 'review', 'name' => 'review', 'title' => '&nbsp;', 'width' => '0', 'searchable' => false, 'orderable' => false]);
+
+            return view('talent.job.index')->with($data);
+        }
+
+        public function submit_proposal(Request $request){
+            if(empty($request->project_id)){
+                return redirect(sprintf('%s/find-jobs',TALENT_ROLE_TYPE));
+            }
+
+            $reload                         = false;
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.proposals.submit';
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['user']['submission_fee'] = SUBMISSION_FEE;
+            $data['project_id']             = $request->project_id;
+            $job_id                         = ___decrypt($data['project_id']);
+            $data['mode']                   = 'submit';
+            $data['job_details']            = \Models\Talents::get_job(\Auth::user()," id_project = {$job_id} ","single");
+            $data['title']                  = sprintf(trans('website.W0474'),$data['job_details']['title']);
+
+            if ($request->ajax()) {
+                
+                $proposals_data = Proposals::select()->where(['project_id' => $job_id, 'user_id' => \Auth::user()->id_user])->get()->count();
+                
+                if(empty($proposals_data)){
+                    $validation_comments = validation('description'); unset($validation_comments[0]);
+                    
+                    if($data['job_details']['employment']  == 'fulltime'){
+                        $validator = \Validator::make($request->all(), [
+                            "quoted_price"              => validation('quoted_price'),
+                            "comments"                  => $validation_comments,
+                        ],[
+                            'quoted_price.required'     => trans('general.M0363'),
+                            'quoted_price.numeric'      => trans('general.M0370'),
+                            'quoted_price.min'          => trans('general.M0438'),
+                            'comments.required'         => trans('general.M0364'),
+                            'comments.string'           => trans('general.M0365'),
+                            'comments.regex'            => trans('general.M0365'),
+                            'comments.max'              => trans('general.M0366'),
+                            'comments.min'              => trans('general.M0367'),
+                        ]);
+                    }else{
+                        $validator = \Validator::make($request->all(), [
+                            "quoted_price"              => validation('quoted_price'),
+                            "comments"                  => $validation_comments,
+                        ],[
+                            'quoted_price.required'     => trans('general.M0358'),
+                            'quoted_price.numeric'      => trans('general.M0370'),
+                            'quoted_price.min'          => trans('general.M0438'),                            
+                            'comments.required'         => trans('general.M0359'),
+                            'comments.string'           => trans('general.M0360'),
+                            'comments.regex'            => trans('general.M0360'),
+                            'comments.max'              => trans('general.M0361'),
+                            'comments.min'              => trans('general.M0362'),
+                        ]);
+                    }
+
+                    $validator->after(function ($validator) use($request) {
+                        if(empty($request->proposal_docs)){
+                            $validator->errors()->add('file', trans('general.M0119'));
+                        }
+                    });
+                    
+                    if($validator->passes()){
+                        $filesID =  $request->proposal_docs;
+                        
+                        $insertArr = [
+                            'project_id'        => ___decrypt($data['project_id']),
+                            'user_id'           => $data['user']['id_user'],
+                            'submission_fee'    => $request->submission_fee,
+                            'quoted_price'      => ___format($request->quoted_price,false,false,false,false),
+                            'comments'          => $request->comments,
+                            'status'            => 'applied',
+                            'created'           => date('Y-m-d H:i:s'),
+                            'updated'           => date('Y-m-d H:i:s')
+                        ];
+                        
+                        $proposaldata = Proposals::create($insertArr);
+                        
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => \Auth::user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'talent-submit-proposal',
+                            'reference_type'    => 'users',
+                            'reference_id'      => \Auth::user()->id_user
+                        ]));
+
+                        if(!empty($proposaldata)){
+                            if(!empty($filesID)){
+                                $fileIds = explode(',', $filesID);
+                                $files = \Models\File::whereIn('id_file',(array)$fileIds)->get();
+                                foreach ($files as $fk => $fv) {
+                                    $fv->record_id = $proposaldata->id_proposal;
+                                    $fv->save();
+                                }
+                            }
+                            \Models\Talents::send_chat_request(\Auth::user()->id_user,$data['job_details']['company_id'],___decrypt($data['project_id']),$proposaldata->id_proposal);
+                        }
+                        
+
+                        $this->redirect = url(sprintf('%s/proposals/submit?project_id=%s',TALENT_ROLE_TYPE,$data['project_id']));
+                        $this->status = true;
+                        if($data['job_details']['employment'] !== 'fulltime'){
+                            $this->message = trans("general.M0368");
+                        }else{
+                            $this->message = trans("general.M0369");
+                        }
+                    }else{
+                        $this->jsondata = ___error_sanatizer($validator->errors());
+                    }
+                }else{
+                    $this->redirect = url(sprintf('%s/proposals/submit?project_id=%s',TALENT_ROLE_TYPE,$data['project_id']));
+                    $this->status = true;
+                    $this->message = trans("website.W0256");                    
+                }
+                return response()->json([
+                    'data'      => $this->jsondata,
+                    'status'    => $this->status,
+                    'message'   => $this->message,
+                    'redirect'  => $this->redirect,
+                ]);
+            }else{
+                $submittedThisproposals = Proposals::select()->leftJoin('files as fi',function($leftjoin) use($data){
+                    $leftjoin->on('fi.record_id', '=', 'talent_proposals.id_proposal');
+                    $leftjoin->on('fi.user_id','=',DB::Raw($data['user']['id_user']));
+                    $leftjoin->on('fi.type','=',DB::Raw('"proposal"'));
+                })->where([
+                    'talent_proposals.user_id' => $data['user']['id_user'],
+                    'talent_proposals.project_id'=>___decrypt($data['project_id'])
+                ])->groupBY(['talent_proposals.id_proposal'])->get();
+                
+                if(!empty($submittedThisproposals[0])){
+                    $data['mode'] = 'view';
+                    $data['proposals'] = $submittedThisproposals;
+                }
+                
+                return view('talent.job.index')->with($data);
+            }
+        }
+
+        public function proposal_submitted(){
+            return view('talent.job.submitted-proposals');
+        }
+
+        public function proposal_document(Request $request){
+            $validator = \Validator::make($request->all(), [
+                "file"                      => array_merge(validation('document'),['required']),
+            ],[
+                'file.validate_file_type'   => trans('general.M0119'),
+            ]);
+            if($validator->passes()){
+                $folder = 'uploads/proposals/';
+                $uploaded_file = upload_file($request,'file',$folder);
+                $data = [
+                    'user_id' => $request->user()->id_user,
+                    'record_id' => ___decrypt($request->project_id),
+                    'reference' => 'users',
+                    'filename' => $uploaded_file['filename'],
+                    'extension' => $uploaded_file['extension'],
+                    'folder' => $folder,
+                    'type' => 'proposal',
+                    'reference' => 'proposal',
+                    'size' => $uploaded_file['size'],
+                    'is_default' => DEFAULT_NO_VALUE,
+                    'created' => date('Y-m-d H:i:s'),
+                    'updated' => date('Y-m-d H:i:s'),
+                ];
+                $isInserted = \Models\Talents::create_file($data,true,true);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-add-propsal-document',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));
+                
+                if(!empty($isInserted)){
+                    if(!empty($isInserted['folder'])){
+                        $isInserted['file_url'] = url(sprintf("%s/%s",$isInserted['folder'],$isInserted['filename']));
+                    }
+                    
+                    $url_delete = sprintf(
+                        url('ajax/%s?id_file=%s'),
+                        DELETE_DOCUMENT,
+                        $isInserted['id_file']
+                    );
+
+                    $this->jsondata = sprintf(PROPOSALS_TEMPLATE,
+                        $isInserted['id_file'],
+                        url(sprintf('/download/file?file_id=%s',___encrypt($isInserted['id_file']))),
+                        asset('/'),
+                        substr($uploaded_file['filename'], 0,3),
+                        $uploaded_file['size'],
+                        $url_delete,
+                        $isInserted['id_file'],
+                        asset('/'),
+                        $isInserted['id_file']
+                    );
+                    
+                    $this->status = true;
+                    $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+                }                
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function proposals(Request $request, Builder $htmlBuilder, $type = 'active'){
+            $data['title']                  = trans('website.W0475');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.proposals.list';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            
+            if ($request->ajax()) {
+                $proposals = \App\Models\Proposals::talents($type,\Auth::user()->id_user);
+                
+                return \Datatables::of($proposals)
+                ->editColumn('title',function($proposal){
+                    $html = '<div class="proposal-box">';
+                        $html .= '<div class="content-box-header clearfix">';
+                            $html .= '<div class="row">';
+                                $html .= '<div class="col-md-9 contentbox-header-title">';
+                                    $html .= '<h3><a href="'.url(sprintf('%s/proposals/submit?project_id=%s',TALENT_ROLE_TYPE,___encrypt($proposal->id_project))).'">'.$proposal->title.'</a></h3>';
+                                    $html .= '<span class="company-name">'.$proposal->company_name.'</span>';
+                                $html .= '</div>';
+                                $html .= '<div class="col-md-3 contentbox-price-range">';
+                                    $html .= '<small class="no-italic-style text-grey">'.trans('job.J0041').' '.___ago($proposal->created).'</small>';
+                                    if($proposal->status == 'accepted'){
+                                        $html .= '<a class="text-center proposal-accepted" href="javascript:void(0);">'.trans('job.J0042').'</a>';
+                                    } else{
+                                        $html .= '<a class="text-center proposal-pending" href="javascript:void(0);">'.trans('job.J0046').'</a>';
+                                    }
+                                $html .= '</div>';    
+                            $html .= '</div>';    
+                        $html .= '</div>';
+                    $html .= '</div>';
+
+                    return $html;
+                })
+                ->make(true);
+            }
+
+            $data['html'] = $htmlBuilder
+            ->parameters(["dom" => "<'row' <'col-md-6 table-heading'> <'col-md-3'> <'col-md-3 filter-option'>> rt <'row'<'col-md-6'i><'col-md-6'p> >"])
+            ->addColumn(['data' => 'title', 'name' => 'title', 'title' => '&nbsp;', 'width' => '0', 'searchable' => false, 'orderable' => false]);
+            
+            return view('talent.job.index')->with($data);
+        } 
+
+        /*public function submitted_proposals(){
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.job.submitted-proposals';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+
+            $proposals = \Models\Talents::submitted_proposals(\Auth::user()->id_user);
+            
+            if(!empty($proposals['result'])){
+                $data['proposals'] = $proposals['result'];
+            }
+            
+            return view('talent.job.index')->with($data);
+        }*/
+
+        public function save_job(Request $request){
+            $validator = \Validator::make($request->all(),[
+                'job_id' => validation('job_id')
+            ],[
+                'job_id.integer' => sprintf(trans('general.M0121'),'job_id')
+            ]);
+           
+            if($validator->passes()){
+                $isUpdated          = \Models\Talents::save_job(\Auth::user()->id_user,$request->job_id);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-save-job',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));                
+                
+                $this->status   = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0218"));               
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }   
+
+        public function talent_availability(){
+            $data['title']                  = trans('website.W0476');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.viewprofile.availability';
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['selected_date']          = date('Y-m-d H:i:s');
+
+            return view('talent.viewprofile.index')->with($data);
+        }
+
+        public function get_talent_availability(Request $request){
+            $this->status           = true;
+            $availability_calendar  = [];
+            $date = $request->date;
+
+            $talent_id         = \Auth::user()->id_user;
+            $this->jsondata    = \Models\Talents::get_calendar_availability($talent_id, $date);
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+            ]);
+        }
+
+        public function notification_list(Request $request){
+        
+            $html               = $search = $load_more = "";
+
+            $page               = (!empty($request->page))?$request->page:1;
+            $notifications      = \Models\Notifications::lists(\Auth::user()->id_user,$page,DEFAULT_PAGING_LIMIT);
+
+            if(!empty($notifications['result'])){
+                foreach($notifications['result'] as $keys => $item){
+                    $html .= '<li class="btn-block">';
+                        $html .= '<a href="javascript:void(0);" data-request="inline-ajax" data-url="'.url(sprintf('%s/notifications/mark/read?notification_id=%s',TALENT_ROLE_TYPE,$item['id_notification'])).'" class="submenu-block clearfix '.$item['notification_status'].'">';
+                            $html .= '<span class="submenublock-user"><img src="'.$item['sender_picture'].'" /></span>';
+                            $html .= '<span class="submenublock-info">';
+                                $html .= '<h4>'.$item['sender_name'].' <span>'.$item['created'].'</span></h4>';
+                                $html .= '<p>'.$item['notification'].'</p>';
+                            $html .= '</span>';
+                        $html .= '</a>';
+                    $html .= '</li>';                
+                }
+            }else{
+                $html .= '<li class="no-records-found">'.trans('general.M0291').'</li>';
+            }
+            
+            if($notifications['total_filtered_result'] == DEFAULT_PAGING_LIMIT){
+                $load_more = '<span class="btn btn-default btn-block btn-lg" data-request="paginate" data-url="'.url(sprintf('%s/notifications/list?page=%s',TALENT_ROLE_TYPE,$page+1)).'" data-target="#notification-list" data-showing="#paginate_showing" data-loadmore="#loadmore">'.trans('website.W0254').'</span>';
+            }
+
+            return response()->json([
+                "recordsTotal"      => intval($notifications['total']),
+                "recordsFiltered"   => intval($notifications['total_filtered_result']),
+                "loadMore"          => $load_more, 
+                "data"              => $html,
+            ]);
+        }
+
+        public function mark_read_notification(Request $request){
+            $isMarkedRead = \Models\Notifications::markread($request->notification_id,\Auth::user()->id_user);
+            
+            if(!empty($isMarkedRead)){
+                $this->status = $isMarkedRead['status'];
+                $this->jsondata = [
+                    'total_unread_notifications' => $isMarkedRead['total_unread_notifications']
+                ];
+                $this->redirect = $isMarkedRead['redirect'];
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-mark-read-notification',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));                
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function chat(Request $request){
+            $data['title']          = trans('website.W0477');
+            $data['subheader']      = 'talent.includes.top-menu';
+            $data['header']         = 'innerheader';
+            $data['footer']         = 'innerfooter';
+            $data['view']           = 'chat.view';
+            $data['user']           = \Models\Talents::get_user(\Auth::user());
+            
+            return view('chat.index')->with($data);
+        }
+
+        public function initiate_chat_request(Request $request){
+            $html = ''; 
+            $isRequestSent = \Models\Chats::initiate_chat_request($request->sender,$request->receiver);
+            if(!empty($isRequestSent['status'])){
+                $this->status = true;
+
+                if($isRequestSent['chat_initiated'] == 'talent'){
+                    $html = '<button style="margin-bottom: 10px;" class="button-line" title="'.trans('job.J0063').'">'.trans('job.J0063').'</button>';
+                }else if($isRequestSent['chat_initiated'] == 'employer'){
+                    $html = '<button style="margin-bottom: 10px;" type="button" class="button-line button-blue" data-request="chat-initiate" data-user="'.$request->receiver_id.'" data-url="'.url(sprintf('%s/chat',TALENT_ROLE_TYPE)).'">'.trans('website.W0296').'</button>';
+                }else if($isRequestSent['chat_initiated'] == 'employer-accepted'){
+                    $html = '<button style="margin-bottom: 10px;" type="button" class="button-line button-blue" data-request="chat-initiate" data-user="'.$request->receiver_id.'" data-url="'.url(sprintf('%s/chat',TALENT_ROLE_TYPE)).'">'.trans('website.W0296').'</button>';
+                }
+
+                $this->jsondata = ['html' => $html];
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function payment_talent(){
+            $data['title']                  = trans('website.W0478');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.job.payment';
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            
+            return view('talent.profile.index')->with($data);
+        }
+
+        public function payment_method(Request $request){
+            $result = \Braintree_Customer::create(array(
+                'firstName' => \Auth::user()->first_name,
+                'lastName' => \Auth::user()->last_name,
+                'company' => '',
+                'email' =>\Auth::user()->email,
+                'phone' =>\Auth::user()->mobile,
+                'fax' => '',
+                'website' => ''
+            ));
+
+            dd($result);
+        }
+
+        public function add_card(Request $request){
+            $data['title']       = trans('website.W0479');
+            $data['subheader']   = 'talent.includes.top-menu';
+            $data['header']      = 'innerheader';
+            $data['footer']      = 'innerfooter';
+            $data['view']        = 'talent.job.add-card';
+
+            $data['user']        = \Models\Talents::get_user(\Auth::user());
+            $data['user_card']   = \Models\Payments::get_user_card(\Auth::user()->id_user);
+            return view('talent.job.index')->with($data);
+        }
+
+        public function add_payment_card(Request $request){
+            // dd($request->credit_card['number']);
+            $get_user_default_card = self::get_user_default_card(\Auth::user()->id_user);
+            $created_date = date('Y-m-d H:i:s');
+            $braintree_id = \Auth::user()->braintree_id;
+            if(empty($braintree_id))
+            {
+                $add_customer_result = \Braintree_Customer::create(array(
+                    'firstName' => \Auth::user()->first_name,
+                    'lastName' => \Auth::user()->last_name,
+                    'email' =>\Auth::user()->email,
+                ));
+
+                \Models\Payments::braintree_response([
+                    'user_id' => \Auth::user()->id_user,
+                    'braintree_response_json' => json_encode($add_customer_result),
+                    'created' => $created_date
+                ]);
+                $braintree_id = $add_customer_result->customer->id;
+                $update['braintree_id'] = $add_customer_result->customer->id;
+                \Models\Talents::change(\Auth::user()->id_user,$update);
+            }
+
+            $add_card_result = \Braintree_CreditCard::create(array(
+                'cardholderName' => $request->credit_card['cardholder_name'],
+                'customerId' => $braintree_id,
+                'expirationDate' => $request->credit_card['expiry_month'] . '/' . $request->credit_card['expiry_year'],
+                'number' => $request->credit_card['number'],
+                'cvv' => $request->credit_card['cvv']
+            ));
+
+            \Models\Payments::braintree_response([
+                'user_id' => \Auth::user()->id_user,
+                'braintree_response_json' => json_encode((array)$add_card_result->creditCard),
+                'created' => $created_date
+            ]);
+            if($add_card_result->success){
+                $credit_card['user_id']                     = \Auth::user()->id_user;
+                $credit_card['type']                        = \Auth::user()->type;
+                $credit_card['bin']                         = $add_card_result->creditCard->bin;
+                $credit_card['expiration_month']            = $add_card_result->creditCard->expirationMonth;
+                $credit_card['expiration_year']             = $add_card_result->creditCard->expirationYear;
+                $credit_card['last4']                       = $add_card_result->creditCard->last4;
+                $credit_card['card_type']                   = $add_card_result->creditCard->cardType;
+                $credit_card['cardholder_name']             = $add_card_result->creditCard->cardholderName;
+                $credit_card['commercial']                  = $add_card_result->creditCard->commercial;
+                $credit_card['country_of_issuance']         = $add_card_result->creditCard->countryOfIssuance; 
+                $credit_card['created_at']                  = $add_card_result->creditCard->createdAt->format('Y-m-d H:i:s');
+                $credit_card['customer_id']                 = $add_card_result->creditCard->customerId;
+                $credit_card['customer_location']           = $add_card_result->creditCard->customerLocation;
+                $credit_card['debit']                       = $add_card_result->creditCard->debit;
+                $credit_card['default']                     = $add_card_result->creditCard->default;
+                $credit_card['durbin_regulated']            = $add_card_result->creditCard->durbinRegulated;
+                $credit_card['expired']                     = $add_card_result->creditCard->expired;
+                $credit_card['healthcare']                  = $add_card_result->creditCard->healthcare;
+                $credit_card['image_url']                   = $add_card_result->creditCard->imageUrl;
+                $credit_card['issuing_bank']                = $add_card_result->creditCard->issuingBank;
+                $credit_card['payroll']                     = $add_card_result->creditCard->payroll;
+                $credit_card['prepaid']                     = $add_card_result->creditCard->prepaid;
+                $credit_card['product_id']                  = $add_card_result->creditCard->productId;
+                $credit_card['subscriptions']               = json_encode($add_card_result->creditCard->subscriptions);
+                $credit_card['token']                       = $add_card_result->creditCard->token;
+                $credit_card['unique_number_identifier']    = $add_card_result->creditCard->uniqueNumberIdentifier;
+                $credit_card['updated_at']                  = $add_card_result->creditCard->updatedAt->format('Y-m-d H:i:s');
+                $credit_card['venmo_sdk']                   = $add_card_result->creditCard->venmoSdk;
+                $credit_card['verifications']               = json_encode($add_card_result->creditCard->verifications);
+                $credit_card['billing_address']             = $add_card_result->creditCard->billingAddress;
+                $credit_card['expiration_date']             = $add_card_result->creditCard->expirationDate;
+                $credit_card['masked_number']               = $add_card_result->creditCard->maskedNumber;
+                $credit_card['card_status']                 = 'active';
+                $credit_card['updated']                     = $created_date;
+                $credit_card['created']                     = $created_date;
+                $isInserted = \Models\Payments::save_credit_card($credit_card);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-add-payment-card',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));
+                
+                if($isInserted){
+                    $url_delete = sprintf(
+                        url('ajax/%s?card_id=%s'),
+                        DELETE_CARD,
+                        $isInserted
+                    );
+                    $this->jsondata = sprintf(
+                        ADD_CARD_TEMPLATE,
+                        $isInserted,
+                        $credit_card['image_url'],
+                        $credit_card['masked_number'],
+                        $url_delete,
+                        $isInserted,
+                        url('/'),
+                        url('/')
+                    );
+                    $this->status   = true;
+                    $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+                }else{
+                }
+                return response()->json([
+                    'data'      => $this->jsondata,
+                    'status'    => $this->status,
+                    'message'   => $this->message,
+                    'redirect'  => $this->redirect,
+                ]);
+            }
+        }    
+
+        public function change_password(Request $request){
+            $data['title']       = trans('website.W0480');
+            $data['subheader']   = 'talent.includes.top-menu';
+            $data['header']      = 'innerheader';
+            $data['footer']      = 'innerfooter';
+            $data['view']        = 'talent.profile.change-password';
+
+            $data['user']        = \Models\Talents::get_user(\Auth::user());
+            
+            return view('talent.profile.index')->with($data);
+        }    
+
+        public function __change_password(Request $request){
+            $validator = \Validator::make($request->all(), [
+                "old_password"              => validation('old_password'),
+                "new_password"              => validation('new_password'),
+                "confirm_password"          => validation('new_confirm_password'),
+            ],[
+                'old_password.required'     => trans('general.M0292'),
+                'old_password.old_password' => trans('general.M0295'),
+                'new_password.different'    => trans('general.M0300'),
+                'new_password.required'     => trans('general.M0293'),
+                'new_password.regex'        => trans('general.M0296'),
+                'new_password.max'          => trans('general.M0297'),
+                'new_password.min'          => trans('general.M0298'),
+                'confirm_password.required' => trans('general.M0294'),
+                'confirm_password.same'     => trans('general.M0299'),
+            ]);
+
+            if($validator->passes()){
+                $isUpdated      = \Models\Talents::change(\Auth::user()->id_user,[
+                    'password'  => bcrypt($request->new_password),
+                    'updated'   => date('Y-m-d H:i:s')
+                ]);
+                
+                $this->status   = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0301"));
+                $this->redirect = url(sprintf('%s/change-password',TALENT_ROLE_TYPE));
+                       
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function settings(Request $request){
+            $data['title']                  = trans('website.W0481');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.profile.settings';
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['settings']               = \Models\Settings::fetch(\Auth::user()->id_user,\Auth::user()->type);
+            $data['industries_name']        = \Cache::get('industries_name');
+            $data['subindustries_name']     = \Cache::get('subindustries_name');
+            return view('talent.profile.index')->with($data);
+        }   
+
+        public function __settings(Request $request){
+
+            $validate = \Validator::make($request->all(), [
+                /*'newsletter_subscribed' => validation('newsletter_subscribed'),*/
+                'city'                  => validation('city'),
+                'interest'              => validation('interests'),
+                'industry'              => validation('industry'),
+                'subindustry'           => validation('subindustry'),
+            ],[
+                'city.integer'                      => 'M0254',
+                'industry.integer'                  => 'M0064',
+                'subindustry.integer'               => 'M0065',
+                /*'newsletter_subscribed.string'      => 'M0427',*/
+            ]);
+
+            if($validate->passes()){
+                $update_userData = [
+                    'newsletter_subscribed' => !empty($request->newsletter_subscribed) ? $request->newsletter_subscribed : DEFAULT_NO_VALUE,
+                    'city'                  => $request->city,
+                    'industry'              => $request->industry,
+                    'subindustry'           => $request->subindustry,
+                ];
+                
+                $isUpdated          = \Models\Talents::change($request->user()->id_user,$update_userData);
+                
+                $isInterestUpdated  = \Models\Talents::update_interest($request->user()->id_user,$request->interest);           
+
+                $isUpdated          = \Models\Settings::add(\Auth::user()->id_user,$request);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-save-settings',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));
+                
+                $this->status   = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0302"));
+                $this->redirect = url(sprintf('%s/settings',TALENT_ROLE_TYPE));
+            }else{
+                $this->jsondata     = (object)___error_sanatizer($validate->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function apply_job(Request $request){
+            if(!empty($request->project_id)){
+                $project_id = ___decrypt($request->project_id);
+                $application_data = Proposals::select()->where(['project_id' => $project_id, 'user_id' => $request->user()->id_user, 'type' => 'application'])->get()->count();
+                
+                if(empty($application_data)){
+                    $insertArr = [
+                        'project_id' => $project_id,
+                        'user_id'    => $request->user()->id_user,
+                        'type'       => 'application',
+                        'created'    => date('Y-m-d H:i:s'),
+                        'updated'    => date('Y-m-d H:i:s')
+                    ];
+                    
+                    $proposaldata = Proposals::create($insertArr);
+                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'talent-apply-job',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));
+                    
+                    $this->status = true;
+                    $this->message = sprintf(ALERT_SUCCESS,trans("general.M0251"));
+                    $this->redirect = url(sprintf('%s/find-jobs/job-details?job_id=%s',TALENT_ROLE_TYPE,___encrypt($project_id)));
+                }else{
+                    $this->message = trans("general.M0252");
+                }
+            }
+            
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function actions(Request $request,$action){
+            $project_id     = (int)___decrypt($request->project_id);
+            
+            $job_details    = \Models\Projects::findById($project_id,['user_id as company_id','employment','startdate','enddate']);
+            $logs           = \Models\ProjectLogs::findById($project_id);
+            $already_logged = \Models\ProjectLogs::is_alredy_logged($project_id,\Auth::user()->id_user,$job_details['employment']);
+            
+            if(empty($job_details)){
+                $this->message = trans("general.M0121");
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+            }else if(strtotime(date('Y-m-d')) < strtotime($job_details['startdate']) && strtotime(date('Y-m-d')) < strtotime($job_details['enddate'])){
+                $this->message = trans("general.M0357");
+            }else if($action == 'start' && $logs['start'] == 'confirmed'){
+                $this->message = trans("general.M0424");
+            }else if($action == 'close' && $logs['close'] == 'confirmed'){
+                $this->message = trans("general.M0425");
+            }else if(!empty($already_logged)){
+                $this->message = trans("general.M0425");
+            }else{
+                if($action == 'start'){
+                    $isUpdated          = \Models\Projects::change([
+                        'id_project' => $project_id,
+                        'project_status' => 'pending'
+                    ],[
+                        'project_status' => 'initiated',
+                        'updated' => date('Y-m-d H:i:s')
+                    ]);
+
+                    $projectLogData     = [
+                        "project_id"    =>  $project_id,
+                        "talent_id"     =>  \Auth::user()->id_user,
+                        "employer_id"   =>  $job_details['company_id'],
+                        "startdate"     =>  date('Y-m-d H:i:s'),
+                        "created"       =>  date('Y-m-d H:i:s'),
+                        "updated"       =>  date('Y-m-d H:i:s'),
+                    ];
+
+                    $isSaved            = \Models\ProjectLogs::save_project_log($projectLogData);
+
+                    $isNotified = \Models\Notifications::notify(
+                        $job_details['company_id'],
+                        \Auth::user()->id_user,
+                        'JOB_STARTED_BY_TALENT',
+                        json_encode([
+                            "user_id" => (string) $job_details['company_id'],
+                            "project_id" => (string) $project_id
+                        ])
+                    );
+                }else if($action == 'close'){
+                    $isClosed = \Models\ProjectLogs::request_close_job($project_id,\Auth::user()->id_user);
+
+                    if(!empty($isClosed)){
+                        $isNotified = \Models\Notifications::notify(
+                            $job_details['company_id'],
+                            \Auth::user()->id_user,
+                            'JOB_COMPLETED_BY_TALENT',
+                            json_encode([
+                                "user_id" => (string) $job_details['company_id'],
+                                "project_id" => (string) $project_id
+                            ])
+                        );
+
+                    }
+                }
+
+                $this->status   = true;
+                $this->message  = trans("general.M0283");               
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function start_job(Request $request){
+            $project_id = (int)___decrypt($request->project_id);
+            /*$project_possible_status    = \Models\Listings::project_status_column();*/
+
+            $job_details = \Models\Talents::get_job(\Auth::user()," id_project = {$project_id} ","single");
+
+            if(empty($request->project_id)){
+                $this->message = trans("general.M0121");
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else if(empty($job_details)){
+                $this->message = trans("general.M0121");
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'user_id');   
+            }else if($job_details['startdate'] > date('Y-m-d')){
+                $this->message = trans("general.M0357");
+            }else if(\Models\ProjectLogs::is_alredy_logged($project_id,\Auth::user()->id_user,$job_details['employment'])){
+                if($job_details['employment'] == 'hourly'){
+                    $this->message = trans("general.M0352");
+                }else if($job_details['employment'] == 'daily'){
+                    $this->message = trans("general.M0352");
+                }else if($job_details['employment'] == 'weekly'){
+                    $this->message = trans("general.M0379");
+                }else if($job_details['employment'] == 'monthly'){
+                    $this->message = trans("general.M0380");
+                }else if($job_details['employment'] == 'fixed'){
+                    $this->message = trans("general.M0381");
+                }
+            }else{
+                $isUpdated          = \Models\Projects::change([
+                    'id_project' => $project_id,
+                    'project_status' => 'pending'
+                ],[
+                    'project_status' => 'initiated',
+                    'updated' => date('Y-m-d H:i:s')
+                ]);
+
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-start-job',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));
+
+                $projectLogData     = [
+                    "project_id"    =>  $project_id,
+                    "talent_id"     =>  \Auth::user()->id_user,
+                    "employer_id"   =>  $job_details['company_id'],
+                    "startdate"     =>  date('Y-m-d H:i:s'),
+                    "created"       =>  date('Y-m-d H:i:s'),
+                    "updated"       =>  date('Y-m-d H:i:s'),
+                ];
+
+                $isSaved            = \Models\ProjectLogs::save_project_log($projectLogData);
+
+                $isNotified = \Models\Notifications::notify(
+                    $job_details['company_id'],
+                    $job_details['accepted_talent_id'],
+                    'JOB_STARTED_BY_TALENT',
+                    json_encode([
+                        "user_id" => (string) $job_details['company_id'],
+                        "project_id" => (string) $project_id
+                    ])
+                );
+
+                $this->redirect = url(sprintf('%s/find-jobs/job-details?job_id=%s',TALENT_ROLE_TYPE,___encrypt($project_id)));
+                $this->status   = true;
+                $this->message  = trans("general.M0283");               
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function close_job(Request $request){
+            $project_id = (int)___decrypt($request->project_id);
+
+            $job_details = \Models\Talents::get_job(\Auth::user()," id_project = {$project_id} ","single"); 
+            
+            if(empty($request->project_id)){
+                $this->message = trans("general.M0121");
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else if(empty($job_details)){
+                $this->message = trans("general.M0121");
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'user_id');   
+            }/*else if((array_search($job_details['project_status'],$project_possible_status) >= array_search("completed",$project_possible_status))){
+                $this->message  = trans("general.M0318");
+            }*/else{
+                $isClosed = \Models\ProjectLogs::request_close_job($project_id,\Auth::user()->id_user);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-close-job',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));
+                
+                if(!empty($isClosed)){
+                    $isNotified = \Models\Notifications::notify(
+                        $job_details['company_id'],
+                        $job_details['accepted_talent_id'],
+                        'JOB_COMPLETED_BY_TALENT',
+                        json_encode([
+                            "user_id" => (string) $job_details['company_id'],
+                            "project_id" => (string) $project_id
+                        ])
+                    );
+
+                    $this->redirect = url(sprintf('%s/find-jobs/job-details?job_id=%s',TALENT_ROLE_TYPE,___encrypt($project_id)));
+                    $this->status   = true;
+                    $this->message  = trans("general.M0283");               
+                }else{
+                    $this->message = trans("general.M0325");                    
+                }
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function report_abuse(Request $request){
+            $validate = \Validator::make($request->all(), [
+                "reason"             => validation('description'),
+            ],[
+                'reason.required'    => trans('general.M0320'),
+                'reason.string'      => trans('general.M0321'),
+                'reason.regex'       => trans('general.M0321')
+            ]);
+
+            if($validate->passes()){
+                $reason         = (string)$request->reason;
+                $sender_id      = (int)\Auth::user()->id_user;
+                $receiver_id    = (int)$request->receiver_id;
+                
+                $isReported = \Models\Abuse::report($sender_id,$receiver_id,$reason);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-report-abuse',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));
+            }else{
+                $this->jsondata = (object)___error_sanatizer($validate->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function wallet(Request $request, Builder $htmlBuilder, $type = 'all'){
+            $data['title']                  = trans('website.W0482');
+            $data['subheader']              = 'talent.includes.top-menu';
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'talent.wallet.list';
+
+            $data['user']                   = \Models\Talents::get_user(\Auth::user());
+            $data['payment_summary']        = \Models\Payments::summary($data['user']['id_user'],'talent');
+
+            if ($request->ajax()) {
+                $payments = \Models\Payments::listing($data['user']['id_user'],'talent',$type);
+                return \Datatables::of($payments)->filter(function ($instance) use ($request) {
+                    if ($request->has('sort')) {
+                        if(!empty($request->sort)){
+                            $sort = explode(" ", ___decodefilter($request->sort));
+
+                            if(count($sort) == 2){
+                                if($sort[1] == "ASC"){
+                                    $instance->collection = $instance->collection->sortBy(function ($row) use ($sort) {
+                                        return (!empty($row->$sort[0]))? $row->$sort[0]: false;
+                                    });
+                                }else if($sort[1] == "DESC"){
+                                    $instance->collection = $instance->collection->sortByDesc(function ($row) use ($sort) {
+                                        return (!empty($row->$sort[0]))? $row->$sort[0]: false;
+                                    });
+                                }
+                            }
+                        }
+                    }else{
+                        $instance->collection = $instance->collection->sortBy(function ($row){
+                            return $row->transaction_status;
+                        });
+                    }
+
+                    if ($request->has('search')) {
+                        if(!empty($request->search['value'])){
+                            $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                return (\Str::contains($row->title, $request->search['value']) || \Str::contains($row->company_name, $request->search['value']) || \Str::contains($row->quoted_price, $request->search['value'])) ? true : false;
+                            });
+                        } 
+                    }
+                })
+                ->editColumn('title',function($payment) use($type){
+                    if($type == 'all' || $type == 'disputed'){
+                        $payment->transaction_subtotal = ___calculate_payment($payment->employment,$payment->quoted_price,$payment->working_hours);
+                    }
+
+                    $html = '<div class="content-box-header clearfix">';
+                        $html .= '<div class="row payment-contentbox">';
+                            $html .= '<div class="col-md-9 col-sm-8 col-xs-7">';
+                                $html .= '<div class="contentbox-header-title">';
+                                    $html .= '<h3><a href="'.url(sprintf('%s/find-jobs/job-details?job_id=%s',TALENT_ROLE_TYPE, ___encrypt($payment->transaction_project_id))).'">'.$payment->title.'</a></h3>';
+                                    $html .= '<span class="company-name">'.$payment->company_name.'</span>';
+                                $html .= '</div>';
+                            $html .= '</div>';
+                            $html .= '<div class="col-md-3 col-sm-4 col-xs-5">';
+                                if($payment->transaction_status == 'confirmed'){
+                                    $html .= '<button type="button" class="button '.$payment->transaction_status.'">'.trans('general.M0324').'</button>';
+                                }else if($payment->transaction_status == 'pending'){
+                                    $html .= '<button type="button" data-request="'.($payment->request_payout =="no" ? "inline-ajax" : " ").'" data-url="'.url(sprintf('%s/wallet/request/payout?job_id=%s',TALENT_ROLE_TYPE,$payment->transaction_project_id)).'"" class="button '.($payment->request_payout =="no" ? $payment->transaction_status : " dark-grey-button").'">'.trans('website.W0437').'</button>';
+                                }
+                                else{
+                                    $html .= '<button type="button" class="button '.$payment->transaction_status.'">'.$payment->transaction_status.'</button>';
+                                }
+                            $html .= '</div>';
+                        $html .= '</div>';
+                    $html .= '</div>';
+                    $html .= '<div class="contentbox-minutes clearfix">';
+                        $html .= '<div class="minutes-left">';
+                            $html .= '<span>'.trans('website.W0368').'  <strong> '.___d($payment->transaction_date).'</strong></span>';
+                            $html .= '<span>'.trans('website.W0369').'  <strong> '.___readable($payment->transaction,true).'</strong></span>';
+                            $html .= '<span>'.trans('website.W0370').'  <strong> '.___format($payment->transaction_subtotal,true,true).'</strong></span>';
+                        $html .= '</div>';
+                    $html .= '</div>';
+
+                    return $html;
+                })
+                ->make(true);
+            }
+
+            $data['html'] = $htmlBuilder
+            ->parameters(["dom" => "rt <'row'<'col-md-6'i><'col-md-6'p> >"])
+            ->addColumn(['data' => 'title', 'name' => 'title', 'title' => '&nbsp;', 'width' => '0', 'searchable' => false, 'orderable' => false]);
+
+            return view('talent.wallet.index')->with($data);
+        }
+
+        public function raise_dispute(Request $request){
+            $validator = \Validator::make($request->all(),[
+                'reason'            => validation('rasie_dispute_reason')
+            ],[
+                'reason.required'   => trans('general.M0384'),
+                'reason.string'     => trans('general.M0385'),
+                'reason.regex'      => trans('general.M0385'),
+                'reason.max'        => trans('general.M0386'),
+                'reason.min'        => trans('general.M0387')
+            ]);
+
+            if($validator->passes()){
+                $project_id         = ___decrypt($request->project_id);
+                $employer_id        = \Models\Projects::findById($project_id,['user_id'])['user_id'];
+
+                $raiseArray = [
+                    'project_id'    => $project_id,
+                    'receiver_id'   => $employer_id,
+                    'sender_id'     => $request->user()->id_user,
+                    'reason'        => $request->reason,
+                    'created'       => date('Y-m-d h:i:s'),
+                    'updated'       => date('Y-m-d h:i:s')
+                ];
+
+                $isDisputed = \Models\RaiseDispute::raise_dispute($raiseArray,'talent');
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-raise-dispute',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));
+
+                if(!empty($isDisputed['status'])){
+                    $this->status   = true;
+                    $this->message  = trans(sprintf("general.%s",$isDisputed['message']));
+                    $this->redirect = url(sprintf("%s/find-jobs/job-details?job_id=%s",TALENT_ROLE_TYPE,___encrypt($project_id)));
+                }else{
+                    $this->jsondata  = (object)[
+                        'reason' => trans(sprintf("general.%s",$isDisputed['message']))
+                    ];
+                }
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);            
+        }
+
+        public function jobactions(Request $request){
+            $job_id                 = ___decrypt($request->job_id);
+            $data['job_details']    = \Models\Talents::get_job(\Auth::user()," id_project = {$job_id} ","single");
+
+            $this->status   = true;
+            $this->jsondata = view('talent.job.include.job-detail')->with($data)->render();
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);            
+        }
+
+        public function job_actions(Request $request){
+            $project_id     = ___decrypt($request->job_id);
+            $job_detail     = \Models\Projects::talent_actions($project_id);
+            
+            $this->status   = true;
+            $this->jsondata = [
+                'html' => view('talent.job.include.job-detail')->with(compact('job_detail'))->render(),
+                'receiver_id' => $job_detail['sender_id']
+            ];
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);            
+        }
+
+        public function payout_request(Request $request){
+            $project_id = !empty($request->job_id) ? ___decrypt($request->job_id) : '';
+            $job_detail = \Models\Projects::findById($project_id);
+            if(empty($job_detail)){
+                $this->message  = trans("general.M0283"); 
+            }else{
+                $updateData = [
+                    'request_payout'    => 'yes',
+                    'updated'           => date('Y-m-d H:i:s')
+                ];
+
+                $isNotified = \Models\Notifications::notify(
+                    $job_detail['user_id'],
+                    \Auth::user()->id_user,
+                    'JOB_REQUEST_PAYOUT_BY_TALENT',
+                    json_encode([
+                        "user_id" => (string) $job_detail['user_id'],
+                        "project_id" => (string) $project_id
+                    ])
+                );
+
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => \Auth::user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'talent-request-payout',
+                    'reference_type'    => 'users',
+                    'reference_id'      => \Auth::user()->id_user
+                ]));
+                
+                $isUpdated = \Models\ProjectLogs::where(['project_id' => $project_id, 'close' => 'pending'])->update($updateData);
+                if($isUpdated){
+                    $this->status   = true;
+                    $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+                }
+                
+                return response()->json([
+                    'data'      => $this->jsondata,
+                    'status'    => $this->status,
+                    'message'   => $this->message,
+                    'redirect'  => $this->redirect,
+                ]);
+            }
+        }
+    }
+

@@ -1,0 +1,42 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class State extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('state', function (Blueprint $table) {
+            $table->increments('id_state');
+            $table->integer('country_id');
+            $table->string('en', 200);
+            $table->string('id', 200);
+            $table->string('cz', 200);
+            $table->string('ta', 200);
+            $table->string('hi', 200);
+            $table->integer('state_order')->default(0);
+            $table->string('iso_code', 7);
+            $table->enum('status', ['active', 'inactive', 'trashed'])->default('active');
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('state');
+    }
+}
+

@@ -1,0 +1,1 @@
+žv:resources/views/talent/community/edit_post_event.blade.php 2phpX÷hr:resources/views/talent/community/edit_post_event.blade.php

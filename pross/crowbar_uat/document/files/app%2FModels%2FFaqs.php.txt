@@ -1,0 +1,35 @@
+<?php
+
+    namespace Models; 
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Mail;
+
+    class Faqs extends Model{
+        public static function  all($fetch = 'array', $keys = ['*'], $where = "", $order_by = 'id_faq'){
+            $table_pages = DB::table('faqs');
+
+            if(!empty($keys)){
+                $table_pages->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_pages->whereRaw($where); 
+            }
+            
+            $table_pages->orderBy($order_by); 
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_pages->get()
+                    ),
+                    true
+                );
+            }else{
+                return $table_pages->get();
+            }
+        }
+    }

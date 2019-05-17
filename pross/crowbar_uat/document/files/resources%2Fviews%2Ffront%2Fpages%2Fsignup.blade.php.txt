@@ -1,0 +1,54 @@
+@extends('layouts.front.main')
+
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+    @section('requirecss')
+        <link href="{{ asset('css/owl.carousel.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/owl.theme.default.min.css') }}" rel="stylesheet">
+    @endsection
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinecss')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    @section('requirejs')
+        
+    @endsection
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinejs')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    @section('content')
+        <div class="contentWrapper">  
+            <section class="singuplanding-section no-padding">
+                <div class="container">                    
+                    <div class="login-inner-wrapper">   
+                        <h2 class="form-heading">{{trans('website.W0125')}}<br />{{trans('website.W0134')}}</h2>
+                        <div class="row has-vr">
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <img src="{{ asset('images/hiretalent-icon.png') }}" />
+                                <p>{{trans('website.W0135')}}</p>
+                                <span>{!!trans('website.W0136')!!}</span>   
+                                <a href="{{ url('/signup/employer') }}" class="button">{{trans('website.W0137')}}</a>                         
+                            </div>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <img src="{{ asset('images/worktalent-icon.png') }}" />
+                                <p>{{trans('website.W0138')}}</p>
+                                <span>{!!trans('website.W0139')!!}</span>
+                                <a href="{{ url('/signup/talent') }}" class="button">{{trans('website.W0140')}}</a>
+                            </div>
+                            <div class="vertical-divison"><span class="optional-or">{{trans('website.W0132')}}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    @endsection
+

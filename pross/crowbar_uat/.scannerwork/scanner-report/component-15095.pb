@@ -1,0 +1,1 @@
+÷u5resources/views/talent/includes/innerfooter.blade.php 2phpXghr5resources/views/talent/includes/innerfooter.blade.php

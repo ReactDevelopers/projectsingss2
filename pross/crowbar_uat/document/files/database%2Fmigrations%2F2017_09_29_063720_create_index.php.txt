@@ -1,0 +1,743 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateIndex extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        $prefix = DB::getTablePrefix();
+
+        DB::statement('ALTER TABLE `'.$prefix.'activity` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('activity', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'api_braintree_response` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('api_braintree_response', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'api_twilio_response` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('api_twilio_response', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'chat` MODIFY `sender_id` INTEGER UNSIGNED NULL;');
+        Schema::table('chat', function (Blueprint $table) {
+            $table->foreign('sender_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'chat` MODIFY `receiver_id` INTEGER UNSIGNED NULL;');
+        Schema::table('chat', function (Blueprint $table) {
+            $table->foreign('receiver_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'chat_requests` MODIFY `sender_id` INTEGER UNSIGNED NULL;');
+        Schema::table('chat_requests', function (Blueprint $table) {
+            $table->foreign('sender_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'chat_requests` MODIFY `receiver_id` INTEGER UNSIGNED NULL;');
+        Schema::table('chat_requests', function (Blueprint $table) {
+            $table->foreign('receiver_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'city` MODIFY `country_id` INTEGER UNSIGNED NULL, MODIFY `state_id` INTEGER UNSIGNED NULL;');
+        Schema::table('city', function (Blueprint $table) {
+            $table->foreign('country_id')
+              ->references('id_country')->on('countries')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('state_id')
+              ->references('id_state')->on('state')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'devices` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('devices', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'files` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('files', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'forum_answer` MODIFY `id_question` INTEGER UNSIGNED NULL, MODIFY `id_user` INTEGER UNSIGNED NULL;');
+        Schema::table('forum_answer', function (Blueprint $table) {
+            $table->foreign('id_question')
+              ->references('id_question')->on('forum_question')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('id_user')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'forum_question` MODIFY `id_user` INTEGER UNSIGNED NULL;');
+        Schema::table('forum_question', function (Blueprint $table) {
+            $table->foreign('id_user')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'languages` MODIFY `country_id` INTEGER UNSIGNED NULL;');
+        Schema::table('languages', function (Blueprint $table) {
+            $table->foreign('country_id')
+              ->references('id_country')->on('countries')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'messages` MODIFY `id_receiver` INTEGER UNSIGNED NULL;');
+        Schema::table('messages', function (Blueprint $table) {
+            $table->foreign('id_receiver')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'notifications` MODIFY `notify` INTEGER UNSIGNED NULL, MODIFY `notified_by` INTEGER UNSIGNED NULL;');
+        Schema::table('notifications', function (Blueprint $table) {
+            $table->foreign('notify')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('notified_by')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'notification_history` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('notification_history', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'plan_features` MODIFY `plan_id` INTEGER UNSIGNED NULL, MODIFY `feature_id` INTEGER UNSIGNED NULL;');
+        Schema::table('plan_features', function (Blueprint $table) {
+            $table->foreign('plan_id')
+              ->references('id_plan')->on('plan')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('feature_id')
+              ->references('id_feature')->on('features')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'projects` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('projects', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'project_invitation` MODIFY `project_id` INTEGER UNSIGNED NULL, MODIFY `employer_id` INTEGER UNSIGNED NULL, MODIFY `talent_id` INTEGER UNSIGNED NULL;');
+        Schema::table('project_invitation', function (Blueprint $table) {
+            $table->foreign('project_id')
+              ->references('id_project')->on('projects')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('employer_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('talent_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'project_language` MODIFY `project_id` INTEGER UNSIGNED NULL;');
+        Schema::table('project_language', function (Blueprint $table) {
+            $table->foreign('project_id')
+              ->references('id_project')->on('projects')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'project_log` MODIFY `project_id` INTEGER UNSIGNED NULL, MODIFY `employer_id` INTEGER UNSIGNED NULL, MODIFY `talent_id` INTEGER UNSIGNED NULL;');
+        Schema::table('project_log', function (Blueprint $table) {
+            $table->foreign('project_id')
+              ->references('id_project')->on('projects')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('employer_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('talent_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'project_required_qualifications` MODIFY `project_id` INTEGER UNSIGNED NULL, MODIFY `qualification` INTEGER UNSIGNED NULL;');
+        Schema::table('project_required_qualifications', function (Blueprint $table) {
+            $table->foreign('project_id')
+              ->references('id_project')->on('projects')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('qualification')
+              ->references('id_degree')->on('degree')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'project_required_skills` MODIFY `project_id` INTEGER UNSIGNED NULL;');
+        Schema::table('project_required_skills', function (Blueprint $table) {
+            $table->foreign('project_id')
+              ->references('id_project')->on('projects')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'proposal_language` MODIFY `proposal_id` INTEGER UNSIGNED NULL;');
+        Schema::table('proposal_language', function (Blueprint $table) {
+            $table->foreign('proposal_id')
+              ->references('id_proposal')->on('talent_proposals')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'question` MODIFY `id_industry` INTEGER UNSIGNED NULL;');
+        Schema::table('question', function (Blueprint $table) {
+            $table->foreign('id_industry')
+              ->references('id_industry')->on('industries')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'question_relation` MODIFY `id_question` INTEGER UNSIGNED NULL, MODIFY `id_question_type` INTEGER UNSIGNED NULL;');
+        Schema::table('question_relation', function (Blueprint $table) {
+            $table->foreign('id_question')
+              ->references('id')->on('question')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('id_question_type')
+              ->references('id')->on('question_type')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'raise_dispute` MODIFY `project_id` INTEGER UNSIGNED NULL, MODIFY `sender_id` INTEGER UNSIGNED NULL, MODIFY `receiver_id` INTEGER UNSIGNED NULL;');
+        Schema::table('raise_dispute', function (Blueprint $table) {
+            $table->foreign('project_id')
+              ->references('id_project')->on('projects')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('sender_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('receiver_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'report_abuse` MODIFY `sender_id` INTEGER UNSIGNED NULL, MODIFY `receiver_id` INTEGER UNSIGNED NULL;');
+        Schema::table('report_abuse', function (Blueprint $table) {
+            $table->foreign('sender_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('receiver_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'reviews` MODIFY `project_id` INTEGER UNSIGNED NULL, MODIFY `sender_id` INTEGER UNSIGNED NULL, MODIFY `receiver_id` INTEGER UNSIGNED NULL;');
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->foreign('project_id')
+              ->references('id_project')->on('projects')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('sender_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('receiver_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'saved_jobs` MODIFY `job_id` INTEGER UNSIGNED NULL, MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('saved_jobs', function (Blueprint $table) {
+            $table->foreign('job_id')
+              ->references('id_project')->on('projects')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'saved_talent` MODIFY `user_id` INTEGER UNSIGNED NULL, MODIFY `talent_id` INTEGER UNSIGNED NULL;');
+        Schema::table('saved_talent', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('talent_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'settings` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('settings', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'state` MODIFY `country_id` INTEGER UNSIGNED NULL;');
+        Schema::table('state', function (Blueprint $table) {
+            $table->foreign('country_id')
+              ->references('id_country')->on('countries')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'tagged_proposals` MODIFY `employer_id` INTEGER UNSIGNED NULL, MODIFY `proposal_id` INTEGER UNSIGNED NULL;');
+        Schema::table('tagged_proposals', function (Blueprint $table) {
+            $table->foreign('employer_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('proposal_id')
+              ->references('id_proposal')->on('talent_proposals')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'talent_answer` MODIFY `id_user` INTEGER UNSIGNED NULL, MODIFY `id_question` INTEGER UNSIGNED NULL;');
+        Schema::table('talent_answer', function (Blueprint $table) {
+            $table->foreign('id_user')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('id_question')
+              ->references('id')->on('question')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'talent_availability` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('talent_availability', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'talent_certificates` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('talent_certificates', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'talent_interests` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('talent_interests', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'talent_perks` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('talent_perks', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'talent_portfolio` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('talent_portfolio', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'talent_proposals` MODIFY `project_id` INTEGER UNSIGNED NULL, MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('talent_proposals', function (Blueprint $table) {
+            $table->foreign('project_id')
+              ->references('id_project')->on('projects')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'talent_skills` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('talent_skills', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'talent_work_experiences` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('talent_work_experiences', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'thumb_devices` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('thumb_devices', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'transactions` MODIFY `transaction_user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->foreign('transaction_user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'user_card` MODIFY `user_id` INTEGER UNSIGNED NULL;');
+        Schema::table('user_card', function (Blueprint $table) {
+            $table->foreign('user_id')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+
+        DB::statement('ALTER TABLE `'.$prefix.'user_subscription` MODIFY `id_plan` INTEGER UNSIGNED NULL, MODIFY `id_user` INTEGER UNSIGNED NULL;');
+        Schema::table('user_subscription', function (Blueprint $table) {
+            $table->foreign('id_plan')
+              ->references('id_plan')->on('plan')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+            $table->foreign('id_user')
+              ->references('id_user')->on('users')
+              ->onDelete('cascade')
+              ->onUpdate('no action');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        $prefix = DB::getTablePrefix();
+
+        Schema::table('activity', function (Blueprint $table) {
+            $table->dropForeign('activity_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'activity` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('api_braintree_response', function (Blueprint $table) {
+            $table->dropForeign('api_braintree_response_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'api_braintree_response` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('api_twilio_response', function (Blueprint $table) {
+            $table->dropForeign('api_twilio_response_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'api_twilio_response` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('chat', function (Blueprint $table) {
+            $table->dropForeign('chat_sender_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'chat` MODIFY `sender_id` INTEGER UNSIGNED NOT NULL;');
+        Schema::table('chat', function (Blueprint $table) {
+            $table->dropForeign('chat_receiver_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'chat` MODIFY `receiver_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('chat_requests', function (Blueprint $table) {
+            $table->dropForeign('chat_requests_sender_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'chat_requests` MODIFY `sender_id` INTEGER UNSIGNED NOT NULL;');
+        Schema::table('chat_requests', function (Blueprint $table) {
+            $table->dropForeign('chat_requests_receiver_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'chat_requests` MODIFY `receiver_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('city', function (Blueprint $table) {
+            $table->dropForeign('city_country_id_foreign');
+            $table->dropForeign('city_state_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'city` MODIFY `country_id` INTEGER UNSIGNED NOT NULL, MODIFY `state_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('devices', function (Blueprint $table) {
+            $table->dropForeign('devices_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'devices` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('files', function (Blueprint $table) {
+            $table->dropForeign('files_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'files` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('forum_answer', function (Blueprint $table) {
+            $table->dropForeign('forum_answer_id_question_foreign');
+            $table->dropForeign('forum_answer_id_user_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'forum_answer` MODIFY `id_question` INTEGER UNSIGNED NOT NULL, MODIFY `id_user` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('forum_question', function (Blueprint $table) {
+            $table->dropForeign('forum_question_id_user_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'forum_question` MODIFY `id_user` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('languages', function (Blueprint $table) {
+            $table->dropForeign('languages_country_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'languages` MODIFY `country_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('messages', function (Blueprint $table) {
+            $table->dropForeign('messages_id_receiver_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'messages` MODIFY `id_receiver` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('notifications', function (Blueprint $table) {
+            $table->dropForeign('notifications_notify_foreign');
+            $table->dropForeign('notifications_notified_by_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'notifications` MODIFY `notify` INTEGER UNSIGNED NOT NULL, MODIFY `notified_by` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('notification_history', function (Blueprint $table) {
+            $table->dropForeign('notification_history_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'notification_history` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('plan_features', function (Blueprint $table) {
+            $table->dropForeign('plan_features_plan_id_foreign');
+            $table->dropForeign('plan_features_feature_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'plan_features` MODIFY `plan_id` INTEGER UNSIGNED NOT NULL, MODIFY `feature_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('projects', function (Blueprint $table) {
+            $table->dropForeign('projects_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'projects` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('project_invitation', function (Blueprint $table) {
+            $table->dropForeign('project_invitation_project_id_foreign');
+            $table->dropForeign('project_invitation_employer_id_foreign');
+            $table->dropForeign('project_invitation_talent_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'project_invitation` MODIFY `project_id` INTEGER UNSIGNED NOT NULL, MODIFY `employer_id` INTEGER UNSIGNED NOT NULL, MODIFY `talent_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('project_language', function (Blueprint $table) {
+            $table->dropForeign('project_language_project_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'project_language` MODIFY `project_id` INTEGER UNSIGNED NOT NULL, MODIFY `employer_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('project_log', function (Blueprint $table) {
+            $table->dropForeign('project_log_project_id_foreign');
+            $table->dropForeign('project_log_employer_id_foreign');
+            $table->dropForeign('project_log_talent_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'project_log` MODIFY `project_id` INTEGER UNSIGNED NOT NULL, MODIFY `employer_id` INTEGER UNSIGNED NOT NULL, MODIFY `talent_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('project_required_qualifications', function (Blueprint $table) {
+            $table->dropForeign('project_required_qualifications_project_id_foreign');
+            $table->dropForeign('project_required_qualifications_qualification_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'project_required_qualifications` MODIFY `project_id` INTEGER UNSIGNED NOT NULL, MODIFY `qualification` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('project_required_skills', function (Blueprint $table) {
+            $table->dropForeign('project_required_skills_project_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'project_required_skills` MODIFY `project_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('proposal_language', function (Blueprint $table) {
+            $table->dropForeign('proposal_language_proposal_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'proposal_language` MODIFY `proposal_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('question', function (Blueprint $table) {
+            $table->dropForeign('question_id_industry_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'question` MODIFY `id_industry` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('question_relation', function (Blueprint $table) {
+            $table->dropForeign('question_relation_id_question_foreign');
+            $table->dropForeign('question_relation_id_question_type_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'question_relation` MODIFY `id_question` INTEGER UNSIGNED NOT NULL, MODIFY `id_question_type` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('raise_dispute', function (Blueprint $table) {
+            $table->dropForeign('raise_dispute_project_id_foreign');
+            $table->dropForeign('raise_dispute_sender_id_foreign');
+            $table->dropForeign('raise_dispute_receiver_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'raise_dispute` MODIFY `project_id` INTEGER UNSIGNED NOT NULL, MODIFY `sender_id` INTEGER UNSIGNED NOT NULL, MODIFY `receiver_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('report_abuse', function (Blueprint $table) {
+            $table->dropForeign('report_abuse_sender_id_foreign');
+            $table->dropForeign('report_abuse_receiver_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'report_abuse` MODIFY `sender_id` INTEGER UNSIGNED NOT NULL, MODIFY `receiver_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->dropForeign('reviews_project_id_foreign');
+            $table->dropForeign('reviews_sender_id_foreign');
+            $table->dropForeign('reviews_receiver_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'reviews` MODIFY `project_id` INTEGER UNSIGNED NOT NULL, MODIFY `sender_id` INTEGER UNSIGNED NOT NULL, MODIFY `receiver_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('saved_jobs', function (Blueprint $table) {
+            $table->dropForeign('saved_jobs_job_id_foreign');
+            $table->dropForeign('saved_jobs_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'saved_jobs` MODIFY `job_id` INTEGER UNSIGNED NOT NULL, MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('saved_talent', function (Blueprint $table) {
+            $table->dropForeign('saved_talent_user_id_foreign');
+            $table->dropForeign('saved_talent_talent_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'saved_talent` MODIFY `user_id` INTEGER UNSIGNED NOT NULL, MODIFY `talent_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('settings', function (Blueprint $table) {
+            $table->dropForeign('settings_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'settings` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('state', function (Blueprint $table) {
+            $table->dropForeign('state_country_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'state` MODIFY `country_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('tagged_proposals', function (Blueprint $table) {
+            $table->dropForeign('tagged_proposals_employer_id_foreign');
+            $table->dropForeign('tagged_proposals_proposal_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'tagged_proposals` MODIFY `employer_id` INTEGER UNSIGNED NOT NULL, MODIFY `proposal_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('talent_answer', function (Blueprint $table) {
+            $table->dropForeign('talent_answer_id_user_foreign');
+            $table->dropForeign('talent_answer_id_question_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'talent_answer` MODIFY `id_user` INTEGER UNSIGNED NOT NULL, MODIFY `id_question` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('talent_availability', function (Blueprint $table) {
+            $table->dropForeign('talent_availability_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'talent_availability` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('talent_certificates', function (Blueprint $table) {
+            $table->dropForeign('talent_certificates_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'talent_certificates` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('talent_interests', function (Blueprint $table) {
+            $table->dropForeign('talent_interests_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'talent_interests` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('talent_perks', function (Blueprint $table) {
+            $table->dropForeign('talent_perks_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'talent_perks` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('talent_portfolio', function (Blueprint $table) {
+            $table->dropForeign('talent_portfolio_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'talent_portfolio` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('talent_proposals', function (Blueprint $table) {
+            $table->dropForeign('talent_proposals_project_id_foreign');
+            $table->dropForeign('talent_proposals_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'talent_proposals` MODIFY `project_id` INTEGER UNSIGNED NOT NULL, MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('talent_skills', function (Blueprint $table) {
+            $table->dropForeign('talent_skills_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'talent_skills` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('talent_work_experiences', function (Blueprint $table) {
+            $table->dropForeign('talent_work_experiences_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'talent_work_experiences` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('thumb_devices', function (Blueprint $table) {
+            $table->dropForeign('thumb_devices_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'thumb_devices` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->dropForeign('transactions_transaction_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'transactions` MODIFY `transaction_user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('user_card', function (Blueprint $table) {
+            $table->dropForeign('user_card_user_id_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'user_card` MODIFY `user_id` INTEGER UNSIGNED NOT NULL;');
+
+        Schema::table('user_subscription', function (Blueprint $table) {
+            $table->dropForeign('user_subscription_id_user_foreign');
+            $table->dropForeign('user_subscription_id_plan_foreign');
+        });
+        DB::statement('ALTER TABLE `'.$prefix.'user_subscription` MODIFY `id_user` INTEGER UNSIGNED NOT NULL, MODIFY `id_plan` INTEGER UNSIGNED NOT NULL;');
+    }
+}
+

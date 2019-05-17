@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class ProjectRequiredSkills extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('project_required_skills', function (Blueprint $table) {
+            $table->integer('project_id');
+            $table->mediumText('skill')->nullable();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('project_required_skills');
+    }
+}
+

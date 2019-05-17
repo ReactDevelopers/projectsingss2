@@ -1,0 +1,1 @@
+¦tresources/views/employer/talent :¥t§t¨t©tªt«t­t®t²t¬trresources/views/employer/talent

@@ -1,0 +1,269 @@
+@section('content')
+    <!-- Main Content -->
+    <div class="contentWrapper" data-request="scroll" data-section="{{ \Request::get('section') }}">
+        <div class="afterlogin-section has-nobanner">
+            <div class="container">
+                @include('employer.includes.talent-profile-header')
+
+                <div class="clearfix"></div>
+                @include('employer.job.includes.talent-profile-menu')
+                <div class="col-md-9 right-sidebar">
+                    <div class="inner-profile-section talent-profile-section">
+                        <div class="view-information" id="personal-infomation">
+                            <h2 class="form-heading top-margin-10px">{{trans('website.W0029')}}</h2>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0047')}}</label>
+                                <label class="info-label col-md-8">{{ !empty($talent['birthday']) ? ___d($talent['birthday']) : N_A  }}</label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0049')}}</label>
+                                <label class="info-label col-md-8">{{ !empty($talent['gender']) ? ucfirst($talent['gender']) : N_A  }}</label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0054')}}</label>
+                                <label class="info-label col-md-8">{{ !empty($talent['address']) ? $talent['address'] : N_A }}</label>
+                            </div>
+                        </div>
+                        <div class="view-information">
+                            <h2 class="form-heading top-margin-10px">{{trans('website.W0030')}}</h2>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0200')}}</label>
+                                <label class="info-label col-md-8">
+                                    @if(!empty($talent['industry']))
+                                        {{ ___cache('industries_name',$talent['industry']) }}
+                                    @else
+                                        {{ N_A }}
+                                    @endif
+                                </label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0206')}}</label>
+                                <label class="info-label col-md-8">
+                                    @if(!empty($talent['subindustry']))
+                                        {{___cache('subindustries_name',$talent['subindustry'])}}
+                                    @else
+                                        {{ N_A }}
+                                    @endif  
+                                </label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0207')}}</label>
+                                <label class="info-label col-md-8">
+                                    @php
+                                        if(!empty($talent['skills'])){
+                                            echo implode(', ', $talent['skills']);
+                                        }else{
+                                            echo N_A;
+                                        }
+                                    @endphp
+                                </label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0208')}}</label>
+                                <label class="info-label col-md-8">{{ !empty($talent['expertise']) ? expertise_levels($talent['expertise']) : N_A }}</label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0209')}}</label>
+                                <label class="info-label col-md-8">{{!empty($talent['experience']) ? $talent['experience'].' Years' : N_A }} </label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0034')}}</label>
+                                <label class="info-label col-md-8">
+                                    @php
+                                        if(!empty($talent['interested'])){
+                                            $interest = [];
+                                            array_walk($talent['interested'], function($item) use(&$interest){
+                                                $interest[] = employment_types('talent_personal_information',$item);
+                                            });
+                                            echo implode(', ', $interest);
+                                        }else{
+                                            echo N_A;
+                                        }
+                                    @endphp
+                                </label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{!! trans('website.W0040') !!}</label>
+                                <label class="info-label col-md-8">{{$talent['expected_salary'] ?___currency($talent['expected_salary'],true,true,$talent['id_user']).' '.trans('website.W0438') : N_A}}</label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0041')}}</label>
+                                <label class="info-label col-md-8">{{$talent['other_expectations'] ? $talent['other_expectations'] : N_A }}</label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0210')}}</label>
+                                <label class="info-label col-md-8">
+                                    {{ !empty($talent['workrate']) ? ___currency($talent['workrate'],true,true,$talent['id_user']) : N_A }}
+                                    @if(!empty($talent['workrate_max']))
+                                        {{ ' - '.___currency($talent['workrate_max'],true,true,$talent['id_user'])}}
+                                    @endif
+                                </label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0211')}}</label>
+                                <label class="info-label col-md-8">{!! !empty($talent['certificates']) ? implode('</br>', $talent['certificates']) : N_A  !!}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="view-information view-education">
+                            <h2 class="form-heading top-margin-10px">{{trans('website.W0031')}}</h2>
+                            @php 
+                                if(!empty($education_list)){
+                                    foreach($education_list as $key => $value){
+                                        $inserted_education_id = $value['id_education'];
+
+                                        $url_edit = sprintf(
+                                                    url('ajax/%s?id_education=%s'),
+                                                    EDIT_TALENT_EDUCATION,
+                                                    $inserted_education_id
+                                                );
+                                        $url_delete = sprintf(
+                                                    url('ajax/%s?id_education=%s'),
+                                                    DELETE_TALENT_EDUCATION,
+                                                    $inserted_education_id
+                                                );
+                                        echo sprintf(
+                                            TALENT_EDUCATION_TEMPLATE,
+                                            $inserted_education_id,
+                                            $url_edit,
+                                            $inserted_education_id,
+                                            asset('/'),
+                                            $url_delete,
+                                            $inserted_education_id,
+                                            asset('/'),
+                                            trans('website.W0082'),
+                                            $value['college'],
+                                            trans('website.W0086'),
+                                            $value['passing_year'],
+                                            trans('website.W0084'),
+                                            $value['degree_name'],
+                                            sprintf(trans('website.W0092'),''),
+                                            $value['degree_country_name'],
+                                            trans('website.W0088'),
+                                            $value['area_of_study'],
+                                            trans('website.W0090'),
+                                            degree_status($value['degree_status'])
+                                        );
+                                    }
+                                }else{
+                                    echo N_A;
+                                }
+                            @endphp
+                        </div>
+                        <div class="view-information view-education">
+                            <h2 class="form-heading top-margin-10px">{{trans('website.W0032')}}</h2>
+                            @php 
+                                if(!empty($work_experience_list)){
+                                    foreach($work_experience_list as $key => $value){
+                                        $inserted_experience_id = $value['id_experience'];
+
+                                        $url_edit = sprintf(
+                                                    url('ajax/%s?id_experience=%s'),
+                                                    EDIT_TALENT_EXPERIENCE,
+                                                    $inserted_experience_id
+                                                );
+                                        $url_delete = sprintf(
+                                                    url('ajax/%s?id_experience=%s'),
+                                                    DELETE_TALENT_EXPERIENCE,
+                                                    $inserted_experience_id
+                                                );
+                                        echo sprintf(
+                                            EXPERIENCE_TEMPLATE,
+                                            $inserted_experience_id,
+                                            $url_edit,
+                                            $inserted_experience_id,
+                                            asset('/'),
+                                            $url_delete,
+                                            $inserted_experience_id,
+                                            asset('/'),
+                                            trans('website.W0094'),
+                                            $value['jobtitle'],
+                                            trans('website.W0096'),
+                                            $value['company_name'],
+                                            trans('website.W0098'),
+                                            sprintf('%s %s',$value['joining_month'],$value['joining_year']),
+                                            trans('website.W0099'),
+                                            ucfirst($value['is_currently_working']),
+                                            trans('website.W0104'),
+                                            employment_types('talent_curriculum_vitae',$value['job_type']),
+                                            trans('website.W0107'),
+                                            $value['is_currently_working'] != DEFAULT_YES_VALUE ? sprintf('%s %s',$value['relieving_month'],$value['relieving_year']) : trans('website.W0259'),
+                                            sprintf(trans('website.W0092'),''),
+                                            \Cache::get('countries')[$value['country']],
+                                            sprintf(trans('website.W0056'),''),
+                                            (!empty($value['state']))?\Cache::get('states')[$value['state']]:N_A
+                                        );
+                                    }
+                                }else{
+                                    echo N_A;
+                                }
+                            @endphp
+                        </div>
+                        <div class="view-information">
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0110')}}</label>
+                                <label class="info-label col-md-8">{{ $talent['cover_letter_description'] ? $talent['cover_letter_description'] : N_A }}</label>
+                            </div>
+                            <div class="form-group clearfix uploaded-docx">
+                                <label class="control-label col-md-2">{{trans('website.W0112')}}</label>
+                                <label class="col-md-8 cross-multiply">
+                                    @php
+                                        if(!empty($get_files)){
+                                            foreach ($get_files as $key => $value) {
+                                                $url_delete = sprintf(
+                                                    url('ajax/%s?id_file=%s'),
+                                                    DELETE_DOCUMENT,
+                                                    $value['id_file']
+                                                );
+                                                echo sprintf(RESUME_TEMPLATE,
+                                                    $value['id_file'],
+                                                    url(sprintf('/download/file?file_id=%s',___encrypt($value['id_file']))),
+                                                    asset('/'),
+                                                    $value['filename'],
+                                                    $value['size'],
+                                                    $url_delete,
+                                                    $value['id_file'],
+                                                    asset('/')
+                                                );  
+                                            }
+                                        }else{
+                                            echo N_A;
+                                        }
+                                    @endphp
+                                </label>    
+                            </div>
+                        </div>
+                        <div class="view-information">
+                            <h2 class="form-heading top-margin-10px">{{trans('website.W0212')}}</h2>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0131')}}</label>
+                                <label class="info-label col-md-8">{{ $talent['instagram_id'] ? 'Verified': "Not Verified" }}</label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0116')}}</label>
+                                <label class="info-label col-md-8">{{ $talent['facebook_id'] ? 'Verified': "Not Verified" }}</label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0119')}}</label>
+                                <label class="info-label col-md-8">{{ $talent['twitter_id'] ? 'Verified': "Not Verified" }}</label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0120')}}</label>
+                                <label class="info-label col-md-8">{{ $talent['linkedin_id'] ? 'Verified': "Not Verified" }}</label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-2">{{trans('website.W0121')}}</label>
+                                <label class="info-label col-md-8">{{ $talent['googleplus_id'] ? 'Verified': "Not Verified" }}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 right-sidebar">
+                    @include('employer.includes.top-talent-listing')
+                </div>                
+            </div>
+        </div>
+    </div>
+    <div class="modal fade upload-modal-box add-payment-cards" id="hire-me" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"></div>
+@endsection
+

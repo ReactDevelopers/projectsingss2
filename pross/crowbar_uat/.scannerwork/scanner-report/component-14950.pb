@@ -1,0 +1,1 @@
+Êt6resources/views/front/includes/banner-slider.blade.php 2phpXçhr6resources/views/front/includes/banner-slider.blade.php

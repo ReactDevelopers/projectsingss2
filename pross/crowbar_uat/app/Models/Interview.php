@@ -1,0 +1,344 @@
+<?php
+
+	namespace App\Models;
+
+	use Illuminate\Database\Eloquent\Model;
+	use Illuminate\Support\Facades\DB;
+
+	class Interview extends Model{
+		public function __construct(){
+
+		}
+
+		/**
+		 * [This method is used to getQuestionList]
+		 * @param null
+		 * @return [array] [list of questions grouped in question type]
+		 */
+		public static function getQuestionList(){
+
+			$questionList = DB::table('question_type')
+			->select('id','question_type')
+			->where('status','active')
+			->orderBy('id','DESC')
+			->get()
+			->toArray();
+
+			foreach ($questionList as $qType) {
+				$qType->question = DB::table('question')
+				->select('question.*')
+				->leftJoin('question_relation', 'question.id', '=', 'question_relation.id_question')
+				->where('question_relation.id_question_type',$qType->id)
+				->where('question.status','active')
+				->orderBy('id','DESC')
+				->get()
+				->toArray();
+			}
+
+			return $questionList;
+		}
+
+		/**
+		 * [This method is used to getQuestionListByType description]
+		 * @param null
+		 * @return [type] [description]
+		 */
+		public static function getQuestionListByType(){
+			$prefix 	= DB::getTablePrefix();
+			$language	= \App::getLocale();
+
+            \DB::statement(\DB::raw('set @row_number=0'));
+			$questionList = DB::table('question')
+			->select([
+                \DB::raw('@row_number  := @row_number  + 1 AS row_number'),
+				'question.id',
+				'question.question',
+				'question.status',
+				'question_type',
+                \DB::Raw("IF(({$prefix}industries.{$language} != ''),{$prefix}industries.`{$language}`, {$prefix}industries.`en`) as industry"),
+			])
+			->leftJoin('industries', 'question.id_industry', '=', 'industries.id_industry')
+			->leftJoin('question_relation', 'question.id', '=', 'question_relation.id_question')
+			->leftJoin('question_type', 'question_type.id', '=', 'question_relation.id_question_type')
+			->whereIn('question.status',['active','inactive'])
+			->orderBy('question.id','DESC')
+			->get();
+
+			return $questionList;
+		}
+
+		/**
+         * [This method is used to getQuestion] 
+         * @param null
+         * @return Data Response
+         */		
+
+		public static function getQuestion(){
+
+			return DB::table('question')
+				->select('question.*')
+				->where('question.status','active')
+				->orderBy('id','DESC')
+				->get()
+				->toArray();
+		}
+
+		/**
+         * [This method is used to getQuestionResponse] 
+         * @param [Integer]$user_id [Used for user id]
+         * @param [Array]$answerArr[Used for user answer]
+         * @return Data Response
+         */
+
+		public static function saveAnswer($id_user, $answerArr)
+		{
+			DB::table('talent_answer')->where('id_user', $id_user)->delete();
+			DB::table('talent_answer')->insert($answerArr);
+		}
+
+		/**
+         * [This method is used to getQuestionResponse] 
+         * @param [Integer]$user_id [Used for user id]
+         * @return Data Response
+         */
+
+		public static function getQuestionResponse($id_user)
+		{
+			$prefix = DB::getTablePrefix();
+			$questionList = DB::table('question_type')
+			->select('id','question_type')
+			->where('status','active')
+			->orderBy('id','DESC')
+			->get()
+			->toArray();
+
+			$total = 0;
+			$optain = 0;
+			foreach ($questionList as $qType) {
+				$sum = DB::table('question')
+							->select(DB::raw('SUM('.$prefix.'talent_answer.question_rate) AS total'),DB::raw('COUNT(*) AS total_ques'))
+							->leftJoin('question_relation', 'question.id', '=', 'question_relation.id_question')
+							->leftJoin('talent_answer', 'question.id', '=', 'talent_answer.id_question')
+							->where('question_relation.id_question_type',$qType->id)
+							->where('talent_answer.id_user',$id_user)
+							->where('question.status','active')
+							->get()
+							->first();
+
+				$qType->ques_total = $sum->total_ques * 5;
+				$total += $qType->ques_total;
+				$qType->response_total = $sum->total > 0 ? $sum->total : 0;
+				$optain += $qType->response_total;
+
+				$qType->question = DB::table('question')
+							->select('question.*','talent_answer.question_rate','talent_answer.question_comment')
+							->leftJoin('question_relation', 'question.id', '=', 'question_relation.id_question')
+							->leftJoin('talent_answer', 'question.id', '=', 'talent_answer.id_question')
+							->where('question_relation.id_question_type',$qType->id)
+							->where('talent_answer.id_user',$id_user)
+							->where('question.status','active')
+							->orderBy('id','DESC')
+							->get()
+							->toArray();
+			}
+
+			$result = array(
+				'questionList' 	=> $questionList,
+				'total' 		=> $total,
+				'optain' 		=> $optain
+				);
+
+			return $result;
+		}
+
+		/**
+         * [This method is used for talentAnswerExist] 
+         * @param [Integer]$user_id [Used for user id]
+         * @return Data Response
+         */
+
+		public static function talentAnswerExist($id_user)
+		{
+			return DB::table('talent_answer')
+						->where('talent_answer.id_user',$id_user)
+						->get()
+						->toArray();
+		}
+
+		/**
+         * [This method is used to getQuestLastModify] 
+         * @param null
+         * @return Data Response
+         */
+
+		public static function getQuestLastModify()
+		{
+			$ques = DB::table('question')
+						->orderBy('id','DESC')
+						->get()
+						->first();
+
+			return date('d M, Y', strtotime($ques->updated));
+		}
+
+		/**
+         * [This method is used to getInterviewPendingTalent] 
+         * @param null
+         * @return Data Response
+         */
+
+		public static function getInterviewPendingTalent()
+		{
+			$prefix = DB::getTablePrefix();
+			$interview_interval = \Cache::get('configuration')['interview_interval'];
+			return DB::table('users')
+					->select(DB::raw("DATEDIFF( '".date('Y-m-d')."', ".$prefix."users.created ) AS DiffDate"), 'users.id_user')
+					->where('users.type','talent')
+					->having('DiffDate', '>', $interview_interval)
+					->orderBy('users.id_user','DESC')
+					->get()
+					->toArray();
+		}
+
+		/**
+         * [This method is used to update question] 
+         * @param [Integer]$id_question [Used for question id]
+         * @param [Varchar]$data[Used for data]
+         * @return Boolean
+         */
+
+		public static function update_question($id_question,$data)
+		{
+			$table_question = DB::table('question');
+			if(!empty($data)){
+				$table_question->where('id',$id_question);
+				$isUpdated = $table_question->update($data); 			
+			}
+			return (bool)$isUpdated;
+		}
+
+		/**
+         * [This method is used to update question type] 
+         * @param [Integer]$id_question_type [Used for question type id]
+         * @param [Varchar]$data[Used for data]
+         * @return Boolean
+         */
+
+		public static function update_question_type($id_question_type,$data)
+		{
+			$table_question_type = DB::table('question_type');
+			if(!empty($data)){
+				$table_question_type->where('id',$id_question_type);
+				$isUpdated = $table_question_type->update($data); 			
+			}
+			return (bool)$isUpdated;
+		}
+
+		/**
+         * [This method is used to updateQuestionRelation] 
+         * @param [Integer]$id_question [Used for question id]
+         * @param [Varchar]$data[Used for data]
+         * @return Boolean
+         */
+
+		public static function updateQuestionRelation($id_question,$data){
+			$table_question_relation = DB::table('question_relation');
+			if(!empty($data)){
+				$table_question_relation->where('id_question',$id_question);
+				$isUpdated = $table_question_relation->update($data); 			
+			}
+			return (bool)$isUpdated;
+		}
+
+		/**
+         * [This method is used to getQuestionType] 
+         * @param [Integer]$id_question_type [Used for question type id]
+         * @param [Enum]$status[Used for status]
+         * @param [Fetching]$fetch[Used for fetching]
+         * @return Data Response
+         */
+
+		public static function getQuestionType($id_question_type=NULL,$status=['active'],$fetch="obj"){
+
+            \DB::statement(\DB::raw('set @row_number=0'));
+
+			$table_question_type = DB::table('question_type');
+			$table_question_type->select([
+				\DB::raw('@row_number  := @row_number  + 1 AS row_number'),
+                'id',
+				'question_type',
+				'status'
+			])->whereIn('status',$status);
+			if(!empty($id_question_type)){
+				$table_question_type->where('id',$id_question_type);
+			}
+			if($fetch == 'obj'){
+				return $table_question_type->get();
+			}else if($fetch == 'first'){
+				return $table_question_type->first();
+			}
+		}
+
+		/**
+         * [This method is used to save question] 
+         * @param [Varchar]$data[Used for data]
+         * @return Data Response
+         */
+
+		public static function saveQuestion($data){
+			$table_question = DB::table('question');
+			if(!empty($data)){
+				return $table_question->insertGetId($data);
+			}
+			return false;
+		}
+
+		/**
+         * [This method is used to saveQuestionType] 
+         * @param [Varchar]$data[Used for data]
+         * @return Data Response
+         */
+		
+		public static function saveQuestionType($data){
+			$table_question_type = DB::table('question_type');
+			if(!empty($data)){
+				return $table_question_type->insertGetId($data);
+			}
+			return false;
+		}
+
+		/**
+         * [This method is used to saveQuestionRelation] 
+         * @param [type]$user_id [<description>]
+         * @param [Varchar]$data[Used for data]
+         * @return Data Response
+         */
+
+		public static function saveQuestionRelation($data){
+			$table_question_relation = DB::table('question_relation');
+			if(!empty($data)){
+				return $table_question_relation->insertGetId($data);
+			}
+			return false;
+		}	
+
+		/**
+         * [This method is used to getQuestionById] 
+         * @param [Integer]$id_question [Used for question id]
+         * @return Data Response
+         */	
+
+		public static function getQuestionById($id_question){
+			$questionList = DB::table('question')
+			->select(['question.id', 'question.question', 'question_type.id as question_type', 'industries.id_industry'])
+			->leftJoin('industries', 'question.id_industry', '=', 'industries.id_industry')
+			->leftJoin('question_relation', 'question.id', '=', 'question_relation.id_question')
+			->leftJoin('question_type', 'question_type.id', '=', 'question_relation.id_question_type')
+			->whereIn('question.status',['active','inactive'])
+			->where('question.id',$id_question)
+			->orderBy('question.id','DESC')->first();
+
+			return $questionList;
+		}
+
+	}

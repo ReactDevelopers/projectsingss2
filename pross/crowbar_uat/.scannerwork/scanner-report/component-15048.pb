@@ -1,0 +1,1 @@
+Èu/resources/views/talent/settings/index.blade.php 2phpXQhr/resources/views/talent/settings/index.blade.php

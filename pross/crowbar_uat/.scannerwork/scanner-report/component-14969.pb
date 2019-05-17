@@ -1,0 +1,1 @@
+ùt3resources/views/front/pages/talent_profile/includes :øtur3resources/views/front/pages/talent_profile/includes

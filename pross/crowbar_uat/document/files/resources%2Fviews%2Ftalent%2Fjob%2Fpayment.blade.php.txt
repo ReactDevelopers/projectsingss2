@@ -1,0 +1,78 @@
+@section('content')
+    <!-- Main Content -->
+            <div class="contentWrapper submitproposal-section">
+                <div class="jobdetails-beforesubmit">
+                    <div class="container">
+                        <div class="content-box">
+                            <div class="content-box-header clearfix">
+                                <div class="contentbox-header-title">
+                                    <h3><a href="job-details.html">Graphic Designer needed for comics designing</a></h3>
+                                    <span class="company-name">Petal Designs</span>
+                                </div>
+                                <div class="contentbox-price-range">
+                                    <span>$250</span>
+                                    <small>Budget</small>
+                                </div>    
+                            </div>
+                            <div class="contentbox-minutes clearfix">
+                                <div class="minutes-left">
+                                    <span>Industry: <strong>Designer, Visualiser</strong></span>
+                                    <span>Expected Timeline: <strong>3 Weeks</strong></span>
+                                    <span>Job Type: <strong>Fixed Price</strong></span>
+                                    <span>Expertise Level: <strong>Proficient</strong></span>
+                                </div>
+                                <div class="minutes-right">
+                                    <span class="posted-time">Posted 3 days ago</span>
+                                </div>
+                            </div>
+                            <div class="content-box-description">
+                                <p>Cras vitae fringilla tortor. Fusce tempus elementum massa, nec aliquet nisi vestibulum ut. Sed aliquam nisi vel tellus ultrices, et vestibulum turpis venenatis. Maecenas hendrerit gravida odio, at scelerisque orci sollicitudin scelerisque. Nunc ac lectus tincidunt, semper dolor in, luctus diam. Aenean sed nisl vitae libero viverra malesuada. Sed pellentesque felis vitae sem placerat elementum. Proin ut leo quis sem dapibus ullamcorper eu sed magna. Suspendisse...</p>
+                                <a href="find-jobs.html" class="more-jobdetail">Read Complete Job Detail &#8594;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="submitProposalForm trnasferAmountList">
+                        <div class="right-sidebar">
+                            <strong>Transfer the amount to Admin in order to commence the job</strong>
+                            <form class="form-horizontal" role="talent_step_one" action="{{url(sprintf('%s/payment_method',TALENT_ROLE_TYPE))}}" method="post" accept-charset="utf-8">
+                                <ul>
+                                    <li>
+                                        <span><strong>Pay Talent</strong></span>
+                                        <span>
+                                            <div class="radio radio-inline">                
+                                                <input name="repeat" type="radio" id="repeat01">
+                                                <label for="repeat01"> On Completion</label>
+                                            </div>
+                                            <div class="radio radio-inline">                
+                                                <input name="repeat" type="radio" id="repeat02">
+                                                <label for="repeat02"> Monthly</label>
+                                            </div>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span>Project Cost </span>
+                                        <span><strong>$400</strong></span>
+                                    </li>
+                                    <li>
+                                        <span>Admin Commission (10%) </span>
+                                        <span><strong>$40</strong></span>
+                                    </li>
+                                    <li class="totalAmount">
+                                        <span>Total Amount To Transfer</span>
+                                        <span> $440</span>
+                                    </li>                                
+                                </ul>
+                                <div class="button-group">
+                                    <div class="row">
+                                        <div class="col-md-6"><button type="button" class="button-line" value="Cancel">Cancel</button></div>
+                                        <div class="col-md-6"><button type="button" class="button" value="Submit" data-request="ajax-submit" data-target='[role="talent_step_one"]' >Proceed to payment</button></div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+@endsection

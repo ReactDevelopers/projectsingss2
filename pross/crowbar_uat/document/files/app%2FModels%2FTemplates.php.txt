@@ -1,0 +1,21 @@
+<?php
+
+	namespace App\Models;
+	use DB;
+	use Illuminate\Database\Eloquent\Model;
+
+	class Templates extends Model{
+	    protected $table = 'templates';
+
+        
+        public static function rows($keys = array()){
+            $handel = DB::table((new static)->getTable());
+
+            if(!empty($keys)){
+                $handel->select($keys);
+            }
+            
+            return $handel->where('status', 'active');    
+        }	    
+	}
+

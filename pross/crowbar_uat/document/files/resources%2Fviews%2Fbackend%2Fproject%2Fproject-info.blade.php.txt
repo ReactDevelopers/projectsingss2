@@ -1,0 +1,34 @@
+<div class="mailbox-read-message">
+    <div class="form-group"><b>Project Type</b> <span class="pull-right">{{employment_types('post_job',$project_detail['employment'])}}</span> </div>
+    <div class="form-group"><b>Industry</b> <span class="pull-right">{{$project_detail['industry']}}</span></div>
+    <div class="form-group"><b>Expertise Level</b> <span class="pull-right">{{ !empty($project_detail['expertise']) ? expertise_levels($project_detail['expertise']) : N_A}}</span></div>
+    <div class="form-group">
+        <b>Timeline</b> 
+        <span class="pull-right">
+            {{___date_difference($project_detail['startdate'],$project_detail['enddate'])}}
+        </span>
+    </div>
+    <br>
+    <b>Description</b>
+    <p>{!!nl2br($project_detail['description'])!!}</p>                                    
+    <br>
+    <b>Skills</b>
+    <p>
+        @if(!empty($project_detail['skill']))
+            {!! sprintf('<span class="label label-default">%s</span>',implode('</span> <span class="label label-default">',array_unique(explode(',',$project_detail['skill'])))) !!}
+        @else
+            {{N_A}}
+        @endif
+    </p>
+    <br>
+    <b>Required Qualification</b>
+    <p>
+        @if(!empty($project_detail['qualification']))
+            {!! sprintf('<span class="label label-default">%s</span>',implode('</span> <span class="label label-default">',array_unique(explode(',',$project_detail['qualification'])))) !!}
+        @else
+            {{N_A}}
+        @endif
+    </p>
+</div>
+
+

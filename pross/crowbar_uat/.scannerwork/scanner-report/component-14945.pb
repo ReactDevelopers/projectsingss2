@@ -1,0 +1,1 @@
+átresources/views/front/forum :àtrresources/views/front/forum

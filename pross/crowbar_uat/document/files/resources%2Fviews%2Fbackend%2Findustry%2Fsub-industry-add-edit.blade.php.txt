@@ -1,0 +1,48 @@
+@extends('layouts.backend.dashboard')
+@section('content')
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel">
+                    <form role="form-add-industry" action="{{url(sprintf("%s/%s",ADMIN_FOLDER,'sub-industry/add'))}}" method="post">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label for="question">INDUSTRY</label>
+                                <div>
+                                    <select class="form-control" name="industry_parent_id">
+                                        {!! ___dropdown_options($industries,trans("admin.A0018"),!empty($industry) ? $industry->parent : '') !!}
+                                    </select>
+                                </div>
+                            </div>                        
+                            <div class="form-group">
+                                <label for="question">ENGLISH</label>
+                                <input type="text" class="form-control" name="en" value="{{ !empty($industry) ? $industry->en : '' }}" placeholder="ENGLISH" style="width:100%;"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="question">INDONESIA</label>
+                                <input type="text" class="form-control" name="id" value="{{ !empty($industry) ? $industry->id : '' }}" placeholder="INDONESIA" style="width:100%;"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="question">MANDARIN</label>
+                                <input type="text" class="form-control" name="cz" value="{{ !empty($industry) ? $industry->cz : '' }}" placeholder="MANDARIN" style="width:100%;"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="question">TAMIL</label>
+                                <input type="text" class="form-control" name="ta" value="{{ !empty($industry) ? $industry->ta : '' }}" placeholder="TAMIL" style="width:100%;"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="question">HINDI</label>
+                                <input type="text" class="form-control" name="hi" value="{{ !empty($industry) ? $industry->hi : '' }}" placeholder="HINDI" style="width:100%;"/>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <input type="hidden" name="id_industry" value="{{ !empty($industry) ? ___encrypt($industry->id_industry) : ''}}">
+                            <input type="hidden" name="action" value="submit">
+                            <button type="button" data-request="ajax-submit" data-target='[role="form-add-industry"]' class="btn btn-default">Save</button>
+                        </div>                                            
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection

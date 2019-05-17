@@ -1,0 +1,54 @@
+@extends('layouts.front.main')
+
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+    @section('requirecss')
+
+    @endsection
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinecss')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    @section('requirejs')
+
+    @endsection
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinejs')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    @section('content')
+        <!-- Banner Section -->
+        @if(Request::get('stream') != 'mobile')
+            <div class="bannerSection aboutBanner"></div>
+        @endif
+        <!-- /Banner Section -->
+        <!-- Main Content -->
+        <div class="contentWrapper">
+            <section class="aboutSection termsAndConditonSec">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="howmakeitSection">
+                                <div class="sectionHeading sectionSubHeading">
+                                    <h2>{!! $page['title'] !!}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9 col-sm-8 col-xs-12">
+                            <div class="aboutContent">
+                                {!! $page['content'] !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section> 
+        </div>
+    @endsection

@@ -1,0 +1,1 @@
+çt3resources/views/front/includes/hiretalent.blade.php 2phpXhr3resources/views/front/includes/hiretalent.blade.php

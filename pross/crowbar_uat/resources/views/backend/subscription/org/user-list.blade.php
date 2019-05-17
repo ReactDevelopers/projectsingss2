@@ -1,0 +1,83 @@
+@extends('layouts.backend.dashboard')
+
+@section('requirejs')
+<script type="text/javascript">
+    var dataTableInstance = '';
+    var page = '{!! $page !!}';
+    $(function(){
+        dataTableInstance = $('#customer-table').DataTable({
+            paging: true,
+            searching: true,
+            processing: true,
+            serverSide: true,
+            ajax: "{!! url(sprintf('%s/ajax/users?page="+page+"',$url)) !!}",
+            columns : [
+                { data: null,"className": 'sno',"orderable": false,"defaultContent": '',"searchable": false},
+                { data: 'name', name: 'name' },
+                { data: 'email', name: 'email' },
+                { data: 'status', name: 'status' },
+                { data: null,"className": 'action',"orderable": false,"defaultContent": '',"searchable": false}
+            ],
+            order:[
+                [1, "ASC"]
+            ],
+            "columnDefs": [{
+                "targets": 0,
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return parseFloat(meta.row) + parseFloat(1) + parseFloat(meta.settings._iDisplayStart);
+                }
+            },{
+                "targets": 4,
+                "data": null,
+                "render": function (data) {
+                    if((data.status).toLowerCase() === 'active'){
+                        var action = '<a href="javascript:;" data-url="'+base_url+'/ajax/user/status?id_user='+data.id_user+'&status=inactive" data-request="status" data-ask="Do you really want to continue with this action?" class="badge bg-green" >Inactive</a> ';
+                    }else{
+                        var action = '<a href="javascript:;" data-url="'+base_url+'/ajax/user/status?id_user='+data.id_user+'&status=active" data-request="status" data-ask="Do you really want to continue with this action?" class="badge bg-green" >Active</a> ';
+                    }
+                    return '<a href="{{$url}}/talent-users/'+data.id_user+'/edit" class="badge bg-light-blue">Edit</a>'+
+                    action+
+                    '<a href="javascript:;" data-url="'+base_url+'/ajax/user/status?id_user='+data.id_user+'&status=trashed" data-request="status" data-ask="Do you really want to continue with this action?" class="badge bg-red" >Delete</a>'+
+                    '';
+                }
+            }],
+        });
+    });
+</script>
+@endsection
+
+@section('content')
+<section class="content">
+    <div class="row">
+        &nbsp;
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel">
+                <div class="panel-body">
+                    @if(Session::has('success'))
+                        <div class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            {{ Session::get('success') }}
+                        </div>
+                    @endif
+                    <div class="table-responsive">
+                        <table id="customer-table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="3%">#</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th width="10">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@endsection

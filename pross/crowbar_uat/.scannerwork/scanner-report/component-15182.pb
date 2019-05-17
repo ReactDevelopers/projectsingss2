@@ -1,0 +1,1 @@
+ÎvBresources/views/talent/viewprofile/includes/sidebar-tabs.blade.php 2phpXhrBresources/views/talent/viewprofile/includes/sidebar-tabs.blade.php

@@ -1,0 +1,727 @@
+<?php
+
+    namespace Models; 
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Mail;
+
+    class Projects extends Model{
+        protected $table = 'projects';
+        protected $primaryKey = 'id_project';
+
+        const CREATED_AT = 'created';
+        const UPDATED_AT = 'updated';
+
+        public function __construct(){}
+
+        public static function findById($project_id,$keys = ['*']){
+            $project = DB::table('projects')->select($keys)->where('id_project',$project_id)->get()->first();
+
+            return json_decode(json_encode($project),true);
+        }
+
+        public static function change($where,$data){
+            if(empty($where) && empty($data)){
+                return false;
+            }
+
+            return DB::table('projects')->where($where)->update($data);
+        }
+
+        public static function employer_jobs($employer_id, $listing, $page = NULL, $sort = NULL, $filter = NULL, $search = NULL, $limit = DEFAULT_PAGING_LIMIT){
+            $prefix         = DB::getTablePrefix();
+            $table_projects = DB::table('projects as projects');
+            $language       = \App::getLocale();
+
+            if(!empty($page)){
+                $offset = ($page - 1)*$limit;
+                $table_projects->offset($offset);
+                $table_projects->limit($limit);
+            }
+
+            if(empty($sort)){
+                $sort = "{$prefix}projects.id_project DESC";
+            }else{
+                $sort = "{$prefix}{$sort}";
+            }
+
+            if($listing != 'suggested'){
+                $table_projects->select([
+                    'projects.id_project',
+                    'projects.user_id',
+                    'projects.title',
+                    'users.company_name',
+                    'projects.industry',
+                    \DB::Raw("IF(({$prefix}industry.{$language} != ''),{$prefix}industry.`{$language}`, {$prefix}industry.`en`) as industry_name"),
+                    'projects.price',
+                    'projects.price_max',
+                    'projects.price_type',
+                    'projects.price_unit',
+                    'projects.description',
+                    'projects.employment',
+                    'projects.budget_type',
+                    'projects.bonus',
+                    'projects.startdate',
+                    'projects.enddate',
+                    'projects.expertise',
+                    'projects.created',
+                    'projects.other_perks',
+                    'projects.location',
+                    \DB::Raw("IF(({$prefix}sub_industry.{$language} != ''),{$prefix}sub_industry.`{$language}`, {$prefix}sub_industry.`en`) as sub_industry_name"),
+                    \DB::Raw("
+                        IFNULL(
+                            IF(
+                                ({$prefix}city.`{$language}` != ''),
+                                {$prefix}city.`{$language}`,
+                                {$prefix}city.`en`
+                            ),
+                            ''
+                        ) as location_name"
+                    ),
+                    \DB::Raw("COUNT({$prefix}proposals.id_proposal) as total_accepted_proposals"),
+                    \DB::Raw("GROUP_CONCAT({$prefix}proposals.status) as proposal_status"),
+                    \DB::Raw("'{$listing}' as type"),
+                ]);
+            }else{
+                $table_projects->select([
+                    'projects.id_project',
+                    'projects.title',
+                    \DB::Raw("COUNT({$prefix}proposals.id_proposal) as total_accepted_proposals")
+                ]);
+            }
+
+            $table_projects->leftJoin('users as users','users.id_user','=','projects.user_id');
+            $table_projects->leftJoin('industries as industry','industry.id_industry','=','projects.industry');
+            $table_projects->leftJoin('industries as sub_industry','sub_industry.id_industry','=','projects.subindustry');
+            $table_projects->leftJoin('city as city','city.id_city','=','projects.location');
+            $table_projects->leftJoin('transactions','transactions.transaction_project_id','=','projects.id_project');
+            $table_projects->leftJoin('talent_proposals as proposals',function($leftjoin){
+                $leftjoin->on('proposals.project_id','=','projects.id_project');
+                $leftjoin->on('proposals.status','=',\DB::Raw("'accepted'"));
+            });
+            
+            if(!empty($search)){
+                $table_projects->whereRaw($search);
+            }
+
+            $table_projects->where('projects.user_id','=',$employer_id);
+            
+
+            if($listing == 'current'){
+                $table_projects->havingRaw("total_accepted_proposals > 0");
+                $table_projects->whereRaw("'".date('Y-m-d')."' BETWEEN DATE({$prefix}projects.startdate) AND DATE({$prefix}projects.enddate)");
+            }else if($listing == 'scheduled'){
+                $table_projects->havingRaw("total_accepted_proposals > 0");
+                $table_projects->where('projects.project_status','=','pending');
+                $table_projects->whereRaw("'".date('Y-m-d')."' < DATE({$prefix}projects.startdate) AND '".date('Y-m-d')."' < DATE({$prefix}projects.enddate)");
+            }else if($listing == 'completed'){
+                $table_projects->havingRaw("total_accepted_proposals > 0");
+                $table_projects->where('projects.project_status','=','closed');
+            }else if($listing == 'suggested'){
+                $table_projects->havingRaw("total_accepted_proposals = 0");
+                $table_projects->where('projects.project_status','=','pending');
+                $table_projects->orderBy("projects.created","DESC");
+            } 
+            $table_projects->orderByRaw($sort);
+            $table_projects->groupBy(['projects.id_project']);
+
+            return $table_projects->get();
+        }
+
+        public static function talent_jobs($talent_id, $listing, $page = NULL, $sort = NULL, $filter = NULL, $search = NULL, $limit = DEFAULT_PAGING_LIMIT){
+            $table_projects = DB::table('projects as projects');
+            $prefix         = DB::getTablePrefix();
+            $language       = \App::getLocale();
+
+            if(!empty($page)){
+                $offset = ($page - 1)*$limit;
+                $table_projects->offset($offset);
+                $table_projects->limit($limit);
+            }
+
+            if(empty($sort)){
+                $sort = "{$prefix}projects.id_project DESC";
+            }else{
+                $sort = "{$prefix}{$sort}";
+            }
+
+            $keys           = [
+                'projects.id_project',
+                'projects.user_id as company_id',
+                'projects.title',
+                'projects.description',
+                'users.company_name',
+                'projects.industry',
+                'projects.location',
+                \DB::Raw("
+                    IFNULL(
+                        IF(
+                            ({$prefix}city.`{$language}` != ''),
+                            {$prefix}city.`{$language}`,
+                            {$prefix}city.`en`
+                        ),
+                        ''
+                    ) as location_name"
+                ),
+                'projects.created',
+                \DB::Raw("IF(({$prefix}industry.{$language} != ''),{$prefix}industry.`{$language}`, {$prefix}industry.`en`) as industry_name"),
+                'projects.price',
+                'projects.budget_type',
+                'projects.price_type',
+                'projects.price_unit',
+                'projects.employment',
+                'projects.expertise',
+                'projects.bonus',
+                'projects.other_perks',
+                'projects.price_max',
+                'projects.created',
+                \DB::Raw("GROUP_CONCAT({$prefix}qualifications.qualification) as required_qualifications"),
+                \DB::Raw("DATE({$prefix}projects.startdate) as startdate"),
+                \DB::Raw("DATE({$prefix}projects.enddate) as enddate"),
+                \DB::Raw("IF({$prefix}saved_jobs.id_saved IS NOT NULL,'".DEFAULT_YES_VALUE."','".DEFAULT_NO_VALUE."') as is_saved"),
+                \DB::Raw("GROUP_CONCAT({$prefix}skills.skill) as skills"),
+                \DB::Raw("GROUP_CONCAT({$prefix}proposals_listing.status) as job_listing_status"),
+                \DB::Raw("
+                    IF(
+                        ('".date('Y-m-d')."' BETWEEN DATE({$prefix}projects.startdate) AND DATE({$prefix}projects.enddate)),
+                        'yes',
+                        'no'
+                    ) as is_job_running
+                "),
+                \DB::Raw("
+                    IF(
+                        ({$prefix}project_log.startdate IS NULL),
+                        'start',
+                        IF(
+                            ({$prefix}project_log.startdate IS NOT NULL AND {$prefix}project_log.start = 'pending'),
+                            'startpending',
+                            IF(
+                                ({$prefix}project_log.enddate IS NULL),
+                                'close',
+                                IF(
+                                    ({$prefix}project_log.enddate IS NOT NULL AND {$prefix}project_log.close = 'pending'),
+                                    'closepending',
+                                    'done'
+                                )
+                            )
+                        )
+                    ) as job_daily_action
+                "),
+                \DB::Raw("'{$listing}' as type")
+            ];
+
+            $table_projects->select($keys);
+            $table_projects->leftJoin('users as users','users.id_user','=','projects.user_id');
+            $table_projects->leftJoin('files as files','files.user_id','=','projects.user_id');
+            $table_projects->leftJoin('industries as industry','industry.id_industry','=','projects.industry');
+            $table_projects->leftJoin('industries as sub_industry','sub_industry.id_industry','=','projects.subindustry');
+            $table_projects->leftJoin('project_required_qualifications as qualifications','qualifications.project_id','=','projects.id_project');
+            $table_projects->leftJoin('project_required_skills as skills','skills.project_id','=','projects.id_project');
+            $table_projects->leftJoin('city as city','city.id_city','=','projects.location');
+            $table_projects->leftJoin('saved_jobs as saved_jobs',function($leftjoin) use($talent_id){
+                $leftjoin->on('saved_jobs.job_id','=','projects.id_project');
+                $leftjoin->on('saved_jobs.user_id','=',DB::Raw($talent_id));
+            });
+            
+            $table_projects->leftjoin('talent_proposals as proposals',function($q) use($talent_id){
+                $q->on('proposals.project_id','=','projects.id_project');
+                $q->on('proposals.user_id','=',DB::Raw($talent_id));
+            });
+            
+            $table_projects->leftjoin('talent_proposals as proposals_listing',function($q) use($talent_id){
+                $q->on('proposals_listing.project_id','=','projects.id_project');
+            });            
+            
+            $table_projects->leftJoin('project_log',function($leftjoin) use($prefix){
+                $leftjoin->on('project_log.project_id','=','projects.id_project');
+                $leftjoin->on(\DB::Raw("DATE({$prefix}project_log.created)"),'=',\DB::Raw("'".date('Y-m-d')."'"));
+            });
+
+            if(!empty($search)){
+                $table_projects->whereRaw($search);
+            }
+
+            if($listing == 'saved'){
+                $table_projects->whereRaw("{$prefix}saved_jobs.id_saved IS NOT NULL");
+            }else if($listing == 'current'){
+                $table_projects->whereRaw("
+                    ('".date('Y-m-d')."' BETWEEN DATE({$prefix}projects.startdate) AND DATE({$prefix}projects.enddate)) 
+                    AND 
+                    ({$prefix}proposals.status = 'accepted')
+                ");
+            }else if($listing == 'scheduled'){
+                $table_projects->whereRaw("
+                    ('".date('Y-m-d')."' < DATE({$prefix}projects.startdate) AND '".date('Y-m-d')."' < DATE({$prefix}projects.enddate)) 
+                    AND 
+                    ({$prefix}proposals.status = 'accepted')
+                ");
+            }else if($listing == 'history'){
+                $table_projects->whereRaw("
+                    ({$prefix}projects.project_status = 'closed') 
+                    AND 
+                    ({$prefix}proposals.status = 'accepted')
+                ");
+                $table_projects->where('projects.project_status','=','closed');
+            }
+            
+
+            $table_projects->groupBy(['projects.id_project']);
+            
+            return $table_projects->get();
+        }
+
+        public static function getProjectList(){
+            $prefix         = DB::getTablePrefix();
+            $language       = \App::getLocale();
+            return DB::table('projects as projects')
+            ->select([
+                'projects.id_project',
+                'projects.title',
+                \DB::Raw("{$prefix}projects.employment AS employment"),
+                \DB::Raw("CONCAT({$prefix}projects.price_unit,{$prefix}projects.price) AS price"),
+                \DB::Raw("DATE_FORMAT({$prefix}projects.startdate, '%d %M %Y') AS startdate"),
+                \DB::Raw("DATE_FORMAT({$prefix}projects.enddate, '%d %M %Y') AS enddate"),
+                \DB::Raw("{$prefix}projects.project_status AS project_status"),
+                \DB::Raw("CONCAT({$prefix}users.first_name, ' ',{$prefix}users.last_name) AS name"),
+                \DB::Raw("IF(({$prefix}industries.{$language} != ''),{$prefix}industries.`{$language}`, {$prefix}industries.`en`) as industry"),
+                \DB::Raw("IF(({$prefix}subindustry.{$language} != ''),{$prefix}subindustry.`{$language}`, {$prefix}subindustry.`en`) as subindustry"),
+            ])
+            ->leftJoin('users', 'projects.user_id', '=', 'users.id_user')
+            ->leftJoin('industries', 'projects.industry', '=', 'industries.id_industry')
+            ->leftJoin('industries AS subindustry', 'projects.subindustry', '=', 'subindustry.id_industry')
+            ->where('projects.status', 'active')
+            ->get();
+        }
+
+        public static function getProjectDetail($id_project){
+            $prefix         = DB::getTablePrefix();
+            $language       = \App::getLocale();
+            $projectDetail = DB::table('projects as projects')
+            ->select([
+                'projects.id_project',
+                'projects.title',
+                'projects.description',
+                'projects.price_max',
+                'projects.bonus',
+                'projects.expertise',
+                'projects.location',
+                'projects.budget_type',
+                'projects.other_perks',
+                \DB::Raw("{$prefix}projects.transaction AS transaction"),#ucfirst
+                'projects.work_hours',
+                \DB::Raw("{$prefix}projects.employment AS employment"),#ucfirst,
+                 \DB::Raw("CONCAT({$prefix}projects.price_unit,{$prefix}projects.price) AS price"),
+                \DB::Raw("DATE_FORMAT({$prefix}projects.startdate, '%d %M %Y') AS startdate"),
+                \DB::Raw("DATE_FORMAT({$prefix}projects.enddate, '%d %M %Y') AS enddate"),
+                \DB::Raw("{$prefix}projects.project_status AS project_status"), #ucfirst
+                \DB::Raw("CONCAT({$prefix}users.first_name,' ',{$prefix}users.last_name) AS name"),
+                'users.company_name',
+                \DB::Raw("IF(({$prefix}industries.{$language} != ''),{$prefix}industries.`{$language}`, {$prefix}industries.`en`) as industry"),
+                \DB::Raw("IF(({$prefix}subindustry.{$language} != ''),{$prefix}subindustry.`{$language}`, {$prefix}subindustry.`en`) as subindustry"),
+                \DB::Raw("IF(({$prefix}city.{$language} != ''),{$prefix}city.{$language}, {$prefix}city.`en`) as city_name")
+                ])
+            ->leftJoin('users', 'projects.user_id', '=', 'users.id_user')
+            ->leftJoin('industries', 'projects.industry', '=', 'industries.id_industry')
+            ->leftJoin('industries AS subindustry', 'projects.subindustry', '=', 'subindustry.id_industry')
+            ->leftJoin('city', function($join)
+            {
+                $join->on('city.id_city', '=', 'projects.location')
+                     ->where('projects.location', '>', 0);
+            })
+            ->where('projects.status', 'active')
+            ->where('projects.id_project', $id_project)
+            ->first();
+
+            return json_decode(json_encode($projectDetail), true);
+        }
+
+        public static function getProjectSkill($id_project){
+            $prefix        = DB::getTablePrefix();
+            $projectSkill = DB::table('project_required_skills')
+            ->select(\DB::Raw('GROUP_CONCAT(`skill` SEPARATOR ", ") AS skill'))
+            ->where('project_id', $id_project)
+            ->first();
+
+            $projectSkill = json_decode(json_encode($projectSkill), true);
+            return $projectSkill['skill'];
+        }
+
+        public static function getProjectQualification($id_project){
+            $prefix        = DB::getTablePrefix();
+            $projectSkill = DB::table('project_required_qualifications')
+            ->select(\DB::Raw('GROUP_CONCAT(`degree_name` SEPARATOR ", ") AS qualification_name'))
+            ->leftJoin('degree', 'degree.id_degree', '=', 'project_required_qualifications.qualification')
+            ->where('project_id', $id_project)
+            ->first();
+
+            $projectSkill = json_decode(json_encode($projectSkill), true);
+            return $projectSkill['qualification_name'];
+        }
+
+        public static function getProjectDescription($id_project){
+            $prefix       = DB::getTablePrefix();
+            $projectLang = DB::table('project_language')
+            ->select('language','description')
+            ->where('project_id', $id_project)
+            ->get();
+
+            return json_decode(json_encode($projectLang), true);
+        }
+
+        public static function getProjectProposal($id_project){
+            $prefix             = DB::getTablePrefix();
+            \DB::statement(\DB::raw('set @row_number=0'));
+            $projectProposal    = DB::table('talent_proposals')
+            ->select(
+                \DB::raw('@row_number  := @row_number  + 1 AS row_number'),
+                'talent_proposals.id_proposal',
+                'talent_proposals.quoted_price',
+                'talent_proposals.comments',
+                'talent_proposals.status',
+                \DB::Raw('CONCAT('.$prefix.'users.first_name, " ", '.$prefix.'users.last_name ) AS name')
+            )
+            ->leftJoin('users', 'users.id_user', '=', 'talent_proposals.user_id')
+            ->where('project_id', $id_project)
+            ->get();
+
+            return $projectProposal;
+        }
+
+        public static function getProjectListByIndustry($id_industry){
+            $prefix         = DB::getTablePrefix();
+            $language       = \App::getLocale();
+            $projectList = DB::table('projects as projects')
+            ->select([
+                'projects.id_project',
+                'projects.title',
+                \DB::Raw('`FIRST`('.$prefix.'projects.employment) AS employment'),
+                \DB::Raw('CONCAT('.$prefix.'projects.price_unit,'.$prefix.'projects.price) AS price'),
+                \DB::Raw('DATE_FORMAT('.$prefix.'projects.startdate, "%d %M %Y") AS startdate'),
+                \DB::Raw('DATE_FORMAT('.$prefix.'projects.enddate, "%d %M %Y") AS enddate'),
+                \DB::Raw('`FIRST`('.$prefix.'projects.project_status) AS project_status'),
+                \DB::Raw('CONCAT('.$prefix.'users.first_name, " ",'.$prefix.'users.last_name) AS name'),
+                'users.company_name',
+                \DB::Raw("IF(({$prefix}industries.{$language} != ''),{$prefix}industries.`{$language}`, {$prefix}industries.`en`) as industries_name"),
+                \DB::Raw("IF(({$prefix}subindustry.{$language} != ''),{$prefix}subindustry.`{$language}`, {$prefix}subindustry.`en`) as subindustry_name"),
+                ])
+            ->leftJoin('users', 'projects.user_id', '=', 'users.id_user')
+            ->leftJoin('industries', 'projects.industry', '=', 'industries.id_industry')
+            ->leftJoin('industries AS subindustry', 'projects.subindustry', '=', 'subindustry.id_industry')
+            ->where('projects.status', 'active')
+            ->where('projects.industry', $id_industry)
+            ->where('projects.project_status', 'pending')
+            ->limit(10)
+            ->get()
+            ->toArray();
+
+            return json_decode(json_encode($projectList), true);
+        }
+
+        public static function is_disputable($project_log){
+            if($project_log['start'] == 'pending' || $project_log['close'] == 'pending'){
+                return 'yes';
+            }else{
+                return 'no';
+            }
+        }
+
+        public static function detail($project_id,$talent_id){
+            $table_projects = DB::table('projects as projects');
+            $prefix         = DB::getTablePrefix();
+            $language       = \App::getLocale();
+
+            $keys = [
+                'projects.id_project',
+                'projects.user_id as company_id',
+                'projects.title',
+                'projects.description',
+                \DB::Raw("TRIM(CONCAT({$prefix}users.first_name,' ',{$prefix}users.last_name)) as company_person_name"),
+                'users.company_name',
+                'projects.industry',
+                'projects.location',
+                'projects.created',
+                \DB::Raw("IF(({$prefix}industry.{$language} != ''),{$prefix}industry.`{$language}`, {$prefix}industry.`en`) as industry_name"),
+                'projects.price',
+                'projects.price_max',
+                'projects.budget_type',
+                'projects.price_type',
+                'projects.price_unit',
+                'projects.employment',
+                'projects.expertise',
+                \DB::Raw("
+                    IFNULL(
+                        IF(
+                            ({$prefix}city.`{$language}` != ''),
+                            {$prefix}city.`{$language}`,
+                            {$prefix}city.`en`
+                        ),
+                        ''
+                    ) as location_name"
+                ),
+                'projects.bonus',
+                'projects.project_status',
+                'projects.created',
+                \DB::Raw("GROUP_CONCAT(DISTINCT({$prefix}qualifications.qualification)) as required_qualifications"),
+                \DB::Raw("DATE({$prefix}projects.startdate) as startdate"),
+                \DB::Raw("DATE({$prefix}projects.enddate) as enddate"),
+                \DB::Raw("IF({$prefix}saved_jobs.id_saved IS NOT NULL,'".DEFAULT_YES_VALUE."','".DEFAULT_NO_VALUE."') as is_saved"),
+                \DB::Raw("GROUP_CONCAT(DISTINCT({$prefix}skills.skill)) as skills")
+            ];
+        
+            $table_projects->select($keys);
+            $table_projects->leftJoin('users as users','users.id_user','=','projects.user_id');
+            $table_projects->leftJoin('files as files','files.user_id','=','projects.user_id');
+            $table_projects->leftJoin('industries as industry','industry.id_industry','=','projects.industry');
+            $table_projects->leftJoin('industries as sub_industry','sub_industry.id_industry','=','projects.subindustry');
+            $table_projects->leftJoin('project_required_skills as skills','skills.project_id','=','projects.id_project');
+            $table_projects->leftJoin('project_required_qualifications as qualifications','qualifications.project_id','=','projects.id_project');            
+            $table_projects->leftJoin('city as city','city.id_city','=','projects.location');
+            $table_projects->leftJoin('chat_requests as chat_requests',function($leftjoin) use($talent_id){
+                $leftjoin->on('chat_requests.sender_id','=',\DB::Raw($talent_id));
+                $leftjoin->on('chat_requests.receiver_id','=','projects.user_id');
+            });
+            $table_projects->leftJoin('talent_proposals as proposals',function($leftjoin) use($talent_id){
+                $leftjoin->on('proposals.project_id','=','projects.id_project'); 
+                $leftjoin->on('proposals.user_id','=',\DB::Raw($talent_id)); 
+            });
+            
+            $table_projects->leftJoin('saved_jobs as saved_jobs',function($leftjoin) use($talent_id){
+                $leftjoin->on('saved_jobs.job_id','=','projects.id_project');
+                $leftjoin->where('saved_jobs.user_id','=',$talent_id);
+            });
+            
+            $table_projects->where('id_project',$project_id);
+
+            $job_details = json_decode(json_encode($table_projects->get()->first()),true);
+
+            $job_details['company_logo']            = get_file_url(\Models\Employers::get_file(sprintf(" type = 'profile' AND user_id = %s",$job_details['company_id']),'single',['filename','folder']));
+            $job_details['created']                 = sprintf("%s %s",trans('general.M0177'),___ago($job_details['created']));
+            $job_details['required_qualifications'] = (array) explode(',',$job_details['required_qualifications']);
+            $job_details['skills']                  = (array) explode(',',$job_details['skills']);
+
+            return $job_details;
+        }
+        
+        public static function getProjectListForNewsLetter(){
+            $prefix         = DB::getTablePrefix();
+            $language       = \App::getLocale();
+            $projectList = DB::table('projects as projects')
+            ->select([
+                'projects.id_project',
+                'projects.title',
+                \DB::Raw('`FIRST`('.$prefix.'projects.employment) AS employment'),
+                \DB::Raw('CONCAT('.$prefix.'projects.price_unit,'.$prefix.'projects.price) AS price'),
+                \DB::Raw('CONCAT('.$prefix.'projects.price_unit,'.$prefix.'projects.price_max) AS price_max'),
+                \DB::Raw('DATE_FORMAT('.$prefix.'projects.startdate, "%d %M %Y") AS startdate'),
+                \DB::Raw('DATE_FORMAT('.$prefix.'projects.enddate, "%d %M %Y") AS enddate'),
+                \DB::Raw('`FIRST`('.$prefix.'projects.project_status) AS project_status'),
+                \DB::Raw('CONCAT('.$prefix.'users.first_name, " ",'.$prefix.'users.last_name) AS name'),
+                'users.company_name',
+                \DB::Raw("IF(({$prefix}industries.{$language} != ''),{$prefix}industries.`{$language}`, {$prefix}industries.`en`) as industries_name"),
+                \DB::Raw("IF(({$prefix}subindustry.{$language} != ''),{$prefix}subindustry.`{$language}`, {$prefix}subindustry.`en`) as subindustry_name"),
+                ])
+            ->leftJoin('users', 'projects.user_id', '=', 'users.id_user')
+            ->leftJoin('industries', 'projects.industry', '=', 'industries.id_industry')
+            ->leftJoin('industries AS subindustry', 'projects.subindustry', '=', 'subindustry.id_industry')
+            ->where('projects.status', 'active')
+            ->where('projects.project_status', 'pending')
+            ->limit(10)
+            ->get()
+            ->toArray();
+
+            return json_decode(json_encode($projectList), true);
+        }
+
+        public static function closeProject(){
+            $prefix         = DB::getTablePrefix();
+            DB::table('projects as projects')
+            ->where('enddate', '<=', date('Y-m-d H:i:s'))
+            ->update(['project_status' => 'closed']);
+        }
+
+        public static function employer_actions($project_id){
+            $action                 = 'no';
+            $section                = '';
+            
+            $talent_id              = \App\Models\Proposals::accepted_proposal_id($project_id);
+            $project                = \Models\Projects::findById($project_id,['id_project','startdate','enddate','employment','user_id as company_id']);
+            $logs                   = \Models\ProjectLogs::findById($project_id);
+            $chat                   = \Models\Chats::is_chat_possible_with_talent($project['company_id'],$talent_id);
+            $dispute                = \Models\Projects::is_disputable($logs);
+            
+            if($logs['close'] == 'pending' && !empty($logs['enddate']) && strtotime(date('Y-m-d')) > strtotime($project['enddate'])){
+                $action     = 'yes';
+                $section    = 'closepending';
+            }else if(strtotime(date('Y-m-d')) > strtotime($project['enddate']) && strtotime(date('Y-m-d')) > strtotime($project['startdate'])){
+                $action         = 'no';    
+                $section        = 'job_expired';    
+            }else if(strtotime(date('Y-m-d')) <= strtotime($project['startdate']) && strtotime(date('Y-m-d')) <= strtotime($project['enddate']) && empty($talent_id)){
+                if(empty($talent_id)){
+                    $action     = 'yes';
+                    $section    = 'no_proposal_accepted';        
+                }
+            } else{
+                if(empty($logs['startdate'])){
+                    $action     = 'yes';
+                    $section    = 'start';
+                }else if(!empty($logs['startdate']) && $logs['start'] == 'pending'){
+                    $action     = 'yes';
+                    $section    = 'startpending';
+                }else if(empty($logs['enddate'])){
+                    $action     = 'yes';
+                    $section    = 'close';
+                }else if(!empty($logs['enddate']) && $logs['close'] == 'pending'){
+                    $action     = 'yes';
+                    $section    = 'closepending';
+                }
+            }
+
+            if(empty($talent_id)){
+                $chat = "";
+            }
+
+            return [
+                'id_project' => $project_id,
+                'receiver_id' => (string)$talent_id,
+                'sender_id' => (string)$project['company_id'],
+                'jobaction' => [
+                    'action' => $action, 
+                    'section' => $section, 
+                    'chat' => [
+                        'chataction' => $chat,
+                        'sender_id' => (string)$talent_id,
+                        'receiver_id' => (string)$project['company_id'],
+                    ], 
+                    'dispute' => $dispute
+                ]
+            ];
+        }
+
+        public static function talent_actions($project_id){
+            $action                 = 'no';
+            $section                = '';
+
+            $project                = \Models\Projects::findById($project_id,['id_project','startdate','enddate','employment','user_id as company_id']);
+            $proposal               = \App\Models\Proposals::project_proposal_detail($project_id,\Auth::user()->id_user);
+            $logs                   = \Models\ProjectLogs::findById($project_id);
+            $chat                   = \Models\Chats::is_chat_possible_with_employer(\Auth::user()->id_user,$project['company_id']);
+            $dispute                = \Models\Projects::is_disputable($logs);
+
+            if(strtotime(date('Y-m-d')) <= strtotime($project['startdate']) && strtotime(date('Y-m-d')) <= strtotime($project['enddate']) && (empty($proposal['status']) || $proposal['status'] !== 'accepted') && $project['employment'] != 'fulltime'){
+                if(empty($proposal['status'])){
+                    $action     = 'yes';
+                    if($project['employment'] == 'fulltime'){
+                        $section    = 'submit_application';
+                    }else{
+                        $section    = 'submit_proposal';
+                    }
+                }else if($proposal['status'] == 'applied'){
+                    $action     = 'no';
+                    
+                    if($project['employment'] == 'fulltime'){
+                        $section    = 'application_submitted';
+                    }else{
+                        $section    = 'proposal_submitted';
+                    }
+                }else{
+                    $action     = 'no';
+                    $section    = 'proposal_declined';
+                }
+            }else if($project['employment'] == 'fulltime'){
+                if(empty($proposal['status'])){
+                    $action     = 'yes';
+                    $section    = 'submit_application';
+                }else if($proposal['status'] == 'applied'){
+                    $action     = 'no';
+                    $section    = 'application_submitted';
+                }else{
+                    $action     = 'no';
+                    $section    = 'proposal_declined';
+                }
+            }else if(strtotime(date('Y-m-d')) > strtotime($project['enddate']) && strtotime(date('Y-m-d')) > strtotime($project['startdate'])){
+                $action         = 'no';    
+                $section        = 'job_expired';    
+            }else{
+                if(empty($logs['startdate'])){
+                    $action     = 'yes';
+                    $section    = 'start';
+                }else if(!empty($logs['startdate']) && $logs['start'] == 'pending'){
+                    $action     = 'yes';
+                    $section    = 'startpending';
+                }else if(empty($logs['enddate'])){
+                    $action     = 'yes';
+                    $section    = 'close';
+                }else if(!empty($logs['enddate']) && $logs['close'] == 'pending'){
+                    $action     = 'yes';
+                    $section    = 'closepending';
+                }
+            }
+
+            $talent_id      = \Auth::user()->id_user;
+            $employer_id    = $project['company_id'];
+
+            if(empty($proposal)){
+                $chat = '';
+            }
+
+            return [
+                'id_project' => $project_id,
+                'receiver_id' => $employer_id,
+                'sender_id' => $talent_id,
+                'jobaction' => [
+                    'action' => $action, 
+                    'section' => $section, 
+                    'chat' => [
+                        'chataction' => $chat,
+                        'sender_id' => $talent_id,
+                        'receiver_id' => $employer_id,
+                    ], 
+                    'dispute' => $dispute
+                ]
+            ];
+        }
+
+        public static function getProjectForNewsLetter($where_data){
+            $prefix         = DB::getTablePrefix();
+            $language       = \App::getLocale();
+
+            if(!empty($where_data)){
+                $where_data = implode(' AND ' . $prefix . 'projects.', $where_data);
+                $where_data = $prefix . 'projects.' . $where_data;
+            }
+            else{
+                $where_data = '';
+            }
+
+            $projectList = DB::table('projects as projects')
+            ->select([
+                'projects.id_project',
+                'projects.title',
+                \DB::Raw('`FIRST`('.$prefix.'projects.employment) AS employment'),
+                \DB::Raw('CONCAT('.$prefix.'projects.price_unit,'.$prefix.'projects.price) AS price'),
+                \DB::Raw('CONCAT('.$prefix.'projects.price_unit,'.$prefix.'projects.price_max) AS price_max'),
+                \DB::Raw('DATE_FORMAT('.$prefix.'projects.startdate, "%d %M %Y") AS startdate'),
+                \DB::Raw('DATE_FORMAT('.$prefix.'projects.enddate, "%d %M %Y") AS enddate'),
+                \DB::Raw('`FIRST`('.$prefix.'projects.project_status) AS project_status'),
+                \DB::Raw('CONCAT('.$prefix.'users.first_name, " ",'.$prefix.'users.last_name) AS name'),
+                'users.company_name',
+                \DB::Raw("IF(({$prefix}industries.{$language} != ''),{$prefix}industries.`{$language}`, {$prefix}industries.`en`) as industries_name"),
+                \DB::Raw("IF(({$prefix}subindustry.{$language} != ''),{$prefix}subindustry.`{$language}`, {$prefix}subindustry.`en`) as subindustry_name"),
+                ])
+            ->leftJoin('users', 'projects.user_id', '=', 'users.id_user')
+            ->leftJoin('industries', 'projects.industry', '=', 'industries.id_industry')
+            ->leftJoin('industries AS subindustry', 'projects.subindustry', '=', 'subindustry.id_industry')
+            ->where('projects.status', 'active')
+            ->where('projects.project_status', 'pending');
+            if(!empty($where_data)){
+                $projectList->whereRaw($where_data);
+            }
+            $projectList->limit(10);
+            $projectList = $projectList->get()->toArray();
+
+            return json_decode(json_encode($projectList), true);
+        }
+	}
+

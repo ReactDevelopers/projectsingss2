@@ -1,0 +1,177 @@
+<?php
+
+    namespace Models; 
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Mail;
+
+
+	class Portfolio extends Model{
+	    protected $table = 'talent_portfolio';
+	    protected $primaryKey = 'id_portfolio';
+
+		const CREATED_AT = 'created';
+		const UPDATED_AT = 'updated';
+
+        public function __construct(){
+    	}
+
+        /**
+         * [This method is used to save portfolio] 
+         * @param [type]$portfolio [Used for portfolio]
+         * @param [Integer]$portfolio_id[Used for portfolio id]
+         * @return Data Response
+         */ 
+
+	    public static function save_portfolio($portfolio,$portfolio_id = NULL){
+            if(!empty($portfolio_id)){
+                $table_portfolio = DB::table('talent_portfolio');   
+                $table_portfolio->where('id_portfolio',$portfolio_id)->update($portfolio);
+                return $portfolio_id;
+            }else{
+                $table_portfolio = DB::table('talent_portfolio');   
+                return $table_portfolio->insertGetId($portfolio);
+            }
+	    }
+
+        /**
+         * [This method is used to get portfolio] 
+         * @param [Integer]$user_id [Used for user id]
+         * @param [type]$where [Used for where clause]
+         * @param [type]$fetch [Used for fetch]
+         * @param [String]$keys[Used for keys]
+         * @param [Integer]$page[Used for paging]
+         * @param [Integer]$limit[Used for linit]
+         * @return Data Response
+         */ 
+
+	    public static function get_portfolio($user_id, $where = "",$fetch = 'all', $keys = NULL,$page = 0, $limit = DEFAULT_PAGING_LIMIT){
+			$table_portfolio = DB::table('talent_portfolio as portfolio');
+            $prefix = DB::getTablePrefix();
+            $offset = 0;
+            if(!empty($page)){
+                $offset = ($page - 1)*$limit;
+            }
+
+            if($fetch != 'rows' && !empty($limit)){
+                $table_portfolio->offset($offset);
+                $table_portfolio->limit($limit);
+            }
+
+            if(empty($keys)){
+                $keys = [
+                    'portfolio.id_portfolio',
+                    'portfolio.portfolio',
+                    'portfolio.description',
+                    'portfolio.description',
+                    'portfolio.created',
+                ];
+            }
+            $table_portfolio->select($keys);
+            $table_portfolio->where('portfolio.user_id', '=', \DB::Raw($user_id));
+
+            if(!empty($where)){
+                $table_portfolio->whereRaw($where);
+            }
+
+            if($fetch == 'count'){
+                return $table_portfolio->get()->count();
+            }else if($fetch == 'single'){
+            	$job_details = json_decode(json_encode($table_portfolio->get()->first()),true);
+
+                $table_files = \DB::table('files');
+                $table_files->select(['id_file','filename','folder','extension']);
+                $table_files->where('files.record_id',$job_details['id_portfolio']);
+                $table_files->where('files.type','portfolio');
+                $table_files->orderBy('files.id_file','DESC');
+
+                $job_details['file'] = json_decode(json_encode($table_files->get()),true);
+
+                if(!empty($job_details['file'])){
+                    array_walk($job_details['file'], function(&$item){
+                        $item['file'] = url(sprintf('%s%s',$item['folder'],$item['filename']));
+                    });
+                }
+
+                return $job_details;
+            }else if($fetch == 'all'){
+                $table_portfolio->offset($offset);
+                $table_portfolio->limit($limit); 
+                $table_portfolio->groupBy(['portfolio.id_portfolio']);
+                
+                $result = json_decode(json_encode($table_portfolio->get()),true);
+
+                foreach ($result as &$item) {
+                    $table_files = \DB::table('files');
+                    $table_files->select(['id_file','filename','folder','extension']);
+                    $table_files->where('files.record_id',$item['id_portfolio']);
+                    $table_files->where('files.type','portfolio');
+                    $table_files->orderBy('files.id_file','DESC');
+
+                    $item['file'] = json_decode(json_encode($table_files->get()),true);
+                }
+
+                return $result;
+            }else if($fetch == 'rows'){
+                $total = $table_projects->get()->count();
+                $table_portfolio->offset($offset);
+                $table_portfolio->limit($limit);
+                $table_portfolio->groupBy(['portfolio.id_portfolio']);
+                $all_portfolio  = json_decode(json_encode($table_portfolio->get()),true);
+
+                foreach ($all_portfolio as &$item) {
+                    $table_files = \DB::table('files');
+                    $table_files->select(['id_file','filename','folder']);
+                    $table_files->where('files.record_id',$item['id_portfolio']);
+                    $table_files->where('files.type','portfolio');
+                    $table_files->orderBy('files.id_file','DESC');
+
+                    $item['file'] = json_decode(json_encode($table_files->get()),true);
+                }
+                
+                return [
+                    'total_result' => $total,
+                    'total_filtered_result' => $table_portfolio->get()->count(),
+                    'result' => $all_portfolio,
+                ];                
+            }else{
+            	$table_portfolio->groupBy(['portfolio.id_portfolio']);
+                $result = $table_portfolio->get();
+                
+                foreach ($result as &$item) {
+                    $table_files = \DB::table('files');
+                    $table_files->select(['id_file','filename','folder']);
+                    $table_files->where('files.record_id',$item->id_portfolio);
+                    $table_files->where('files.type','portfolio');
+                    $table_files->orderBy('files.id_file','DESC');
+
+                    $item->file = json_decode(json_encode($table_files->get()),true);
+                }          
+
+                return $result;
+            }
+	    }
+
+        /**
+         * [This method is used to delete portfolio] 
+         * @param [Integer]$id_portfolio[Used for portfolio id]
+         * @param [Integer]$user_id[Used for user id]
+         * @return Boolean
+         */ 
+
+		public static function delete_portfolio($id_portfolio,$user_id){
+			$table_portfolio = \DB::table('talent_portfolio');
+			$table_files 	 = \DB::table('files');
+			$prefix 	 	 = DB::getTablePrefix();
+			$table_portfolio->whereRaw(sprintf(" id_portfolio = %s AND user_id = %s ",$id_portfolio , $user_id));
+			if($table_portfolio->delete()){
+				$table_files->whereRaw(sprintf("record_id = %s AND user_id = %s AND type='portfolio'",$id_portfolio , $user_id));
+				return $table_files->delete();
+			}
+			return false;
+		}
+
+
+	}

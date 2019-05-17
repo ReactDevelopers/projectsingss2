@@ -1,0 +1,40 @@
+@section('content')        
+    <div class="contentWrapper">
+        <div class="postjob-beforesubmit premiumAccount">
+            <div class="container">
+                <div class="right-sidebar">
+                    <h2>Proceed To Payment</h2>
+                    <div class="">
+                        <form class="form-horizontal" role="proceed_payment" action="{{url(sprintf('%s/proceed_payment',EMPLOYER_ROLE_TYPE))}}" method="post" accept-charset="utf-8">
+                            <div class="card-box">
+                                @foreach($user_card as $key => $item)
+                                    <div class="cardType" id="box-%s">
+                                        <label>
+                                            <input type="radio" name="card_id" value="{{ $item['id_card'] }}" autocomplete="off">
+                                            <span class="input-value">
+                                                <span><img src="{{ $item['image_url'] }}"/></span>
+                                                <span class="number-value">{{ $item['masked_number'] }}</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="form-group button-group">
+                                <div class="col-md-6 col-sm-offset-2">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <a href="{{ url(sprintf('%s/add/card',EMPLOYER_ROLE_TYPE)) }}" class="button">Add Card</a>
+                                        </div>
+                                        <div class="col-md-7">  
+                                            <button type="button" data-request="ajax-submit" data-target='[role="proceed_payment"]' class="button" value="Proceed To Checkout">Proceed To Checkout</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                            
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

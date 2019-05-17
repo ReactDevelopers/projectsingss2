@@ -1,0 +1,1 @@
+ãu-resources/views/talent/profile/four.blade.php 2phpXRhr-resources/views/talent/profile/four.blade.php

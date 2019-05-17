@@ -1,0 +1,268 @@
+@section('content')
+    <div class="contentWrapper job-listing-section">
+        <div class="container">
+            <div class="col-md-9">
+                <div class="content-box">
+                    <div class="content-box-header clearfix">
+                        <img src="{{ asset(@$job_details['company_logo']) }}" alt="profile" class="job-profile-image" />
+                        <div class="contentbox-header-title">
+                            <h3><a href="javascript:void(0);">{{ @$job_details['title'] }}</a></h3>
+                            <span class="company-name">{{ @$job_details['company_name'] }}</span>
+                        </div>
+                        <div class="contentbox-price-range">
+                            <span>
+                                {{___format($job_details['price'],true,true)}}
+                                
+                                @if(!empty($job_details['price_max']))
+                                    {{ ' - '.___format($job_details['price_max'],true,true) }}
+                                @endif
+                            </span>
+                            <small>{{ trans(sprintf('general.%s',$job_details['budget_type'])) }}</small>
+                        </div>    
+                    </div>
+                    <div class="contentbox-minutes clearfix">
+                        <div class="minutes-left">
+                            <span>{{trans('job.J0003')}}: <strong>{{ @$job_details['industry_name'] }}</strong></span>
+                            
+                            @if($job_details['employment'] !== 'fulltime')
+                                <span>{{trans('job.J0004')}}: 
+                                    <strong>{{___date_difference($job_details['startdate'],$job_details['enddate'])}}</strong>
+                                </span>
+                            @else
+                                @if(!empty($job_details['bonus']))
+                                    <span>{{trans('job.J0096')}}: 
+                                        <strong>{{$job_details['price_unit'].___format($job_details['bonus'],true,true)}}</strong>
+                                    </span>
+                                @endif
+
+                                @if(!empty($job_details['location_name']))
+                                    <span>{{trans('job.J0097')}}: 
+                                        <strong>{{$job_details['location_name']}}</strong>
+                                    </span>
+                                @endif
+                            @endif
+                            <span>{{trans('job.J0005')}}: <strong>{{ @$job_details['job_type'] }}</strong></span>
+                            <span>
+                                {{trans('job.J0006')}}: 
+                                <strong>
+                                    @if(!empty(@$job_details['expertise'])) 
+                                        {{expertise_levels(@$job_details['expertise']) }}
+                                    @else
+                                        {{ N_A }}
+                                    @endif
+                                </strong>
+                            </span>
+                        </div>
+                        <div class="minutes-right">
+                            <span class="posted-time">{{ @$job_details['created'] }}</span>
+                        </div>
+                    </div>
+                    <div class="content-box-description">
+                        @if(strlen($job_details['description']) > READ_MORE_LENGTH)
+                            <p>{!! substr($job_details['description'], 0,READ_MORE_LENGTH) !!}..</p>
+                        @else
+                            <p>{!! $job_details['description'] !!}</p>
+                        @endif
+                        
+                        <a href="{{ url(sprintf('%s/jobs/job-details?job_id=%s',TALENT_ROLE_TYPE,$project_id)) }}" class="more-jobdetail">{{trans('job.J0017')}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="col-md-9">
+                <div class="talent-submit-proposals">
+                    @if($mode == 'submit')
+                        <div class="login-inner-wrapper no-padding no-background">
+                            <div class="col-md-12 top-margin-20px">
+                                <div class="col-md-12">
+                                    <div class="small-submit-proposal-text">
+                                        @if($job_details['employment'] == 'fulltime')
+                                            <h2 class="form-heading">{{ trans('job.J0073') }}</h2>
+                                            @if(!empty($user['expected_salary']))
+                                                <small>{{ sprintf(trans('job.J0075'),___currency($user['expected_salary'],true,true)) }}</small>
+                                            @else
+                                                <small>{!! trans('job.J0076') !!}</small>
+                                            @endif
+                                        @else
+                                            <h2 class="form-heading">{{ trans('job.J0018') }}</h2>
+                                            @php 
+                                                if($user['workrate_unit'] == 'per hour'){
+                                                    $work_rate_type = strtoupper(trans('website.W0035'));
+                                                    $work_rate_postfix = trans('job.J00110');
+                                                }elseif($user['workrate_unit'] == 'per day'){
+                                                    $work_rate_type = strtoupper(trans('website.W0036'));
+                                                    $work_rate_postfix = trans('job.J00111');
+                                                }elseif($user['workrate_unit'] == 'per week'){
+                                                    $work_rate_type = strtoupper(trans('website.W0037'));
+                                                    $work_rate_postfix = trans('job.J00112');
+                                                }elseif($user['workrate_unit'] == 'per month'){
+                                                    $work_rate_type = strtoupper(trans('website.W0038'));
+                                                    $work_rate_postfix = trans('job.J00113');
+                                                }else{
+                                                    $work_rate_type = "";
+                                                    $work_rate_postfix = "";
+                                                }
+                                            @endphp
+                                            @if(!empty($user['workrate']))
+                                                <small>{{ sprintf(trans('job.J0019'),$work_rate_type,___currency($user['workrate'],true,true), $work_rate_postfix) }}</small>
+                                            @else
+                                                <small>{!! trans('job.J0051') !!}</small>
+                                            @endif
+                                        @endif
+                                    </div>
+                                    
+                                    <form class="form-horizontal" action="{{ url(sprintf('%s/proposals/submit?project_id=%s',TALENT_ROLE_TYPE,$project_id)) }}" role="submit_proposal" method="post" accept-charset="utf-8">
+                                        {{ csrf_field() }}
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12"> 
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-12">
+                                                        @if($job_details['employment'] == 'fulltime') 
+                                                            {!!trans('job.J0074')!!}
+                                                        @else
+                                                            {!!trans('job.J0021')!!}
+                                                        @endif
+                                                    </label>
+                                                    <div class="col-md-12">
+                                                        <span class="inputMessage text-right">{{trans('job.J0020')}}</span>
+                                                        <input type="text" name="quoted_price" placeholder="0" class="form-control" data-request="input-keyup" data-copy-source='[name="submission_fee"]' data-paste-destination='[name="recieving_amount"]'/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-12">
+                                                        @if($job_details['employment'] == 'fulltime') 
+                                                            {!!trans('job.J0077')!!}
+                                                        @else
+                                                            {!!trans('job.J0024')!!}
+                                                        @endif
+                                                        <span>({{trans('job.J0025')}})</span>
+                                                    </label>
+                                                    <div class="col-md-12">
+                                                        <textarea style="height:auto;" type="text" name="comments" rows="4" placeholder="{{trans('job.J0031')}}" class="form-control"></textarea>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" name="proposal_docs" >
+                                                <button class="hide" id="proposal-form" type="button" data-request="ajax-submit" data-target='[role="submit_proposal"]' name="submit" class="button" value="Submit">
+                                                    {{trans('job.J0029')}}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    
+                                    <div class="col-md-6 col-sm-6 col-xs-12 shift-up-relative">
+                                        <div class="row">
+                                            <form class="form-horizontal" action="{{ url(sprintf('%s/proposals/submit/document?project_id=%s',TALENT_ROLE_TYPE,$project_id)) }}" role="doc-submit" method="post" accept-charset="utf-8">
+                                                <div class="form-group attachment-group">
+                                                    <label class="control-label col-md-12">{{trans('website.W0112')}}</label>
+                                                    <div class="col-md-12">
+                                                        <div class="upload-box">
+                                                        </div>
+                                                        <div class="single-remove">
+                                                            <div class="fileUpload upload-docx"><span>{{trans('website.W0519')}}</span>
+                                                                <input type="file" name="file" class="upload" data-request="doc-submit" data-toadd =".upload-box" data-after-upload=".single-remove" data-target='[role="doc-submit"]' data-single="true"/>
+                                                            </div>
+                                                            <span class="upload-hint">{{trans('job.J0030')}}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+
+                        <div class="row form-group button-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="row form-btn-set">
+                                    <div class="col-md-7 col-sm-7 col-xs-6">
+                                        <a href="{{ url()->previous() }}" class="greybutton-line">{{trans('job.J0028')}}</a>
+                                    </div>
+                                    <div class="col-md-5 col-sm-5 col-xs-6">
+                                        <button id="doc-button" type="button" data-request="trigger-proposal" data-target="#proposal-form" data-copy-source='[name="documents[]"]' data-copy-destination='[name="proposal_docs"]' class="button" value="Submit">
+                                                {{trans('website.W0013')}}
+                                            </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        @if($job_details['employment'] == 'fulltime')
+                            <h2 class="form-heading">{{ trans('job.J0079') }}</h2>
+                        @else
+                            <h2 class="form-heading">{{ trans('job.J0052') }}</h2>
+                        @endif
+                        <div class="row padding-top">
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-3">
+                                    @if($job_details['employment'] == 'fulltime') 
+                                        {!!trans('job.J0074')!!}
+                                    @else
+                                        {!!trans('job.J0021')!!}
+                                    @endif
+                                </label>
+                                <label class="info-label col-md-7">
+                                    {!! sprintf('<b>%s</b> <small>%s</small>',___format($proposals[0]->quoted_price,true,true),job_types_rates_postfix($job_details['employment'])) !!}
+                                </label>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="control-label col-md-3">
+                                    @if($job_details['employment'] == 'fulltime') 
+                                        {!!trans('job.J0077')!!}
+                                    @else
+                                        {!!trans('job.J0024')!!}
+                                    @endif
+                                </label>
+                                <label class="info-label col-md-7">
+                                    {!! !empty($proposals[0]->comments) ? nl2br($proposals[0]->comments) : N_A !!}
+                                </label>
+                            </div>
+                            <div class="form-group clearfix uploaded-docx">
+                                <label class="control-label col-md-6">{{ trans('job.J0026') }}</label>
+                                <div class="col-md-6">
+                                    <div class="row cross-multiply">
+                                        @php
+                                            if(!empty($proposals)){
+                                                foreach ($proposals as $key => $value) {
+                                                    $url_delete = sprintf(
+                                                        url('ajax/%s?id_file=%s'),
+                                                        DELETE_DOCUMENT,
+                                                        $value->id_file
+                                                    );
+
+                                                    echo sprintf(
+                                                        PROPOSALS_TEMPLATE,
+                                                        $value->id_file,
+                                                        url(sprintf('/download/file?file_id=%s',___encrypt($value->id_file))),
+                                                        asset('/'),
+                                                        substr($value->filename,0,3),
+                                                        $value->size,
+                                                        $url_delete,
+                                                        $value->id_file,
+                                                        asset('/'),
+                                                        $value->id_file
+                                                    );  
+                                                }
+                                            }else{
+                                                echo N_A;
+                                            }
+                                        @endphp
+                                    </div>
+                                </div>    
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+@push('inlinescript')
+    @if($mode != 'submit')
+        <style>.uploaded-docx a.delete-docx {display: none;}</style>
+    @endif
+@endpush

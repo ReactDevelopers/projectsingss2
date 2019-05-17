@@ -1,0 +1,1 @@
+Çt2resources/views/vendor/datatables/script.blade.php 2phpXhr2resources/views/vendor/datatables/script.blade.php

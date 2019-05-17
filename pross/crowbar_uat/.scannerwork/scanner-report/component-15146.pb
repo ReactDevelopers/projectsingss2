@@ -1,0 +1,1 @@
+ªv4resources/views/talent/jobdetail/proposals.blade.php 2phpX"hr4resources/views/talent/jobdetail/proposals.blade.php

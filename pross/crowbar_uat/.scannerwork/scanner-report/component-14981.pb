@@ -1,0 +1,1 @@
+…u,resources/views/front/pages/forgot.blade.php 2phpXShr,resources/views/front/pages/forgot.blade.php

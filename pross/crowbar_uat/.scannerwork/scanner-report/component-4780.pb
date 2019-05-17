@@ -1,0 +1,1 @@
+¬%&node_modules/vm-browserify/example/run :«%r&node_modules/vm-browserify/example/run

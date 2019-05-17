@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class JobTitle extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('job_title', function (Blueprint $table) {
+            $table->increments('id_job_title');
+            $table->string('job_title_name', 100);
+            $table->enum('job_title_status', ['active', 'inactive', 'trashed'])->default('active');
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('job_title');
+    }
+}
+

@@ -1,0 +1,5 @@
+@if($user['is_subscribed'] == 'yes')
+	@include('employer.premium.talents')
+@else
+	@include('employer.premium.package')
+@endif

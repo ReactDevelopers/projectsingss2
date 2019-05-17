@@ -1,0 +1,1 @@
+ïw2resources/views/backend/talent/portfolio.blade.php 2phpXMhr2resources/views/backend/talent/portfolio.blade.php

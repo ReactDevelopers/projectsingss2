@@ -1,0 +1,1 @@
+èu.resources/views/front/pages/activate.blade.php 2phpX2hr.resources/views/front/pages/activate.blade.php

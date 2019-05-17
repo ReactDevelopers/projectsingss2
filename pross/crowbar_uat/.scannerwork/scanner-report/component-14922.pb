@@ -1,0 +1,1 @@
+Êt*resources/views/vendor/translation-manager :Étr*resources/views/vendor/translation-manager

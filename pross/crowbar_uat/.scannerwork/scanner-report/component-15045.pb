@@ -1,0 +1,1 @@
+Åu2resources/views/talent/settings/currency.blade.php 2phpXhr2resources/views/talent/settings/currency.blade.php

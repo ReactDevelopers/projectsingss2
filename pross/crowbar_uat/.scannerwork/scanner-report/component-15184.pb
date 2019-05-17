@@ -1,0 +1,1 @@
+Ðv1resources/views/talent/viewprofile/view.blade.php 2phpX˜hr1resources/views/talent/viewprofile/view.blade.php

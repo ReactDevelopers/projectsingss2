@@ -1,0 +1,1 @@
+øtGresources/views/front/pages/talent_profile/includes/education.blade.php 2phpX'hrGresources/views/front/pages/talent_profile/includes/education.blade.php

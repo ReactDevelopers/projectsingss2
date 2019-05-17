@@ -1,0 +1,3162 @@
+<?php
+
+    namespace App\Http\Controllers\Api;
+
+    use App\Http\Requests;
+    use Illuminate\Http\Request;
+    use Illuminate\Validation\Rule;
+    use Illuminate\Support\Facades\DB;
+
+    use App\Http\Controllers\Controller;
+    use App\Models\Proposals;
+    use App\Models\File;
+
+    class Talent extends Controller{
+        
+        /**
+         * Create a new controller instance.
+         *
+         * @return void
+         */
+        protected $jwt;
+        private $post;
+        private $token;
+        private $status;
+        private $jsondata;
+        private $status_code;
+        private $prefix;
+
+        public function __construct(Request $request){
+            $this->jsondata     = (object)[];
+            $this->message      = "M0000";
+            $this->error_code   = "no_error_found";
+            $this->status       = false;
+            $this->status_code  = 200;
+            $this->prefix       = \DB::getTablePrefix();
+
+            $json = json_decode(file_get_contents('php://input'),true);
+            if(!empty($json)){
+                $this->post = $json;
+            }else{
+                $this->post = $request->all();
+            }
+
+            /*RECORDING API REQUEST IN TABLE*/
+            \Models\Listings::record_api_request([
+                'url' => $request->url(),
+                'request' => json_encode($this->post),
+                'type' => 'webservice',
+                'created' => date('Y-m-d H:i:s')
+            ],$request);
+        }
+
+        private function populateresponse($data){
+            $data['message'] = (!empty($data['message']))?"":$this->message;
+            
+            if(empty($this->error)){
+                $data['error'] = trans(sprintf("general.%s",$data['message']));     
+            }else{
+                $data['error'] = $this->error;
+            }
+
+            $data['error_code'] = "";
+
+            if(empty($data['status'])){
+                $data['status'] = $this->status;
+                $data['error_code'] = $this->message;
+            }
+            
+            $data['status_code'] = $this->status_code;
+            
+            $data = json_decode(json_encode($data),true);
+
+            array_walk_recursive($data, function(&$item,$key){
+                if($key === 'invitation'){
+                    $item = (object)[];
+                } else if (gettype($item) == 'integer' || gettype($item) == 'float' || gettype($item) == 'NULL'){
+                    $item = trim($item);
+                }
+            });
+
+            if(empty($data['data'])){
+                $data['data'] = (object) $data['data'];
+            }
+
+            return $data;
+        }
+
+        public function viewprofile(Request $request){
+            $user = \Models\Talents::get_user($request->user(),true);
+            
+            if(!empty($user)){
+                $this->status = true;
+            }
+
+            $this->jsondata = [
+                'user' => $user
+            ];
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_one(Request $request){
+            $request->replace($this->post);
+            $validation_mobile = validation('phone_number'); unset($validation_mobile[0]);
+            
+            $validate = \Validator::make($request->all(), [
+                'first_name'                => validation('first_name'),
+                'last_name'                 => validation('last_name'),
+                'email'                     => ['required','email',Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],
+                'birthday'                  => array_merge(['min_age:14'],validation('birthday')),
+                'gender'                    => validation('gender'),
+                'mobile'                    => array_merge([Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],validation('mobile')),
+                'address'                   => validation('address'),
+                'country'                   => validation('country'),
+                'country_code'              => $request->mobile ? array_merge(['required'], validation('country_code')) : validation('country_code'),
+                'state'                     => validation('state'),
+                'city'                      => validation('city'),
+                'postal_code'               => validation('postal_code'),
+            ],[
+                'first_name.required'       => 'M0006',
+                'first_name.regex'          => 'M0007',
+                'first_name.string'         => 'M0007',
+                'first_name.max'            => 'M0020',
+                'last_name.required'        => 'M0008',
+                'last_name.regex'           => 'M0009',
+                'last_name.string'          => 'M0009',
+                'last_name.max'             => 'M0019',
+                'email.required'            => 'M0010',
+                'email.email'               => 'M0011',
+                'email.unique'              => 'M0047',
+                'birthday.regex'            => 'M0054',
+                'birthday.min_age'          => 'M0055',
+                'gender.string'             => 'M0056',
+                'mobile.required'           => 'M0030',
+                'mobile.regex'              => 'M0031',
+                'mobile.string'             => 'M0031',
+                'mobile.min'                => 'M0032',
+                'mobile.max'                => 'M0033',
+                'mobile.unique'             => 'M0197',
+                'address.string'            => 'M0057',
+                'address.regex'             => 'M0057',
+                'address.max'               => 'M0058',
+                'country.integer'           => 'M0059',
+                'state.integer'             => 'M0060',
+                'city.integer'              => 'M0254',
+                'postal_code.string'        => 'M0061',
+                'postal_code.regex'         => 'M0061',
+                'postal_code.max'           => 'M0062',
+                'postal_code.min'           => 'M0063',
+                'country_code.string'       => 'M0074',
+                'country_code.required'     => 'M0074',
+            ]);
+
+            // $validator->after(function($v) use($request){
+            //     $res = validatePayPalEmail($request->email);
+            //     if($res == 'Failure'){
+            //         $v->errors()->add('email',trans('general.valid_paypal_email'));
+            //     }
+            // });            
+
+            if($validate->fails()){
+                $this->message = $validate->messages()->first();                
+            }else{
+                $update = array_intersect_key(
+                    json_decode(json_encode($this->post),true), 
+                    array_flip(
+                        array(
+                            'gender',
+                            'first_name',
+                            'last_name',
+                            'email',
+                            'birthday',
+                            'country_code',
+                            'mobile',
+                            'country',
+                            'state',
+                            'city',
+                            'address',
+                            'postal_code',
+                        )
+                    )
+                );
+                
+                /*
+                *   REPLACING ALL BLANK STRING WITH 
+                *   NULL BECAUSE OF LARAVEL MYSQL 
+                *   DRIVER ASKING FOR INTEGER VALUE 
+                *   FOR INTEGER COLUMN TYPE
+                */
+                ___filter_null($update);
+                if(empty($update['agree'])){
+                    $update['agree'] = DEFAULT_YES_VALUE;
+                }
+
+                if(empty($update['agree_pricing'])){
+                    $update['agree_pricing'] = DEFAULT_YES_VALUE;
+                }
+
+                if($update['mobile'] != $request->user()->mobile){
+                    $update['is_mobile_verified'] = DEFAULT_NO_VALUE;
+                }
+                
+                $isUpdated = \Models\Talents::change($request->user()->id_user,$update);
+
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-step-one',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+                
+                $this->status = true;
+                $this->jsondata = [
+                    'user' => \Models\Talents::get_user($request->user(),true)
+                ];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_one_picture(Request $request){
+            
+            $validate = \Validator::make($request->all(), [
+                "image"              => validation('image'),
+            ],[
+                'image.mimetypes'    => 'M0120',
+            ]);
+
+            if($validate->fails()){
+                $this->message = $validate->messages()->first();
+            }else{
+                $folder = 'uploads/profile/';
+
+                $uploaded_file = upload_file($request,'image',$folder);
+                $data = [
+                    'user_id' => $request->user()->id_user,
+                    'reference' => 'users',
+                    'filename' => $uploaded_file['filename'],
+                    'extension' => $uploaded_file['extension'],
+                    'folder' => $folder,
+                    'type' => 'profile',
+                    'size' => $uploaded_file['size'],
+                    'is_default' => DEFAULT_NO_VALUE,
+                    'created' => date('Y-m-d H:i:s'),
+                    'updated' => date('Y-m-d H:i:s'),
+                ];
+
+                $isInserted = \Models\Talents::create_file($data,false,true);
+
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-set-profile-picture',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+                
+                if(!empty($isInserted)){
+                    $isInserted['file_url'] = asset(sprintf("%s%s",$isInserted['folder'],$isInserted['filename']));
+                    
+                    $this->status = true;
+                    $this->jsondata = $isInserted;
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_two(Request $request){
+            if(empty($this->post['workrate'])){
+                $this->post['workrate'] = "";
+            }
+            
+            if(empty($this->post['expected_salary'])){
+                $this->post['expected_salary'] = "";
+            }
+
+            $request->replace($this->post);
+
+            $validate = \Validator::make($request->all(), [
+                'interests'                     => validation('interests'),
+                'expected_salary'               => validation('expected_salary'),
+                'other_expectations'            => validation('other_expectations'),
+                'agree'                         => validation('agree_pricing'),
+                'industry'                      => validation('industry'),
+                'subindustry'                   => validation('subindustry'),
+                'skills'                        => validation('skills'),
+                'expertise'                     => validation('expertise'),
+                'experience'                    => validation('experience'),
+                'workrate'                      => validation('workrate'),
+                'workrate_max'                  => validation('workrate_max'),
+                'workrate_unit'                 => validation('workrate_unit'),
+                'workrate_information'          => validation('workrate_information'),
+                'certificates'                  => validation('certificates'),
+            ],[
+                'expected_salary.required_range'=> 'M0264',
+                'expected_salary.integer'       => 'M0049',
+                'expected_salary.max'           => 'M0050',
+                'expected_salary.min'           => 'M0051',
+                'other_expectations.max'        => 'M0052',
+                'other_expectations.min'        => 'M0053',
+                'agree.required_range'          => 'M0253',
+                'agree.required'                => 'M0253',
+                'industry.integer'              => 'M0064',
+                'subindustry.integer'           => 'M0065',
+                'expertise.string'              => 'M0066',
+                'experience.numeric'            => 'M0067',
+                'experience.max'                => 'M0068',
+                'experience.min'                => 'M0069',
+                'workrate.min'                  => 'M0261',
+                'workrate.numeric'              => 'M0070',
+                'workrate.numeric_range'        => 'M0258',
+                'workrate.different'            => 'M0263',
+                'workrate.required_range'       => 'M0259',
+                'workrate.required_having'      => 'M0259',
+                'workrate_max.numeric'          => 'M0256',
+                'workrate_max.min'              => 'M0262',
+                'workrate_unit.string'          => 'M0257',
+                'workrate_unit.required_with'   => 'M0260',
+                'workrate_information.string'   => 'M0071',
+                'workrate_information.regex'    => 'M0071',
+                'workrate_information.max'      => 'M0072',
+                'workrate_information.min'      => 'M0073',
+            ]);
+            
+            if($validate->fails()){
+                $this->message = $validate->messages()->first();
+            }else{
+                $update = array_intersect_key(
+                    json_decode(json_encode($this->post),true), 
+                    array_flip(
+                        array(
+                            'expected_salary',
+                            'other_expectations',
+                            'agree',
+                            'industry',
+                            'subindustry',
+                            'expertise',
+                            'experience',
+                            'workrate',
+                            'workrate_max',
+                            'workrate_unit',
+                            'workrate_information',
+                        )
+                    )
+                );
+
+                /*
+                *   REPLACING ALL BLANK STRING WITH 
+                *   NULL BECAUSE OF LARAVEL MYSQL 
+                *   DRIVER ASKING FOR INTEGER VALUE 
+                *   FOR INTEGER COLUMN TYPE
+                */
+
+                if(!empty($update['agree'])){
+                    $update['agree_pricing'] = $update['agree'];
+                }
+
+                ___filter_null($update);
+                
+                $isUpdated = \Models\Talents::change($request->user()->id_user,$update);
+
+                /*REMOVE AND ADD NEWLY SELECTED INTERESTES*/
+                \Models\Talents::update_interest($request->user()->id_user,$this->post['interests']);    
+
+                /*REMOVE AND ADD NEWLY SELECTED SKILLS*/
+                \Models\Talents::update_skill($request->user()->id_user,$this->post['skills'],$update['subindustry']);
+
+                /*REMOVE AND ADD NEWLY SELECTED CERTIFICATES*/
+                \Models\Talents::update_certificate($request->user()->id_user,$this->post['certificates']);
+
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-step-two',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+                
+                $this->status = true;
+                $this->jsondata = [
+                    'user' => \Models\Talents::get_user($request->user(),true)
+                ];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three(Request $request){
+            $request->replace($this->post);
+
+            $validate = \Validator::make($request->all(), [
+                'cover_letter_description'          => validation('cover_letter_description'),
+            ],[
+                'cover_letter_description.string'   => 'M0075',
+                'cover_letter_description.regex'    => 'M0075',
+                'cover_letter_description.max'      => 'M0076',
+                'cover_letter_description.min'      => 'M0077',
+            ]);
+
+            if($validate->fails()){
+                $this->message = $validate->messages()->first();
+            }else{
+                $update = array_intersect_key(
+                    json_decode(json_encode($this->post),true), 
+                    array_flip(
+                        array(
+                            'cover_letter_description',
+                        )
+                    )
+                );
+
+                /*
+                *   REPLACING ALL BLANK STRING WITH 
+                *   NULL BECAUSE OF LARAVEL MYSQL 
+                *   DRIVER ASKING FOR INTEGER VALUE 
+                *   FOR INTEGER COLUMN TYPE
+                */
+                
+                ___filter_null($update);
+                $isUpdated = \Models\Talents::change($request->user()->id_user,$update);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-step-three',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+                
+                $this->status = true;
+                $this->jsondata = [
+                    'user' => \Models\Talents::get_user($request->user(),true)
+                ];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three_education(Request $request){
+            $request->replace($this->post);
+
+            $validate = \Validator::make($request->all(), [
+                "college"                           => validation('college'),
+                "degree"                            => validation('degree'),
+                "passing_year"                      => validation('passing_year'),
+                "area_of_study"                     => validation('area_of_study'),
+                "degree_status"                     => validation('degree_status'),
+                "degree_country"                    => array_merge(['required'],validation('country')),
+            ],[
+                'college.required'                  => 'M0078',
+                'college.string'                    => 'M0079',
+                'college.regex'                     => 'M0079',
+                'college.max'                       => 'M0080',
+                'degree.required'                   => 'M0081',
+                'degree.integer'                    => 'M0082',
+                'passing_year.required'             => 'M0083',
+                'passing_year.integer'              => 'M0084',
+                'area_of_study.required'            => 'M0085',
+                'area_of_study.integer'             => 'M0086',
+                'degree_status.required'            => 'M0087',
+                'degree_status.integer'             => 'M0088',
+                'degree_country.required'           => 'M0089',
+                'degree_country.integer'            => 'M0059',
+            ]);
+
+            if($validate->fails()){
+                $this->message = $validate->messages()->first();
+            }else{
+                $update = array_intersect_key(
+                    json_decode(json_encode($this->post),true), 
+                    array_flip(
+                        array(
+                            'college',
+                            'degree',
+                            'passing_year',
+                            'area_of_study',
+                            'degree_status',
+                            'degree_country',
+                        )
+                    )
+                );
+
+                /*
+                *   REPLACING ALL BLANK STRING WITH 
+                *   NULL BECAUSE OF LARAVEL MYSQL 
+                *   DRIVER ASKING FOR INTEGER VALUE 
+                *   FOR INTEGER COLUMN TYPE
+                */
+
+                ___filter_null($update);
+                $isInserted = \Models\Talents::add_education($request->user()->id_user,$this->post);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-add-education',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+                
+                $this->status = true;
+                $this->jsondata = [
+                    'educations' => \Models\Talents::get_education(sprintf(" id_education = %s ",$isInserted))
+                ];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three_education_edit(Request $request){
+            $request->replace($this->post);
+
+            if(empty($this->post['id_education'])){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_education');
+            }else if(empty(\Models\Talents::get_education(sprintf(" id_education = %s AND user_id = %s ",$this->post['id_education'], $request->user()->id_user),'count'))){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_education');
+            }else{
+
+                $validate = \Validator::make($request->all(), [
+                    "college"                           => validation('college'),
+                    "degree"                            => validation('degree'),
+                    "passing_year"                      => validation('passing_year'),
+                    "area_of_study"                     => validation('area_of_study'),
+                    "degree_status"                     => validation('degree_status'),
+                    "degree_country"                    => array_merge(['required'],validation('country')),
+                ],[
+                    'college.required'                  => 'M0078',
+                    'college.string'                    => 'M0079',
+                    'college.regex'                     => 'M0079',
+                    'college.max'                       => 'M0080',
+                    'degree.required'                   => 'M0081',
+                    'degree.integer'                    => 'M0082',
+                    'passing_year.required'             => 'M0083',
+                    'passing_year.integer'              => 'M0084',
+                    'area_of_study.required'            => 'M0085',
+                    'area_of_study.integer'             => 'M0086',
+                    'degree_status.required'            => 'M0087',
+                    'degree_status.integer'             => 'M0088',
+                    'degree_country.required'           => 'M0089',
+                    'degree_country.integer'            => 'M0059',
+                ]);
+
+                if($validate->fails()){
+                    $this->message = $validate->messages()->first();
+                }else{
+                    $update = array_intersect_key(
+                        json_decode(json_encode($this->post),true), 
+                        array_flip(
+                            array(
+                                'college',
+                                'degree',
+                                'passing_year',
+                                'area_of_study',
+                                'degree_status',
+                                'degree_country',
+                            )
+                        )
+                    );
+
+                    /*
+                    *   REPLACING ALL BLANK STRING WITH 
+                    *   NULL BECAUSE OF LARAVEL MYSQL 
+                    *   DRIVER ASKING FOR INTEGER VALUE 
+                    *   FOR INTEGER COLUMN TYPE
+                    */
+
+                    ___filter_null($update);
+                    \Models\Talents::update_education($this->post['id_education'],$update);
+                
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-update-education',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+                    
+                    $this->status = true;
+                    $this->jsondata = [
+                        'educations' => \Models\Talents::get_education(sprintf(" id_education = %s ",$this->post['id_education']))
+                    ];
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three_education_delete(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($this->post['id_education'])){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_education');
+            }else if(empty(\Models\Talents::get_education(sprintf(" id_education = %s AND user_id = %s ",$this->post['id_education'], $request->user()->id_user),'count'))){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_education');
+            }else{
+                $isDeleted = \Models\Talents::delete_education(sprintf(" id_education = %s AND user_id = %s ",$this->post['id_education'], $request->user()->id_user));
+
+                if(!empty($isDeleted)){
+                
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-delete-education',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+                    
+                    $this->status = true;
+                    $this->message = 'M0124';
+                }else{
+                    $this->message = 'M0048'; 
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three_work_experience(Request $request){
+            $request->replace($this->post);
+
+            $request->request->add(['startdate' => sprintf("%s-%s",$request->joining_year,$request->joining_month)]);
+            if(!empty($request->relieving_year) && !empty($request->relieving_month)){
+                $request->request->add(['enddate' => sprintf("%s-%s",$request->relieving_year,$request->relieving_month)]);
+            }
+            $validation_reliving_month  = validation('relieving_month'); unset($validation_reliving_month[0]);
+            $validation_reliving_year   = validation('relieving_year'); unset($validation_reliving_year[0]);
+            $validate = \Validator::make($request->all(), [
+                "jobtitle"                          => validation('jobtitle'),
+                "company_name"                      => validation('company_name'),
+                "joining_month"                     => validation('joining_month'),
+                "joining_year"                      => validation('joining_year'),
+                "is_currently_working"              => validation('is_currently_working'),
+                "job_type"                          => validation('job_type'),
+                "relieving_month"                   => array_merge(['required_unless:is_currently_working,'.DEFAULT_YES_VALUE],$validation_reliving_month),
+                "relieving_year"                    => array_merge(['required_unless:is_currently_working,'.DEFAULT_YES_VALUE],$validation_reliving_year),
+                "country"                           => array_merge(['required'],validation('country')),
+                "state"                             => validation('state'),
+            ],[
+                'jobtitle.required'                 => 'M0090',
+                'jobtitle.string'                   => 'M0091',
+                'jobtitle.regex'                    => 'M0091',
+                'jobtitle.max'                      => 'M0092',
+                'jobtitle.min'                      => 'M0093',
+                'company_name.required'             => 'M0023',
+                'company_name.regex'                => 'M0024',
+                'company_name.string'               => 'M0024',
+                'company_name.max'                  => 'M0025',
+                'joining_month.required'            => 'M0094',
+                'joining_month.string'              => 'M0095',
+                'joining_year.required'             => 'M0096',
+                'joining_year.string'               => 'M0097',
+                'is_currently_working.required'     => 'M0098',
+                'is_currently_working.string'       => 'M0099',
+                'job_type.required'                 => 'M0100',
+                'job_type.string'                   => 'M0101',
+                'relieving_month.required_unless'   => 'M0102',
+                'relieving_month.string'            => 'M0103',
+                'relieving_year.required_unless'    => 'M0104',
+                'relieving_year.string'             => 'M0105',
+                'country.required'                  => 'M0106',
+                'country.integer'                   => 'M0059',
+                'state.integer'                     => 'M0060',
+                'state.required'                    => 'M0107',
+            ]);
+
+            // $validate->sometimes(['relieving_month','relieving_year'], 'required', function($input){
+            //     return ($input->is_currently_working == DEFAULT_YES_VALUE);
+            // });         
+
+            if($validate->fails()){
+
+                $this->message = $validate->messages()->first();
+            }else{
+                if(!empty($request->startdate) && !empty($request->enddate) && (strtotime($request->startdate) > strtotime($request->enddate))){
+                    $this->message = 'M0190';
+                }else{                
+                    $update = array_intersect_key(
+                        json_decode(json_encode($this->post),true), 
+                        array_flip(
+                            array(
+                                "jobtitle",
+                                "company_name",
+                                "joining_month",
+                                "joining_year",
+                                "is_currently_working",
+                                "job_type",
+                                "relieving_month",
+                                "relieving_year",
+                                "country",
+                                "state",
+                            )
+                        )
+                    );
+
+
+                    /*
+                    *   REPLACING ALL BLANK STRING WITH 
+                    *   NULL BECAUSE OF LARAVEL MYSQL 
+                    *   DRIVER ASKING FOR INTEGER VALUE 
+                    *   FOR INTEGER COLUMN TYPE
+                    */
+
+                    ___filter_null($update);
+
+                    if($request->is_currently_working == DEFAULT_YES_VALUE){
+                        unset($update['relieving_month']);
+                        unset($update['relieving_year']);
+                    }                    
+                    $isInserted = \Models\Talents::add_experience($request->user()->id_user,$update);
+                                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-step-three-work-experience',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+                    
+                    $this->status = true;
+                    $this->jsondata = [
+                        'work_experiences' => \Models\Talents::get_experience(sprintf(" id_experience = %s ",$isInserted))
+                    ];
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three_work_experience_edit(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($this->post['id_experience'])){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_experience');
+            }else if(empty(\Models\Talents::get_experience(sprintf(" id_experience = %s AND user_id = %s ",$this->post['id_experience'], $request->user()->id_user),'count'))){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_experience');
+            }else{
+                $validation_reliving_month  = validation('relieving_month'); unset($validation_reliving_month[0]);
+                $validation_reliving_year   = validation('relieving_year'); unset($validation_reliving_year[0]);
+                $validate = \Validator::make($request->all(), [
+                    "jobtitle"                          => validation('jobtitle'),
+                    "company_name"                      => validation('company_name'),
+                    "joining_month"                     => validation('joining_month'),
+                    "joining_year"                      => validation('joining_year'),
+                    "is_currently_working"              => validation('is_currently_working'),
+                    "job_type"                          => validation('job_type'),
+                    "relieving_month"                   => array_merge(['required_unless:is_currently_working,'.DEFAULT_YES_VALUE],$validation_reliving_month),
+                    "relieving_year"                    => array_merge(['required_unless:is_currently_working,'.DEFAULT_YES_VALUE],$validation_reliving_year),
+                    "country"                           => array_merge(['required'],validation('country')),
+                    "state"                             => validation('state'),
+                ],[
+                    'jobtitle.required'                 => 'M0090',
+                    'jobtitle.string'                   => 'M0091',
+                    'jobtitle.regex'                    => 'M0091',
+                    'jobtitle.max'                      => 'M0092',
+                    'jobtitle.min'                      => 'M0093',
+                    'company_name.required'             => 'M0023',
+                    'company_name.regex'                => 'M0024',
+                    'company_name.string'               => 'M0024',
+                    'company_name.max'                  => 'M0025',
+                    'joining_month.required'            => 'M0094',
+                    'joining_month.string'              => 'M0095',
+                    'joining_year.required'             => 'M0096',
+                    'joining_year.string'               => 'M0097',
+                    'is_currently_working.required'     => 'M0098',
+                    'is_currently_working.string'       => 'M0099',
+                    'job_type.required'                 => 'M0100',
+                    'job_type.string'                   => 'M0101',
+                    'relieving_month.required_unless'   => 'M0102',
+                    'relieving_month.string'            => 'M0103',
+                    'relieving_year.required_unless'    => 'M0104',
+                    'relieving_year.string'             => 'M0105',
+                    'country.required'                  => 'M0106',
+                    'country.integer'                   => 'M0059',
+                    'state.integer'                     => 'M0060',
+                    'state.required'                    => 'M0107',
+                ]);
+
+                if($validate->fails()){
+                    $this->message = $validate->messages()->first();
+                }else{
+                    $update = array_intersect_key(
+                        json_decode(json_encode($this->post),true), 
+                        array_flip(
+                            array(
+                                "jobtitle",
+                                "company_name",
+                                "joining_month",
+                                "joining_year",
+                                "is_currently_working",
+                                "job_type",
+                                "relieving_month",
+                                "relieving_year",
+                                "country",
+                                "state",
+                            )
+                        )
+                    );
+
+                    /*
+                    *   REPLACING ALL BLANK STRING WITH 
+                    *   NULL BECAUSE OF LARAVEL MYSQL 
+                    *   DRIVER ASKING FOR INTEGER VALUE 
+                    *   FOR INTEGER COLUMN TYPE
+                    */
+
+                    ___filter_null($update);
+                    \Models\Talents::update_experience($this->post['id_experience'],$update);
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-update-work-experience',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+                    
+                    $this->status = true;
+                    $this->jsondata = [
+                        'work_experiences' => \Models\Talents::get_experience(sprintf(" id_experience = %s ",$this->post['id_experience']))
+                    ];
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three_work_experience_delete(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($this->post['id_experience'])){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_experience');
+            }else if(empty(\Models\Talents::get_experience(sprintf(" id_experience = %s AND user_id = %s ",$this->post['id_experience'], $request->user()->id_user),'count'))){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_experience');
+            }else{
+                $isDeleted = \Models\Talents::delete_experience(sprintf(" id_experience = %s AND user_id = %s ",$this->post['id_experience'], $request->user()->id_user));
+
+                if(!empty($isDeleted)){
+                                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-delete-work-experience',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));  
+                                      
+                    $this->status = true;
+                    $this->message = 'M0123';
+                }else{
+                    $this->message = 'M0048'; 
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three_document(Request $request){
+            
+            $validate = \Validator::make($request->all(), [
+                "file"                              => validation('document'),
+            ],[
+                'file.validate_file_type'           => 'M0119',
+            ]);
+
+            if($validate->fails()){
+                $this->message = $validate->messages()->first();
+            }else{
+                $folder = 'uploads/certificates/';
+
+                $uploaded_file = upload_file($request,'file',$folder);
+                $data = [
+                    'user_id'       => $request->user()->id_user,
+                    'reference'     => 'users',
+                    'filename'      => $uploaded_file['filename'],
+                    'extension'     => $uploaded_file['extension'],
+                    'folder'        => $folder,
+                    'type'          => 'certificates',
+                    'size'          => $uploaded_file['size'],
+                    'is_default'    => DEFAULT_NO_VALUE,
+                    'created'       => date('Y-m-d H:i:s'),
+                    'updated'       => date('Y-m-d H:i:s'),
+                ];
+
+                $isInserted = \Models\Talents::create_file($data,true,true);
+                                    
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-step-three-document',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+
+                if(!empty($isInserted)){
+                    if(!empty($isInserted['folder'])){
+                        $isInserted['filename'] = substr($isInserted['filename'], 0, 3);
+                        $isInserted['file_url'] = asset(sprintf("%s/%s",$isInserted['folder'],$isInserted['filename']));
+                    }
+                    
+                    $this->status = true;
+                    $this->jsondata = $isInserted;
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_three_document_delete(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($this->post['id_file'])){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_file');
+            }else if(empty(\Models\Talents::get_file(sprintf(" id_file = %s AND user_id = %s ",$this->post['id_file'], $request->user()->id_user),'count'))){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_file');
+            }else{
+                $isDeleted = \Models\Talents::delete_file(sprintf(" id_file = %s AND user_id = %s ",$this->post['id_file'], $request->user()->id_user));
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-step-three-document-delete',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+
+                if(!empty($isDeleted)){
+                    $this->status = true;
+                    $this->message = 'M0122';
+                }else{
+                    $this->message = 'M0048'; 
+                }
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_four_set_availability(Request $request){
+            $request->replace($this->post);
+            
+            $validate = \Validator::make($request->all(), [
+                "availability_type"             => array_merge(['required']),
+                "availability_date"             => array_merge(['required'],validation('birthday')),
+                "from_time"                     => array_merge(['required'],validation('time')),
+                "to_time"                       => array_merge(['required'],validation('time')),
+                "repeat"                        => validation('repeat'),
+                "deadline"                      => array_merge(['required'],validation('birthday')),
+            ],[
+                'availability_type.required'    => 'M0473',
+                'availability_date.required'    => 'M0155',
+                'availability_date.string'      => 'M0156',
+                'availability_date.regex'       => 'M0156',
+                "from_time.required"            => 'M0159',
+                "from_time.string"              => 'M0160',
+                "from_time.regex"               => 'M0160',
+                "to_time.required"              => 'M0161',
+                "to_time.string"                => 'M0162',
+                "to_time.regex"                 => 'M0162',
+                "repeat.string"                 => 'M0163',
+                'deadline.required'             => 'M0157',
+                'deadline.string'               => 'M0158',
+                'deadline.regex'                => 'M0158',
+            ]);
+
+            if($validate->fails()){
+                $this->message = $validate->messages()->first();
+            }else{
+                $valid_employment_types = employment_types('talent_personal_information','keys');
+                
+                if(!in_array($request->repeat, $valid_employment_types)){
+                    $this->message = 'M0169';
+                }else{
+                    if($request->availability_date < date('Y-m-d')){
+                        $this->message = 'M0436';
+                    }
+                    elseif($request->deadline < $request->availability_date){
+                        $this->message = 'M0173';  
+                    }else{
+                        $availability_id = NULL;
+                        
+                        if(!empty($request->id_availability)){
+                            $availability_id = $request->id_availability;
+                        }
+
+                        if($request->availability_type == 'unavailable'){
+                            $isAvailable = true;
+                        }
+                        else{
+                            $isAvailable = \Models\Talents::check_availability($request->user()->id_user,$request->availability_date,$request->from_time,$request->to_time,$request->deadline,$request->availability_day,$request->repeat,$availability_id);
+                        }
+                        
+                        if($isAvailable === true){
+                            $table_talent_availability = DB::table('talent_availability');
+                            $max_repeat_group = (int)$table_talent_availability->max('repeat_group')+1;
+                            $data = [];
+                            if($request->repeat == 'daily' || $request->repeat == 'monthly'){
+                                $begin = new \DateTime( $request->availability_date );
+
+                                $endDate = date('Y-m-d', strtotime("+1 day", strtotime($request->deadline)));
+
+                                $end = new \DateTime( $endDate );
+
+                                if($request->repeat == 'daily'){
+                                    $repeat_type = '1 day';
+                                }
+                                elseif($request->repeat == 'monthly'){
+                                    $repeat_type = '1 month';
+                                }
+                                $interval = \DateInterval::createFromDateString($repeat_type);
+                                $period = new \DatePeriod($begin, $interval, $end);
+
+                                foreach ( $period as $dt ){
+                                    $data[] = [
+                                        'user_id' => \Auth::user()->id_user,
+                                        'availability_type' => $request->availability_type,
+                                        'availability_date' => $dt->format( "Y-m-d" ),
+                                        'from_time' => $request->from_time,
+                                        'to_time' => $request->to_time,
+                                        'repeat' => $request->repeat,
+                                        'deadline' => $request->deadline,
+                                        'repeat_group' => $availability_id ? $availability_id : $max_repeat_group,
+                                        'created' => date('Y-m-d H:i:s'),
+                                        'updated' => date('Y-m-d H:i:s'),
+                                    ];
+                                }
+                            }
+                            elseif($request->repeat == 'weekly'){
+                                $date = ___days_between($request->availability_date, $request->deadline, $request->availability_day);
+
+                                foreach ($date as $d) {
+                                    $data[] = [
+                                        'user_id' => \Auth::user()->id_user,
+                                        'availability_type' => $request->availability_type,
+                                        'availability_date' => $d,
+                                        'from_time' => $request->from_time,
+                                        'to_time' => $request->to_time,
+                                        'repeat' => $request->repeat,
+                                        'deadline' => $request->deadline,
+                                        'repeat_group' => $availability_id ? $availability_id : $max_repeat_group,
+                                        'availability_day' => date('l', strtotime($d)),
+                                        'created' => date('Y-m-d H:i:s'),
+                                        'updated' => date('Y-m-d H:i:s'),
+                                    ];
+                                }
+                            }
+
+                            if(!empty($data)){
+                                $isInserted = \Models\Talents::setTalentAvailability(\Auth::user()->id_user, $max_repeat_group, $data, $availability_id, $request->availability_date, $request->deadline, $request->availability_type);
+                            }
+
+                            /* RECORDING ACTIVITY LOG */
+                            event(new \App\Events\Activity([
+                                'user_id'           => $request->user()->id_user,
+                                'user_type'         => 'talent',
+                                'action'            => 'webservice-talent-set-availability',
+                                'reference_type'    => 'users',
+                                'reference_id'      => $request->user()->id_user
+                            ]));
+
+                            if(!empty($isInserted)){
+                                $this->status = true;
+                                $this->message = trans('M0000');
+                                $this->jsondata = ___availability_list($isInserted);
+                            }
+
+                            if(!empty($isInserted)){
+                                $this->status = true;
+                                $this->jsondata = $isInserted;
+                            }
+                        }else{
+                            $this->jsondata = (object)[];
+                            $this->message = 'M0172';
+                        }
+                    }
+                }
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_four_delete_availability(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($this->post['id_availability'])){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_availability');
+            }else{    
+                $isInserted = \Models\Talents::delete_availability($request->user()->id_user,$this->post['id_availability']);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-step-four-delete-availability',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+                
+                $this->status = true;    
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_five_social_connect(Request $request){
+            $request->replace($this->post);
+            
+            if(empty($this->post['social_key']) || !in_array($this->post['social_key'], valid_social_keys())){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'social_key');
+            }else if(empty($this->post['social_id'])){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'social_id');
+            }else{
+                $request->request->add([$request->social_key => $request->social_id]);
+                $validator = \Validator::make($request->all(), [
+                    $request->social_key    => [Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],
+                ],[
+                    sprintf('%s.unique',$request->social_key)   => 'M0126',
+                ]);
+
+                if($validator->fails()){
+                    $this->message = $validator->messages()->first();
+                }else{
+                    $isUpdated = \Models\Talents::change($request->user()->id_user,[$request->social_key => $request->social_id, 'updated' => date('Y-m-d H:i:s')]);
+                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-step-five-social-connect',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+                                        
+                    $this->status = true;
+                }
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_five_change_mobile(Request $request){
+            $request->replace($this->post);
+            
+            $validator = \Validator::make($request->all(), [
+                'mobile'                    => array_merge([Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],validation('phone_number')),
+                'country_code'              => array_merge(['required'],validation('country_code')),                
+            ],[
+                'country_code.string'       => 'M0074',
+                'country_code.required'     => 'M0164',
+                'mobile.required'           => 'M0030',
+                'mobile.regex'              => 'M0031',
+                'mobile.string'             => 'M0031',
+                'mobile.min'                => 'M0032',
+                'mobile.max'                => 'M0033',
+                'mobile.unique'             => 'M0197',
+            ]);
+
+            if($validator->fails()){
+                $this->message = $validator->messages()->first();
+            }else{
+                $created_date               = date('Y-m-d H:i:s');
+                $otp_shuffle                = \Cache::get('configuration')['otp_shuffle'];
+                $otp_length                 = \Cache::get('configuration')['otp_length'];
+                $otp_expired                = \Cache::get('configuration')['otp_expired'];
+
+                $otp_password               = substr(str_shuffle($otp_shuffle), 2, $otp_length);
+                $otp_message                = sprintf(\Cache::get('configuration')['otp_message'],$otp_password);
+                $otp_expired                = date('Y-m-d H:i:s',strtotime("+".$otp_expired." minutes", strtotime($created_date)));
+                
+                $isUpdated = \Models\Talents::change(
+                    $request->user()->id_user,[
+                        'country_code'          => $request->country_code, 
+                        'mobile'                => $request->mobile, 
+                        'otp_password'          => $otp_password,
+                        'otp_created'           => $created_date,
+                        'otp_expired'           => $otp_expired,
+                        'is_mobile_verified'    => DEFAULT_NO_VALUE,
+                        'updated'               => date('Y-m-d H:i:s')
+                    ]
+                );
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-step-five-change-mobile',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+                
+                try{
+                    $response = \Twilio::message(sprintf("%s%s",$request->country_code,$request->mobile), $otp_message);
+                    $this->status = true;
+                    $this->message = 'M0129';
+                    $this->jsondata = [
+                        'mobile' => $request->mobile,
+                        'country_code' => $request->country_code,
+                        'otp_password' => $otp_password,
+                    ];
+
+                    \Models\Listings::twilio_response([
+                        'user_id' => $request->user()->id_user,
+                        'twilio_response_json' => json_encode($response->client->last_response),
+                        'created' => $created_date
+                    ]);
+                }catch ( \Services_Twilio_RestException $e ) {
+                    $this->message = 'M0128';
+                    \Models\Listings::twilio_response([
+                        'user_id' => $request->user()->id_user,
+                        'twilio_response_json' => json_encode(['body' => $e->getMessage()]),
+                        'created' => $created_date
+                    ]);
+                } 
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function step_five_verify_mobile(Request $request){
+            $request->replace($this->post);
+            
+            $validator = \Validator::make($request->all(), [
+                'otp_password'              => ['required']
+            ],[
+                'otp_password.required'     => 'M0130',
+            ]);
+
+            if($validator->fails()){
+                $this->message              = $validator->messages()->first();
+            }else{
+                $result = (array) \Models\Talents::findById($request->user()->id_user,['otp_password']);
+
+                if($result['otp_password'] == $request->otp_password){
+                    $created_date               = date('Y-m-d H:i:s');
+                    $otp_shuffle                = \Cache::get('configuration')['otp_shuffle'];
+                    $otp_length                 = \Cache::get('configuration')['otp_length'];
+                    $otp_expired                = \Cache::get('configuration')['otp_expired'];
+
+                    $otp_password               = substr(str_shuffle($otp_shuffle), 2, $otp_length);
+                    $otp_expired                = date('Y-m-d H:i:s',strtotime("+".$otp_expired." minutes", strtotime($created_date)));
+                    
+                    $this->message = 'M0132';
+                    $this->status = true;
+                    $isUpdated = \Models\Talents::change(
+                        $request->user()->id_user,[
+                            'otp_password'          => $otp_password,
+                            'otp_created'           => $created_date,
+                            'otp_expired'           => $otp_expired,
+                            'is_mobile_verified'    => DEFAULT_YES_VALUE,
+                            'updated'               => date('Y-m-d H:i:s')
+                        ]
+                    );
+                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-step-five-verify-mobile',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+
+                }else{
+                    $this->message = 'M0131';
+                }
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function find_jobs(Request $request){
+            $request->replace($this->post);
+            $this->status   = true;
+            $page           = (!empty($request->page))?$request->page:1;
+            $sort           = (!empty($request->sort))?$request->sort:"";
+            $search         = "";
+
+            if(empty($request->temporary_salary_low_filter)){
+                $request->temporary_salary_low_filter = 0;
+            }
+
+            if(empty($request->temporary_salary_high_filter)){
+                $request->temporary_salary_high_filter = 5000;
+            }
+
+            if(empty($request->permanent_salary_low_filter)){
+                $request->permanent_salary_low_filter = 0;
+            }
+
+            if(empty($request->permanent_salary_high_filter)){
+                $request->permanent_salary_high_filter = 15000000;
+            }
+
+            if($request->sortby_filter){
+                $sort       = ___decodefilter($request->sortby_filter);
+            }
+
+            if(!empty($request->employment_type_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.employment IN ('%s') ",implode("','", $request->employment_type_filter)); 
+            }
+
+            if(!empty($request->expertise_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.expertise IN ('%s') ", implode("','",$request->expertise_filter)); 
+            }
+
+            if(!empty($request->industry_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.industry = {$request->industry_filter} "); 
+            }
+
+            if(!empty($request->subindustry_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.subindustry = {$request->subindustry_filter} "); 
+            }
+
+            if(!empty($request->skills_filter)){
+                $search .= sprintf(" AND {$this->prefix}skills.skill IN ('%s') ",implode("','", $request->skills_filter)); 
+            }
+            
+            if(!empty($request->location_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.location IN ('%s') ",implode("','", $request->location_filter)); 
+            }                                  
+
+            if(!empty($request->startdate_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.startdate >= '%s' ",___convert_date($request->startdate_filter)); 
+            } 
+            
+            if(!empty($request->enddate_filter)){
+                $search .= sprintf(" AND {$this->prefix}projects.enddate >= '%s' ",___convert_date($request->enddate_filter)); 
+            }
+
+            if(!empty($request->search)){
+                $search .= " AND ({$this->prefix}projects.title LIKE '%".$request->search."%' OR {$this->prefix}projects.description LIKE '%".$request->search."%' OR {$this->prefix}projects.employment LIKE '%".$request->search."%' OR {$this->prefix}projects.price_type LIKE '%".$request->search."%' OR {$this->prefix}projects.expertise LIKE '%".$request->search."%' OR {$this->prefix}projects.budget_type LIKE '%".$request->search."%' )";
+            }
+
+            if(!empty($request->employment_type_filter) && (count($request->employment_type_filter) === 1) && in_array('fulltime', $request->employment_type_filter)){
+                $search .= sprintf(" AND (
+                    {$this->prefix}projects.price >= {$request->permanent_salary_low_filter} 
+                    AND 
+                    {$this->prefix}projects.price <= {$request->permanent_salary_high_filter} 
+                )");                 
+            }else {
+                $search .= sprintf(" AND (
+                    {$this->prefix}projects.price >= {$request->temporary_salary_low_filter} 
+                    AND 
+                    {$this->prefix}projects.price <= {$request->temporary_salary_high_filter} 
+                )"); 
+            }
+            
+            // $search .= " AND (
+            //     (
+
+            //         {$this->prefix}projects.price >= {$request->temporary_salary_low_filter} 
+            //         AND 
+            //         {$this->prefix}projects.price <= {$request->temporary_salary_high_filter} 
+            //     )
+            //     OR 
+            //     (
+            //         {$this->prefix}projects.price >= {$request->permanent_salary_low_filter} 
+            //         AND 
+            //         {$this->prefix}projects.price <= {$request->permanent_salary_high_filter} 
+            //     )
+            // )";
+
+            $current_date   = date('Y-m-d');
+            $user_detail    = \Models\Talents::get_user($request->user(),true);
+
+            $where = " 
+                (
+                    (
+                        {$this->prefix}projects.project_status = 'pending'
+                        OR 
+                        {$this->prefix}projects.employment = 'fulltime'
+                    )
+                ) {$search}
+            ";
+            
+            $having = " (job_listing_status IS NULL) "; 
+
+            $jobs = \Models\Talents::find_job($request->user(),'all',$where,$page,$sort,NULL,$having);
+            
+            
+            if(!empty($jobs['result'])){
+                $this->jsondata = $jobs['result'];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function job_detail(Request $request){
+            $request->replace($this->post);
+    
+            if(!empty($this->post['id_project'])){
+                $project_id = $this->post['id_project'];
+                $job = \Models\Talents::get_job($request->user(),sprintf(" {$this->prefix}projects.id_project = %s ",$project_id),'single');
+
+                if(!empty($job)){
+                    $this->status = true;
+
+                    if(!empty($job['company_id'])){
+                        $job['talent_details'] = [
+                            'workrate' => ___format($request->user()->workrate,true,true),
+                            'workrate_unit' => $request->user()->workrate_unit,
+                            'expected_salary' => ___format($request->user()->expected_salary,true,true)
+                        ];
+
+                        $job['employer']            = \Models\Employers::employer_sidebar_widget_details($job['company_id']);
+                        $job['employer']['picture'] = get_file_url(\Models\Employers::get_file(sprintf(" type = 'profile' AND user_id = %s",$job['company_id']),'single',['filename','folder']));
+                        $job['employer_other_jobs'] = \Models\Employers::employer_other_jobs($project_id,$job['company_id'],$request->user());
+                        $projects_id                = array_column($job['employer_other_jobs'],'id_project');
+                        $job['similar_jobs']        = \Models\Employers::similar_jobs($project_id,$job['industry'],$request->user(),$projects_id);
+                        $job['chat']                = \Models\Talents::get_my_chat_list($request->user()->id_user,NULL,$job['company_id']);
+                        $job['invitation']          = \Models\ProjectInvitations::findById($project_id,$request->user()->id_user);
+
+                        if(!empty($job['invitation'])){
+                            $job['invitation']->created = trans('general.M0177').' '.___ago($job['invitation']->created);
+                        }
+                    }
+                    
+                    $result = \Models\Projects::talent_actions($project_id);
+                    $job    = array_merge($job,$result);
+                    $this->jsondata = $job;
+                }else{
+                    $this->message = 'M0121';
+                    $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_project');
+                }
+            }else{
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_project');
+            }     
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function job_save_unsave(Request $request){
+            $request->replace($this->post);
+     
+            $my_job = \Models\Talents::get_job($request->user(),sprintf(" {$this->prefix}projects.id_project = %s ",$this->post['id_project']),'count',['projects.id_project']);
+
+            if(!empty($my_job)){
+                $isSaved = \Models\Talents::save_job($request->user()->id_user,$request->id_project);
+                
+                if(!empty($isSaved['status'])){
+                    if($isSaved['action'] == 'deleted_saved_job'){
+                    
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => $request->user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'webservice-talent-delete-saved-job',
+                            'reference_type'    => 'projects',
+                            'reference_id'      => $request->id_project
+                        ]));
+
+                        $this->status = true;
+                        $this->message = 'M0168';
+                    }else if($isSaved['action'] == 'saved_job'){
+                    
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => $request->user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'webservice-talent-save-job',
+                            'reference_type'    => 'projects',
+                            'reference_id'      => $request->id_project
+                        ]));
+
+                        $this->status = true;
+                        $this->message = 'M0167';
+                    }else{
+                        $this->message = 'M0022';
+                    }
+                }else{
+                    $this->message = 'M0022';
+                }
+            }else{
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_project');
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        /******* For Submitting Proposals *******/
+        public function submit_proposal(Request $request){
+            $request->replace($this->post);
+            $fileinsertarr          = [];
+            $isInserted             = [];
+            $proposals_data         = Proposals::select()->where(['project_id' => $request->project_id, 'user_id' => \Auth::user()->id_user])->get()->count();
+            $data['job_details']    = \Models\Talents::get_job($request->user()," id_project = {$request->project_id} ","single");
+
+            if(empty($proposals_data)){
+                if(1){
+                    $validation_comments = validation('description'); unset($validation_comments[0]);
+                    if($data['job_details']['employment']  == 'fulltime'){
+                        $validator = \Validator::make($request->all(), [
+                            "quoted_price"          => validation('quoted_price'),
+                            "project_id"            => validation('project_id'),
+                            "file"                  => array_merge(validation('document'),['required']),
+                            "comments"              => $validation_comments,
+                        ],[
+                            'quoted_price.numeric'   => 'M0370',
+                            'quoted_price.required'  => 'M0363',
+                            'quoted_price.min'       => 'M0438',
+                            'project_id.required'    => 'M0201',
+                            'file.mimetypes'         => 'M0119',
+                            'file.required'          => 'M0202',        
+                            'comments.string'        => 'M0365',         
+                            'comments.regex'         => 'M0365',         
+                            'comments.max'           => 'M0366',         
+                            'comments.min'           => 'M0367',
+                        ]);
+                    }else{
+                        $validator = \Validator::make($request->all(), [
+                            "quoted_price"          => validation('quoted_price'),
+                            "project_id"            => validation('project_id'),
+                            "file"                  => array_merge(validation('document'),['required']),
+                            "comments"              => $validation_comments,
+                        ],[
+                            'quoted_price.numeric'   => 'M0199',
+                            'quoted_price.required'  => 'M0200',
+                            'quoted_price.min'       => 'M0438',
+                            'project_id.required'    => 'M0201',
+                            'file.mimetypes'         => 'M0119',
+                            'file.required'          => 'M0202',        
+                            'comments.string'        => 'M0204',         
+                            'comments.regex'         => 'M0204',         
+                            'comments.max'           => 'M0205',         
+                            'comments.min'           => 'M0206',
+                        ]);
+                    }
+                    
+                    if($validator->fails()){
+                        $this->message   = $validator->messages()->first();
+                    }else{
+                        $folder          = 'uploads/proposals/';
+                        $project_id      = $request->project_id;
+                        
+                        $insertArr = [
+                            'project_id'     => ___decrypt($project_id),
+                            'user_id'        => \Auth::user()->id_user,
+                            'submission_fee' => NULL,
+                            'quoted_price'   => $request->quoted_price,
+                            'comments'       => $request->comments,
+                            'status'         => 'applied',
+                            'created'        => date('Y-m-d H:i:s'),
+                            'updated'        => date('Y-m-d H:i:s')
+                        ];
+
+                        $proposaldata = Proposals::create($insertArr);
+                        if(!empty($request->file)){
+                            $folder = 'uploads/proposals/';                    
+                            $uploaded_file = upload_file($request,'file',$folder);
+                            $fileinsertarr = [
+                                'user_id'       => $request->user()->id_user,
+                                'record_id'     => $proposaldata->id_proposal,
+                                'reference'     => 'users',
+                                'filename'      => $uploaded_file['filename'],
+                                'extension'     => $uploaded_file['extension'],
+                                'folder'        => $folder,
+                                'type'          => 'proposal',
+                                'reference'     => 'proposal',
+                                'size'          => $uploaded_file['size'],
+                                'is_default'    => DEFAULT_NO_VALUE,
+                                'created'       => date('Y-m-d H:i:s'),
+                                'updated'       => date('Y-m-d H:i:s'),
+                            ];   
+
+                            $isInserted[] = \Models\Talents::create_file($fileinsertarr,true,true);
+                            \Models\Talents::send_chat_request($request->user()->id_user,$data['job_details']['company_id'],___decrypt($project_id),$proposaldata->id_proposal);
+                        }
+
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => $request->user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'webservice-talent-submit-proposals',
+                            'reference_type'    => 'talent_proposals',
+                            'reference_id'      => $proposaldata->id_proposal
+                        ]));
+
+                        $this->status = true;
+                        if($data['job_details']['employment'] == 'fulltime'){
+                            $this->message = "M0368";
+                        }else{
+                            $this->message = "M0369";
+                        }
+                    }
+                }else{
+                    $this->message = "M0207";
+                }
+            }else{
+                $this->message = "M0213";
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function active_proposals(Request $request){
+            $request->replace($this->post);
+            $this->status = true;
+            $page = (!empty($request->page))?$request->page:0;
+
+            $proposals = \Models\Talents::active_proposals(\Auth::user()->id_user,$page);
+            
+            if(!empty($proposals['result'])){
+                $this->jsondata = $proposals['result'];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function submitted_proposals(Request $request){
+            $request->replace($this->post);
+            $this->status = true;
+            $page = (!empty($request->page))?$request->page:0;
+
+            $proposals = \Models\Talents::submitted_proposals(\Auth::user()->id_user,$page);
+            
+            if(!empty($proposals['result'])){
+                $this->jsondata = $proposals['result'];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function proposal_details(Request $request){
+            $request->replace($this->post);
+
+            if(!empty($request->id_proposal)){   
+                $keys = [
+                    'talent_proposals.id_proposal',
+                    'talent_proposals.project_id',
+                    'talent_proposals.user_id',
+                    'talent_proposals.submission_fee',
+                    'talent_proposals.quoted_price',
+                    'talent_proposals.comments',
+                    'talent_proposals.status',
+                    'talent_proposals.created',
+                ];
+
+                $proposal = Proposals::select($keys)
+                ->where('talent_proposals.user_id',$request->user()->id_user)
+                ->where('talent_proposals.id_proposal',$request->id_proposal)
+                ->get()->first();
+
+                if(!empty($proposal)){
+                    $proposal = json_decode(json_encode($proposal),true);
+
+                    $proposal['job_details'] = \Models\Talents::get_job(\Auth::user()," id_project = ".$proposal['project_id']." ","single");
+                    $proposal['files'] = \Models\File::select(
+                        [
+                            'id_file',
+                            'filename',
+                            'size',
+                            'user_id',
+                            \DB::Raw("CONCAT(folder,'',filename) as file_url"),
+                        ]
+                    )
+                    ->where('record_id',$proposal['id_proposal'])->where('type','proposal')->get()->first();
+                    $proposal['files']['file_url'] = asset($proposal['files']['file_url']);
+                    $proposal['files']['filename'] = substr($proposal['files']['filename'], 0, 3);
+                    $proposal['created'] = ___ago($proposal['created']);
+                    
+                    $this->jsondata = $proposal;
+                    $this->status = true;
+                }else{
+                    $this->message = 'M0121';
+                    $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_proposal');
+                }
+            }else{
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'id_proposal');
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function saved_jobs(Request $request){
+            $request->replace($this->post);
+            $language       = \App::getLocale();
+            $search         = "";
+            $this->status   = true;
+            if(!empty($request->search)){
+                $search = "
+                    AND (
+                        {$this->prefix}projects.title LIKE '%{$request->search}%'
+                        OR 
+                        {$this->prefix}projects.title LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}users.company_name LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.location LIKE '%{$request->search}%' 
+                        OR 
+                        IF(({$this->prefix}industry.{$language} != ''),{$this->prefix}industry.`{$language}`, {$this->prefix}industry.`en`) LIKE '%{$request->search}%', 
+                        OR 
+                        {$this->prefix}projects.budget_type LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.employment LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.expertise LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.required_qualifications LIKE '%{$request->search}%'
+                    )
+                ";
+            }
+
+            $where = " 
+                {$this->prefix}projects.project_status != 'closed' {$search}
+            ";
+
+            $having         = " (is_saved = '".DEFAULT_YES_VALUE."') ";
+            
+            $page           = (!empty($request->page))?$request->page:1;
+            $sort           = (!empty($request->sort))?$request->sort:"";
+            $type           = 'saved';
+            
+            $jobs           = \Models\Talents::find_job($request->user(),'all',$where,$page,$sort,NULL,$having);
+            $jobs           = \Models\Projects::talent_jobs($request->user()->id_user,$type);
+
+            if(!empty($jobs['result'])){
+                $jobs['result'] = \App\lib\Dash::insert($jobs['result'],'{n}.type','saved');
+                $this->jsondata = $jobs['result'];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }        
+
+        public function myjobs(Request $request, $type="saved"){
+            $request->replace($this->post);
+            $language       = \App::getLocale();
+            $search         = "";
+            $this->status   = true;
+            if(!empty($request->search)){
+                $search = "
+                    AND (
+                        {$this->prefix}projects.title LIKE '%{$request->search}%'
+                        OR 
+                        {$this->prefix}projects.title LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}users.company_name LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.location LIKE '%{$request->search}%' 
+                        OR 
+                        IF(({$this->prefix}industry.{$language} != ''),{$this->prefix}industry.`{$language}`, {$this->prefix}industry.`en`) LIKE '%{$request->search}%', 
+                        OR 
+                        {$this->prefix}projects.budget_type LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.employment LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.expertise LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.required_qualifications LIKE '%{$request->search}%'
+                    )
+                ";
+            }       
+
+            $where = "1
+                {$search}
+            ";
+
+            $having         = " 1 ";
+            $page           = (!empty($request->page))?$request->page:1;
+            $sort           = (!empty($request->sort))?$request->sort:"";
+            $jobs['result'] = json_decode(json_encode(\Models\Projects::talent_jobs($request->user()->id_user,$type,$page,$sort,'',$where)),true);
+            array_walk($jobs['result'],function(&$item){
+                $company_logo = \Models\Talents::get_file(sprintf(" type = 'profile' AND user_id = %s",$item['company_id']),'single',['filename','folder']);                
+                if($item['employment'] !== 'fulltime'){
+                    $item['timeline'] = ___date_difference($item['startdate'],$item['enddate']);
+                }else{
+                    $item['timeline'] = trans('website.W0039');
+                }
+
+                $item['timeline'] = ___date_difference($item['startdate'],$item['enddate']);
+                
+                if(!empty($company_logo)){
+                    $item['company_logo'] = get_file_url($company_logo);
+                }else{
+                    $item['company_logo'] = "";    
+                }
+
+                $item['created'] = sprintf("%s %s",trans('general.M0177'),___ago($item['created']));
+                
+                if(is_array($item['required_qualifications'])){
+                    $item['required_qualifications'] = (string)implode(',',(array)$item['required_qualifications']);
+                }else{
+                    $item['required_qualifications'] = "";
+                }
+                
+                $item['job_type'] = employment_types('post_job',$item['employment']);
+            });
+            $this->jsondata = $jobs['result'];
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function scheduled_jobs(Request $request){
+            $request->replace($this->post);
+            $language       = \App::getLocale();
+            $search         = "";
+            $this->status   = true;
+            if(!empty($request->search)){
+                $search = "
+                    AND (
+                        {$this->prefix}projects.title LIKE '%{$request->search}%'
+                        OR 
+                        {$this->prefix}projects.title LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}users.company_name LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.location LIKE '%{$request->search}%' 
+                        OR 
+                        IF(({$this->prefix}industry.{$language} != ''),{$this->prefix}industry.`{$language}`, {$this->prefix}industry.`en`) LIKE '%{$request->search}%', 
+                        OR 
+                        {$this->prefix}projects.budget_type LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.employment LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.expertise LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.required_qualifications LIKE '%{$request->search}%'
+                    )
+                ";
+            }       
+
+            $where = " 
+                {$this->prefix}projects.project_status = 'pending'
+                AND ({$this->prefix}proposals.status = 'applied' OR {$this->prefix}proposals.status = 'accepted')
+                {$search}
+            ";
+
+            $having         = " 1 ";
+            
+            $page           = (!empty($request->page))?$request->page:1;
+            $sort           = (!empty($request->sort))?$request->sort:"";
+            $jobs           = \Models\Talents::find_job($request->user(),'all',$where,$page,$sort,NULL,$having);
+            $type           = 'scheduled';
+            $jobs           = \Models\Projects::talent_jobs($request->user()->id_user,$type);            
+            
+            if(!empty($jobs['result'])){
+                $jobs['result'] = \App\lib\Dash::insert($jobs['result'],'{n}.type','scheduled');
+                $this->jsondata = $jobs['result'];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function history_jobs(Request $request){
+            $request->replace($this->post);
+            $language       = \App::getLocale();
+            $search         = "";
+            $this->status   = true;
+            if(!empty($request->search)){
+                $search = "
+                    AND (
+                        {$this->prefix}projects.title LIKE '%{$request->search}%'
+                        OR 
+                        {$this->prefix}projects.title LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}users.company_name LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.location LIKE '%{$request->search}%' 
+                        OR 
+                        IF(({$this->prefix}industry.{$language} != ''),{$this->prefix}industry.`{$language}`, {$this->prefix}industry.`en`) LIKE '%{$request->search}%', 
+                        OR 
+                        {$this->prefix}projects.budget_type LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.employment LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.expertise LIKE '%{$request->search}%' 
+                        OR 
+                        {$this->prefix}projects.required_qualifications LIKE '%{$request->search}%'
+                    )
+                ";
+            }   
+                
+            $where = " 
+                {$this->prefix}projects.project_status = 'closed' 
+                AND ({$this->prefix}proposals.status = 'applied' OR {$this->prefix}proposals.status = 'accepted')
+                {$search}
+            ";
+
+            $having         = " 1 ";
+            
+            $page           = (!empty($request->page))?$request->page:1;
+            $sort           = (!empty($request->sort))?$request->sort:"";
+            $jobs           = \Models\Talents::find_job($request->user(),'all',$where,$page,$sort,NULL,$having);
+            $type           = 'history';
+            $jobs           = \Models\Projects::talent_jobs($request->user()->id_user,$type);
+            
+            if(!empty($jobs['result'])){
+                $jobs['result'] = \App\lib\Dash::insert($jobs['result'],'{n}.type','history');
+                $this->jsondata = $jobs['result'];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function apply_job(Request $request){
+            $request->replace($this->post);
+            if(empty($request->project_id)){
+                $this->message = 'M0121';
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+            }else{
+                $application_data = Proposals::select()->where(['project_id' => $request->project_id, 'user_id' => $request->user()->id_user, 'type' => 'application'])->get()->count();
+                if(empty($application_data)){
+                    $insertArr = [
+                        'project_id' => $request->project_id,
+                        'user_id'    => $request->user()->id_user,
+                        'type'       => 'application',
+                        'created'    => date('Y-m-d H:i:s'),
+                        'updated'    => date('Y-m-d H:i:s')
+                    ];
+                    $proposaldata = Proposals::create($insertArr);
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-apply-job',
+                        'reference_type'    => 'projects',
+                        'reference_id'      => $request->project_id
+                    ]));
+
+                    $this->status = true;
+                    $this->message = "M0251";
+                }else{
+                    $this->message = "M0252";
+                }
+            }
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function initiate_chat_request(Request $request){
+            $request->replace($this->post);
+            
+            $html = ''; 
+            $isRequestSent = \Models\Chats::initiate_chat_request($request->sender,$request->receiver);
+            
+            if(empty($request->html)){
+                if(!empty($isRequestSent['status'])){
+                    $this->status = $isRequestSent['status'];
+                    $this->message = $isRequestSent['message'];
+                    $this->jsondata = $isRequestSent;
+                }
+            }else{
+                if($isRequestSent['chat_initiated'] == 'talent'){
+                    $html = '<button class="button-line" title="'.trans('job.J0063').'">'.trans('job.J0063').'</button>';
+                }else if($isRequestSent['chat_initiated'] == 'employer'){
+                    $html = '<button type="button" class="button-line button-blue" data-request="chat-initiate" data-user="'.$request->receiver_id.'" data-url="'.url(sprintf('%s/chat',EMPLOYER_ROLE_TYPE)).'">'.trans('website.W0296').'</button>';
+                }
+
+                $this->jsondata = ['html' => $html];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function notification_list(Request $request){
+            if(empty($this->post['user_id'])){
+                $this->post['user_id'] = $request->user()->id_user;
+            }
+
+            if(empty($this->post['page'])){
+                $notifications = \Models\Notifications::lists($this->post['user_id']);
+            }else{
+                $notifications = \Models\Notifications::lists($this->post['user_id'],$this->post['page']);
+            }
+            
+            if(!empty($notifications['result'])){
+                $this->status   = true;
+                $this->jsondata = $notifications;
+            }
+        
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function mark_read_notification(Request $request){
+            $request->replace($this->post);
+
+            $isMarkedRead = \Models\Notifications::markread($request->notification_id,$request->user()->id_user);
+            
+            /* RECORDING ACTIVITY LOG */
+            event(new \App\Events\Activity([
+                'user_id'           => $request->user()->id_user,
+                'user_type'         => 'talent',
+                'action'            => 'webservice-talent-mark-read-notification',
+                'reference_type'    => 'notifications',
+                'reference_id'      => $request->notification_id
+            ]));
+
+            if(!empty($isMarkedRead)){
+                $this->status = $isMarkedRead['status'];
+                $this->jsondata = [
+                    'total_unread_proposal_notifications'   => $isMarkedRead['total_unread_proposal_notifications'],
+                    'total_unread_notifications'            => $isMarkedRead['total_unread_notifications']
+                ];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function total_chat_count(Request $request){
+            $this->status = true;
+            
+            if(empty($request->user_id)){
+                return [];
+            }
+
+            $count = \Models\Talents::get_chat_count($request->user_id);
+            
+            if(!empty($count)){
+                $this->jsondata = ['count' => $count];
+            }else{
+                $this->jsondata = ['count' => ''];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function change_password(Request $request){
+            $request->replace($this->post);
+
+            $validator = \Validator::make($request->all(), [
+                "old_password"              => validation('old_password'),
+                "new_password"              => validation('new_password'),
+                "confirm_password"          => validation('confirm_password'),
+            ],[
+                'old_password.required'     => 'M0292',
+                'old_password.old_password' => 'M0295',
+                'new_password.different'    => 'M0300',
+                'new_password.required'     => 'M0293',
+                'new_password.regex'        => 'M0296',
+                'new_password.max'          => 'M0297',
+                'new_password.min'          => 'M0298',
+                'confirm_password.required' => 'M0294',
+                'confirm_password.same'     => 'M0299',
+            ]);
+
+            if($validator->fails()){
+                $this->message   = $validator->messages()->first();
+            }else{
+                $isUpdated      = \Models\Talents::change(\Auth::user()->id_user,[
+                    'password'  => bcrypt($request->new_password),
+                    'updated'   => date('Y-m-d H:i:s')
+                ]);
+
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-change-password',
+                    'reference_type'    => 'notifications',
+                    'reference_id'      => $request->notification_id
+                ]));
+
+                $this->status   = true;
+                $this->message  = 'M0301';
+                $this->redirect = url(sprintf('%s/change-password',TALENT_ROLE_TYPE));
+                       
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function image_portfolio(Request $request){
+            $validator = \Validator::make($request->all(), [
+                "file"                      => array_merge(validation('document'),['required']),
+            ],[
+                'file.validate_file_type'   => 'M0119',
+                'file.required'             => 'M0310',
+            ]);
+
+            if($validator->fails()){
+                $this->message   = $validator->messages()->first();
+            }else{
+                $folder = 'uploads/portfolio/';
+                $uploaded_file = upload_file($request,'file',$folder,true);
+                
+                $data = [
+                    'user_id'       => $request->user()->id_user,
+                    'record_id'     => "",
+                    'reference'     => 'users',
+                    'filename'      => $uploaded_file['filename'],
+                    'extension'     => $uploaded_file['extension'],
+                    'folder'        => $folder,
+                    'type'          => 'portfolio',
+                    'size'          => $uploaded_file['size'],
+                    'is_default'    => DEFAULT_NO_VALUE,
+                    'created'       => date('Y-m-d H:i:s'),
+                    'updated'       => date('Y-m-d H:i:s'),
+                ];
+
+                $isInserted = \Models\Talents::create_file($data,true,true);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-image-portfolio',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+
+                if(!empty($isInserted)){
+                    $this->jsondata = $isInserted;
+                    $this->status = true;
+                    $this->message  = "M0431";
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function add_portfolio(Request $request){
+            $request->replace($this->post);
+
+            $validator = \Validator::make($request->all(), [
+                "portfolio"         => validation('portfolio'),
+                "description"       => validation('portfolio_description'),
+                "portfolio_docs"    => ['required'],
+            ],[
+                'portfolio.required'        => 'M0312',
+                'portfolio.string'          => 'M0304',
+                'portfolio.regex'           => 'M0304',
+                'portfolio.max'             => 'M0305',
+                'portfolio.min'             => 'M0306',
+                'description.required'      => 'M0303',
+                'description.string'        => 'M0307',
+                'description.regex'         => 'M0307',
+                'description.max'           => 'M0308',
+                'description.min'           => 'M0309',
+                'portfolio_docs.required'   => 'M0310',
+            ]);
+
+            if($validator->fails()){
+                $this->message   = $validator->messages()->first();
+            }else{
+
+                $insertArr = [
+                    'user_id' => \Auth::user()->id_user,
+                    'portfolio' => $request->portfolio,
+                    'description' => $request->description,
+                    'created' => date('Y-m-d H:i:s'),
+                    'updated' => date('Y-m-d H:i:s')
+                ];
+                
+                if(!empty($request->portfolio_id)){
+                    $portfolio_id = \Models\Portfolio::save_portfolio($insertArr,$request->portfolio_id);
+                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-update-portfolio',
+                        'reference_type'    => 'talent_portfolio',
+                        'reference_id'      => $request->portfolio_id
+                    ]));
+
+                }else{
+                    $portfolio_id = \Models\Portfolio::save_portfolio($insertArr);
+                    
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-add-portfolio',
+                        'reference_type'    => 'users',
+                        'reference_id'      => $request->user()->id_user
+                    ]));
+
+                }
+
+                $files          = (array) explode(",",$request->portfolio_docs);
+                
+                if(!empty($portfolio_id)){
+                    \Models\File::update_file($files,['record_id' => $portfolio_id]);
+                    \Models\Talents::delete_file(
+                        sprintf(
+                            " record_id = 0 AND type = 'portfolio' AND  user_id = %s", 
+                            \Auth::user()->id_user
+                        )
+                    );
+
+                    if(!empty($request->removed_portfolio)){
+                        \Models\Talents::delete_file(sprintf(" id_file IN(%s) AND  user_id = %s",$request->removed_portfolio,\Auth::user()->id_user));                        
+                    }
+                }
+
+
+                
+                $this->status   = true;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function delete_portfolio(Request $request){
+            $isDeleted = \Models\Portfolio::delete_portfolio($this->post['id_portfolio'], $request->user()->id_user);
+            
+            if($isDeleted){
+                $this->status = true;
+                $this->message  = "M0313";
+
+                \Models\Talents::delete_file(
+                    sprintf(
+                        " record_id = %s AND type = 'portfolio' AND  user_id = %s", 
+                        $this->post['id_portfolio'],
+                        \Auth::user()->id_user
+                    )
+                );
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-delete-portfolio',
+                    'reference_type'    => 'portfolio',
+                    'reference_id'      => $this->post['id_portfolio']
+                ]));
+
+            }else{
+                $this->message  = "M0121";
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }  
+
+        public function list_portfolio(Request $request){
+            $request->replace($this->post);
+            $page = 1;
+            
+            if(!empty($request->page)){
+                $page = $request->page;
+            }
+
+            $portfolioes = \Models\Portfolio::get_portfolio($request->user()->id_user,"","all",[],$page);
+            
+            if($portfolioes){
+                $this->status = true;
+
+                array_walk($portfolioes, function(&$item, $key){
+                    if(!empty($item['file'])){
+                        foreach ($item['file'] as &$file) {
+                            $file['file'] = asset(sprintf("%s%s",$file['folder'],$file['filename']));
+                        }
+                    }else{
+                        $item['file'][] = [
+                            'id_file' => 0,
+                            'filename' => DEFAULT_AVATAR_IMAGE,
+                            'folder' => 'images/',
+                            'file' => url(sprintf('images/%s',DEFAULT_AVATAR_IMAGE))
+                        ];
+                    }
+                });
+
+                $this->jsondata = $portfolioes;
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function delete_portfolio_image(Request $request){
+            $request->replace($this->post);
+            $isDeleted = \Models\Talents::delete_file(sprintf(" id_file = %s AND user_id = %s ",$this->post['id_file'], $request->user()->id_user));
+
+            if($isDeleted){
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-delete-portfolio-image',
+                    'reference_type'    => 'files',
+                    'reference_id'      => $this->post['id_file']
+                ]));
+
+                $this->status = true;
+                $this->message  = "M0314";
+            }else{
+                $this->message  = "M0121";
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function start_job(Request $request){
+            $request->replace($this->post);
+
+            $project_id = (int)___decrypt($request->project_id);
+            /*$project_possible_status    = \Models\Listings::project_status_column();*/
+
+            $job_details = \Models\Talents::get_job(\Auth::user()," id_project = {$project_id} ","single");
+
+            if(empty($request->project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else if(empty($request->project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else if(empty($job_details)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'user_id');   
+            }else if($job_details['startdate'] > date('Y-m-d')){
+                $this->message = "M0357";
+            }else if(\Models\ProjectLogs::is_alredy_logged($project_id,\Auth::user()->id_user,$job_details['employment'])){
+                if($job_details['employment'] == 'hourly'){
+                    $this->message = "M0352";
+                }else if($job_details['employment'] == 'daily'){
+                    $this->message = "M0352";
+                }else if($job_details['employment'] == 'weekly'){
+                    $this->message = "M0379";
+                }else if($job_details['employment'] == 'monthly'){
+                    $this->message = "M0380";
+                }else if($job_details['employment'] == 'fixed'){
+                    $this->message = "M0381";
+                }
+            }else{
+                $isUpdated          = \Models\Projects::change([
+                    'id_project' => $project_id,
+                    'project_status' => 'pending'
+                ],[
+                    'project_status' => 'initiated',
+                    'updated' => date('Y-m-d H:i:s')
+                ]);
+
+                $projectLogData     = [
+                    "project_id"    =>  $project_id,
+                    "talent_id"     =>  \Auth::user()->id_user,
+                    "employer_id"   =>  $job_details['company_id'],
+                    "startdate"     =>  date('Y-m-d H:i:s'),
+                    "created"       =>  date('Y-m-d H:i:s'),
+                    "updated"       =>  date('Y-m-d H:i:s'),
+                ];
+
+                $isSaved            = \Models\ProjectLogs::save_project_log($projectLogData);
+
+                if(!empty($isSaved)){
+                    $isNotified = \Models\Notifications::notify(
+                        $job_details['company_id'],
+                        $job_details['accepted_talent_id'],
+                        'JOB_STARTED_BY_TALENT',
+                        json_encode([
+                            "user_id" => (string) $job_details['company_id'],
+                            "project_id" => (string) $project_id
+                        ])
+                    );
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-start-job',
+                        'reference_type'    => 'projects',
+                        'reference_id'      => $project_id
+                    ]));
+
+                    $this->status   = true;
+                    $this->message  = "M0283";
+                }else{
+                    $this->message  = "M0356";
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function close_job(Request $request){
+            $request->replace($this->post);
+            $project_id = (int)___decrypt($request->project_id);
+            $job_details = \Models\Talents::get_job(\Auth::user()," id_project = {$project_id} ","single"); 
+            
+            if(empty($request->project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else if(empty($job_details)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'user_id');   
+            }/*else if((array_search($job_details['project_status'],$project_possible_status) >= array_search("completed",$project_possible_status))){
+                $this->message  = "M0318";
+            }*/else{
+                $isClosed = \Models\ProjectLogs::request_close_job($project_id,\Auth::user()->id_user);
+
+                if(!empty($isClosed)){
+                    $isNotified = \Models\Notifications::notify(
+                        $job_details['company_id'],
+                        $job_details['accepted_talent_id'],
+                        'JOB_COMPLETED_BY_TALENT',
+                        json_encode([
+                            "user_id" => (string) $job_details['company_id'],
+                            "project_id" => (string) $project_id
+                        ])
+                    );
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-close-job',
+                        'reference_type'    => 'projects',
+                        'reference_id'      => $project_id
+                    ]));
+
+                    $this->status   = true;
+                    $this->message  = "M0283";               
+                }else{
+                    $this->message = "M0325";                    
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        /*public function close_job(Request $request){
+            $request->replace($this->post);
+
+            $project_id = (int)___decrypt($request->project_id);
+            $project_possible_status    = \Models\Listings::project_status_column();
+
+            $job_details = \Models\Talents::get_job(\Auth::user()," id_project = {$project_id} ","single"); 
+            
+            if(empty($project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else if(empty($job_details)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'user_id');   
+            }else if((array_search($job_details['project_status'],$project_possible_status) >= array_search("completed",$project_possible_status))){
+                $this->message  = "M0318";
+            }else{
+                $isUpdated          = \Models\Employers::update_job($project_id,[
+                    'project_status' => 'completed',
+                    'updated' => date('Y-m-d H:i:s')
+                ]);
+
+                $isNotified = \Models\Notifications::notify(
+                    $job_details['company_id'],
+                    $job_details['accepted_talent_id'],
+                    'JOB_COMPLETED_BY_TALENT',
+                    json_encode([
+                        "user_id" => (string) $job_details['company_id'],
+                        "project_id" => (string) $project_id
+                    ])
+                );
+
+                $this->status   = true;
+                $this->message  = "M0319";               
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }*/
+
+        public function wallet(Request $request){
+            $request->replace($this->post);
+
+            $this->status   = true;
+            $this->jsondata = \Models\Payments::summary($request->user()->id_user,'talent');
+            $payments       = \Models\Payments::listing($request->user()->id_user,'talent',$request->type, false, $request->page,$request->sort,$request->search);
+
+            if(!empty($payments->count())){
+                $this->jsondata['payments_list'] = json_decode(json_encode($payments),true);
+            }else{
+                $this->jsondata['payments_list'] = [];
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function payout_request(Request $request){
+            $request->replace($this->post);
+
+            if(empty($request->project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+            }else{
+                $project_id  = $request->project_id;
+                $job_detail = \Models\Projects::findById($project_id);
+                if(empty($job_detail)){
+                    $this->message = "M0121";
+                    $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+                }else{
+                    $updateData = [
+                        'request_payout'    => 'yes',
+                        'updated'           => date('Y-m-d H:i:s')
+                    ];
+                    
+                    $isUpdated      = \Models\ProjectLogs::where(['project_id' => $project_id, 'close' => 'pending'])->update($updateData);
+
+                    $isNotified = \Models\Notifications::notify(
+                        $job_detail['user_id'],
+                        \Auth::user()->id_user,
+                        'JOB_REQUEST_PAYOUT_BY_TALENT',
+                        json_encode([
+                            "user_id" => (string) $job_detail['user_id'],
+                            "project_id" => (string) $project_id
+                        ])
+                    );
+
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => $request->user()->id_user,
+                        'user_type'         => 'talent',
+                        'action'            => 'webservice-talent-payout-request',
+                        'reference_type'    => 'projects',
+                        'reference_id'      => $project_id
+                    ]));
+
+                    $this->status   = true;
+                    $this->message  = 'M0428';
+                }
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );             
+        }
+
+        public function add_review(Request $request){
+            $request->replace($this->post);
+
+            if(empty($request->receiver_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'receiver_id'); 
+            }else if(empty($request->project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id'); 
+            }else{
+                $validator = \Validator::make($request->all(), [
+                    "description"           => validation('review_description'),
+                    "category_one"          => validation('review_average'),
+                    "category_two"          => validation('review_performance'),
+                    "category_three"        => validation('review_punctuality'),
+                    "category_four"         => validation('review_quality'),
+                    "category_five"         => validation('review_skill'),
+                    "category_six"          => validation('review_support'),
+                ],[
+                    "review_description.required"   => 'M0343',
+                    "review_description.string"     => 'M0336',
+                    "review_description.regex"      => 'M0336',
+                    "review_description.max"        => 'M0327',
+                    "review_description.min"        => 'M0328',
+                    "category_one.required"         => 'M0330',
+                    "category_one.numeric"          => 'M0337',
+                    "category_two.required"         => 'M0331',
+                    "category_two.numeric"          => 'M0338',
+                    "category_three.required"       => 'M0332',
+                    "category_three.numeric"        => 'M0339',
+                    "category_four.required"        => 'M0333',
+                    "category_four.numeric"         => 'M0340',
+                    "category_five.required"        => 'M0334',
+                    "category_five.numeric"         => 'M0341',
+                    "category_six.required"         => 'M0335',
+                    "category_six.numeric"          => 'M0342',
+                ]);
+                if($validator->fails()){
+                    $this->message = $validator->messages()->first();                
+                }else{
+                     if(empty($project_data = json_decode(json_encode(\Models\Projects::where(['id_project' => $request->project_id,'user_id' => $request->receiver_id])->get(),true)))){
+                        $this->message = "M0121";
+                        $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+                    }else if(empty($proposal_data = json_decode(json_encode(Proposals::where(['project_id' => $request->project_id, 'user_id' => \Auth::user()->id_user, 'type' => 'proposal', 'status' => 'accepted'])->get(),true ) ) ) ){
+                        $this->message = "M0121";
+                        $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');
+                    }else if(!empty(json_decode(json_encode(\Models\Reviews::where(['project_id' => $request->project_id, 'sender_id' => \Auth::user()->id_user ])->get(),true)))){
+                        $this->message = "M0329";
+                        $this->error = trans(sprintf('general.%s',$this->message));                 
+                    }else{
+                        $total_average  = ($request->category_two+$request->category_three+$request->category_four+$request->category_five+$request->category_six)/5;
+                        
+                        $reviewArray = [
+                            'project_id'            =>  $request->project_id,
+                            'sender_id'             =>  \Auth::user()->id_user,
+                            'receiver_id'           =>  $request->receiver_id,
+                            'description'           =>  $request->description,
+                            'review_average'        =>  $total_average,
+                            'category_two'          =>  $request->category_two,    
+                            'category_three'        =>  $request->category_three,
+                            'category_four'         =>  $request->category_four,
+                            'category_five'         =>  $request->category_five,
+                            'category_six'          =>  $request->category_six,
+                            'created'               =>  date('Y-m-d h:i:s'),
+                            'updated'               =>  date('Y-m-d h:i:s'),
+                        ];
+
+                        $isInserted = \Models\Reviews::add_review($reviewArray);
+
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => $request->user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'webservice-talent-add-review',
+                            'reference_type'    => 'users',
+                            'reference_id'      => $request->receiver_id
+                        ]));
+
+                        if($isInserted){
+                            $this->status   = true;
+                            $this->message  = "M0326";
+                        }
+                    }
+                }
+            }
+
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );                        
+        }
+
+        public function my_profile_reviews(Request $request){
+            $request->replace($this->post);
+            $this->status   = true;
+            
+            $page           = (!empty($request->page)) ? $request->page : 1;
+            $review_type    = ((!empty($request->review_type)) ? $request->review_type : "by_employers");
+            
+            $this->jsondata = \Models\Reviews::talent_reviews(\Auth::user()->id_user,'',$review_type,$page);
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );            
+        }
+
+        public function job_review_list(Request $request){
+            $request->replace($this->post);
+            if(empty($request->project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id'); 
+            }else{
+                $this->status   = true;
+                $page           = (!empty($request->page)) ? $request->page : 1;
+                $review_type    = ((!empty($request->review_type)) ? $request->review_type : "by_employers");
+                $projectData    = json_decode(json_encode(\Models\Projects::findById($request->project_id), true));
+                $this->jsondata = \Models\Reviews::employer_reviews($projectData->user_id,'','by_talents',$page);
+            }
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            ); 
+        }
+
+        public function raise_dispute(Request $request){
+            $request->replace($this->post);
+
+            if(empty($request->project_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'project_id');   
+            }else if(empty($request->employer_id)){
+                $this->message = "M0121";
+                $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'employer_id');   
+            }else{
+                $validator = \Validator::make($request->all(),[
+                    'reason'            => validation('rasie_dispute_reason')
+                ],[
+                    'reason.required'   => 'M0384',
+                    'reason.string'     => 'M0385',
+                    'reason.regex'      => 'M0385',
+                    'reason.max'        => 'M0386',
+                    'reason.min'        => 'M0387'
+                ]);
+
+                if($validator->fails()){
+                    $this->message = $validator->messages()->first();
+                }else{
+                    $raiseArray = [
+                        'project_id'    => $request->project_id,
+                        'receiver_id'   => $request->employer_id,
+                        'sender_id'     => $request->user()->id_user,
+                        'reason'        => $request->reason,
+                        'created'       => date('Y-m-d h:i:s'),
+                        'updated'       => date('Y-m-d h:i:s')
+                    ];
+
+                    $isDisputed = \Models\RaiseDispute::raise_dispute($raiseArray,'talent');
+                    if(!empty($isDisputed['status'])){
+                    
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => $request->user()->id_user,
+                            'user_type'         => 'talent',
+                            'action'            => 'webservice-talent-raise-dispute',
+                            'reference_type'    => 'projects',
+                            'reference_id'      => $request->project_id
+                        ]));
+
+                        $this->status   = true;
+                        $this->message  = $isDisputed['message'];
+                    }else{
+                        $this->message  = $isDisputed['message'];
+                    }
+                }
+            }  
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );            
+        }
+
+        public function settings(Request $request){
+            $this->status       = true;
+            $this->jsondata     = \Models\Settings::fetch(\Auth::user()->id_user,\Auth::user()->type);
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }   
+
+        public function savesettings(Request $request){
+            $request->replace($this->post);
+            $data = [];
+            $validator = \Validator::make($request->all(), [
+                'newsletter_subscribed' => validation('newsletter_subscribed'),
+                'city'                  => validation('city'),
+                'interest'              => validation('interests'),
+                'industry'              => validation('industry'),
+                'subindustry'           => validation('subindustry'),
+            ],[
+                'city.integer'                      => 'M0254',
+                'industry.integer'                  => 'M0064',
+                'subindustry.integer'               => 'M0065',
+                'newsletter_subscribed.string'      => 'M0427',
+            ]);
+
+            if($validator->fails()){
+                $this->message = $validator->messages()->first();
+            }else{
+                if(!empty($request->email)){
+                    foreach ($request->email as $item) {
+                        if(!empty($item['status'] == DEFAULT_YES_VALUE)){
+                            $data['email'][] = $item['setting'];
+                        }
+                    }
+                }
+
+                if(!empty($request->mobile)){
+                    foreach ($request->mobile as $item) {
+                        if(!empty($item['status'] == DEFAULT_YES_VALUE)){
+                            $data['mobile'][] = $item['setting'];
+                        }
+                    }
+                }
+
+                $update_userData = [
+                    'newsletter_subscribed' => !empty($request->newsletter_subscribed) ? $request->newsletter_subscribed : 'no',
+                    'city'                  => $request->city,
+                    'industry'              => $request->industry,
+                    'subindustry'           => $request->subindustry,
+                ];
+                
+                $isUpdated          = \Models\Talents::change($request->user()->id_user,$update_userData);
+                
+                $isInterestUpdated  = \Models\Talents::update_interest($request->user()->id_user,$request->interest);           
+
+                $isUpdated          = \Models\Settings::add(\Auth::user()->id_user,$data);
+                
+                /* RECORDING ACTIVITY LOG */
+                event(new \App\Events\Activity([
+                    'user_id'           => $request->user()->id_user,
+                    'user_type'         => 'talent',
+                    'action'            => 'webservice-talent-save-settings',
+                    'reference_type'    => 'users',
+                    'reference_id'      => $request->user()->id_user
+                ]));
+
+                $this->status   = true;
+                $this->message  = 'M0426';
+                
+            }
+            
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }
+
+        public function get_my_availability(Request $request){
+            if(!empty($request->user()->id_user)){
+                $this->status       = true;
+                $talent_availability = \Models\Talents::get_availability($request->user()->id_user);
+
+                if(!empty($talent_availability)){
+                    foreach ($talent_availability as &$value) {
+                        $value['start'] = $value['availability_date'].'T'.$value['from_time'];
+                        $value['end'] = $value['availability_date'].'T'.$value['to_time'];
+                        $value['type'] = $value['repeat'];
+                        $value['description'] = sprintf("%s - %s",___t($value['from_time']),___t($value['to_time']));
+                        if($value['repeat'] == 'daily'){
+                            $value['title'] = sprintf("%s - %s\n%s",___t($value['from_time']),___t($value['to_time']),sprintf("%s %s",'Daily', sprintf("until %s",___d($value['deadline']))));
+
+                        }
+                        elseif($value['repeat'] == 'weekly'){
+                            $value['title'] = sprintf(
+                                "%s - %s\n%s",
+                                ___t($value['from_time']),
+                                ___t($value['to_time']),
+                                sprintf(
+                                    "WEEKLY ON %s %s",
+                                    ___replace_last(
+                                        ',',
+                                        " AND ",
+                                        str_replace(
+                                            array_values(days()),
+                                            array_keys(days()),
+                                            implode(", ", $value['availability_day'])
+                                        )
+                                    ),
+                                    sprintf("until %s",___d($value['deadline']))
+                                )
+                            );
+                        }
+                        elseif($value['repeat'] == 'monthly'){
+                            $value['title'] = sprintf("%s - %s\n%s",___t($value['from_time']),___t($value['to_time']),sprintf("%s %s",'Monthly', sprintf("until %s",___d($value['deadline']))));
+                        }
+                    }
+                    #$get_scalar_availability = ___get_scalar_availability($talent_availability);
+                    #dd($talent_availability);
+                    if(!empty($talent_availability)){
+                        $this->jsondata = $talent_availability;
+                    }
+                }
+            }
+            else{
+                $this->message = 'M0121';
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );
+        }
+
+        public function add_thumb_device(Request $request){
+            $request->replace($this->post);
+            
+            $validator = \Validator::make($request->all(), [
+                'device_uuid'           => validation('touch_login'),
+                'device_type'           => validation('touch_login'),
+                'device_name'           => validation('touch_login'),
+            ],[
+                'device_uuid.required'  => 'M0430',
+                'device_type.required'  => 'M0430',
+                'device_name.required'  => 'M0430',
+            ]);
+
+            if($validator->fails()){
+                $this->message = $validator->messages()->first();
+            }else{
+                $setting          = @(string)(!empty($this->post['setting']))?$this->post['setting']:'off';
+                $device_uuid      = @(string)$this->post['device_uuid'];
+                $device_type      = @(string)$this->post['device_type'];
+                $device_name      = @(string)$this->post['device_name'];
+                
+                $isDeviceConfigured =\Models\ThumbDevices::add($request->user()->id_user, $device_uuid, $device_type, $device_name,$setting);
+                
+                if($request->setting == 'on'){
+                    if(!empty($isDeviceConfigured)){
+                        $this->message    = 'M0443';
+                        $this->status     = true;
+                        $this->jsondata   = [];
+                    }else{
+                        $this->status   = true;
+                        $this->message  = 'M0429';
+                    }
+                }else{
+                    $this->status   = true;
+                    $this->message  = 'M0448';
+                }
+
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status'    => $this->status,
+                    'data'      => $this->jsondata
+                ])
+            );  
+        }
+
+        public function change_currency(Request $request){
+            $currency = !empty($this->post['currency']) ? $this->post['currency'] : DEFAULT_CURRENCY;
+            $isUpdated = \Models\Talents::change($request->user()->id_user,[
+                'currency' => $currency,
+                'updated'  => date('Y-m-d h:i:s')
+            ]);
+            if($isUpdated){
+                $this->status = true;
+                $this->message  = "M0470";
+            }
+
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+    }
+

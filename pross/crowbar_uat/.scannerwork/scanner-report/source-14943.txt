@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <link href="{{ asset('favicon.ico') }}" rel="icon">
+        <title>{{ config('app.name', 'Laravel') }}</title>
+        <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+        <link href="{{ asset("/backend/bootstrap/css/bootstrap.min.css") }}" rel="stylesheet" type="text/css" />
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+        <link href="{{ asset("/backend/dist/css/admin.min.css")}}" rel="stylesheet" type="text/css" />
+        @yield('requirecss')
+        @yield('inlinecss')
+        <script>
+            @php $agent = new Jenssegers\Agent\Agent; @endphp
+            window.Laravel = <?php echo json_encode(['csrfToken' => csrf_token(),]); ?>;
+            var $is_mobile_device   = '{{ (!empty($agent->isMobile())?DEFAULT_YES_VALUE:DEFAULT_NO_VALUE) }}';
+            var $alert_message_text     = '{{ trans("website.W0548") }}';
+            var $confirm_botton_text    = '{{ trans("website.W0551") }}';
+            var $close_botton_text      = '{{ trans("website.W0549") }}';
+            var $no_thanks_botton_text  = '{{ trans("website.W0552") }}';
+            var $cancel_botton_text     = '{{ trans("website.W0550") }}';
+            
+            var month = [
+                "{{trans('general.M0451')}}",
+                "{{trans('general.M0452')}}",
+                "{{trans('general.M0453')}}",
+                "{{trans('general.M0454')}}",
+                "{{trans('general.M0455')}}",
+                "{{trans('general.M0456')}}",
+                "{{trans('general.M0457')}}",
+                "{{trans('general.M0458')}}",
+                "{{trans('general.M0459')}}",
+                "{{trans('general.M0460')}}",
+                "{{trans('general.M0461')}}",
+                "{{trans('general.M0462')}}",
+            ];
+            
+            var weekday = [
+                "{{trans('general.M0463')}}",
+                "{{trans('general.M0464')}}",
+                "{{trans('general.M0465')}}",
+                "{{trans('general.M0466')}}",
+                "{{trans('general.M0467')}}",
+                "{{trans('general.M0468')}}",
+                "{{trans('general.M0469')}}",
+            ];
+
+            var base_url                = "{{ url('/') }}";
+            var asset_url               = "{{ asset('/') }}";
+            var $image_upload_text      = "{{trans('website.W0623')}}";
+            var $image_upload_select    = "{{trans('website.W0624')}}";
+        </script>
+    </head>
+    <body class="hold-transition login-page">
+        <div id="app">
+            <div class="container">
+                <div class="collapse navbar-collapse" id="app-navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">    
+                            <ul class="dropdown-menu" role="menu">
+                                <li>        
+                                    <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
+                                        {{ csrf_field() }}
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            @yield('content')
+        </div>
+        <script src="{{ asset ("/backend/plugins/jQuery/jquery-2.2.3.min.js") }}"></script>
+        <script src="{{ asset ("/backend/bootstrap/js/bootstrap.min.js") }}" type="text/javascript"></script>
+        <script src="{{ asset ("/backend/dist/js/app.js") }}" type="text/javascript"></script>
+        @yield('requirejs')
+        @yield('inlinejs')
+    </body>
+</html>

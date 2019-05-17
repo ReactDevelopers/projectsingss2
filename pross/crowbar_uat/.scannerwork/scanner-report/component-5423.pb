@@ -1,0 +1,1 @@
+¯*=node_modules/node-sass/test/fixtures/watching-dir-02/foo.scss 2scssXhr=node_modules/node-sass/test/fixtures/watching-dir-02/foo.scss

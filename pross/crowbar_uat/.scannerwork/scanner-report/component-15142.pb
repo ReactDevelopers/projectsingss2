@@ -1,0 +1,1 @@
+¦v resources/views/talent/jobdetail :¥v§vªv«v¯v°v±v²vr resources/views/talent/jobdetail

@@ -1,0 +1,366 @@
+.placeholder {outline: 1px dashed #4183c4;}.mjs-nestedSortable-error {background: #fbe3e4 none repeat scroll 0 0;border-color: transparent;}ol {padding: 0 0 0 30px;}ol ol {border-left: 1px solid #ccc;margin-left: 15px !important;padding-left: 8px !important;}ol.sortable, ol.sortable ol {list-style-type: none;margin: 0 0 0 25px;padding: 0;}ol.sortable {margin: 20px 10px;}.sortable li {margin: 5px 0 0;padding: 0;}.sortable li div .list-item{padding-left: 10px;}ol ol .list-item::before {color: #ccc;content: "_";left: -8px;position: relative;top: -7px;}.sortable li div {/*background: #fafafa;border-color: #d4d4d4 #d4d4d4 #bcbcbc;border-image: none;border-style: solid;border-width: 1px;*/cursor: move;margin: 0;/*padding: 6px;*/}/*.sortable li.mjs-nestedSortable-branch div {background: #fafafa;}.sortable li.mjs-nestedSortable-leaf div {background: #fbfbfb;             }*/li.mjs-nestedSortable-collapsed.mjs-nestedSortable-hovering div {background: #fafafa none repeat scroll 0 0;border-color: #999;}.disclose {background: #eeeeee none repeat scroll 0 0;border: 1px solid #ccc;cursor: pointer;display: none;line-height: 17px;padding: 1px 4px;text-align: center;width: 22px;height: 22px;}.sortable li.mjs-nestedSortable-collapsed > ol {display: none;}.sortable li.mjs-nestedSortable-branch > div > .disclose {display: inline-block;}.sortable li.mjs-nestedSortable-collapsed > div > .disclose > span::before {content: "+ ";color: #999999;}.sortable li.mjs-nestedSortable-expanded > div > .disclose > span::before {content: "- ";color: #999999;} .sortable li.mjs-nestedSortable-leaf div .list-item{padding-left: 32px;}.sortable li.mjs-nestedSortable-leaf div .list-item {padding-left: 35px;}.sortable li.mjs-nestedSortable-branch ol .list-item {padding-left: 10px;}
+.text-avatar {
+  color: #ffffff;
+  display: inline-block;
+  margin-right: 10px;
+  padding: 6% 0;
+  text-align: center;
+  background: #ee806b;
+  background: -moz-linear-gradient(left, #ee806b 1%, #e71556 49%, #9c1556 100%);
+  background: -webkit-linear-gradient(left, #ee806b 1%, #e71556 49%, #9c1556 100%);
+  background: linear-gradient(to right, #ee806b 1%, #e71556 49%, #9c1556 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ee806b', endColorstr='#9c1556', GradientType=1);
+  border: none;
+  border-radius: 100%;
+}
+.btn-primary,.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+  background-color: #000000;
+  border-color: #000000;
+  padding: 5px 12px;
+}
+.page-title{
+	font-size: 18px;
+	color: #fff;
+	padding: 11px;
+	display: inline-block;
+}
+.table-responsive .row{padding:0;margin:0;}
+.table-responsive table{width: 100%!important;}
+.table-responsive .col-sm-12, .table-responsive .col-sm-6{margin: 0;padding: 0;}
+.pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {background-color: #E82459;border-color: #E82459;}
+.product-box{
+  background: url('../../images/product_sample.jpg') no-repeat center;
+  width: 330px;
+  height: 220px;
+}
+.thumbnail{
+  border-radius: 0;
+}
+.border-warning{
+  border-bottom: 5px solid #E82459;
+}
+.border-default{
+  border-bottom: 5px solid #cccccc;
+}
+.btn-overlay {
+  background: #E82459 none repeat scroll 0 0;
+  border-radius: 100%;
+  font-size: 18px;
+  font-weight: normal;
+  height: 36px;
+  margin-top: 12px;
+  opacity: 0.7;
+  padding-top: 2px;
+  position: absolute;
+  right: 26px;
+  width: 36px;
+  border: 3px solid #E82459;
+  cursor: pointer;
+  text-align: center;
+}
+.m-l-1x{
+  right: 70px;
+}
+
+.m-l-2x{
+  right: 115px;
+}
+.required::after {
+  color: #a94442;
+  content: " *";
+}
+.table th {
+  vertical-align: middle!important;
+}
+.fancybox{cursor:pointer;}
+.form-control{border-radius: 0!important;}
+
+/*Radio*/
+.radiogroup-vertical {
+    position: relative;
+    margin: 0;
+    padding: 5px 0 0 0;
+    width: 100%;
+}
+
+.radio {
+    padding-left: 20px;
+}
+
+.radio label {
+    display: inline-block;
+    position: relative;
+    padding-left: 9px;
+    font-size: 14px;
+    color: #1a1a1a;
+    font-weight: 400;
+}
+
+.radio label::before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    left: 0;
+    margin-left: -20px;
+    border: 3px solid #d1d1d1;
+    border-radius: 50%;
+    background-color: #fff;
+    -webkit-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+}
+
+.radio label::after {
+    display: inline-block;
+    position: absolute;
+    content: " ";
+    width: 7px;
+    height: 7px;
+    left: 3px;
+    top: 5px;
+    margin-left: -18px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    -webkit-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+}
+
+.radio input[type="radio"] {
+    display: none;
+}
+
+.radio input[type="radio"]:checked + label::after {
+    border-color: #1a1a1a;
+    background: #1a1a1a;
+}
+
+.radio input[type="radio"]:disabled + label {
+    opacity: 0.65;
+}
+
+.radio input[type="radio"]:disabled + label::before {
+    cursor: not-allowed;
+}
+
+.radio.radio-inline {
+    margin-top: 0;
+}
+
+
+/* Checkbox Button styling CSS */
+
+.admin-checkbox.checkbox {
+    display: block;
+    margin-bottom: 10px;
+    margin-top: 0;
+    padding-left: 0;
+    float: left;
+    padding-right: 15px;
+}
+
+.admin-checkbox.checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.admin-checkbox.checkbox input[type="checkbox"] + label {
+    color: #1a1a1a !important;
+    font-size: 14px;
+    padding-left: 0;
+}
+
+.admin-checkbox.checkbox input[type="checkbox"] + label a {
+    color: #0fa1a8;
+    font-weight: 700;
+}
+
+.admin-checkbox.checkbox input[type="checkbox"] + label span.check {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    margin: -2px 10px 0 0;
+    vertical-align: middle;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.admin-checkbox.checkbox input[type="checkbox"] + label span.check {
+    background: url(../img/uncheck.png) no-repeat;
+}
+
+.admin-checkbox.checkbox input[type="checkbox"]:checked + label span.check {
+    background: url(../img/check.png) no-repeat;
+}
+
+.admin-checkbox.checkbox input[type="checkbox"] + label span.check,
+.admin-checkbox.checkbox input[type="checkbox"]:checked + label span.check {
+    -webkit-transition: background-color 0.4s linear;
+    -o-transition: background-color 0.4s linear;
+    -moz-transition: background-color 0.4s linear;
+    transition: background-color 0.4s linear;
+}
+
+
+
+.upload-docx  input.upload {
+    display: none;
+}
+.uploaded-docx {
+    position: relative;
+    display: inline-block;
+}
+
+.uploaded-docx a.delete-docx {
+    position: absolute;
+    display: inline-block;
+    right: -14px;
+    top: -10px;
+    background-color: white;
+    border-radius: 50%;
+    padding: 4px 5px;
+    text-align: center;
+    border: 1px solid #dddddd;
+    height: 30px;
+    width: 30px;
+    line-height: 18px;
+}
+.uploaded-docx a.delete-docx img {
+    max-width: 77%;
+}
+.uploaded-docx {
+    margin-top: 5px;
+}
+.uploaded-docx a.download-docx img {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+.download-docx {
+    display: inline-block;
+    width: 240px;
+    min-height: 140px;
+    border-radius: 6px;
+    padding: 20px;
+    position: relative;
+/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#e5e4e5+1,dad9da+51,cfcecf+100 */
+    background: #e5e4e5; /* Old browsers */
+    background: -moz-linear-gradient(left, #e5e4e5 1%, #dad9da 51%, #cfcecf 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, #e5e4e5 1%,#dad9da 51%,#cfcecf 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, #e5e4e5 1%,#dad9da 51%,#cfcecf 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5e4e5', endColorstr='#cfcecf',GradientType=1 ); /* IE6-9 */
+}
+.download-docx:hover {/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#e5e4e5+1,dad9da+51,cfcecf+100 */
+    background: #e5e4e5; /* Old browsers */
+    background: -moz-linear-gradient(top, #e5e4e5 1%, #dad9da 51%, #cfcecf 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #e5e4e5 1%,#dad9da 51%,#cfcecf 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #e5e4e5 1%,#dad9da 51%,#cfcecf 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5e4e5', endColorstr='#cfcecf',GradientType=0 ); /* IE6-9 */
+}
+.upload-text {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1c2730;
+}
+
+.upload-info {
+    padding-left: 0;
+    padding-top: 45px;
+}
+
+.upload-info p {
+    font-size: 32px;
+    font-weight: 100;
+    color: #1c2730;
+    line-height: 35px;    
+    display: inline-block;
+    vertical-align: middle;
+    padding-right: 10px;
+}
+
+.upload-info span {
+    font-size: 32px;
+    font-weight: 100;
+    color: #1c2730;
+    line-height: 35px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.upload-docx {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    min-width: 1px;
+    min-width: 125px;
+    text-align: initial;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.upload-docx span {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1c2730;
+    display: inline-block;
+    line-height: 16px;
+    cursor: pointer;
+}
+.single-upload-wrapper {
+  padding-bottom: 20px;
+}
+
+/* Checkbox Button styling CSS Ends */
+
+
+.custom-image-upload input[type=file] {
+    display: none;
+}
+
+.custom-image-upload {
+    margin-bottom: 15px;
+}
+a.delete-admin-banner-template {
+    position: absolute;
+    top: 80px;
+    right: 25px;
+    color: #000000;
+    display: inline-block;
+    padding: 0;
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    border-radius: 50%;
+    line-height: 27px;
+    z-index: 9;
+}
+
+
+.custom-image-upload span.fancybox.add-image-item {
+    display: inline-block;
+    position: relative;
+}
+
+.custom-image-upload span.fancybox.add-image-item a {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    border: 1px solid #dddddd;
+    background-color: #fff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 27px;
+}
+.custom-image-upload img {
+  max-width: 100%;
+}
+.custom-image-upload .upload-box.row {
+    padding-top: 10px;
+}
+.custom-image-upload .upload-box.row .add-image-wrapper > img {
+    padding-right: 5px;
+}

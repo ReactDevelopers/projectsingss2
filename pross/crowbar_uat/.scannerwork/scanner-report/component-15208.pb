@@ -1,0 +1,1 @@
+èv resources/views/backend/industry :çvévøvr resources/views/backend/industry

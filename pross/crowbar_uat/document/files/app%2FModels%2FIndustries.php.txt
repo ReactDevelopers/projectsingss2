@@ -1,0 +1,99 @@
+<?php
+
+    namespace Models; 
+
+    use Illuminate\Database\Eloquent\Model;
+
+    class Industries extends Model{
+        protected $table = 'industries';
+        protected $primaryKey = 'id_industry';
+        
+        const CREATED_AT = 'created';
+        const UPDATED_AT = 'updated';
+
+        public function children(){
+            return $this->hasMany('Models\Industries', 'parent');
+        }
+
+        public function childrenRecursive(){
+            return $this->children()->with('childrenRecursive');
+        }
+
+        public function parent(){
+            return $this->belongsTo('Models\Industries','parent');
+        }
+
+        public function parentRecursive(){
+            return $this->parent()->with('parentRecursive');
+        }
+
+        public static function allindustries($fetch = "array", $where = "", $keys = [], $order_by = "name",$withSubindustries = NULL){
+            $prefix             = \DB::getTablePrefix();
+            $table_industries   = \DB::table((new static)->getTable());
+            \DB::statement(\DB::raw('set @row_number=0'));
+
+
+            if(!empty($keys)){
+                $table_industries->select($keys);
+            }
+
+            if(!empty($withSubindustries)){
+                $table_industries->addSelect([
+                    \DB::raw("(SELECT COUNT(*) FROM {$prefix}industries as subindustries WHERE `subindustries`.`parent` = `{$prefix}industries`.`id_industry` )as subindustries_count")
+                ]);
+            }
+
+            if(!empty($where)){
+                $table_industries->whereRaw($where); 
+            }
+
+            
+
+            if($fetch === 'array'){
+                if(!empty($withSubindustries)){
+                    $table_industries->having('subindustries_count','>',1);
+                }
+
+                $industries_list = $table_industries->get();
+                return json_decode(
+                    json_encode(
+                        $industries_list
+                    ),
+                    true
+                );
+            }else if($fetch === 'obj'){
+                $table_industries->orderBy('parent.industries_order'); 
+                $table_industries->leftJoin('industries as parent','parent.id_industry','=','industries.parent');
+                return $table_industries->get();                
+            }else if($fetch === 'single'){
+                $table_industries->orderBy('industries_order'); 
+                return $table_industries->get()->first();
+            }else{
+                $table_industries->orderBy('industries_order'); 
+                return $table_industries->get();
+            }
+        }
+
+        public static function update_industry($id_industry,$data){
+            $table_industries = \DB::table('industries');
+            if(!empty($data)){
+                $table_industries->where('id_industry',$id_industry);
+                $isUpdated = $table_industries->update($data);           
+                $cache_key = ['industries_name','subindustries_name'];
+                forget_cache($cache_key);
+            }
+            return (bool)$isUpdated;
+        }
+
+        public static function  add_industry($data){
+            $table_industries = \DB::table('industries');
+
+            if(!empty($data)){
+                $isInserted = $table_industries->insert($data);
+                $cache_key = ['industries_name','subindustries_name'];
+                forget_cache($cache_key);
+            }
+            return (bool)$isInserted;
+        }        
+    }
+

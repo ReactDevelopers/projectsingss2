@@ -1,0 +1,1 @@
+ŸMnode_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_opacity.scss 2scssX	hrMnode_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_opacity.scss

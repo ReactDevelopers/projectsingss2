@@ -1,0 +1,1 @@
+—u6resources/views/front/pages/complete-account.blade.php 2phpX[hr6resources/views/front/pages/complete-account.blade.php

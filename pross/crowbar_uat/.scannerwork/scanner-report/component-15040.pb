@@ -1,0 +1,1 @@
+Àu@resources/views/talent/settings/pages/select_user_type.blade.php 2phpXEhr@resources/views/talent/settings/pages/select_user_type.blade.php

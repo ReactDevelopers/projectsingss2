@@ -1,0 +1,169 @@
+<?php
+
+	namespace App\Http\Controllers\Front;
+
+	use Illuminate\Http\Request;
+	use App\Http\Controllers\Controller;
+	use App\Models\Interview as Interview;
+
+	class InterviewController extends Controller{
+		public function __construct(){
+			$this->jsondata     = [];
+			$this->message      = false;
+			$this->redirect     = false;
+			$this->status       = false;
+			$this->prefix       = \DB::getTablePrefix();
+
+			\View::share ( 'footer_settings', \Cache::get('configuration') );
+		}
+
+		/**
+         * [This method is used for randering view of Interview] 
+         * @param  null
+         * @return \Illuminate\Http\Response
+         */
+        
+		public function myInterview(){
+			$id_user 						= \Auth::user()->id_user;
+			$data['subheader']              = 'talent.includes.top-menu';
+			$data['header']                 = 'innerheader';
+			$data['footer']                 = 'innerfooter';
+			$data['view']                   = 'talent.interview.my_interview';
+			$data['user']                   = \Models\Talents::get_user(\Auth::user());
+			$data['skip_url']               = url(sprintf("%s/interview",TALENT_ROLE_TYPE));
+
+			$data['ques'] = Interview::getQuestLastModify();
+
+			$talentAnswerExist = Interview::talentAnswerExist($id_user);
+			if(!empty($talentAnswerExist)){
+				return redirect(sprintf('%s/interview-summary', TALENT_ROLE_TYPE));
+			}
+
+			return view('talent.interview.index')->with($data);
+		}
+
+		/**
+         * [This method is used for randering view of Interview question] 
+         * @param  null
+         * @return \Illuminate\Http\Response
+         */
+        
+		public function interview_question(){
+			$id_user 						= \Auth::user()->id_user;
+			$data['subheader']              = 'talent.includes.top-menu';
+			$data['header']                 = 'innerheader';
+			$data['footer']                 = 'innerfooter';
+			$data['view']                   = 'talent.interview.question_list';
+			$data['user']                   = \Models\Talents::get_user(\Auth::user());
+			$data['skip_url']               = url(sprintf("%s/find-jobs",TALENT_ROLE_TYPE));
+
+			$talentAnswerExist = Interview::talentAnswerExist($id_user);
+
+			if(empty($talentAnswerExist)){
+				$data['questionList'] = Interview::getQuestionList();
+				$data['total'] 			= '';
+				$data['optain'] 		= '';
+			}
+			else{
+				$result = Interview::getQuestionResponse($id_user);
+				$data['questionList'] 	= $result['questionList'];
+				$data['total'] 			= $result['total'];
+				$data['optain'] 		= $result['optain'];
+			}
+			/*
+			$talentAnswerExist = Interview::talentAnswerExist($id_user);
+			if(!empty($talentAnswerExist)){
+				return redirect(sprintf('%s/interview-summary', TALENT_ROLE_TYPE));
+			}
+			*/
+
+			return view('talent.interview.index')->with($data);
+		}
+
+		/**
+         * [This method is used for Save interview answer]
+         * @param  Request
+         * @return \Illuminate\Http\Response
+         */ 
+
+		public function save_interview_answer(Request $request)
+		{
+			$id_user = \Auth::user()->id_user;
+			$validator = \Validator::make($request->all(),[
+				'res_rate'=>'required|array'
+			]);
+
+			$validator->after(function($v) use($request){
+				$rate = $request->res_rate;
+				$no_of_rate = count($rate);
+				$valid_rate = 0;
+
+				array_walk($rate, function($v) use(&$valid_rate){
+					if($v){
+						$valid_rate++;
+					}
+				});
+				
+				if($valid_rate != $no_of_rate){
+				  $request->session()->flash('alert',sprintf(ALERT_DANGER,trans("website.W0408")));
+				  $v->errors()->add('res_rate', 'Something is wrong with this field!');
+				}
+			});
+
+            if($validator->passes()){
+
+            	$questionList = Interview::getQuestion();
+            	
+            	$answerArr = [];
+            	foreach ($questionList as $q) {
+            		$answerArr[] = array(
+            			'id_user' => $id_user,
+            			'id_question' => $q->id,
+            			'question_rate' => $request->res_rate[$q->id],
+            			'question_comment' => $request->res_comment[$q->id],
+            			'updated' => date('Y-m-d H:i:s'),
+            			'created' => date('Y-m-d H:i:s')
+            			);
+            	}
+
+            	if(!empty($answerArr))
+            	{
+            		Interview::saveAnswer($id_user, $answerArr);
+            	}
+
+            	return redirect(sprintf('%s/interview-summary', TALENT_ROLE_TYPE));
+            }
+            else{
+            	return redirect(sprintf('%s/interview', TALENT_ROLE_TYPE))->withErrors($validator)->withInput();
+            }
+		}
+
+		/**
+         * [This method is used for randering view of interview answer review] 
+         * @param  null
+         * @return \Illuminate\Http\Response
+         */
+        
+		public function interviewAnswerReview()
+		{
+			$id_user 						= \Auth::user()->id_user;
+			$data['subheader']              = 'talent.includes.top-menu';
+			$data['header']                 = 'innerheader';
+			$data['footer']                 = 'innerfooter';
+			$data['view']                   = 'talent.interview.question_summary';
+			$data['user']                   = \Models\Talents::get_user(\Auth::user());
+			$data['interview_edit_url']     = url(sprintf("%s/interview",TALENT_ROLE_TYPE));
+
+			$result = Interview::getQuestionResponse($id_user);
+			$data['questionList'] 	= $result['questionList'];
+			$data['total'] 			= $result['total'];
+			$data['optain'] 		= $result['optain'];
+
+			$talentAnswerExist = Interview::talentAnswerExist($id_user);
+			if(empty($talentAnswerExist)){
+				return redirect(sprintf('%s/my-interview', TALENT_ROLE_TYPE));
+			}
+
+			return view('talent.interview.index')->with($data);
+		}
+	}

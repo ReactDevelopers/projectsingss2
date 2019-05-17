@@ -1,0 +1,1 @@
+îu.resources/views/talent/profile/index.blade.php 2phpXghr.resources/views/talent/profile/index.blade.php

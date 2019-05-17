@@ -1,0 +1,69 @@
+<div class="headerWrapper">
+    @includeIf('talent.includes.currency-language')
+    <div class="afterlogin-header employer-header">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                        <div class="navbar-header">
+                            <a href="{{ url(sprintf('%s/find-talents',EMPLOYER_ROLE_TYPE)) }}" class="navbar-brand logo">
+                                <img src="{{ asset('images/splashLogo.png') }}" class="web-logo">
+                                <img src="{{ asset('images/responsive-logo.png') }}" class="responsive-logo">
+                            </a>
+                        </div>
+                    </div>                
+                    <div class="col-md-4 col-sm-4 col-xs-12 pull-right account-block">
+                        <div class="header-innerWrapper">
+                            <div class="collapse navbar-collapse pull-right" id="bs-example-navbar-collapse-1">
+                                <ul class="nav navbar-nav">
+                                    <li>
+                                        <a href="{{ url(sprintf('/%s/chat',EMPLOYER_ROLE_TYPE)) }}" class="message-notification"><span data-target="chat-count" style="display: none;"></span></a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="notification notification-toggle"><span data-target="notification-count" style="display: none;"></span></a>
+                                        <ul class="dropdown-submenu notification-submenu" data-target="notification-list"></ul>
+                                    </li>
+                                    <li>
+                                        <a id="usermenu-toggle" href="javascript:void(0);" class="username">
+                                            <span class="hidden-xs" style="display: inline-block;text-align: right;"><span class="hello-msg">Hello</span><br>{{ sprintf("%s",$user['first_name']) }}</span>
+                                            @if(0)
+                                                <img src="{{ url($user['picture']) }}" height="37" alt="{{ sprintf("%s %s",$user['first_name'],$user['last_name']) }}" />
+                                            @endif
+                                           <img src="{{ asset('images/user-icon.png') }}" alt="user">
+                                        </a>
+                                        <ul class="dropdown-submenu usermenu-submenu">
+                                            <li><a href="{{url(sprintf('%s/profile',EMPLOYER_ROLE_TYPE))}}">{{ trans('website.W0606') }}</a></li>
+                                            <li><a href="{{ url(sprintf('%s/profile/edit/setup',EMPLOYER_ROLE_TYPE)) }}">{{ trans('website.W0610') }}</a></li>
+                                            <li><a href="{{ url(sprintf('%s/settings',EMPLOYER_ROLE_TYPE)) }}">{{ trans('website.W0598') }}</a></li>
+                                            <li><a href="{{ url(sprintf('%s/payment/card/manage',EMPLOYER_ROLE_TYPE)) }}">{{ trans('website.W0607') }}</a></li>
+                                            <li><a href="{{ url(sprintf('%s/change-password',EMPLOYER_ROLE_TYPE)) }}">{{ trans('website.W0608') }}</a></li>
+                                            <li><a href="{{ url('logout') }}">{{ trans('website.W0609') }}</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>                    
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 search-block">
+                        @if(substr(url()->current(), strrpos(url()->current(), '/') + 1) !== 'find-talents')
+                            <div class="searchbar-wrap searchForJob">                            
+                                <div class="header-searchBar">
+                                    <form action="{{ url(sprintf('%s/find-talents',EMPLOYER_ROLE_TYPE)) }}" method="get">
+                                        <div class="form-group">
+                                            <input type="text" name="_search" value="{{ \Request::get('_search') }}" class="form-control" placeholder="{{trans('website.W0558')}}">
+                                            <button type="submit" class="btn searchBtn">Search</button>
+                                        </div>
+                                    </form>
+                                </div>  
+                            </div>
+                        @else
+                            <div class="clearfix" style="height: 75px;"></div>
+                        @endif
+                    </div>                    
+                </div>
+            </div>
+        </nav>
+    </div>
+    @includeIf($subheader)
+</div>
+

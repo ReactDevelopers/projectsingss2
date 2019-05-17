@@ -1,0 +1,1 @@
+€u,resources/views/front/pages/static.blade.php 2phpX8hr,resources/views/front/pages/static.blade.php

@@ -1,0 +1,79 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class InsertFeaturesTableData extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        \DB::table('features')->insert([
+            [
+                'name' => 'Find Talents',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'Recieve Proposals',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'Post Jobs',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'Chat with Talents',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'Chat with Talents',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'Recieve Proposals',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'Recieve Premium CVs',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'Hire Premium Talents',
+                'status' => 'active',
+                'created' => date('Y-m-d H:i:s'),
+                'updated' => date('Y-m-d H:i:s')
+            ],
+
+        ]);
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        \DB::table('features')->truncate();
+    }
+}
+

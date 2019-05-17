@@ -1,0 +1,16 @@
+@if(!empty($banner))
+<div class="hero-section">
+    <div id="hero-slider" class="owl-carousel">
+        @foreach($banner as $b)
+        <div class="hero-item" style='background-image:url("{{ asset('uploads/banner/resize/'.$b['banner_image']) }}")'>
+            <div class="container-fluid">
+                <div class="bannerContent">
+                    <h1>{{$b['banner_text']}}</h1>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
+

@@ -1,0 +1,1 @@
+‰w2resources/views/backend/payout_mgmt/list.blade.php 2phpX%hr2resources/views/backend/payout_mgmt/list.blade.php

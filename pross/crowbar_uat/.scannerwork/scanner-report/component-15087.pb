@@ -1,0 +1,1 @@
+ïu,resources/views/talent/wallet/list.blade.php 2phpXEhr,resources/views/talent/wallet/list.blade.php

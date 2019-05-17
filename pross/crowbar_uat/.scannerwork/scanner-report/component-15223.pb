@@ -1,0 +1,1 @@
+÷vJresources/views/backend/subscription/org/talent-education-detail.blade.php 2phpXªhrJresources/views/backend/subscription/org/talent-education-detail.blade.php

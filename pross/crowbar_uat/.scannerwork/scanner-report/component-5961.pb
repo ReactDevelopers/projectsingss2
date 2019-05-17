@@ -1,0 +1,1 @@
+É.=node_modules/less/test/less/errors/root-func-undefined-1.less 2lessXhr=node_modules/less/test/less/errors/root-func-undefined-1.less

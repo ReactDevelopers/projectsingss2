@@ -1,0 +1,21 @@
+<?php
+
+    namespace App\Http\Middleware;
+
+    use Closure;
+
+    class TempLogin{
+        
+        public function handle($request, Closure $next){
+            
+            if(in_array(app()->environment(), ['staging','production'])){
+                if(strpos(\Request::path(),'page/') !== 3){
+                    if(\Session::get('temp-login') != 'authenticated'){
+                        return redirect('templogin?redirect='.base64_encode($request->fullUrl()));
+                    }
+                }
+            }
+
+            return $next($request);
+        }
+    }

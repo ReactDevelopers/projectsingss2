@@ -1,0 +1,248 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class StoreFunction extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        $Function = "
+        CREATE FUNCTION `EMPLOYER_JOB_STATUS`(`employment` VARCHAR(20), `total_proposal` INT, `project_status` VARCHAR(20)) RETURNS varchar(50) CHARSET latin1
+            NO SQL
+        BEGIN
+            DECLARE job_status CHAR(50);
+
+            IF employment != 'fulltime' THEN
+
+                IF total_proposal > 0 THEN
+
+                    IF project_status = 'initiated'  THEN
+
+                        SET job_status = 'start_job';
+
+                    ELSEIF project_status = 'open'  THEN
+
+                        SET job_status = 'mark_completed';
+
+                    ELSEIF project_status = 'closed'  THEN
+
+                        SET job_status = 'job_closed';
+
+                    ELSE
+
+                        SET job_status = 'job_not_started';
+
+                    END IF;
+
+                ELSE
+
+                    SET job_status = 'no_proposal_received';
+
+                END IF;
+
+            ELSE
+
+                IF total_proposal > 0 THEN
+
+                    SET job_status = 'job_application_received';
+
+                ELSE
+
+                    SET job_status = 'no_application_received';
+
+                END IF;
+
+            END IF;
+
+            RETURN job_status;
+
+        END
+        ";
+        DB::unprepared($Function);
+
+        $Function = "
+        CREATE FUNCTION `FIRST`(`input` VARCHAR(255)) RETURNS varchar(255) CHARSET latin1
+            NO SQL
+        BEGIN
+        DECLARE len INT;
+            DECLARE i INT;
+            DECLARE charnum INT;
+            declare SortedName varchar(255);
+
+            SET len   = CHAR_LENGTH(input);
+            SET input = LOWER(input);
+            SET i = 1;
+            set charnum = 1;
+            set SortedName = '';
+
+
+            WHILE (i <= len) DO
+                if charnum = 1 then
+                    set SortedName = concat(SortedName,upper(mid(input,i,1)));
+                    set charnum = charnum + 1;
+                else
+                    if mid(input,i,1) = ' ' then
+                        set SortedName = concat(SortedName,' ');
+                        set charnum = 1;
+                    else
+                        set SortedName = concat(SortedName,mid(input,i,1));
+                        set charnum = charnum + 1;
+                    end if;
+
+                end if;
+
+
+                SET i = i + 1;
+            END WHILE;
+            RETURN SortedName;
+        END
+        ";
+        DB::unprepared($Function);
+
+        $Function = "
+        CREATE FUNCTION `STRIP_TAGS`(`Dirty` TEXT) RETURNS text CHARSET latin1
+        BEGIN
+         DECLARE iStart, iEnd, iLength int;
+           WHILE Locate( '<', Dirty ) > 0 And Locate( '>', Dirty, Locate( '<', Dirty )) > 0 DO
+             BEGIN
+               SET iStart = Locate( '<', Dirty ), iEnd = Locate( '>', Dirty, Locate('<', Dirty ));
+               SET iLength = ( iEnd - iStart) + 1;
+               IF iLength > 0 THEN
+                 BEGIN
+                   SET Dirty = Insert( Dirty, iStart, iLength, '');
+                 END;
+               END IF;
+             END;
+           END WHILE;
+           RETURN Dirty;
+        END
+        ";
+        DB::unprepared($Function);
+
+        $Function = "
+        CREATE FUNCTION `TALENT_JOB_STATUS`(`employment` VARCHAR(20), `project_status` VARCHAR(20), `proposal_status` VARCHAR(20), `project_start_date` DATE, `project_current_date` DATE) RETURNS varchar(50) CHARSET latin1
+            NO SQL
+        BEGIN
+            DECLARE job_status CHAR(50);
+
+            IF employment != 'fulltime' THEN
+
+                IF project_status = 'pending' THEN
+
+                    IF proposal_status IS NULL THEN
+
+                        IF project_current_date <= project_start_date THEN
+
+                            SET job_status = 'submit_proposal';
+
+                        END IF;
+
+                    ELSEIF proposal_status = 'applied'  THEN
+
+                        SET job_status = 'application_not_accepted';
+
+                    ELSEIF proposal_status = 'accepted'  THEN
+
+                        SET job_status = 'start_job';
+
+                    END IF;
+
+                ELSEIF proposal_status = 'accepted'  THEN
+
+                    IF project_status = 'pending' THEN
+
+                        SET job_status = 'start_job';
+
+                    ELSEIF project_status = 'initiated' THEN
+
+                        SET job_status = 'start_job';
+
+                    ELSEIF project_status = 'open' THEN
+
+                        SET job_status = 'mark_completed';
+
+                    ELSEIF project_status = 'closed' THEN
+
+                        SET job_status = 'job_closed';
+
+                    END IF;
+
+                ELSE
+
+                    SET job_status = 'application_not_accepted';
+
+                END IF;
+
+            ELSE
+
+                IF project_status = 'pending' THEN
+
+                    IF proposal_status IS NULL THEN
+
+                        SET job_status = 'apply_job';
+
+                    ELSEIF proposal_status = 'applied' THEN
+
+                        SET job_status = 'job_applied_already';
+
+                    ELSEIF proposal_status = 'accepted' THEN
+
+                        SET job_status = 'job_accepted';
+
+                    ELSE
+
+                        SET job_status = 'job_rejected';
+
+                    END IF;
+                ELSE
+
+                    IF proposal_status IS NULL THEN
+
+                        SET job_status = 'job_application_closed';
+
+                    ELSEIF proposal_status = 'applied'  THEN
+
+                        SET job_status = 'job_applied_already';
+
+                    ELSEIF proposal_status = 'accepted'  THEN
+
+                        SET job_status = 'job_accepted';
+
+                    ELSE
+
+                        SET job_status = 'job_rejected';
+
+                    END IF;
+
+                END IF;
+
+            END IF;
+
+            RETURN job_status;
+
+        END
+        ";
+        DB::unprepared($Function);
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        DB::unprepared('DROP FUNCTION IF EXISTS `EMPLOYER_JOB_STATUS`');
+        DB::unprepared('DROP FUNCTION IF EXISTS `FIRST`');
+        DB::unprepared('DROP FUNCTION IF EXISTS `STRIP_TAGS`');
+        DB::unprepared('DROP FUNCTION IF EXISTS `TALENT_JOB_STATUS`');
+    }
+}
+

@@ -1,0 +1,1 @@
+™v9resources/views/talent/community/event-template.blade.php 2phpXhr9resources/views/talent/community/event-template.blade.php

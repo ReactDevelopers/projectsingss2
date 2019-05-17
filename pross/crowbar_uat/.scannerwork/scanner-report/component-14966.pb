@@ -1,0 +1,1 @@
+öt%resources/views/front/includes/mobile :õtr%resources/views/front/includes/mobile

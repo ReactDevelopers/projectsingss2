@@ -1,0 +1,1 @@
+§uresources/views/front/home :¦u¨urresources/views/front/home

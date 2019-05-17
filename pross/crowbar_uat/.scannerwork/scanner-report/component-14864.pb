@@ -1,0 +1,1 @@
+êt"resources/views/employer/jobdetail :ètëtítòtôtötõtútr"resources/views/employer/jobdetail

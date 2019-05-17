@@ -1,0 +1,1 @@
+Ôt-resources/views/front/pages/sitemap.blade.php 2phpXèhr-resources/views/front/pages/sitemap.blade.php

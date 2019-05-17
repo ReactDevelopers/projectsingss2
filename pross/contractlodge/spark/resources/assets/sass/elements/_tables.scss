@@ -1,0 +1,56 @@
+// Tables
+// -------------------------------------------------------------------------- */
+.table-fixed thead th {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.table {
+  thead {
+    th {
+      &:not(.table-active):not(.table-primary):not(.table-secondary):not(.table-success):not(.table-danger):not(.table-info):not(.table-light):not(.table-dark):not(.bg-primary):not(.bg-success):not(.bg-warning):not(.bg-danger):not(.bg-info) {
+        background-color: hsl($brand-hue, 25%, 92%);
+      }
+    }
+  }
+  tbody {
+    td {
+      input.form-control {
+        width: auto;
+      }
+    }
+  }
+}
+
+.table-valign-middle {
+  td {
+    vertical-align: middle;
+  }
+}
+
+.th-fit,
+.td-fit {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.table-plan-price {
+  font-weight: 600;
+  color: $gray-800;
+}
+
+.table-plan-text {
+  color: $gray-600;
+}
+
+.card {
+  .table {
+    &:not(.table-sm) {
+      th, td {
+        padding: 0.75rem 1.25rem;
+      }
+    }
+  }
+}

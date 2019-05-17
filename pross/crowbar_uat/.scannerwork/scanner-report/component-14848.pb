@@ -1,0 +1,1 @@
+€t1resources/views/employer/payment/detail.blade.php 2phpXnhr1resources/views/employer/payment/detail.blade.php

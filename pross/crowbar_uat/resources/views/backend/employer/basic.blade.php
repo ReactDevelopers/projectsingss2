@@ -1,0 +1,188 @@
+<form role="add-talent" method="post" enctype="multipart/form-data" action="{{ url('administrator/employer-users/'.$user['id_user'].'/update') }}">
+    <input type="hidden" name="_method" value="PUT">
+    {{ csrf_field() }}
+
+    <div class="panel-body">
+        <div class="form-group @if ($errors->has('first_name'))has-error @endif">
+            <label for="name">First Name</label>
+            <input type="text" class="form-control" name="first_name" placeholder="First Name" value="{{ (old('first_name'))?old('first_name'):$user['first_name'] }}">
+            @if ($errors->first('first_name'))
+                <span class="help-block">
+                    {{ $errors->first('first_name')}}
+                </span>
+            @endif
+        </div>
+        <div class="form-group @if ($errors->has('last_name'))has-error @endif">
+            <label for="name">Last Name</label>
+            <input type="text" class="form-control" name="last_name" placeholder="Last Name" value="{{ (old('last_name'))?old('last_name'):$user['last_name'] }}">
+            @if ($errors->first('last_name'))
+                <span class="help-block">
+                    {{ $errors->first('last_name')}}
+                </span>
+            @endif
+        </div>
+        <div class="form-group @if ($errors->has('email'))has-error @endif">
+            <label for="name">Email</label>
+            <input readonly="readonly" type="text" class="form-control" name="email" placeholder="Email" value="{{ (old('email'))?old('email'):$user['email'] }}">
+            @if ($errors->first('email'))
+                <span class="help-block">
+                    {{ $errors->first('email')}}
+                </span>
+            @endif
+        </div>
+        <div class="form-group @if ($errors->has('country_code'))has-error @endif">
+            <label for="name">Country Code</label>
+            @php
+            if(old('country_code')){
+                $country_code = old('country_code');
+            }
+            else{
+                $country_code = $user['country_code'];
+            }
+            @endphp
+            <select class="form-control" name="country_code" placeholder="Country Code">
+                <option value="">Select Country Code</option>
+                @foreach($countries as $c)
+                    <option {{$country_code==$c->phone_country_code?' selected="selected"':''}} value="{{$c->phone_country_code}}">{{$c->phone_country_code}}</option>
+                @endforeach
+            </select>
+            @if ($errors->first('country_code'))
+                <span class="help-block">
+                    {{ $errors->first('country_code')}}
+                </span>
+            @endif
+        </div>
+        <div class="form-group @if ($errors->has('mobile'))has-error @endif">
+            <label for="name">Phone Number</label>
+            <input type="text" class="form-control" name="mobile" placeholder="Phone Number" value="{{ (old('mobile'))?old('mobile'):$user['mobile'] }}">
+            @if ($errors->first('mobile'))
+                <span class="help-block">
+                    {{ $errors->first('mobile')}}
+                </span>
+            @endif
+        </div>
+        <div class="form-group @if ($errors->has('other_country_code'))has-error @endif">
+            <label for="name">Other Country Code</label>
+            @php
+            if(old('other_country_code')){
+                $other_country_code = old('other_country_code');
+            }
+            else{
+                $other_country_code = $user['other_country_code'];
+            }
+            @endphp
+            <select class="form-control" name="other_country_code" placeholder="Other Country Code">
+                <option value="">Select Other Country Code</option>
+                @foreach($countries as $c)
+                    <option {{$other_country_code==$c->phone_country_code?' selected="selected"':''}} value="{{$c->phone_country_code}}">{{$c->phone_country_code}}</option>
+                @endforeach
+            </select>
+            @if ($errors->first('other_country_code'))
+                <span class="help-block">
+                    {{ $errors->first('other_country_code')}}
+                </span>
+            @endif
+        </div>        
+        <div class="form-group @if ($errors->has('other_mobile'))has-error @endif">
+            <label for="name">Other Phone Number (Optional)</label>
+            <input type="text" class="form-control" name="other_mobile" placeholder="Other Phone Number" value="{{ (old('other_mobile'))?old('other_mobile'):$user['other_mobile'] }}">
+            @if ($errors->first('other_mobile'))
+                <span class="help-block">
+                    {{ $errors->first('other_mobile')}}
+                </span>
+            @endif
+        </div>
+        <div class="form-group">
+            <label for="name">Website (Optional)</label>
+            <input type="text" class="form-control" name="website" placeholder="e.g. http://www.mywebsite.com" value="{{ (old('website'))?old('website'):$user['website'] }}">
+        </div>
+        <div class="form-group @if ($errors->has('address'))has-error @endif">
+            <label for="name">Address</label>
+            <textarea class="form-control" name="address" placeholder="Address">{{ (old('address'))?old('address'):$user['address'] }}</textarea>
+            @if ($errors->first('address'))
+                <span class="help-block">
+                    {{ $errors->first('address')}}
+                </span>
+            @endif
+        </div>
+
+        <div class="form-group @if ($errors->has('country'))has-error @endif">
+            <label for="name">Country</label>
+            @php
+            if(old('country')){
+                $country = old('country');
+            }
+            else{
+                $country = $user['country'];
+            }
+            @endphp
+            <select class="form-control" name="country" id="country" data-url="{{ url('ajax/state-list') }}" placeholder="Country">
+                @foreach($countries as $c)
+                    <option {{$country==$c->id_country?' selected="selected"':''}} value="{{$c->id_country}}">{{$c->country_name}}</option>
+                @endforeach
+            </select>
+            @if ($errors->first('country'))
+                <span class="help-block">
+                    {{ $errors->first('country')}}
+                </span>
+            @endif
+        </div>
+        <div class="form-group @if ($errors->has('state'))has-error @endif">
+            <label for="name">State</label>
+            @php
+            if(old('state')){
+                $state = old('state');
+            }
+            else{
+                $state = $user['state'];
+            }
+            @endphp
+            <select class="form-control" name="state" id="state" placeholder="State" data-url="{{ url('ajax/city-list') }}">
+                <option value="">Select State/ Province</option>
+                @foreach($states as $c)
+                    <option {{$state==$c->id_state?' selected="selected"':''}} value="{{$c->id_state}}">{{$c->state_name}}</option>
+                @endforeach
+            </select>
+            @if ($errors->first('state'))
+                <span class="help-block">
+                    {{ $errors->first('state')}}
+                </span>
+            @endif
+        </div>
+
+        <div class="form-group @if ($errors->has('postal_code'))has-error @endif">
+            <label for="name">Postal Code</label>
+            <input type="text" class="form-control" name="postal_code" placeholder="Postal Code" value="{{ (old('postal_code'))?old('postal_code'):$user['postal_code'] }}">
+            @if ($errors->first('postal_code'))
+                <span class="help-block">
+                    {{ $errors->first('postal_code')}}
+                </span>
+            @endif
+        </div>
+
+    </div>
+    <div class="panel-footer">
+        <a href="{{ $backurl }}" class="btn btn-default">Back</a>
+        <button type="button" data-request="ajax-submit" data-target='[role="add-talent"]' class="btn btn-default">Save</button>
+    </div>
+</form>
+@push('inlinescript')
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#country').change(function(){
+        var id_country = $('#country').val();
+        var url = $('#country').data('url');
+        if(id_country > 0){
+            $.ajax({
+            method: "POST",
+            url: url,
+            data: { record_id: id_country}
+            })
+            .done(function(data) {
+                $('#state').html(data);
+            });
+        }
+    });
+});
+</script>
+@endpush

@@ -1,0 +1,1 @@
+ùw resources/views/backend/faq/post :úwûwr resources/views/backend/faq/post

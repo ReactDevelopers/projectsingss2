@@ -1,0 +1,136 @@
+<!-- Main Content -->
+<div class="allproposal-detail allproposal-detail-list">
+    <div class="container">
+        <div class="content-box">
+            <div class="content-box-header clearfix no-padding">
+                <a href="{{url(sprintf('%s/proposals/listing?id_project=%s',EMPLOYER_ROLE_TYPE,___encrypt($project['id_project'])))}}" class="back-to-results">&#8592; {{trans('website.W0348')}}</a>
+                <div class="contentbox-header-title">
+                    <h3><a href="{{ url(sprintf('%s/my-jobs/job_details?job_id=%s',EMPLOYER_ROLE_TYPE, ___encrypt($project['id_project']))) }}">{{$project['title']}}</a></h3>
+                    @if($project['proposal_current_status'] !== DEFAULT_YES_VALUE)
+                        <a href="javascript:void(0);" class="proposal-status proposal-pending">{{trans('job.J0046')}}</a>
+                    @else
+                        <a href="javascript:void(0);" class="proposal-status proposal-accepted">{{trans('job.J0045')}}</a>
+                    @endif
+                </div>                                    
+                <div class="contentbox-price-range">
+                    <span class="company-name">{{trans('job.J0044')}}: <b>{{$project['total_proposals']}}</b></span>
+                    <small class="no-italic-style text-grey">{{trans('job.J0041')}} {{___ago($project['created'])}}</small>
+                </div>
+            </div>                              
+        </div>
+    </div>
+</div>
+<div class="proposed-job-list">
+    <div class="container">
+        <div class="approved-proposals no-padding">
+            <div class="">
+                <div class="col-md-8 col-sm-12 col-xs-12">
+                    @if($proposal['status'] == 'accepted')
+                        <h2 class="form-heading">{{trans('job.J0042')}}</h2>
+                    @else
+                        <h2 class="form-heading">{{trans('website.W0343')}}</h2>
+                    @endif
+                    @if(!empty($proposal))
+                        <div class="content-box">
+                            <div class="content-box-header clearfix">
+                                <div class="proposal-wrap">
+                                    <div class="contentbox-header-title">
+                                        <h3><a href="javascript:void(0)">{{$proposal['name']}}</a></h3>
+                                    </div>
+                                    <div class="contentbox-price-range">
+                                        <span>{{ ___format($proposal['quoted_price'],true,true) }}</span>                    
+                                    </div> 
+                                </div>   
+                                <div class="proposal-description">
+                                    <div class="row">
+                                        <div class="col-md-8" style="font-size: 12px;">
+                                            {!! !empty($proposal['comments']) ? nl2br($proposal['comments']) : N_A !!}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <span class="published-date">{{trans('job.J0041')}} {{___d($proposal['created'])}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-5 col-sm-5 col-xs-12">
+                                        <div class="resume-link">
+                                        @if(!empty($proposal['filename']))
+                                            <div class="uploaded-docx clearfix">
+                                                <a href="{{ url(sprintf('download/file?file_id=%s',___encrypt($proposal['id_file'])))}}" class="download-docx">
+                                                    <span class="upload-text">{{trans('website.W0501') }}</span>
+                                                    <img src="{{ asset('images/new-attachement.png') }}"> 
+                                                    <div class="upload-info"> 
+                                                        <p>{{ substr($proposal['filename'],0,3) }}</p> 
+                                                        <span>{{ $proposal['size'] }}</span>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        @else
+                                            {{N_A}}
+                                        @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7 col-sm-7 col-xs-12">
+                                        @if($project['proposal_current_status'] !== DEFAULT_YES_VALUE)
+                                            @if($proposal['status'] == 'applied')
+                                                <div class="row button-group">
+                                                    <div class="col-md-4 col-sm-4 col-xs-4">
+                                                        <button type="button" class="button" data-user="{{ $proposal['user_id'] }}" data-request="inline-ajax" data-url="{{url(sprintf('%s/chat/employer-chat-request?sender=%s&receiver=%s',EMPLOYER_ROLE_TYPE,___encrypt($user['id_user']),___encrypt($proposal['user_id'])))}}" >{{trans('website.W0295')}}</button>
+                                                    </div>
+                                                    <div class="col-md-4 col-sm-4 col-xs-4">
+                                                        <button type="button" class="button" data-request="inline-ajax" data-url="{{url(sprintf('%s/proposals/decline?proposal_id=%s&project_id=%s',EMPLOYER_ROLE_TYPE,___decrypt($proposal['id_proposal']),___decrypt($project['id_project'])))}}">{{trans('website.W0220')}}</button>
+                                                    </div>
+                                                    <div class="col-md-4 col-sm-4 col-xs-4">
+                                                        <button type="button" class="button" data-request="inline-ajax" data-url="{{url(sprintf('%s/proposals/accept?proposal_id=%s&project_id=%s',EMPLOYER_ROLE_TYPE,___decrypt($proposal['id_proposal']),___decrypt($project['id_project'])))}}" value="Submit">{{trans('website.W0221')}}</button>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @elseif($proposal['status'] == 'accepted')
+                                            <div class="row button-group">
+                                                <div class="col-md-4 col-sm-4 col-xs-4"></div>
+                                                <div class="col-md-4 col-sm-4 col-xs-4"></div>
+                                                <div class="col-md-4 col-sm-4 col-xs-4">
+                                                    <button type="button" class="button" data-user="{{ $proposal['user_id'] }}" data-request="inline-ajax" data-url="{{url(sprintf('%s/chat/employer-chat-request?sender=%s&receiver=%s',EMPLOYER_ROLE_TYPE,___encrypt($user['id_user']),___encrypt($proposal['user_id'])))}}" >{{trans('website.W0295')}}</button>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="approved-proposals">
+                            <p class="no-records-found">{{trans('website.W0222')}}</p>
+                        </div>
+                    @endif
+                </div>
+                @if(!empty($tagged_proposals))
+                    <div class="col-md-4">
+                        <div class="jobdetails-sidebar-content">
+                            <h2 class="form-heading">{{ trans('website.W0346') }}</h2>
+                            @foreach($tagged_proposals as $item)
+                                <div class="content-box">
+                                    <img class="pull-left" style="position: relative;top: 10px;" src="{{ asset('images/star-tagged.png') }}" />
+                                    <div class="col-xs-8">
+                                        <a style="font-size: 18px;text-transform: uppercase;font-weight: bold;letter-spacing: 2px;" href="{{ url(sprintf('%s/proposals/detail?proposal_id=%s',EMPLOYER_ROLE_TYPE,___encrypt($item['id_proposal']))) }}">
+                                            {{ $item['name'] }}
+                                        </a>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="contentbox-price-range pull-right">
+                                            <span style="margin-right: -25px;">{{ PRICE_UNIT.___format($item['quoted_price']) }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="time-ago" style="padding-left: 10px;">{{ ___d($item['created']) }}</span>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif                
+            </div>
+        </div>
+    </div>
+</div>

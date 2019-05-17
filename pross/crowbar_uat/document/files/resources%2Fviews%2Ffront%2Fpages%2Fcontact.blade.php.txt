@@ -1,0 +1,133 @@
+@extends('layouts.front.main')
+
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+    @section('requirecss')
+        <link href="{{ asset('css/owl.carousel.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/owl.theme.default.min.css') }}" rel="stylesheet">
+    @endsection
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinecss')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    @section('requirejs')
+        
+    @endsection
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinejs')
+        {{-- CODE WILL GO HERE --}}
+        
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    @section('content')
+        <!-- Banner Section -->
+        <div class="static-heading-sec">
+            <div class="container-fluid">
+                <div class="static Heading">                    
+                    <h1>{{trans('website.W0010')}}</h1>                        
+                </div>                    
+            </div>
+        </div>
+        <!-- /Banner Section -->
+        <!-- Main Content -->
+        <div class="contentWrapper">
+            <section class="aboutSection termsAndConditonSec">
+                <div class="container">                    
+                    <div class="contactSection">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-4 col-xs-12">
+                                <h4 class="form-heading blue-text">{{trans('website.W0009')}}</h4>
+                                <div class="contactAddress">
+                                    <p>{{\Cache::get('configuration')['office_address']}}</p>
+                                    <p class="contact-info"><strong>{{trans('website.W0007')}}</strong>{{\Cache::get('configuration')['contact_number']}}</p>
+                                    <p class="contact-info"><strong>{{trans('website.W0008')}}</strong><a href="mailTo:{{\Cache::get('configuration')['info_email']}}">{{\Cache::get('configuration')['info_email']}}</a></p>
+                                </div>                                
+                            </div>
+                            <div class="col-md-9 col-sm-8 col-xs-12">
+                                <form method="POST" action="{{ url('/page/_contact') }}" class="form-horizontal login-form">
+                                    <div class="login-inner-wrapper grey-inner-wrapper">
+                                        <h4 class="form-heading blue-text">{{trans('website.W0011')}}</h4>
+                                        <div class="message">
+                                            {{ ___alert((!empty($alert))?$alert:($errors->has('alert'))?$errors->first('alert'):'') }}
+                                        </div>
+                                        {{ csrf_field() }}
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="form-group has-feedback{{ $errors->has('name') ? ' has-error' : '' }}">
+                                                    <label class="col-md-12 col-sm-12 col-xs-12 control-label">{{trans('website.W0014')}}</label>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <input name="name" value="{{ old('name',(!empty($name))?$name:'') }}" type="text" class="form-control">
+                                                        @if ($errors->has('name'))
+                                                            <span class="help-block">{{ $errors->first('name') }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>                                                
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="form-group has-feedback{{ $errors->has('email') ? ' has-error' : '' }}">
+                                                    <label class="col-md-12 col-sm-12 col-xs-12 control-label">Email address</label>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <input name="email" value="{{ old('email',(!empty($email))?$email:'') }}" type="text" class="form-control" placeholder="">
+                                                        @if ($errors->has('email'))
+                                                            <span class="help-block">{{ $errors->first('email') }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <div class="form-group has-feedback{{ $errors->has('phone_number') ? ' has-error' : '' }}">
+                                                        <label class="col-md-12 col-sm-12 col-xs-12 control-label">Contact No.</label>
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <input name="phone_number" value="{{ old('phone_number',(!empty($phone_number))?$phone_number:'') }}" type="text" class="form-control" placeholder="">
+                                                            @if ($errors->has('phone_number'))
+                                                                <span class="help-block">{{ $errors->first('phone_number') }}</span>
+                                                            @endif
+                                                        </div>
+                                                    </div> 
+                                                
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="form-group has-feedback{{ $errors->has('message') ? ' has-error' : '' }}">
+                                                    <label class="col-md-12 col-sm-12 col-xs-12 control-label">Message</label>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <textarea name="message" type="text" rows="6" class="form-control">{{ old('message',(!empty($message))?$message:'') }}</textarea>
+                                                        @if ($errors->has('message'))
+                                                            <span class="help-block">{{ $errors->first('message') }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div> 
+                                                
+                                            </div>
+                                        </div>
+                                    </div>                                    
+                                    <div class="form-group button-group">
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="row form-btn-set">
+                                                <div class="col-md-7 col-sm-7 col-xs-6">
+                                                    <a href="{{ url('/') }}" class="button-line">
+                                                        {{trans('website.W0355')}}
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-5 col-sm-5 col-xs-6">
+                                                    <button type="submit" class="btn btn-sm redShedBtn">{{trans('website.W0013')}}</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                
+                                </form>                                        
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section> 
+        </div>
+    @endsection
+

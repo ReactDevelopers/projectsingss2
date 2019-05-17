@@ -1,0 +1,1 @@
+ût8resources/views/front/pages/confirm-newsletter.blade.php 2phpXPhr8resources/views/front/pages/confirm-newsletter.blade.php

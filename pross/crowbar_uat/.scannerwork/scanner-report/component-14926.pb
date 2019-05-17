@@ -1,0 +1,1 @@
+Ît3resources/views/vendor/pagination/default.blade.php 2phpX%hr3resources/views/vendor/pagination/default.blade.php

@@ -1,0 +1,1 @@
+×t-resources/views/layouts/talent/main.blade.php 2phpX™hr-resources/views/layouts/talent/main.blade.php

@@ -1,0 +1,1 @@
+ÄuCresources/views/talent/settings/transfer-ownership-accept.blade.php 2phpX|hrCresources/views/talent/settings/transfer-ownership-accept.blade.php

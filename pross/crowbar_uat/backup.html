@@ -1,0 +1,571 @@
+<div class="col-md-6 col-sm-6 col-xs-12 form-right">                            
+						<h4 class="form-heading">{{trans('website.W0128')}}</h4>                            
+						<!-- <p>{{trans('website.W0129')}}</p> -->
+						<ul class="loginOptions">
+							<li><a href="{{ asset('/login/linkedin') }}" class="linkedin-option"><span>{{sprintf(trans('website.W0130'),trans('website.W0120'))}}</span></a></li>
+							<li><a href="{{ asset('/login/facebook') }}" class="facebook-option"><span>{{sprintf(trans('website.W0130'),trans('website.W0116'))}}</span></a></li>
+							<li><a href="{{ asset('/login/instagram') }}" class="instagram-option"><span>{{sprintf(trans('website.W0130'),trans('website.W0131'))}}</span></a></li>
+							<li><a href="{{ asset('/login/twitter') }}" class="twitter-option"><span>{{sprintf(trans('website.W0130'),trans('website.W0119'))}}</span></a></li>
+						</ul>
+					</div>
+
+
+					
+
+        /**
+         * [This method is used for randering view of Employer] 
+         * @param  null
+         * @return \Illuminate\Http\Response
+         */
+        
+        public function step_one(){
+            $data['subheader']              = false;
+            $data['title']                  = trans('website.W0576');
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'employer.profile.general';
+
+            $data['user']                   = \Models\Employers::get_user(\Auth::user());
+            
+            $data['steps']                  = ['setup','general'];
+            $data['country_phone_codes']    = \Cache::get('country_phone_codes');
+            $data['countries']              = \Cache::get('countries');
+            $data['states']                 = \Cache::get('states');
+            $data['skip_url']               = url(sprintf("%s/profile/setup",EMPLOYER_ROLE_TYPE));
+            return view('employer.profile.index')->with($data);
+        }
+
+        /**
+         * [This method is used for handling profile setup]
+         * @param  Request
+         * @return Json Response
+         */
+        
+        public function _step_one(Request $request){
+            $validation_mobile = validation('phone_number'); unset($validation_mobile[0]);
+            $user = \Models\Talents::get_user(\Auth::user());
+            $validator = \Validator::make($request->all(), [
+                'first_name'                => validation('first_name'),
+                'last_name'                 => validation('last_name'),
+                'email'                     => ['required','email',Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',$request->user()->id_user);})],
+                'mobile'                    => array_merge([Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',\Auth::user()->id_user);})],validation('mobile')),
+                'country_code'              => $request->mobile ? array_merge(['required'], validation('country_code')) : validation('country_code'),                
+                'other_mobile'              => array_merge([Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',\Auth::user()->id_user);})],validation('mobile'),['different:mobile']),
+                'other_country_code'        => $request->other_mobile ? array_merge(['required'], validation('country_code')) : validation('country_code'),                
+                'website'                   => validation('website'),
+                'address'                   => validation('address'),
+                'country'                   => validation('country'),
+                'state'                     => validation('state'),
+                'postal_code'               => validation('postal_code'),
+            ],[
+                'first_name.required'       => trans('general.M0006'),
+                'first_name.regex'          => trans('general.M0007'),
+                'first_name.string'         => trans('general.M0007'),
+                'first_name.max'            => trans('general.M0020'),
+                'last_name.required'        => trans('general.M0008'),
+                'last_name.regex'           => trans('general.M0009'),
+                'last_name.string'          => trans('general.M0009'),
+                'last_name.max'             => trans('general.M0019'),
+                'email.required'            => trans('general.M0010'),
+                'email.email'               => trans('general.M0011'),
+                'email.unique'              => trans('general.M0047'),  
+                'mobile.required'           => trans('general.M0030'),
+                'mobile.regex'              => trans('general.M0031'),
+                'mobile.string'             => trans('general.M0031'),
+                'mobile.min'                => trans('general.M0032'),
+                'mobile.max'                => trans('general.M0033'),
+                'mobile.unique'             => trans('general.M0197'),
+                'address.string'            => trans('general.M0057'),
+                'address.regex'             => trans('general.M0057'),
+                'address.max'               => trans('general.M0058'),                
+                'country.integer'           => trans('general.M0059'),
+                'state.integer'             => trans('general.M0060'),
+                'postal_code.string'        => trans('general.M0061'),
+                'postal_code.regex'         => trans('general.M0061'),
+                'postal_code.max'           => trans('general.M0062'),
+                'postal_code.min'           => trans('general.M0063'),
+                
+                /*USELESS FOR NOW DUE TO DESIGN RESTRICTION*/
+                'country_code.required'         => trans('general.M0164'),
+                'country_code.string'           => trans('general.M0074'),
+                'other_country_code.required'   => trans('general.M0432'),
+                'other_country_code.string'     => trans('general.M0074'),
+                'other_mobile.required'         => trans('general.M0030'),
+                'other_mobile.regex'            => trans('general.M0031'),
+                'other_mobile.string'           => trans('general.M0031'),
+                'other_mobile.min'              => trans('general.M0032'),
+                'other_mobile.max'              => trans('general.M0033'),
+                'other_mobile.unique'           => trans('general.M0197'),
+                'other_mobile.different'        => trans('general.M0127'),
+                /*END*/
+            ]);
+
+            // $validator->after(function($v) use($request){
+            //     $res = validatePayPalEmail($request->email);
+            //     if($res == 'Failure'){
+            //         $v->errors()->add('email',trans('general.valid_paypal_email'));
+            //     }
+            // });
+            if($validator->passes()){
+                $update = array_intersect_key(
+                    json_decode(json_encode($request->all()),true), 
+                    array_flip(
+                        array(
+                            'first_name',
+                            'last_name',
+                            'email',
+                            'mobile',
+                            'other_mobile',
+                            'website',
+                            'address',
+                            'country',
+                            'state',
+                            'postal_code',
+                            'country_code',
+                            'other_country_code',
+                        )
+                    )
+                );
+
+                /*
+                *   REPLACING ALL BLANK STRING WITH 
+                *   NULL BECAUSE OF LARAVEL MYSQL 
+                *   DRIVER ASKING FOR INTEGER VALUE 
+                *   FOR INTEGER COLUMN TYPE
+                */
+                ___filter_null($update);
+                if($update['mobile'] != \Auth::user()->mobile){
+                    $update['is_mobile_verified'] = DEFAULT_NO_VALUE;
+                }
+
+                if($request->email != $user['email']){
+                    $code = bcrypt(__random_string());
+                    $update['remember_token'] = $code;
+                    $update['is_email_verified'] = DEFAULT_NO_VALUE;
+                }
+
+                // if(!empty($update['country'])){
+                //     $update['country_code'] = ___get_country_phone_code_by_country($update['country']);
+                // }
+
+                $isUpdated      = \Models\Employers::change(\Auth::user()->id_user,$update);
+
+                if($request->email != $user['email']){
+                    if(!empty($request->email)){
+                        $emailData              = ___email_settings();
+                        $emailData['email']     = $request->email;
+                        $emailData['name']      = $request->first_name;
+                        $emailData['link']      = url(sprintf("emailverify/account?token=%s",$code));
+
+                        ___mail_sender($request->email,sprintf("%s %s",$request->first_name,$request->last_name),"update_email_verification",$emailData);
+                    }
+                }
+
+                $this->status   = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+                
+                if($request->step_type == 'edit'){
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'employer-update-step-one',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));                    
+                    $this->redirect = url(sprintf("%s/profile",EMPLOYER_ROLE_TYPE));
+                }else{
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'employer-step-one',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));                    
+                    $this->redirect = url(sprintf("%s/profile/verify-account",EMPLOYER_ROLE_TYPE));
+                }
+
+            }else{
+                $this->jsondata = json_decode(json_encode(___error_sanatizer($validator->errors())),true);
+                
+                if(!empty($this->jsondata['country_code'])){
+                    $this->jsondata['mobile'][0] = $this->jsondata['country_code'][0];
+                    unset($this->jsondata['country_code']);
+                }
+
+                if(!empty($this->jsondata['other_country_code'])){
+                    $this->jsondata['other_mobile'][0] = $this->jsondata['other_country_code'][0];
+                    unset($this->jsondata['other_country_code']);
+                }                
+
+                $this->jsondata = (object)$this->jsondata;
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        } 
+
+        /**
+         * [This method is used for randering view of Employer] 
+         * @param  null
+         * @return \Illuminate\Http\Response
+         */
+        
+        public function step_two(){
+            $data['subheader']              = false;
+            $data['title']                  = trans('website.W0577');
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'employer.profile.setup';
+            
+            $data['user']                   = \Models\Employers::get_user(\Auth::user());
+            $data['steps']                  = ['setup'];
+            $data['work_fields']            = \Cache::get('work_fields');
+            $data['industries_name']        = array_flatten(\Cache::get('industries_name'));
+            $data['skip_url']               = url(sprintf("%s/profile/verify-account",EMPLOYER_ROLE_TYPE));
+            return view('employer.profile.index')->with($data);
+        } 
+        /**
+         * [This method is used for general information]
+         * @param  Request
+         * @return \Illuminate\Http\Response
+         */
+
+        public function _step_two(Request $request){
+            $validation_mobile = validation('phone_number'); unset($validation_mobile[0]);
+            
+            $validator = \Validator::make($request->all(), [
+                'company_name'                  => validation('company_name'),
+                'contact_person_name'           => validation('contact_person_name'),
+                'company_website'               => validation('website'),
+                'company_work_field'            => validation('company_work_field'),
+                'certificates'                  => validation('certificates'),
+                'company_biography'             => validation('company_biography'),
+            ],[
+                'company_name.required'         => trans('general.M0023'),
+                'company_name.regex'            => trans('general.M0024'),
+                'company_name.string'           => trans('general.M0024'),
+                'company_name.max'              => trans('general.M0025'),
+                'contact_person_name.required'  => trans('general.M0040'),
+                'contact_person_name.regex'     => trans('general.M0041'),
+                'contact_person_name.string'    => trans('general.M0041'),
+                'contact_person_name.max'       => trans('general.M0042'),
+                'company_website.string'        => trans('general.M0114'),
+                'company_website.regex'         => trans('general.M0114'),
+                'company_work_field.integer'    => trans('general.M0115'),
+                'company_biography.regex'       => trans('general.M0116'),
+                'company_biography.string'      => trans('general.M0116'),
+                'company_biography.max'         => trans('general.M0117'),
+                'company_biography.min'         => trans('general.M0118'),
+            ]);
+
+            if($validator->passes()){
+                $update = array_intersect_key(
+                    json_decode(json_encode($request->all()),true), 
+                    array_flip(
+                        array(
+                            'company_profile',
+                            'company_name',
+                            'contact_person_name',
+                            'company_website',
+                            'company_work_field',
+                            'company_biography',
+                        )
+                    )
+                );
+
+                /*
+                *   REPLACING ALL BLANK STRING WITH 
+                *   NULL BECAUSE OF LARAVEL MYSQL 
+                *   DRIVER ASKING FOR INTEGER VALUE 
+                *   FOR INTEGER COLUMN TYPE
+                */
+                ___filter_null($update);
+                
+                $isUpdated      = \Models\Employers::change(\Auth::user()->id_user,$update);
+                
+                if(!empty($request->certificates)){
+                    \Models\Employers::update_certificate(\Auth::user()->id_user,$request->certificates);
+                }
+
+                $this->status   = true;
+                $this->message  = sprintf(ALERT_SUCCESS,trans("general.M0110"));
+                
+                if($request->step_type == 'edit'){
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'employer-update-step-two',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));
+                    $this->redirect = url(sprintf("%s/profile",EMPLOYER_ROLE_TYPE)); 
+                }else{
+                    /* RECORDING ACTIVITY LOG */
+                    event(new \App\Events\Activity([
+                        'user_id'           => \Auth::user()->id_user,
+                        'user_type'         => 'employer',
+                        'action'            => 'employer-step-two',
+                        'reference_type'    => 'users',
+                        'reference_id'      => \Auth::user()->id_user
+                    ]));                    
+                    $this->redirect = url(sprintf("%s/profile/general",EMPLOYER_ROLE_TYPE));
+                }
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        /**
+         * [This method is used for randering view of Employer] 
+         * @param  null
+         * @return \Illuminate\Http\Response
+         */
+        
+        public function step_three(){
+            $data['subheader']  = false;
+            $data['title']      = trans('website.W0578');
+            $data['header']     = 'innerheader';
+            $data['footer']     = 'innerfooter';
+            $data['view']       = 'employer.profile.verify-account';
+            $data['steps']      = ['general','setup','verify-account'];
+
+            $data['user']       = \Models\Employers::get_user(\Auth::user(),true);
+            $data['skip_url']   = url(sprintf("%s/find-talents",EMPLOYER_ROLE_TYPE));
+            
+            return view('employer.profile.index')->with($data);
+        }
+
+        /**
+         * [This method is used for phone verification]
+         * @param  Request
+         * @return \Illuminate\Http\Response
+         */
+        
+        public function verify_phone(Request $request){
+            $data['subheader']              = false;
+            $data['title']                  = trans('website.W0579');
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'employer.profile.verify-phone';
+
+            $data['steps']                  = ['general','setup','verify-account'];
+            $data['country_phone_codes']    = \Cache::get('country_phone_codes');
+            $data['states']                 = \Cache::get('states');            
+            $data['user']                   = \Models\Employers::get_user(\Auth::user());
+            $data['skip_url']               = url(sprintf("%s/profile/verify-account",EMPLOYER_ROLE_TYPE));
+            return view('employer.profile.index')->with($data);
+        }
+
+        /**
+         * [This method is used for handling phone verification]
+         * @param  Request
+         * @return Json Response
+         */
+        
+        public function _verify_phone(Request $request){
+            if($request->ajax()){
+                $validator = \Validator::make($request->all(), [
+                    'mobile'                    => array_merge([Rule::unique('users')->ignore('trashed','status')->where(function($query) use($request){$query->where('id_user','!=',\Auth::user()->id_user);})],validation('phone_number')),
+                    'country_code'              => array_merge(['required'],validation('country_code')),                
+                ],[
+                    'country_code.string'       => trans('general.M0074'),
+                    'country_code.required'     => trans('general.M0164'),
+                    'mobile.required'           => trans('general.M0030'),
+                    'mobile.regex'              => trans('general.M0031'),
+                    'mobile.string'             => trans('general.M0031'),
+                    'mobile.min'                => trans('general.M0032'),
+                    'mobile.max'                => trans('general.M0033'),
+                    'mobile.unique'             => trans('general.M0197'),
+                ]);
+                if($validator->passes()){
+                    $created_date               = date('Y-m-d H:i:s');
+                    $otp_shuffle                = \Cache::get('configuration')['otp_shuffle'];
+                    $otp_length                 = \Cache::get('configuration')['otp_length'];
+                    $otp_expired                = \Cache::get('configuration')['otp_expired'];
+
+                    $otp_password               = substr(str_shuffle($otp_shuffle), 2, $otp_length);
+                    $otp_message                = sprintf(\Cache::get('configuration')['otp_message'],$otp_password);
+                    $otp_expired                = date('Y-m-d H:i:s',strtotime("+".$otp_expired." minutes", strtotime($created_date)));
+
+                    $isUpdated = \Models\Employers::change(
+                    \Auth::user()->id_user,[
+                            'country_code'          => $request->country_code, 
+                            'mobile'                => $request->mobile, 
+                            'otp_password'          => $otp_password,
+                            'otp_created'           => $created_date,
+                            'otp_expired'           => $otp_expired,
+                            'is_mobile_verified'    => DEFAULT_NO_VALUE,
+                            'updated'               => date('Y-m-d H:i:s')
+                        ]
+                    );
+
+                    try{
+                        $response = \Twilio::message(sprintf("%s%s",$request->country_code,$request->mobile), $otp_message);
+                        $this->status = true;
+                        $this->message = $this->message  = sprintf(ALERT_SUCCESS,sprintf(str_replace('\n','',trans('general.M0129')),$request->mobile));
+                        $this->jsondata = [
+                            'mobile' => $request->mobile,
+                            'country_code' => $request->country_code
+                        ];
+                        if($request->step_type == 'edit'){
+                            /* RECORDING ACTIVITY LOG */
+                            event(new \App\Events\Activity([
+                                'user_id'           => \Auth::user()->id_user,
+                                'user_type'         => 'employer',
+                                'action'            => 'employer-update-verify-phone',
+                                'reference_type'    => 'users',
+                                'reference_id'      => \Auth::user()->id_user
+                            ]));                        
+                            $this->redirect = url(sprintf("%s/profile/edit/verify-account/otp",EMPLOYER_ROLE_TYPE));
+                        }else{
+                            /* RECORDING ACTIVITY LOG */
+                            event(new \App\Events\Activity([
+                                'user_id'           => \Auth::user()->id_user,
+                                'user_type'         => 'employer',
+                                'action'            => 'employer-verify-phone',
+                                'reference_type'    => 'users',
+                                'reference_id'      => \Auth::user()->id_user
+                            ]));                        
+                            $this->redirect = url(sprintf("%s/profile/verify-otp",EMPLOYER_ROLE_TYPE));
+                        }                    
+
+                        \Models\Listings::twilio_response([
+                            'user_id' => \Auth::user()->id_user,
+                            'twilio_response_json' => json_encode($response->client->last_response),
+                            'created' => $created_date
+                        ]);
+                    }catch ( \Services_Twilio_RestException $e ) {
+                        $this->message = trans('general.M0128');
+                        \Models\Listings::twilio_response([
+                            'user_id' => \Auth::user()->id_user,
+                            'twilio_response_json' => json_encode(['body' => $e->getMessage()]),
+                            'created' => $created_date
+                        ]);
+                        $this->jsondata = (object) ['mobile_error' => $e->getMessage()];                    
+                    }                
+                }else{
+                    $errors = json_decode(json_encode(___error_sanatizer($validator->errors())),true);
+
+                    if(!empty($errors['country_code'][0])){
+                        $errors['mobile'][0] = $errors['country_code'][0];
+                        unset($errors['country_code']);
+                    }
+
+                    $this->jsondata = (object)$errors;
+                }
+                
+                return response()->json([
+                    'data'      => $this->jsondata,
+                    'status'    => $this->status,
+                    'message'   => $this->message,
+                    'redirect'  => $this->redirect,
+                ]);          
+            }else{
+                return redirect()->back();
+            }
+        }
+
+        /**
+         * [This method is used for otp verification]
+         * @param  Request
+         * @return \Illuminate\Http\Response
+         */
+        
+        public function verify_otp(Request $request){
+            $data['subheader']              = false;
+            $data['title']                  = trans('website.W0580');
+            $data['header']                 = 'innerheader';
+            $data['footer']                 = 'innerfooter';
+            $data['view']                   = 'employer.profile.verify-otp';
+            $data['steps']                  = ['general','setup','verify-account'];
+
+            $data['user']                   = \Models\Employers::get_user(\Auth::user());
+            $data['edit_url']               = url(sprintf("%s/profile/phone",EMPLOYER_ROLE_TYPE));
+            $data['skip_url']               = url(sprintf("%s/profile/verify-account",EMPLOYER_ROLE_TYPE));
+            return view('employer.profile.index')->with($data);
+        }
+
+        /**
+         * [This method is used for handling otp verification]
+         * @param  Request
+         * @return Json Response
+         */
+        
+        public function _verify_otp(Request $request){
+            $validator = \Validator::make($request->all(), [
+                'otp_password'              => ['required']
+            ],[
+                'otp_password.required'     => trans('general.M0130'),
+            ]);
+
+            if($validator->passes()){
+                $result = (array) \Models\Employers::findById(\Auth::user()->id_user,['otp_password']);
+
+                if($result['otp_password'] == $request->otp_password){
+                    $created_date               = date('Y-m-d H:i:s');
+                    $otp_shuffle                = \Cache::get('configuration')['otp_shuffle'];
+                    $otp_length                 = \Cache::get('configuration')['otp_length'];
+                    $otp_expired                = \Cache::get('configuration')['otp_expired'];
+
+                    $otp_password               = substr(str_shuffle($otp_shuffle), 2, $otp_length);
+                    $otp_expired                = date('Y-m-d H:i:s',strtotime("+".$otp_expired." minutes", strtotime($created_date)));
+                    if($request->step_type == 'edit'){
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => \Auth::user()->id_user,
+                            'user_type'         => 'employer',
+                            'action'            => 'update-employer-verify-otp',
+                            'reference_type'    => 'users',
+                            'reference_id'      => \Auth::user()->id_user
+                        ])); 
+                        $this->redirect = url(sprintf("%s/profile/edit/verify-account",EMPLOYER_ROLE_TYPE));
+                    }else{
+                        /* RECORDING ACTIVITY LOG */
+                        event(new \App\Events\Activity([
+                            'user_id'           => \Auth::user()->id_user,
+                            'user_type'         => 'employer',
+                            'action'            => 'employer-verify-otp',
+                            'reference_type'    => 'users',
+                            'reference_id'      => \Auth::user()->id_user
+                        ])); 
+                        $this->redirect = url(sprintf("%s/profile/verify-account",EMPLOYER_ROLE_TYPE));
+                    }                    
+                    $this->message = sprintf(ALERT_SUCCESS,trans('general.M0132'));
+                    $this->status = true;
+                    $isUpdated = \Models\Employers::change(
+                        \Auth::user()->id_user,[
+                            'otp_password'          => $otp_password,
+                            'otp_created'           => $created_date,
+                            'otp_expired'           => $otp_expired,
+                            'is_mobile_verified'    => DEFAULT_YES_VALUE,
+                            'updated'               => date('Y-m-d H:i:s')
+                        ]
+                    );
+                }else{
+                    $this->jsondata = (object)['otp_password' => trans('general.M0131')];
+                }
+            }else{
+                $this->jsondata = ___error_sanatizer($validator->errors());
+            }
+
+            return response()->json([
+                'data'      => (object)$this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);              
+        }

@@ -1,0 +1,1 @@
+›v5resources/views/talent/community/post_event.blade.php 2phpX—hr5resources/views/talent/community/post_event.blade.php

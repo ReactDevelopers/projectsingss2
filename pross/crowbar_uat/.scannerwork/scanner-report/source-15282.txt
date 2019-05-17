@@ -1,0 +1,16 @@
+<div style="padding-top:10px;">
+    <form role="form-add-abusive-words" action="{{url(sprintf("%s/%s",ADMIN_FOLDER,'add-abusive-word'))}}" method="post">
+        <div class="col-md-1 form-group">
+            <i class="fa fa-save fa-2x"></i>
+        </div>
+        <div class="col-md-5 form-group">
+            <input type="text" class="form-control" name="abusive_word" value="{{ !empty($abusive) ? $abusive->abusive_word : '' }}" placeholder="{{ trans("admin.A0033") }}" style="width:100%;"/>
+        </div>
+        <input type="hidden" name="id_words" value="{{ !empty($abusive) ? $abusive->id_words : '' }}">
+        <input type="hidden" name="action" value="submit">
+        <div class="col-md-2 form-group">
+            <button type="button" class="btn btn-default btn-block" data-request="inline-submit" data-target="[role=form-add-abusive-words]">Save</button>
+        </div>
+    </form>
+</div>
+<div class="clearfix"></div>

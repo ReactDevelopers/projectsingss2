@@ -1,0 +1,1 @@
+«u)resources/views/front/temp_data.blade.php 2phpX„hr)resources/views/front/temp_data.blade.php

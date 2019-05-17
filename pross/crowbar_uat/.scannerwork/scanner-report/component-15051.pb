@@ -1,0 +1,1 @@
+Ëuresources/views/talent :Êu„vrresources/views/talent

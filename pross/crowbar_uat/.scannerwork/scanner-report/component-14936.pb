@@ -1,0 +1,1 @@
+Øtresources/views/layouts/talent :×trresources/views/layouts/talent

@@ -1,0 +1,1 @@
+ˆx+resources/views/backend/activity_log/talent :‡xr+resources/views/backend/activity_log/talent

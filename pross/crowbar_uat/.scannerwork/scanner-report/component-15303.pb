@@ -1,0 +1,1 @@
+Çw.resources/views/backend/college/list.blade.php 2phpX'hr.resources/views/backend/college/list.blade.php

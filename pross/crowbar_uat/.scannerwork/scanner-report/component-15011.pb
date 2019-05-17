@@ -1,0 +1,1 @@
+£u"resources/views/front/home/layouts :¢u¤u¥ur"resources/views/front/home/layouts

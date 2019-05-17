@@ -1,0 +1,108 @@
+<?php
+
+    namespace App\Exceptions;
+
+    use Exception;
+    use Illuminate\Auth\AuthenticationException;
+    use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+    use Illuminate\Session\TokenMismatchException;
+
+
+    class Handler extends ExceptionHandler{
+        /**
+         * A list of the exception types that should not be reported.
+         *
+         * @var array
+         */
+        protected $dontReport = [
+            \Illuminate\Auth\AuthenticationException::class,
+            \Illuminate\Auth\Access\AuthorizationException::class,
+            \Symfony\Component\HttpKernel\Exception\HttpException::class,
+            \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+            \Illuminate\Session\TokenMismatchException::class,
+            \Illuminate\Validation\ValidationException::class,
+        ];
+
+        /**
+         * Report or log an exception.
+         *
+         * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
+         *
+         * @param  \Exception  $exception
+         * @return void
+         */
+        public function report(Exception $exception){
+            parent::report($exception);
+        }
+
+        /**
+         * Render an exception into an HTTP response.
+         *
+         * @param  \Illuminate\Http\Request  $request
+         * @param  \Exception  $exception
+         * @return \Illuminate\Http\Response
+         */
+        public function render($request, Exception $exception){
+            if($request->is('api/*') && !($exception instanceof AuthenticationException)){
+                if(class_basename($exception) === 'NotFoundHttpException'){
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => "404",
+                        'message' => 'Someting wrong, please try after some time.',
+                        'error' => 'API endpoint not found.',
+                        'error_code' => 'exception_found',
+                        'exception' => class_basename( $exception ).' in '.basename($exception->getFile()).' line '.$exception->getLine().': ' .$exception->getMessage(),
+                    ],404);
+                }else{
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => "500",
+                        'error' => 'Someting wrong, please try after some time.',
+                        'error_code' => 'exception_found',
+                        'exception' => class_basename( $exception ).' in '.basename($exception->getFile()).' line '.$exception->getLine().': ' .$exception->getMessage(),
+                    ],500);
+                }
+            }else{
+                if ($exception instanceof TokenMismatchException){
+                    $request->session()->flash('alert', sprintf(ALERT_WARNING,'Email & Password combination is wrong. Try Again.'));
+                    return redirect(url('/'));
+                }else if(class_basename($exception) === 'QueryException'){
+                    if (app()->environment() == 'staging') {
+                        return response()->view('errors.500', [], 500);
+                    }
+                }
+            }
+
+            return parent::render($request, $exception);
+        }
+
+        /**
+         * Convert an authentication exception into an unauthenticated response.
+         *
+         * @param  \Illuminate\Http\Request  $request
+         * @param  \Illuminate\Auth\AuthenticationException  $exception
+         * @return \Illuminate\Http\Response
+         */
+        protected function unauthenticated($request, AuthenticationException $exception){
+            $guard = array_get($exception->guards(),0);
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Unauthenticated.'], 401);
+            }
+
+            switch ($guard) {
+                case 'api':{
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'M0048',
+                        'error' => 'Unauthorized access for this request.',
+                        'error_code' => 'unauthorized',
+                        'status_code' => '401'
+                    ], 401);
+                    break;
+                }
+            }
+
+            return redirect()->guest('login');
+        }
+    }
+

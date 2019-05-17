@@ -1,0 +1,1 @@
+Üs2resources/views/employer/job/find-talent.blade.php 2phpXˆhr2resources/views/employer/job/find-talent.blade.php

@@ -1,0 +1,136 @@
+    
+    <?php $__env->startSection('requirecss'); ?>
+    <?php $__env->stopSection(); ?>
+    
+
+    
+    <?php $__env->startSection('inlinecss'); ?>
+        
+    <?php $__env->stopSection(); ?>
+    
+
+    
+    <?php $__env->startSection('requirejs'); ?>
+        <script src="<?php echo e(asset('js/app.js')); ?>" type="text/javascript"></script>
+        <script src="<?php echo e(asset('js/jquery.dataTables.js')); ?>"></script>
+        <script src="<?php echo e(asset('js/dataTables.bootstrap.js')); ?>"></script>
+        <script type="text/javascript">
+            $(document).on('click','[data-request="follow-question"]',function(){
+                $('#popup').show(); 
+                var $this = $(this);
+                var $url    = $this.data('url');
+                $.ajax({
+                    url: $url, 
+                    cache: false, 
+                    contentType: false, 
+                    processData: false, 
+                    type: 'get',
+                    success: function($response){
+                        $('#popup').hide();
+                        if($this.hasClass('active')){
+                            $this.removeClass('active');
+                            $this.html($response.data);
+                            $('.follow_user_'+$response.user_id).removeClass('active');
+                            $('.follow_user_'+$response.user_id).html($response.data);
+                        }else{
+                            $this.addClass('active');
+                            $this.html($response.data);
+                            $('.follow_user_'+$response.user_id).addClass('active');
+                            $('.follow_user_'+$response.user_id).html($response.data);
+                        }
+                    },error: function(error){
+                        $('#popup').hide();
+                    }
+                });
+            });
+            
+        </script>
+        <?php echo $html->scripts(); ?>
+
+    <?php $__env->stopSection(); ?>
+    
+    
+    
+    <?php $__env->startSection('inlinejs'); ?>
+        
+    <?php $__env->stopSection(); ?>
+    
+
+    <?php $__env->startSection('content'); ?>
+        <!-- Banner Section -->
+        <?php if(Request::get('stream') != 'mobile'): ?>
+            <div class="static-heading-sec">
+                <div class="container-fluid">
+                    <div class="static Heading">                    
+                        <h1><?php echo e(trans('website.W0447')); ?></h1>                        
+                    </div>                    
+                </div>
+            </div>
+        <?php endif; ?>
+        <!-- /Banner Section -->
+        <!-- Main Content -->
+        <div class="contentWrapper">
+            <section class="aboutSection questions-listing">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-9 col-sm-8 col-xs-12">
+                            <div class="left-question-section">
+                                <div class="no-table datatable-listing general-questions-list ">
+                                    <?php echo $html->table();; ?>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="related-questions">
+                                <div class="search-question-form box-heading">
+                                    <h3 class="form-heading"><?php echo e(trans('website.W0949')); ?></h3>
+                                    <div class="search-wrapper detail-search-wrapper">
+                                        <input type="text" name="search" placeholder="Search" class="form-control" id="search_ques" data-request="search"/>
+                                        <buttton class="btn button searching">
+                                            <img src="<?php echo e(asset('images/white-search-icon.png')); ?>">
+                                        </button>
+                                    </div>           
+                                </div>
+                                <?php if(!empty(\Auth::user())): ?>
+                                    <div class="first-question-section">
+                                        <h3 class="form-heading top-margin-20px"><?php echo e(trans('website.W0950')); ?></h3>
+                                        <ul>
+                                            <ol><?php echo e(trans('website.W0951')); ?></ol>
+                                            <ol><?php echo e(trans('website.W0952')); ?></ol>
+                                        </ul>
+                                        <a href="<?php echo e(url('/network/community/forum/question/ask')); ?>" class="button bottom-margin-10px inline"><?php echo e(trans('website.W0953')); ?></a>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="clearfix"></div>
+                                <?php if(!empty($latest_question)): ?>
+                                    <div class="other-question-section">
+                                        <h3 class="form-heading top-margin-20px"><?php echo e(trans('website.W0954')); ?></h3>
+                                        <ul>
+                                            <?php $__currentLoopData = $latest_question; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                                                <li>
+                                                    <a href="<?php echo e(url('/network/community/forum/question/'.___encrypt($r['id_question']))); ?>"><h4><?php echo e($r['question_description']); ?></h4></a>
+                                                </li>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+                                        </ul>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section> 
+        </div>
+    <?php $__env->stopSection(); ?>
+    <?php $__env->startPush('inlinescript'); ?>
+    <script type="text/javascript">
+        $('#search_ques').keyup(function(){
+            var search = $(this).val() 
+            LaravelDataTables["dataTableBuilder"].on('preXhr.dt', function (e, settings, data) {
+                data.search['value'] = search;
+            }); 
+            window.LaravelDataTables.dataTableBuilder.draw();
+        });
+    </script>
+    <?php $__env->stopPush(); ?>
+<?php echo $__env->make($extends, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

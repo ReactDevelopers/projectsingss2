@@ -1,0 +1,1 @@
+žu.resources/views/front/article/detail.blade.php 2phpX‡hr.resources/views/front/article/detail.blade.php

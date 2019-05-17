@@ -1,0 +1,1 @@
+«t6resources/views/employer/talent/availability.blade.php 2phpXhr6resources/views/employer/talent/availability.blade.php

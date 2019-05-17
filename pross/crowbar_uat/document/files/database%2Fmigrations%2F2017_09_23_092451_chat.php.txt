@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class Chat extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('chat', function (Blueprint $table) {
+            $table->increments('id_chat');
+            $table->text('message');
+            $table->integer('sender_id')->nullable();
+            $table->integer('receiver_id')->nullable();
+            $table->enum('message_type', ['text','image','report-abuse','report-abuse-resolved','raise-dispute','raise-dispute-resolved'])->default('text');
+            $table->enum('seen_status', ['sending', 'sent', 'delivered', 'read'])->default('sent');
+            $table->enum('delete_sender_status', ['active', 'trashed'])->default('active');
+            $table->enum('delete_receiver_status', ['active', 'trashed'])->default('active');
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('chat');
+    }
+}
+

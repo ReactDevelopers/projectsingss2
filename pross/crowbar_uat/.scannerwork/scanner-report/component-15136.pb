@@ -1,0 +1,1 @@
+†v1resources/views/talent/community/events.blade.php 2phpXèhr1resources/views/talent/community/events.blade.php

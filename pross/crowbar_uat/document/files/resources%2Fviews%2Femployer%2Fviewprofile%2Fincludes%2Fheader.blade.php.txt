@@ -1,0 +1,13 @@
+<div class="header-navigation">
+    <div class="container-fluid">
+        <a href="javascript:void(0);" class="mobile-menu"><span></span> Menu</a>
+        <ul class="navigation-group-list clearfix">
+            <li><a href="find-jobs.html" title="Find Jobs">Find Jobs</a></li>
+            <li><a href="javascript:void(0);" title="My Jobs">My Jobs</a></li>
+            <li><a class="active" href="view-profile.html" title="Profile">Profile</a></li>
+            <li><a href="javascript:void(0);" title="Set Availability">Set Availability</a></li>
+            <li><a href="javascript:void(0);" title="My Wallet">My Wallet</a></li>
+            <li><a href="javascript:void(0);" title="Proposals">Proposals</a></li>
+        </ul>
+    </div>
+</div>     

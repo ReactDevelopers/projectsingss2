@@ -1,0 +1,1 @@
+Œu+resources/views/front/pages/about.blade.php 2phpX9hr+resources/views/front/pages/about.blade.php

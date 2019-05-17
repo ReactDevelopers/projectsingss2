@@ -1,0 +1,56 @@
+@section('content')
+    <!-- Main Content -->
+    <div class="contentWrapper" data-request="scroll" data-section="{{ \Request::get('section') }}">
+        <div class="afterlogin-section has-nobanner">
+            <div class="container">
+                @include('employer.includes.talent-profile-header')
+                <div class="clearfix"></div>
+                @include('employer.job.includes.talent-profile-menu')
+                <div class="col-md-9 right-sidebar job-details-left">
+                    <div class="inner-profile-section talent-profile-section top-padding-10px">
+
+                        @if($user['is_subscribed'] == 'No')
+                            <div class="premium-account-msg">
+                                <div class="premium-account-image">
+                                    <img src="{{ asset('images/premium-account.png') }}" alt="image">
+                                </div>
+                                <div class="premium-account-content">
+                                    <h3>{{trans('website.W0442')}}</h3>
+                                    <p>{{trans('website.W0443')}}</p>
+                                    <div class="premium-account-actions">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-6">
+                                                <a href="{{$upgrade_later_url}}">
+                                                    <button type="button" class="button-line" value="Cancel">{{trans('website.W0444')}}</button>
+                                                </a>
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-6">
+                                                <a href="{{$upgrade_now_url}}">
+                                                    <button type="button" class="button" value="Submit">{{trans('website.W0445')}}</button>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            @if($talentAnswerExist == 1)
+                                @include('employer.interview.summary')
+                            @else
+                                <div class="premium-account-msg">
+                                    <div class="premium-account-content">
+                                        <h2 class="form-heading">{{ trans('website.W0441')}}</h2>
+                                    </div>
+                                </div>
+                            @endif
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-3 right-sidebar">
+                    @include('employer.includes.top-talent-listing')
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+

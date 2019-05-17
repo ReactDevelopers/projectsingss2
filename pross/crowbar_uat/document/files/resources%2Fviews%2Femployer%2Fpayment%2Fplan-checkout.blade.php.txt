@@ -1,0 +1,72 @@
+<div class="contentWrapper submitproposal-section">
+    <div class="static-heading-sec">
+        <div class="container-fluid">
+            <div class="col-md-12">
+                <div class="static Heading">                    
+                    <h1>{{ @$plan['name'] }}</h1>              
+                    <!-- <span>{{ @$plan['plan_detail'] }}</span>-->
+                </div>   
+            </div>                 
+        </div>
+    </div>
+    <div class="container">
+        <div class="submitProposalForm trnasferAmountList">
+            <div class="right-sidebar no-padding-left">
+                <div class="col-md-10 col-sm-12 col-xs-12 full-width-element">
+                    <form action="{{ url(sprintf('%s/plan/payment/initiate/' . $id_plan,EMPLOYER_ROLE_TYPE)) }}" method="post">
+                        <div class="login-inner-wrapper">
+                            {{ csrf_field() }}
+                            <h2 class="form-heading">{{ trans('website.W0356') }}</h2>
+                            <small class="small-heading">{{ trans('website.W0356') }}</small>
+                            <div class="top-margin-20px">{{ ___alert(\Session::get('alert')) }}</div>
+                            <ul>                            
+                                <li>
+                                    <div class="row">
+                                        <div class="col-md-7 col-sm-12 col-xs-12">
+                                            <span class="plan-main-heading">{{trans('website.W0498')}}</span>
+                                            @if(!empty($default_card_detail))
+                                                <span>
+                                                    <a href="javascript:void(0);" class="manage-cards" data-target="#add-cards" data-request="ajax-modal" data-url="{{url(sprintf('%s/payment/card/manage',EMPLOYER_ROLE_TYPE))}}">{{trans('website.W0431')}}</a>
+                                                    <img class="selected-card" src="{{$default_card_detail['image_url']}}" />
+                                                    <strong>
+                                                        {{sprintf("%s%s",str_repeat("*",strlen($default_card_detail['masked_number'])-4),$default_card_detail['last4'])}}
+                                                    </strong>
+                                                </span>
+                                            @else
+                                                <span>
+                                                    <a class="manage-cards" style="left: 0;" data-target="#add-cards" data-request="ajax-modal" data-url="{{url(sprintf('%s/payment/card/manage',EMPLOYER_ROLE_TYPE))}}">{{trans('website.W0430')}}</a>
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="col-md-5 col-sm-12 col-xs-12 plan-cost-block">
+                                            <span class="total-plan-heading">{{ trans('website.W0362') }}</span>
+                                            <span class="total-plan-price">{{ PRICE_UNIT.___format( $plan['price'] ) }}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="form-group button-group row">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="row form-btn-set">
+                                    <div class="col-md-7 col-sm-7 col-xs-6">
+                                        <a class="greybutton-line" href="{{ url(sprintf('%s/hire-premium-talents',EMPLOYER_ROLE_TYPE)) }}">{{ trans('website.W0355') }}</a>
+                                    </div>
+                                    <div class="col-md-5 col-sm-5 col-xs-6">
+                                        <button type="submit" class="button">{{ trans('website.W0364') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade upload-modal-box add-payment-cards" id="add-cards" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"></div>
+
+
+@push('inlinescript')
+    <style>.submitProposalForm.trnasferAmountList .right-sidebar{width: inherit;}</style>
+@endpush

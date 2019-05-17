@@ -1,0 +1,2 @@
+Õu%resources/views/talent/talent-connect :
+ÃuŒuœu–u—ur%resources/views/talent/talent-connect

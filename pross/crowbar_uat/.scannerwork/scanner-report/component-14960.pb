@@ -1,0 +1,1 @@
+ğtresources/views/front/pages :@ïtñtûtütıtştÿt€uu‚uƒu„u…u†u‡u‰uŠu‹uŒuuuu‘u’u“u”u•u–u—u˜u™uˆurresources/views/front/pages

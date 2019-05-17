@@ -1,0 +1,41 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class ProjectLog extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('project_log', function (Blueprint $table) {
+            $table->increments('id_log');
+            $table->integer('project_id')->nullable();
+            $table->integer('talent_id')->nullable();
+            $table->integer('employer_id')->nullable();
+            $table->dateTime('startdate')->nullable();
+            $table->dateTime('enddate')->nullable();
+            $table->enum('start', ['pending', 'confirmed'])->default('pending');
+            $table->enum('close', ['pending', 'confirmed', 'disputed'])->default('pending');
+            $table->enum('request_payout', ['yes', 'no'])->default('no');
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('project_log');
+    }
+}
+

@@ -1,0 +1,43 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class UsersMenu extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('users_menu', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 255);
+            $table->bigInteger('parent')->default(0);
+            $table->enum('section', ['admin','employer-top-after-login','talent-top-after-login','employer-myjobs','employer-profile-sidebar-menu','employer-view-editprofile-menu','talent-view-editprofile-menu','talent-profile-sidebar-menu','talent-proposal-menu','talent-myjobs','employer-payments','talent-wallet','employer-talent-profile'])->nullable();
+            $table->bigInteger('created_by');
+            $table->timestamp('created_date');
+            $table->enum('status', ['active', 'deactive'])->default('active');
+            $table->string('action_url', 255)->nullable();
+            $table->string('menu_icon', 50)->nullable();
+            $table->string('menu_class', 100)->nullable();
+            $table->integer('menu_order');
+            $table->string('callback', 50)->nullable();
+            $table->tinyInteger('disable_list_view')->default(0);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('users_menu');
+    }
+}
+

@@ -1,0 +1,1 @@
+Ñv"resources/views/talent/viewprofile :ÐvÙvr"resources/views/talent/viewprofile

@@ -1,0 +1,1 @@
+ôu<resources/views/talent/includes/user-detail-header.blade.php 2phpX&hr<resources/views/talent/includes/user-detail-header.blade.php

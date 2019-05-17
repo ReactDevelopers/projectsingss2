@@ -1,0 +1,1 @@
+Ûw(resources/views/backend/forgot.blade.php 2phpX=hr(resources/views/backend/forgot.blade.php

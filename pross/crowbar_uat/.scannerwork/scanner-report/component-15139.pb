@@ -1,0 +1,1 @@
+£v:resources/views/talent/community/member-template.blade.php 2phpXhr:resources/views/talent/community/member-template.blade.php

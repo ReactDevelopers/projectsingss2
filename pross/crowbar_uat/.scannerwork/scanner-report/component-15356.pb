@@ -1,0 +1,1 @@
+üw5resources/views/backend/talent/activity_log.blade.php 2phpX’hr5resources/views/backend/talent/activity_log.blade.php

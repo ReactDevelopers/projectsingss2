@@ -1,0 +1,323 @@
+<?php 
+    namespace App\Http\Controllers\Front;
+
+    use App\Http\Requests;
+    use Illuminate\Support\Facades\DB;
+    use App\Models\Proposals;
+    use App\Models\File;
+    use App\Http\Controllers\Controller;
+    
+    use Illuminate\Support\Facades\Cookie;
+    use Illuminate\Validation\Rule;
+    use Illuminate\Http\Request;
+    use Crypt;
+    
+    class ChatController extends Controller {
+
+        private $jsondata;
+        private $redirect;
+        private $message;
+        private $status; 
+        private $prefix;
+
+        public function __construct(Request $request){
+            $this->jsondata     = (object)[];
+            $this->message      = "M0000";
+            $this->error_code   = "no_error_found";
+            $this->status       = false;
+            $this->status_code  = 200;
+            $this->prefix       = \DB::getTablePrefix();
+
+            \View::share ( 'footer_settings', \Cache::get('configuration') );
+
+            $json = json_decode(file_get_contents('php://input'),true);
+            if(!empty($json)){
+                $request->replace($json);
+            }
+
+            /*RECORDING API REQUEST IN TABLE*/
+            \Models\Listings::record_api_request([
+                'url' => $request->url(),
+                'request' => json_encode($request->all()),
+                'type' => 'webservice',
+                'created' => date('Y-m-d H:i:s')
+            ],$request);
+        }
+
+        private function populateresponse($data){
+            $data['message'] = (!empty($data['message']))?"":$this->message;
+            
+            if(empty($this->error)){
+                $data['error'] = trans(sprintf("general.%s",$data['message']));     
+            }else{
+                $data['error'] = $this->error;
+            }
+
+            $data['error_code'] = "";
+
+            if(empty($data['status'])){
+                $data['status'] = $this->status;
+                $data['error_code'] = $this->message;
+            }
+            
+            $data['status_code'] = $this->status_code;
+            
+            $data = json_decode(json_encode($data),true);
+
+            array_walk_recursive($data, function(&$item){
+                if (gettype($item) == 'integer' || gettype($item) == 'float' || gettype($item) == 'NULL'){
+                    $item = trim($item);
+                }
+            });
+
+            if(empty($data['data'])){
+                $data['data'] = (object) $data['data'];
+            }
+
+            return $data;
+        }
+
+        public function chat_save(Request $request){
+            $isSaved = \Models\Chats::addmessage($request->all());
+            if(!empty($isSaved)){
+                $this->jsondata = $isSaved;
+                $this->status = true;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function chat_update(Request $request){
+            $isSaved = \Models\Chats::updatemessage($request->all());
+            if(!empty($isSaved)){
+                $this->jsondata = $isSaved;
+                $this->status = true;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function chat_readall(Request $request){
+            $isSaved = \Models\Chats::readall([
+                'receiver_id' => $request->sender_id,
+                'sender_id' => $request->receiver_id,
+                'seen_status' => 'read',
+            ]);
+
+            if(!empty($isSaved)){
+                $this->status = true;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function chat_list(Request $request){
+            $user = \Models\Users::findById($request->user_id,['id_user','type']);
+
+            if($user['type'] == 'employer'){
+                $this->jsondata         = \Models\Employers::get_my_chat_list($user['id_user'],$request->search);
+            }else if($user['type'] == 'talent'){
+                $this->jsondata         = \Models\Talents::get_my_chat_list($user['id_user'],$request->search);
+            }else if($request->user_id == SUPPORT_CHAT_USER_ID){
+                $this->jsondata         = \Models\Users::get_my_chat_list(SUPPORT_CHAT_USER_ID,$request->search);
+            }
+            
+            if(!empty($this->jsondata)){
+                $this->status = true;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function chat_history(Request $request){
+            $user_details   = \Models\Users::findById($request->sender_id,['id_user','type']);
+
+            if($user_details['type'] == 'employer'){
+                $column = 'delete_receiver_status';
+            }else{
+                $column = 'delete_sender_status';
+            }
+            
+            $this->jsondata = \Models\Chats::getmessages($request->sender_id,$request->receiver_id,$request->page,$request->chat_id,$request->direction,$column);
+            
+            if(!empty($this->jsondata)){
+                $this->status = true;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function chat_offline_messages(Request $request){
+            $user_details   = \Models\Users::findById($request->sender_id,['id_user','type']);
+
+            if($user_details['type'] == 'employer'){
+                $column = 'delete_receiver_status';
+            }else{
+                $column = 'delete_sender_status';
+            }
+            
+            $this->jsondata = \Models\Chats::getofflinemessages($request->sender_id,$request->page,$request->chat_id,$request->direction,$column,'offline');
+            
+            if(!empty($this->jsondata)){
+                $this->status = true;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function chat_accept(Request $request){
+            $isAccepted = \Models\Chats::accept($request->sender_id,$request->receiver_id);
+            
+            if(!empty($isAccepted)){
+                $this->status = true;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+
+        public function chat_reject(Request $request){
+            $isRejected = \Models\Chats::reject($request->sender_id,$request->receiver_id);
+            
+            if(!empty($isRejected)){
+                $this->status = true;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function chat_upload_image(Request $request){
+            $folder = 'uploads/chat/';
+
+            $isImageUploaded = upload_file($request,'file',$folder,true);
+
+            if(!empty($this->jsondata)){
+                $this->status = true;
+                $this->jsondata = $isImageUploaded;
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function chat_deleteall(Request $request){
+            if(!empty($request->sender_id) && !empty($request->receiver_id)){
+                $user_details   = \Models\Users::findById($request->sender_id,['id_user','type']);
+
+                if($user_details['type'] == 'employer'){
+                    $column = 'delete_receiver_status';
+                }else{
+                    $column = 'delete_sender_status';
+                }
+
+                $isDeleted     = \Models\Chats::delete_all($request->sender_id,$request->receiver_id,$column);
+                if(!empty($isDeleted) && $isDeleted['message'] == 'deleted_all'){
+                    $this->status = true;
+                }else{
+                    $this->message = $isDeleted['deleted_all'];
+                }
+            }else{
+                $this->message = 'M0121';
+            }
+
+            return response()->json(
+                $this->populateresponse([
+                    'status' => $this->status,
+                    'data' => $this->jsondata
+                ])
+            );
+        }
+
+        public function chat_report_abuse(Request $request){
+            $validate = \Validator::make($request->all(), [
+                "message"             => validation('description'),
+            ],[
+                'message.required'    => trans('general.M0320'),
+                'message.string'      => trans('general.M0321'),
+                'message.regex'       => trans('general.M0321')
+            ]);
+
+            if($validate->passes()){
+                $isSaved = \Models\Chats::addmessage($request->all());
+                if(!empty($isSaved)){
+                    $isReported = \Models\Abuse::report($request->sender_id,$request->receiver_id,$request->message, 'report-abused');
+                    $this->jsondata = $isSaved;
+                    $this->status = true;
+                }
+            }else{
+                $this->jsondata = ___error_sanatizer($validate->errors());
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+
+        public function chat_user_status(Request $request){
+            if(!empty($request->sender_id)){
+                $isUpdated = \Models\Users::change($request->sender_id,[
+                    'chat_status' => $request->status,
+                    'updated' => date('Y-m-d H:i:s'), 
+                ]);
+
+                if(!empty($isUpdated)){
+                    $this->status = true;
+                }
+            }
+
+            return response()->json([
+                'data'      => $this->jsondata,
+                'status'    => $this->status,
+                'message'   => $this->message,
+                'redirect'  => $this->redirect,
+            ]);
+        }
+    }
+

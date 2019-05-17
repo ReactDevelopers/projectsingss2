@@ -1,0 +1,1 @@
+ÿt3resources/views/front/pages/forgot-verify.blade.php 2phpXLhr3resources/views/front/pages/forgot-verify.blade.php

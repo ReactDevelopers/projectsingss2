@@ -1,0 +1,1 @@
+€x5resources/views/backend/talent/del_password.blade.php 2phpXhr5resources/views/backend/talent/del_password.blade.php

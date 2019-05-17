@@ -1,0 +1,1 @@
+ët5resources/views/front/includes/how-it-works.blade.php 2phpXhr5resources/views/front/includes/how-it-works.blade.php

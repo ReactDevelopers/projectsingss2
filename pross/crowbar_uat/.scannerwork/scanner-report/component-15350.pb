@@ -1,0 +1,1 @@
+öw5resources/views/backend/talent/org/industry.blade.php 2phpXÒhr5resources/views/backend/talent/org/industry.blade.php

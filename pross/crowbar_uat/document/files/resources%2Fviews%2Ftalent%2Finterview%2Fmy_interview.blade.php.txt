@@ -1,0 +1,48 @@
+<!-- Main Content -->
+<div class="contentWrapper">
+    <div class="afterlogin-section interview-section my-interview-sec">
+        <div class="container">
+            <div class="interview-heading-section no-border">
+                <h2>{{trans('website.W0382')}}</h2>
+            </div>
+            <p class="interview-sub-description">{{trans('website.W0381')}}</p>
+
+            <ul class="my-interview-steps">
+                <li>
+                    <span>5 - {{trans('website.W0383')}}</span>
+                    <span class="rating-bar"><img src="{{ asset('images/rating-bar_001.png') }}"></span>
+                </li>
+                <li>
+                    <span>4 - {{trans('website.W0384')}}</span>
+                    <span class="rating-bar"><img src="{{ asset('images/rating-bar_002.png') }}"></span>
+                </li>
+                <li>
+                    <span>3 - {{trans('website.W0385')}}</span>
+                    <span class="rating-bar"><img src="{{ asset('images/rating-bar_003.png') }}"></span>
+                </li>
+                <li>
+                    <span>2 - {{trans('website.W0386')}}</span>
+                    <span class="rating-bar"><img src="{{ asset('images/rating-bar_004.png') }}"></span>
+                </li>
+                <li>
+                    <span>1 - {{trans('website.W0387')}}</span>
+                    <span class="rating-bar"><img src="{{ asset('images/rating-bar_005.png') }}"></span>
+                </li>
+            </ul>
+            <div class="modified-msg">
+                <h6>{{trans('website.W0388')}}: <span>{{$ques}}</span></h6>
+            </div>
+            <div class="interview-actions left-btn-actions">
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <a href="{{$skip_url}}">
+                            <button type="button" class="button" value="Submit">{{trans('website.W0389')}}</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Main Content -->
+

@@ -1,0 +1,1 @@
+´v!resources/views/talent/viewtalent :³v¸v¹vr!resources/views/talent/viewtalent

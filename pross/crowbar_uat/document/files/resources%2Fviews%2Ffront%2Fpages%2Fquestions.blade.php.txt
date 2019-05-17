@@ -1,0 +1,111 @@
+@extends('layouts.front.main')
+
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+    @section('requirecss')
+        <link href="{{ asset('css/owl.carousel.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/owl.theme.default.min.css') }}" rel="stylesheet">
+    @endsection
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinecss')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    @section('requirejs')
+        <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+
+        <script src="{{ asset('js/jquery.dataTables.js') }}"></script>
+        <script src="{{ asset('js/dataTables.bootstrap.js') }}"></script>
+        {!! $html->scripts() !!}
+
+    @endsection
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinejs')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    @section('content')
+        <!-- Banner Section -->
+        @if(Request::get('stream') != 'mobile')
+            <div class="static-heading-sec">
+                <div class="container-fluid">
+                    <div class="static Heading">                    
+                        <h1>{{trans('website.W0447')}}</h1>                        
+                    </div>                    
+                </div>
+            </div>
+        @endif
+        <!-- /Banner Section -->
+        <!-- Main Content -->
+        <div class="contentWrapper">
+            <section class="aboutSection questions-listing">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-9 col-sm-8 col-xs-12">
+                            <div class="left-question-section">
+                                <div class="no-table datatable-listing general-questions-list ">
+                                    {!! $html->table(); !!}
+                                </div>
+
+                                @if(!empty(\Auth::user()))
+                                    <form role="add-talent" action="{{url('community/forum/question/add')}}" method="POST" class="question-form">
+                                        <input type="hidden" name="_method" value="PUT">
+                                        {{ csrf_field() }}
+                                        <div class="questionform-box">
+                                            <h2 class="form-heading">{{trans('website.W0448')}}</h2>
+                                            <div class="form-group form-element">
+                                                <textarea name="question_description" class="form-control" placeholder="{{trans('website.W0449')}}"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row form-group button-group">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="row form-btn-set">
+                                                    <div class="col-md-7 col-sm-7 col-xs-6">
+                                                        <a href="{{url('/')}}" class="greybutton-line" value="{{trans('website.W0196')}}">
+                                                            {{trans('website.W0355')}}
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-md-5 col-sm-5 col-xs-6">
+                                                        <input data-request="ajax-submit" data-target='[role="add-talent"]' type="button" class="button" value="{{ trans('website.W0393') }}" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="related-questions">
+                                @if(empty(\Auth::guard('web')->user()))
+                                    <a href="{{url('login?back=forum')}}" class="button bottom-margin-10px inline">
+                                        Ask Question
+                                    </a>
+                                    <div class="clearfix"></div>
+                                @endif
+                                @if(!empty($latest_question))
+                                <h3 class="form-heading top-margin-20px">{{ trans('website.W0450') }}</h3>
+                                <ul>
+                                    @foreach($latest_question as $r)
+                                    <li>
+                                        <a href="{{url('community/forum/question/' . ___encrypt($r['id_question']))}}">
+                                            <h4>{{$r['question_description']}}</h4>
+                                        </a>
+                                    </li>
+                                    @endforeach
+                                </ul>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section> 
+        </div>
+    @endsection
+

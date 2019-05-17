@@ -1,0 +1,1 @@
+öu?resources/views/talent/includes/my-profile-percentage.blade.php 2phpXhr?resources/views/talent/includes/my-profile-percentage.blade.php

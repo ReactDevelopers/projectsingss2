@@ -1,0 +1,1 @@
+ğwresources/views/backend/talent :ïwñwòw÷wøwùwúwûwüwıwşwÿw€xxxrresources/views/backend/talent

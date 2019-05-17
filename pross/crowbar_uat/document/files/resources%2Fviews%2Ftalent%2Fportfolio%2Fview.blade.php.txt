@@ -1,0 +1,52 @@
+@section('content')
+    <!-- Main Content -->
+    <div class="contentWrapper" data-request="scroll" data-section="{{ \Request::get('section') }}">
+        <div class="afterlogin-section has-nobanner after-login-view">
+            <div class="container">
+                @include('talent.includes.user-detail-header',$user)
+                @include('talent.viewprofile.includes.sidebar',$user)
+                <div class="col-md-9 col-sm-8 col-xs-12 right-sidebar">
+                    @include('talent.viewprofile.includes.sidebar-tabs',$user)
+                    <div class="inner-profile-section addNewProjects">
+                        <div>    
+                            <!-- <h2 class="form-heading">{{ trans('website.W0324') }}</h2> -->
+                            <div class="amazingProductBox">
+                                <div class="row">
+                                    @php
+                                        foreach ($get_file as $key => $item) {
+                                            echo sprintf(
+                                                PORTFOLIO_LIST_TEMPLATE,
+                                                $item['id_portfolio'],
+                                                (!empty($item['file'][0]))?asset(sprintf("%s%s%s",$item['file'][0]['folder'],'thumbnail/',$item['file'][0]['filename'])):asset(sprintf('images/%s',DEFAULT_AVATAR_IMAGE)),
+                                                $item['portfolio'],
+                                                url(sprintf("%s/profile/portfolio/edit?portfolio_id=%s",TALENT_ROLE_TYPE,___encrypt($item['id_portfolio']))),
+                                                sprintf(url('ajax/%s?id_portfolio=%s'), DELETE_PORTFOLIO, $item['id_portfolio'] ),
+                                                $item['id_portfolio']
+                                            );
+                                        }
+                                    @endphp
+                                    <div class="col-md-4 col-sm-6 col-xs-6">
+                                        <a href="{{url(sprintf('%s/profile/portfolio/add',TALENT_ROLE_TYPE))}}">
+                                            <label class="btn-bs-file add-image-box add-image-box-block">
+                                                <span class="add-image-wrapper">
+                                                    <img src="{{ asset('images/add-icon.png') }}" />
+                                                    <span class="add-icon-title">{{ trans('website.W0326') }}</span>
+                                                </span>
+                                            </label>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+

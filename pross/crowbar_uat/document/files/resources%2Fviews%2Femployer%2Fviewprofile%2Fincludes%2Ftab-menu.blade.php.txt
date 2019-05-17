@@ -1,0 +1,1 @@
+{!! ___getmenu('employer-view-editprofile-menu','<span class="hide">%s</span><ul class="user-profile-links">%s</ul>','active',true,true) !!}

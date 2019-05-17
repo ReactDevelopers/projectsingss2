@@ -1,0 +1,169 @@
+@extends('layouts.front.main')
+
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+    @section('requirecss')
+        <link href="{{ asset('css/owl.carousel.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/owl.theme.default.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/hidePassword.css') }}" rel="stylesheet">
+    @endsection
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinecss')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    @section('requirejs')
+        <script type="text/javascript" src="{{ asset('js/hideShowPassword.js') }}"></script>
+    @endsection
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinejs')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    @section('content')
+        <div class="contentWrapper">  
+            <section class="login-section signuphire-section">
+                <div class="container">             
+                    <div class="login-inner-wrapper">             
+                        <h4 class="form-heading">{{trans('website.W0141')}}</h4>
+                        <div class="row has-vr">
+                            <div class="col-md-6 col-sm-6 col-xs-12">                            
+                                {{ ___alert((!empty($alert))?$alert:($errors->has('alert'))?$errors->first('alert'):'') }}
+                                <form method="POST" action="{{ url('/signup/employer/process') }}" class="form-horizontal login-form" autocomplete="off">
+                                    {{ csrf_field() }}
+                                    <input type="hidden" value="{{ Request::get('token') }}" name="remember_token" />
+                                    <div class="form-group has-feedback{{ $errors->has('first_name') ? ' has-error' : '' }}">
+                                        <label class="col-md-12 col-sm-12 col-xs-12 control-label">{{trans('website.W0142')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <input name="first_name" value="{{ old('first_name',(!empty($social['social_first_name'])?$social['social_first_name']:''))}}" type="text" class="form-control">
+                                            @if ($errors->has('first_name'))
+                                                <span class="help-block">{{ $errors->first('first_name') }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group has-feedback{{ $errors->has('last_name') ? ' has-error' : '' }}">
+                                        <label class="col-md-12 col-sm-12 col-xs-12 control-label">{{trans('website.W0143')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <input name="last_name" value="{{ old('last_name',(!empty($social['social_last_name'])?$social['social_last_name']:''))}}" type="text" class="form-control">
+                                            @if ($errors->has('last_name'))
+                                                <span class="help-block">{{ $errors->first('last_name') }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group has-feedback{{ $errors->has('company_name') ? ' has-error' : '' }}">
+                                        <label class="col-md-12 col-sm-12 col-xs-12 control-label">{{trans('website.W0096')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <input name="company_name" value="{{ old('company_name',(!empty($social['social_company_name'])?$social['social_company_name']:''))}}" type="text" class="form-control">
+                                            @if ($errors->has('company_name'))
+                                                <span class="help-block">{{ $errors->first('company_name') }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group has-feedback{{ $errors->has('email') ? ' has-error' : '' }}">
+                                        <label class="col-md-12 col-sm-12 col-xs-12 control-label">{{trans('website.W0144')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <input name="email" value="{{ old('email',(!empty($social['social_email'])?$social['social_email']:''))}}" type="text" class="form-control">
+                                            @if ($errors->has('email'))
+                                                <span class="help-block">{{ $errors->first('email') }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group has-feedback toggle-social{{ $errors->has('password') ? ' has-error' : '' }}{{ (!empty($social['social_agree']))?' hide':'' }}">
+                                        <label class="col-md-12 col-sm-12 col-xs-12 control-label">{{trans('website.W0145')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <input name="password" type="password" class="form-control">
+                                            @if ($errors->has('password'))
+                                                <span class="help-block">{{ $errors->first('password') }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group has-feedback toggle-social{{ $errors->has('confirm_password') ? ' has-error' : '' }}{{ (!empty($social['social_agree']))?' hide':'' }}">
+                                        <label class="col-md-12 col-sm-12 col-xs-12 control-label">{{trans('website.W0146')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <input name="confirm_password" type="password" class="form-control">
+                                            @if ($errors->has('confirm_password'))
+                                                <span class="help-block">{{ $errors->first('confirm_password') }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-12 col-xs-12">
+                                            <div class="checkbox">                
+                                                <input name="agree" type="checkbox" id="agree"{{ (!empty(old('agree')))?' checked="checked"':''  }}>
+                                                <label for="agree">
+                                                    <span class="check"></span>
+                                                    {!!
+                                                        sprintf(
+                                                            trans('website.W0149'),
+                                                            "<a class='underline' target='_blank' href='".url('/page/pricing-and-terms-and-conditions')."'>".trans('website.W0147')."</a>",
+                                                            "<a class='underline' target='_blank' href='".url('/page/privacy-policy')."'>".trans('website.W0148')."</a>"
+                                                        )
+                                                    !!}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>                                  
+                                    <div class="form-group">
+                                        <div class="col-sm-12 col-xs-12">
+                                            <div class="checkbox">                
+                                                <input name="newsletter" type="checkbox" id="newsletter"{{ (!empty(old('newsletter')))?' checked="checked"':''  }}>
+                                                <label for="newsletter">
+                                                    <span class="check"></span>
+                                                    {{trans('website.W0150')}}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if(0)
+                                        <div class="form-group has-feedback{{ $errors->has('g-recaptcha-response') ? ' has-error' : '' }}">
+                                            <div class="col-sm-12 col-xs-12">
+                                                <div class="catcha-wrapper" style="transform:scale(1.31);-webkit-transform:scale(1.31);transform-origin:0 0;-webkit-transform-origin:0 0;" >{!! Recaptcha::render() !!}</div>
+                                                <br>
+                                                @if ($errors->has('g-recaptcha-response'))
+                                                    <span class="help-block">{{ $errors->first('g-recaptcha-response') }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
+                                    <div class="form-group submit-form-btn">
+                                        <div class="col-sm-12 col-xs-12">                                        
+                                            <button type="submit" class="btn btn-sm redShedBtn top-margin-10px">{{trans('website.W0151')}}</button>
+                                        </div>
+                                    </div>                                
+                                </form>
+                            </div>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <div class="hire-talentRight">
+                                    <h5>{{trans('website.W0152')}}</h5>
+                                    <p>{{trans('website.W0153')}}</p>
+                                    <ul class="hire-benefits">
+                                        <li class="improve-quality"><span>{{trans('website.W0154')}}</span></li>
+                                        <li class="search-time"><span>{{trans('website.W0155')}}</span></li>
+                                        <li class="faster-talent"><span>{{trans('website.W0156')}}</span></li>
+                                    </ul>
+                                    @if(\Cache::get('configuration')['display_pricing_page'] === 'yes')
+                                        <h6 class="text-uppercase">{{trans('website.W0157')}}</h6>
+                                        <p>{{trans('website.W0158')}}</p>
+                                        <a href="{{ url('/page/pricing') }}">
+                                            <span class="italic-red">{{ sprintf(trans('website.W0159'),$plan_price) }}</span>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="vertical-divison"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    @endsection
+
+    @push('inlinescript')
+        <script type="text/javascript">$('[name="password"]').hidePassword(true);</script>
+    @endpush

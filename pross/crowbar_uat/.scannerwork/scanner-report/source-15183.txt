@@ -1,0 +1,4 @@
+@extends('layouts.blank')
+    @section('content')
+        @include($view)
+    @endsection

@@ -1,0 +1,1 @@
+™t5resources/views/employer/jobdetail/proposal.blade.php 2phpXÝhr5resources/views/employer/jobdetail/proposal.blade.php

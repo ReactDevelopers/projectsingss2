@@ -1,0 +1,1 @@
+±v0resources/views/talent/jobdetail/about.blade.php 2phpX?hr0resources/views/talent/jobdetail/about.blade.php

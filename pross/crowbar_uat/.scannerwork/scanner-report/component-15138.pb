@@ -1,0 +1,1 @@
+¢v0resources/views/talent/community/index.blade.php 2phpX8hr0resources/views/talent/community/index.blade.php

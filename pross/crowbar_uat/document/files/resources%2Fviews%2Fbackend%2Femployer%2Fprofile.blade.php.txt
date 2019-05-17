@@ -1,0 +1,69 @@
+<form role="add-talent" method="post" enctype="multipart/form-data" action="{{ url('administrator/employer-users/'.$user['id_user'].'/update') }}">
+    <input type="hidden" name="_method" value="PUT">
+    {{ csrf_field() }}
+
+    <div class="panel-body">
+        <div class="form-group">
+            <label for="name">Profile as</label>
+            <div class="class="form-control"">
+                @if($user['company_profile'] == 'individual')
+                    Individual
+                @else
+                    Company
+                @endif
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="name">Company Name</label>
+            <div class="class="form-control"">
+                {{$user['company_name']}}
+            </div>
+        </div>
+
+        @if($user['company_profile'] == 'company')
+            <div class="form-group">
+                <label for="name">Contact Person</label>
+                <div class="class="form-control"">
+                    {{$user['contact_person_name']}}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name">Company Website</label>
+                <div class="class="form-control"">
+                    {{$user['company_website']}}
+                </div>
+            </div>
+        @endif
+
+        <div class="form-group">
+            <label for="name">Field of Work</label>
+            <div class="class="form-control"">
+                {{$company_work_field_name['field_name']}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="name">Industry Affiliations & Certifications</label>
+            <div class="class="form-control"">
+
+            </div>
+        </div>
+
+        @if($user['company_profile'] == 'company')
+            <div class="form-group">
+                <label for="name">About Company</label>
+                <div class="class="form-control"">
+                    {{$user['company_biography']}}
+                </div>
+            </div>
+        @endif
+
+    </div>
+</form>
+@push('inlinescript')
+<script type="text/javascript">
+$(document).ready(function(){
+
+});
+</script>
+@endpush
+

@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class TalentProposals extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('talent_proposals', function (Blueprint $table) {
+            $table->increments('id_proposal');
+            $table->integer('project_id');
+            $table->integer('user_id');
+            $table->float('submission_fee')->nullable();
+            $table->float('quoted_price')->nullable();
+            $table->text('comments')->nullable();
+            $table->enum('type', ['proposal', 'application'])->default('proposal');
+            $table->enum('status', ['applied', 'accepted', 'rejected'])->default('applied');
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('talent_proposals');
+    }
+}
+

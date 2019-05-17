@@ -1,0 +1,364 @@
+    
+    <?php $__env->startSection('requirecss'); ?>
+    <?php $__env->stopSection(); ?>
+    
+
+    
+    <?php $__env->startSection('inlinecss'); ?>
+        
+    <?php $__env->stopSection(); ?>
+    
+
+    
+    <?php $__env->startSection('requirejs'); ?>
+        <script src="<?php echo e(asset('js/app.js')); ?>" type="text/javascript"></script>
+    <?php $__env->stopSection(); ?>
+    
+    
+    
+    <?php $__env->startSection('inlinejs'); ?>
+        
+    <?php $__env->stopSection(); ?>
+    
+
+    <?php $__env->startSection('content'); ?>
+        <!-- Banner Section -->
+        <?php if(Request::get('stream') != 'mobile'): ?>
+            <div class="static-heading-sec">
+                <div class="container-fluid">
+                    <div class="static Heading">                    
+                        <h1>Article Details</h1>                        
+                    </div>                    
+                </div>
+            </div>
+        <?php endif; ?>
+        <!-- /Banner Section -->
+        <!-- Main Content -->
+        <div class="contentWrapper">
+            <section class="aboutSection questions-listing">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-8 col-sm-8 col-xs-12">
+                            <div class="left-question-section question-details">
+                                <div class="details">
+                                    <ul class="general-questions-list">
+                                        <li>
+                                            <div class="question-wrap question-wrap-detail">
+                                                <h5><?php echo e($article['title']); ?></h5>
+                                                <div class="article-section-detail">
+                                                    <div class="posted-on">
+                                                        <div class="question-author-action">
+                                                            <span>Posted: <?php echo e(___ago($article['created'])); ?></span>
+                                                        </div>
+                                                        <?php if($article['article_img'] != 'none'): ?>
+                                                        <div class="article-detail-image">
+                                                        	<img src="<?php echo e($article['article_img']); ?>" alt="Article image">
+                                                        </div>
+                                                        <?php endif; ?>
+                                                        <div class="article-description">
+                                                        	<p><?php echo $article['description']; ?>
+
+                                                        	</p>
+                                                        </div>          
+                                                    </div>
+                                                </div>
+                                                <div class="row shared-row">
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    	<div class="user-detail">
+                                                    		<div class="comment-author">
+                                                    			<img src="<?php echo e($article['user_img']); ?>" alt="User-Image" class="author-image">
+                                                                <?php if($article['type'] == 'firm'): ?>
+                                                                    <h4><?php echo e($article['firm_name']); ?></h4>
+                                                                <?php else: ?>
+                                                                    <h4><?php echo e($article['user_name']); ?></h4>
+                                                                <?php endif; ?>
+                                                                <?php if(!empty(\Auth::user()) && \Auth::user()->id_user != $article['id_user']): ?>
+                                                            		<div class="user-follow-sec">
+        		                                                   		<?php 
+        		                                                            if($article['is_article_following'] == 1){
+        		                                                                $is_article_following = 'active';
+        		                                                                $follow_article_text = 'Following Article';
+        		                                                            }else{
+        		                                                                $is_article_following = '';
+        		                                                                $follow_article_text = 'Follow Article';
+        		                                                            }
+        		                                                         ?>
+        		                                                        <a href="javascript:void(0);" class="follow-icon <?php echo e($is_article_following); ?>" data-request="follow-article" data-url="<?php echo e(url(sprintf('/mynetworks/community/article/follow-this-article?article_id=%s',$article['article_id']))); ?>"><?php echo e($follow_article_text); ?>
+
+        		                                                        </a>
+                                                            		</div>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                    	</div>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <div class="listing-dropdown text-right">
+                                                            <ul>
+                                                                <li>
+                                                                   <div class="count-wrap">
+			                                                            <h6 class="reply-counts"><?php echo e($article['total_reply']); ?> <?php echo e(str_plural('Comment',$article['total_reply'])); ?></h6>
+			                                                        </div>
+                                                                </li>
+                                                                <?php 
+                                                                    // Article share detail url
+                                                                    $article_url = url('/network/article/detail').'/'.___encrypt($id_article);
+                                                                 ?>
+                                                                <li>
+                                                                    <div class="dropdown socialShareDropdown">
+                                                                        <a href="javascript:void(0);" data-toggle="dropdown" aria-expanded="false"><?php echo e(trans("website.W0908")); ?></a>
+                                                                        <ul class="dropdown-menu">
+                                                                            <li>
+                                                                                <a href="javascript:void(0);" class="linkdin_icon">
+                                                                                    <script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script>
+                                                                                    <script type="IN/Share" data-url="<?php echo e($article_url); ?>"></script>
+                                                                                    <img src="<?php echo e(asset('images/linkedin.png')); ?>">
+                                                                                </a>
+                                                                            </li>
+                                                                            <li>
+                                                                                <a class="fb_icon" href="https://www.facebook.com/sharer/sharer.php?u=<?php echo e($article_url); ?>" target="_blank">
+                                                                                    <img src="<?php echo e(asset('images/facebook.png')); ?>">
+                                                                                </a>
+                                                                            </li>
+                                                                            <li>
+                                                                                <a href="https://web.whatsapp.com/send?text=<?php echo e($article_url); ?>" target="_blank" id="whatsapp_link" data-action="share/whatsapp/share"><img src="<?php echo e(asset('images/whatsapp-logo.png')); ?>"></a>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>   
+                                                                </li>
+                                                            </ul>
+                                                        </div> 
+                                                    </div>    
+                                                </div>    
+                                            </div>    
+                                        </li>                               
+                                    </ul>
+                                    <?php if(!empty(\Auth::user())): ?>
+                                        <div class="ask-question none" id="ask_main_answer">
+                                            <form role="add-talent" action="<?php echo e(url('/mynetworks/article/answer/add/'.$id_article)); ?>" method="POST" class="question-form">
+                                                <input type="hidden" name="_method" value="PUT">
+                                                <?php echo e(csrf_field()); ?>
+
+                                                <input type="hidden" name="id_parent" value="0">
+                                                <div class="questionform-box">
+                                                    <p>Post Your Comment</p>
+                                                    <div class="form-element form-group">
+                                                        <textarea name="answer_description" class="form-control" placeholder="Enter Your Comment"></textarea>
+                                                    </div>
+                                                    <?php if($company_profile != 'individual'): ?>
+                                                        <div class="form-group form-element">
+                                                            <div>
+                                                                <select name="type">
+                                                                    <option value="individual" selected="selected">Post as <?php echo e(\Auth::user()->name); ?></option>
+                                                                    <option value="firm">Post as firm</option>
+                                                                </select>                                               
+                                                            </div>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div class="form-group form-element" style="display:none;">
+                                                            <div>
+                                                                <select name="type">
+                                                                    <option value="individual" selected="selected">Post as <?php echo e(\Auth::user()->name); ?></option>
+                                                                </select>                                               
+                                                            </div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <div class="form-group button-group">
+                                                        <div class="form-btn-set submit-solution">
+                                                            <input data-request="ajax-submit" data-target='[role="add-talent"]' type="button" class="button" value="<?php echo e(trans('website.W0393')); ?>" />
+                                                        </div>
+                                                    </div>                                
+                                                </div>
+                                            </form>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="answers-list answer-list-wrapper">
+                                    <div>
+                                        <h6>All Comments (<?php echo e(count($answer)); ?>)</h6>
+                                    </div>
+                                    <ul class="answer-chat">
+                                        <?php $__currentLoopData = $answer; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $a): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                                        <li class="promoted-answer">
+                                            <div class="answer-wrapper">
+                                                <div class="answer-level">
+                                                    <p> <?php echo e($a['answer_desp']); ?></p>
+                                                    <div class="question-author listing-author-wrapper question-listing">
+                                                        <div class="flex-cell answer-cell">
+                                                            <?php if(!empty($a['filename'])): ?>
+                                                                <img src="<?php echo e(asset($a['filename'])); ?>" alt="image" class="question-author-image">
+                                                            <?php else: ?>
+                                                                <img src="<?php echo e(asset('images/sdf.png')); ?>" alt="image" class="question-author-image">
+                                                            <?php endif; ?>
+                                                            <span class="question-author-action">
+                                                                <?php if($a['type'] == 'firm'): ?>
+                                                                    <h4><?php echo e($a['firm_name']); ?></h4>
+                                                                <?php else: ?>
+                                                                    <h4><?php echo e($a['person_name']); ?></h4>
+                                                                <?php endif; ?>
+                                                                <span><?php echo e(___ago($a['created'])); ?></span>
+                                                            </span>
+                                                        </div>
+                                                        
+                                                        <?php if(!empty(\Auth::user()) && \Auth::user()->id_user != $a['user_id']): ?>
+                                                            <div>
+                                                                <?php 
+                                                                    if($a['is_following'] == 1){
+                                                                        $comment_is_following = 'active';
+                                                                        $comment_follow_text  = 'Following';
+                                                                    }else{
+                                                                        $comment_is_following = '';
+                                                                        $comment_follow_text  = 'Follow';
+                                                                    }
+                                                                 ?>
+                                                                <a href="javascript:void(0);" class="follow-icon follow_user_<?php echo e($a['user_id'].' '.$comment_is_following); ?>" data-request="follow-question" data-url="<?php echo e(url(sprintf('/mynetworks/community/article/follow-question?user_id=%s',$a['user_id']))); ?>"><?php echo e($comment_follow_text); ?>
+
+                                                                </a>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                        <div class="post-link">
+                                                            <?php if(!empty(\Auth::user())): ?>
+                                                                <a href="javascript:;" onclick="addReply(<?php echo e($a['id_article_answer']); ?>);" class="reply-answer">Post Answer</a>
+                                                            <?php endif; ?>
+                                                        </div>                                            
+                                                    </span>
+                                                </div>
+
+                                                
+                                                <?php if($a['has_child'] == 1): ?>
+                                                    <ul class="subcomment-wrapper answer-chat">
+                                                        <?php $__currentLoopData = $a['has_child_answer']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$value): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+                                                            <li class="subcomment subcomment-article-wrapper">
+                                                                <div class="answer-wrapper question-listing">
+                                                                    <div class="answer-level">
+                                                                        <p> <?php echo e($value['answer_desp']); ?></p>
+                                                                        <div class="question-author listing-author-wrapper question-listing">
+                                                                            <div class="flex-cell">
+                                                                                <?php if(!empty($value['filename'])): ?>
+                                                                                    <img src="<?php echo e(asset($value['filename'])); ?>" alt="image" class="question-author-image">
+                                                                                <?php else: ?>
+                                                                                    <img src="<?php echo e(asset('images/sdf.png')); ?>" alt="image" class="question-author-image">
+                                                                                <?php endif; ?>
+                                                                   
+                                                                                <span class="question-author-action">
+                                                                                    <?php if($value['type'] == 'firm'): ?>
+                                                                                        <h4><?php echo e($value['firm_name']); ?></h4>
+                                                                                    <?php else: ?>
+                                                                                        <h4><?php echo e($value['person_name']); ?></h4>
+                                                                                    <?php endif; ?>
+                                                                                    <span><?php echo e(___ago($value['created'])); ?></span>
+                                                                                </span>
+                                                                            </div>
+                                                                            <div class="forum-follow-detail">
+                                                                                <?php if(!empty(\Auth::user()) && \Auth::user()->id_user != $value['user_id']): ?>
+                                                                                    <div>
+                                                                                        <?php 
+                                                                                            if($value['is_following'] == 1){
+                                                                                                $sub_comment_is_following = 'active';
+                                                                                                $sub_comment_follow_text  = 'Following';
+                                                                                            }else{
+                                                                                                $sub_comment_is_following = '';
+                                                                                                $sub_comment_follow_text  = 'Follow';
+                                                                                            }
+                                                                                         ?>
+                                                                                        <a href="javascript:void(0);" class="follow-icon follow_user_<?php echo e($value['user_id'].' '.$sub_comment_is_following); ?>" data-request="follow-question" data-url="<?php echo e(url(sprintf('/mynetworks/community/article/follow-question?user_id=%s',$value['user_id']))); ?>"><?php echo e($sub_comment_follow_text); ?>
+
+                                                                                        </a>
+                                                                                    </div>
+                                                                                <?php endif; ?>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </li>            
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+                                                    </ul>
+                                                    <a href="javascript:;" onclick="loadReply(<?php echo e($a['id_article_answer']); ?>)" class="reply-answer" style="display:none;">| View reply</a>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div id="add-reply-response-<?php echo e($a['id_article_answer']); ?>"></div>
+                                            <div id="reply-area-<?php echo e($a['id_article_answer']); ?>"></div>
+                                        </li>
+                                        <?php if(!empty(\Auth::user())): ?>
+                                            <div id="text-reply-area-<?php echo e($a['id_article_answer']); ?>" style="display: none;">
+                                                <div class="questionform-box">
+                                                    <h2 class="form-heading">Your Comment</h2>
+                                                    <div class="form-element form-group" id="text-reply-area2-<?php echo e($a['id_article_answer']); ?>">
+                                                        <textarea id="answer_description_<?php echo e($a['id_article_answer']); ?>" name="answer_description_<?php echo e($a['id_article_answer']); ?>" class="form-control" placeholder="Enter Your Comment"></textarea>
+                                                        <span id="text-reply-error-area-<?php echo e($a['id_article_answer']); ?>"></span>
+                                                    </div>
+                                                    <?php if($company_profile != 'individual'): ?>
+                                                        <div class="form-group form-element">
+                                                            <div>
+                                                                <select name="answer_type_<?php echo e($a['id_article_answer']); ?>">
+                                                                    <option value="individual" selected="selected">Post as <?php echo e(\Auth::user()->name); ?></option>
+                                                                    <option value="firm">Post as firm</option>
+                                                                </select>                                               
+                                                            </div>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div class="form-group form-element" style="display:none;">
+                                                            <div>
+                                                                <select name="answer_type_<?php echo e($a['id_article_answer']); ?>">
+                                                                    <option value="individual" selected="selected">Post as <?php echo e(\Auth::user()->name); ?></option>
+                                                                </select>                                               
+                                                            </div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <div class="row form-group button-group">
+                                                        <div class="col-md-5 col-sm-5 col-xs-6 form-btn-set submit-solution">
+                                                            <input onclick="insertReply(<?php echo e($a['id_article_answer']); ?>);" type="button" class="button" value="<?php echo e(trans('website.W0393')); ?>" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                        <?php endif; ?>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            <div class="related-questions">
+                                <?php if(!empty(\Auth::user())): ?>
+	                                <div class="search-question-form">
+	                                    <h3 class="form-heading top-margin-20px">Search Article</h3>
+	                                    <form method="get" action="<?php echo e(url('network/article')); ?>" class="form-inline align-center">
+                                            <div class="search-wrapper detail-search-wrapper">
+                                                <input type="text" name="search_article" placeholder="Enter to search" class="form-control">
+                                                <buttton class="btn button searching"></buttton>
+                                            </div>
+	                                    </form>           
+	                                </div>
+                                <?php endif; ?>
+                                <div class="other-question-section most-viewed-section">
+                                    <?php if(!empty($related_article)): ?>
+	                                    <h3 class="form-heading">Most Viewed Articles</h3>
+	                                    <div class="list-article-section">
+	                                        <?php $__currentLoopData = $related_article; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $art): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+		                                        <div class="article-wrapper">
+		                                        	<span class="article-image">
+		                                        		<img src="<?php echo e($art['article_img']); ?>" alt="Articles">
+		                                        	</span>
+		                                        	<div class="article-title">
+			                                            <a href="<?php echo e(url('network/article/detail/'.___encrypt($art['article_id']))); ?>">
+			                                            	<h3 class="article-heading"><?php echo e($art['title']); ?></h3>
+			                                            </a>
+		                                        	</div>
+		                                        	<label class="posted-label">Posted <span class="posted-date"><?php echo e(___ago($art['created'])); ?></span></label>
+		                                        </div>
+	                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
+	                                    </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section> 
+        </div>
+        <!-- /Main Content -->
+        <input type="hidden" id="add-reply" value="<?php echo e(url('/mynetworks/article/answer/add/'.$id_article)); ?>" />
+        <input type="hidden" id="list-reply" value="<?php echo e(url('/mynetworks/community/article/load/answer/'.$id_article)); ?>" />
+    <?php $__env->stopSection(); ?>
+<?php echo $__env->make($extends, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

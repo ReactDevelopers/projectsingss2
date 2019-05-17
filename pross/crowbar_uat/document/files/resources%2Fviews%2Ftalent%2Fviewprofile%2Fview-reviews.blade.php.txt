@@ -1,0 +1,64 @@
+@section('content')
+    <!-- Main Content -->
+    <div class="contentWrapper" data-request="scroll" data-section="{{ \Request::get('section') }}">
+        <div class="afterlogin-section has-nobanner after-login-view">
+            <div class="container">
+                @include('talent.includes.user-detail-header',$user)
+                @include('talent.viewprofile.includes.sidebar',$user)
+                <div class="col-md-9 col-sm-8 col-xs-12 right-sidebar">
+                    @include('talent.viewprofile.includes.sidebar-tabs',$user)
+                    <div class="inner-profile-section">
+                        <div class="view-information" id="personal-infomation">
+                            <!-- <h2>View Reviews</h2> -->
+                            <div>
+                                <ul class="payment-tabs-wrapper top-margin-20px">
+                                    <li class="active-tab"><a href="javascript:void(0);" data-request="datatable" data-type="receiver">{{ trans('job.J0011') }}</a></li>
+                                    <li class="resp-tab-item"><a href="javascript:void(0);" data-request="datatable" data-type="sender">{{ trans('job.J0012') }}</a></li>
+                                </ul>
+
+                                <div class="payment-tabs job-related-tabs">
+                                    <div class="datatable-listing">
+                                        <div data-target="reviews">
+                                            <div class="no-table">
+                                                {!! $html->table() !!}
+                                            </div>
+                                        </div>                        
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@push('inlinescript')
+    <script src="{{ asset('js/jquery.dataTables.js') }}"></script>
+    <script src="{{ asset('js/dataTables.bootstrap.js') }}"></script>
+    {!! $html->scripts() !!}
+    
+    <script type="text/javascript">
+        $(function(){
+            $('.no-table thead').remove();
+
+            $(document).on('click','[data-request="datatable"]',function(e){
+                e.preventDefault();
+                
+                var $this = $(this);
+
+                $('.active-tab').removeClass('active-tab');
+                $this.parent().addClass('active-tab');
+                
+                LaravelDataTables["dataTableBuilder"].on('preXhr.dt', function ( e, settings, data ) {
+                    data.type    = $this.data('type');
+                }); 
+
+                window.LaravelDataTables.dataTableBuilder.draw();
+            });
+        });
+    </script>
+@endpush
+

@@ -1,0 +1,37 @@
+<div class="profileprogress-steps">
+    <div class="container">
+        <ul class="profileprogress-group clearfix">
+            <li class="@if(in_array('personal',$steps)) {{ 'selected'}} @endif">
+                <a href="{{ url(TALENT_ROLE_TYPE.'/profile/personal') }}" title="Personal Information">
+                    <img src="{{ asset('/images/personalinfo-icon.png') }}" />
+                    <span>Personal Information</span>
+                </a>
+            </li>
+            <li class="@if(in_array('industry-skills',$steps)) {{ 'selected'}} @endif">
+                <a href="{{ url(TALENT_ROLE_TYPE.'/profile/industry-skills') }}" title="Industry & Skills">
+                    <img src="{{ asset('/images/industryskills-icon.png') }}" />
+                    <span>Industry & Skills</span>
+                </a>
+            </li>
+            <li class="@if(in_array('curriculum-vitae',$steps)) {{ 'selected'}} @endif">
+                <a href="{{ url(TALENT_ROLE_TYPE.'/profile/curriculum-vitae') }}" title="Curriculum Vitae">
+                    <img src="{{ asset('/images/cv-icon.png') }}" />
+                    <span>Curriculum Vitae</span>
+                </a>
+            </li>
+            <li class="@if(in_array('availability',$steps)) {{ 'selected'}} @endif">
+                <a href="{{ url(TALENT_ROLE_TYPE.'/profile/availability') }}" title="Availability For Hiring">
+                    <img src="{{ asset('/images/availability-icon.png') }}" />
+                    <span>Availability For Hiring</span>
+                </a>
+            </li>
+            <li class="@if(in_array('verify-account',$steps)) {{ 'selected'}} @endif">
+                <a href="{{ url(TALENT_ROLE_TYPE.'/profile/verify-account') }}" title="Verify Account">
+                    <img src="{{ asset('images/verify-icon.png') }}" />
+                    <span>Verify Account</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+

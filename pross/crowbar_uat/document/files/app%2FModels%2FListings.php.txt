@@ -1,0 +1,971 @@
+<?php
+
+    namespace Models; 
+
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Facades\Mail;
+
+    class Listings extends Model{        
+        public static function  cities($fetch = 'array',$keys = array('*'),$state_id = "",$country_id = "",$where=""){
+            $table_cities = DB::table('city');
+            
+            if(!empty($keys)){
+                $table_cities = $table_cities->select($keys); 
+            }
+            if(!empty($state_id)){
+                $table_cities->where('state_id','=',$state_id);
+            }
+
+            if(!empty($country_id)){
+                $table_cities->where('country_id','=',$country_id);
+            }
+
+            if(!empty($where)){
+                $table_cities->whereRaw($where);
+            }
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_cities->get()->toArray()
+                    ),
+                    true
+                );
+            }else{
+                return $table_cities->get();
+            }
+        }
+
+        public static function  city_list($where = "",$keys = array('*'),$fetch="array"){
+            $table_cities = DB::table('city');
+            DB::statement(DB::raw('set @row_number=0'));
+            if(!empty($keys)){
+                $table_cities = $table_cities->select($keys); 
+            }
+        
+            $table_cities->whereRaw($where);
+            if($fetch == 'obj'){
+                $table_cities->leftJoin('countries','countries.id_country','=','city.country_id')
+                ->leftJoin('state','state.id_state','=','city.state_id');
+                return $table_cities->get();
+            }else if($fetch === 'single'){
+                return $table_cities->get()->first();
+            }else{
+                return json_decode(
+                    json_encode(
+                        $table_cities->get()->toArray()
+                    ),
+                    true
+                );
+            }
+        }
+
+        public static function  languages($keys = ['*']){
+            $result = json_decode(json_encode(\DB::table('languages')->select($keys)->get()),true);
+
+            return $result;
+        }
+
+        public static function  state_list($where = "",$keys = array('*'),$fetch="array"){
+            $table_cities = DB::table('state');
+            DB::statement(DB::raw('set @row_number=0'));
+            if(!empty($keys)){
+                $table_cities = $table_cities->select($keys); 
+            }
+        
+            $table_cities->whereRaw($where);
+            if($fetch == 'obj'){
+                $table_cities->leftJoin('countries','countries.id_country','=','state.country_id');
+                return $table_cities->get();
+            }else if($fetch == 'first'){
+                return $table_cities->first();
+            }else{
+                return json_decode(
+                    json_encode(
+                        $table_cities->get()->toArray()
+                    ),
+                    true
+                ); 
+            }
+        }
+
+        public static function  industries($keys = array('*')){
+            return json_decode(
+                json_encode(
+                    Industries::with([
+                        'children' => function($query) use($keys){
+                            /*$query->addSelect($keys);*/
+                        }
+                    ])->where('parent','0')->select($keys)->get()
+                ),
+                true
+            );
+        }
+
+        public static function  apimessages($fetch = "array", $keys = array('*'),$where = ""){
+            $table_api_messages = DB::table('api_messages');
+
+            if(!empty($keys)){
+                $table_api_messages->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_countries->whereRaw($where); 
+            }
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_api_messages->get()
+                    ),
+                    true
+                );
+            }else{
+                return $table_api_messages->get();
+            }
+        }
+
+        public static function  add_api_message($data){
+            $table_api_messages = DB::table('api_messages');
+
+            if(!empty($data)){
+                $isInserted = $table_api_messages->insert($data); 
+            }
+
+            return (bool)$isInserted;            
+        }
+
+        public static function  record_api_request($data,$request){
+            $data['user_id'] = NULL; $data['user_type'] = NULL;
+            if(!empty($request->user()->id_user)){
+                $data['user_id'] = $request->user()->id_user;
+                $data['user_type'] = $request->user()->type;
+            }
+
+            $table_api_request = DB::table('api_request');
+
+            if(!empty($data)){
+                $isInserted = $table_api_request->insert($data); 
+            }
+
+            return (bool)$isInserted;            
+        }
+
+        public static function  twilio_response($data){
+            $table_api_twilio_response = DB::table('api_twilio_response');
+
+            if(!empty($data)){
+                $isInserted = $table_api_twilio_response->insert($data); 
+            }
+
+            return (bool)$isInserted;            
+        }
+
+        public static function  countries($fetch = 'array', $keys = ['*'], $where = "", $order_by = 'country_order'){
+            $table_countries = DB::table('countries');
+            DB::statement(DB::raw('set @row_number=0'));
+            if(!empty($keys)){
+                $table_countries->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_countries->whereRaw($where); 
+            }
+            
+            $table_countries->where('status','!=','trashed'); 
+            
+            $table_countries->orderBy($order_by); 
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_countries->get()
+                    ),
+                    true
+                );
+            }else if($fetch === 'single'){
+                return $table_countries->get()->first();
+            }else{
+                return $table_countries->get();
+            }
+        }
+
+        public static function  states($fetch = 'array', $keys = ['*'], $where = "", $order_by = 'state_order'){
+            $table_states = DB::table('state');
+
+            if(!empty($keys)){
+                $table_states->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_states->whereRaw($where); 
+            }
+            
+            $table_states->orderBy($order_by); 
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_states->get()
+                    ),
+                    true
+                );
+            }else if($fetch === 'single'){
+                return $table_states->get()->first();
+            }else{
+                return $table_states->get();
+            }
+        }
+
+        public static function  country_state_list($country_id){
+            $table_states = DB::table('state');
+            $language     = \App::getLocale();
+            $table_states->select(
+                'id_state',
+                \DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as state_name")
+            ); 
+
+            if(!empty($country_id)){
+                $table_states->whereRaw("country_id = {$country_id}"); 
+            }
+            
+            $table_states->orderBy('state_order','ASC'); 
+
+            return json_decode(
+                json_encode(
+                    $table_states->get()
+                ),
+                true
+            );
+        }
+
+        public static function  state_city_list($state_id){
+            $table_city = DB::table('city');
+            $language   = \App::getLocale();
+            $table_city->select(
+                'id_city',
+                DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as city_name") 
+            ); 
+
+            if(!empty($state_id)){
+                $table_city->whereRaw("state_id = {$state_id}"); 
+            }
+            
+            $table_city->orderBy(DB::Raw("IF(({$language} != ''),`{$language}`, `en`)"),'ASC'); 
+
+            return json_decode(
+                json_encode(
+                    $table_city->get()
+                ),
+                true
+            );
+        }
+
+        public static function  industry_subindustry_list($industry_id){
+            $language           = \App::getLocale();
+            $table_industry     = DB::table('industries');
+            $table_industry->select(
+                'id_industry',
+                DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as name")
+            ); 
+
+            if(!empty($industry_id)){
+                $table_industry->whereRaw(" parent = {$industry_id} AND status = 'active' "); 
+            }
+            
+            $table_industry->orderBy(DB::Raw("IF(({$language} != ''),`{$language}`, `en`)"),'ASC'); 
+
+            return json_decode(
+                json_encode(
+                    $table_industry->get()
+                ),
+                true
+            );
+        }
+
+        public static function  skills($fetch = 'array', $keys = ['*'], $where = "", $order_by = 'skill_name'){
+            $table_skills = DB::table('skill');
+
+            if(!empty($keys)){
+                $table_skills->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_skills->whereRaw($where); 
+            }
+            
+            $table_skills->orderBy($order_by); 
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_skills->get()
+                    ),
+                    true
+                );
+            }else{
+                return $table_skills->get();
+            }
+        }
+        
+        public static function  certificates($fetch = 'array', $keys = ['*'], $where = "", $order_by = 'certificate_name'){
+            $table_certificate = DB::table('certificate');
+            DB::statement(DB::raw('set @row_number=0'));
+
+            if(!empty($keys)){
+                $table_certificate->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_certificate->whereRaw($where); 
+            }
+            
+            $table_certificate->orderBy($order_by); 
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_certificate->get()
+                    ),
+                    true
+                );
+            }else if($fetch === 'obj'){
+                return $table_certificate->get();
+            }else if($fetch === 'single'){
+                return $table_certificate->get()->first();
+            }else{
+                return $table_certificate->get();
+            }
+        }
+
+        public static function  add_certificate($data){
+            $table_certificate = DB::table('certificate');
+
+            if(!empty($data)){
+                $isInserted = $table_certificate->insert($data); 
+            }
+
+            return (bool)$isInserted;
+        }        
+
+        public static function  update_certificate($id_certificate, $data){
+            $table_certificate = DB::table('certificate');
+
+            if(!empty($data)){
+                $table_certificate->where('id_cetificate','=',$id_certificate);
+                $isUpdated = $table_certificate->update($data); 
+            }
+            
+            return (bool)$isUpdated;
+        }                
+        
+        public static function  colleges($fetch = 'array', $keys = ['*'], $where = "", $order_by = 'college_name'){
+            $table_college = DB::table('college');
+            DB::statement(DB::raw('set @row_number=0'));
+            if(!empty($keys)){
+                $table_college->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_college->whereRaw($where); 
+            }
+            
+            $table_college->orderBy($order_by); 
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_college->get()
+                    ),
+                    true
+                );
+            }else if($fetch === 'single'){
+                return $table_college->get()->first();
+            }else{
+                return $table_college->get();
+            }
+        }
+
+        public static function  add_college($data){
+            $table_college = DB::table('college');
+
+            if(!empty($data)){
+                $isInserted = $table_college->insert($data); 
+            }
+
+            return (bool)$isInserted;
+        }        
+
+        public static function  update_college($id_college, $data){
+            $table_college = DB::table('college');
+
+            if(!empty($data)){
+                $table_college->where('id_college','=',$id_college);
+                $isUpdated = $table_college->update($data); 
+            }
+            
+            return (bool)$isUpdated;
+        }        
+        
+        public static function  job_titles($fetch = 'array', $keys = ['*'], $where = "", $order_by = 'job_title_name'){
+            $table_job_title = DB::table('job_title');
+
+            if(!empty($keys)){
+                $table_job_title->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_job_title->whereRaw($where); 
+            }
+            
+            $table_job_title->orderBy($order_by); 
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_job_title->get()
+                    ),
+                    true
+                );
+            }else{
+                return $table_job_title->get();
+            }
+        }
+
+        public static function  degrees($fetch = 'array', $keys = ['*'], $where = "", $order_by = 'degree_name'){
+            $table_degrees = DB::table('degree');
+            DB::statement(DB::raw('set @row_number=0'));
+
+            if(!empty($keys)){
+                $table_degrees->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_degrees->whereRaw($where); 
+            }
+            
+            $table_degrees->orderBy($order_by); 
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_degrees->get()
+                    ),
+                    true
+                );
+            }else if($fetch === 'single'){
+                return $table_degrees->get()->first();
+            }else{
+                return $table_degrees->get();
+            }
+        }
+
+        public static function  add_degree($data){
+            $table_degree = DB::table('degree');
+
+            if(!empty($data)){
+                $isInserted = $table_degree->insert($data); 
+                $cache_key  = ['degree_name'];
+                forget_cache($cache_key);
+            }
+
+            return (bool)$isInserted;
+        }
+
+        public static function  update_degree($id_degree, $data){
+            $table_degree = DB::table('degree');
+
+            if(!empty($data)){
+                $table_degree->where('id_degree','=',$id_degree);
+                $isUpdated = $table_degree->update($data); 
+                $cache_key = ['degree_name'];
+                forget_cache($cache_key);
+            }
+            
+            return (bool)$isUpdated;
+        }
+
+        public static function  workfields($fetch = 'array', $keys = ['*'], $where = "", $order_by = 'field_name'){
+            $table_workfields = DB::table('workfield');
+
+            if(!empty($keys)){
+                $table_workfields->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_workfields->whereRaw($where); 
+            }
+            
+            $table_workfields->orderBy($order_by); 
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_workfields->get()
+                    ),
+                    true
+                );
+            }else{
+                return $table_workfields->get();
+            }
+        }
+
+        public static function  abusive_words($fetch="array", $where="",$keys=['*']){
+            $table_abusive_words = DB::table('abusive_words');
+            DB::statement(DB::raw('set @row_number=0'));
+            if(!empty($keys)){
+                $table_abusive_words->select($keys); 
+            }
+            $table_abusive_words->whereRaw($where);
+            if($fetch == "array"){
+                $result = json_decode(
+                    json_encode(
+                        $table_abusive_words->get()
+                    ),
+                    true
+                ); 
+            }else if($fetch == "obj"){
+                $result = $table_abusive_words->get();
+            }else if($fetch == "single"){
+                $result = $table_abusive_words->get()->first();
+            }else{
+                $result = $table_abusive_words->get();
+            }
+            
+            return $result;
+        }
+
+        public static function  add_abusive_words($data){
+            $table_abusive_words = DB::table('abusive_words');
+
+            if(!empty($data)){
+                $isInserted = $table_abusive_words->insert($data);
+                $cache_key = ['abusive_words'];
+                forget_cache($cache_key);
+            }
+
+            return (bool)$isInserted;
+        }
+
+        public static function  update_abusive_words($id_words, $data){
+            $table_abusive_words = DB::table('abusive_words');
+
+            if(!empty($data)){
+                $table_abusive_words->where('id_words','=',$id_words);
+                $isUpdated = $table_abusive_words->update($data);
+                $cache_key = ['abusive_words'];
+                forget_cache($cache_key);
+            }
+            
+            return (bool)$isUpdated;
+        }        
+
+        public static function  add_country($data){
+            $table_countries = DB::table('countries');
+
+            if(!empty($data)){
+                $isInserted = $table_countries->insert($data);
+                $cache_key = ['country_name','phone_codes','countries','country_phone_codes'];
+                forget_cache($cache_key);
+            }
+
+            return (bool)$isInserted;
+        }
+
+        public static function  update_country($country_id, $data){
+            $table_countries = DB::table('countries');
+            if(!empty($data)){
+                $table_countries->where('id_country','=',$country_id);
+                $isUpdated = $table_countries->update($data);
+                $cache_key = ['country_name','phone_codes','countries','country_phone_codes'];
+                forget_cache($cache_key);
+            }
+            return (bool)$isUpdated;
+        }
+
+        public static function  add_state($data){
+            $table_state = DB::table('state');
+
+            if(!empty($data)){
+                $isInserted = $table_state->insert($data); 
+                $cache_key = ['state_name','states'];
+                forget_cache($cache_key);                
+            }
+
+            return (bool)$isInserted;
+        }
+
+        public static function  update_state($state_id, $data){
+            $table_state = DB::table('state');
+
+            if(!empty($data)){
+                $table_state->where('id_state','=',$state_id);
+                $isUpdated = $table_state->update($data);
+                $cache_key = ['state_name','states'];
+                forget_cache($cache_key);                 
+            }
+            
+            return (bool)$isUpdated;
+        }
+
+        public static function  add_city($data){
+            $table_city = DB::table('city');
+
+            if(!empty($data)){
+                $isInserted = $table_city->insert($data); 
+            }
+
+            return (bool)$isInserted;
+        }
+
+        public static function  update_city($city_id, $data){
+            $table_city = DB::table('city');
+
+            if(!empty($data)){
+                $table_city->where('id_city','=',$city_id);
+                $isUpdated = $table_city->update($data); 
+            }
+            
+            return (bool)$isUpdated;
+        }                
+
+        public static function  update_setting($key, $value){
+            $isUpdated = DB::table('config')->where('key', $key)->update(['value' => $value]);
+            return (bool)$isUpdated;
+        }
+        
+        public static function  emails($fetch = 'array', $keys = array('*'),$where = "", $order_by = 'id_email'){
+            $table_emails = DB::table('emails');
+
+            if(!empty($keys)){
+                $table_emails->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_emails->whereRaw($where); 
+            }
+            
+            $table_emails->orderBy($order_by); 
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_emails->get()
+                    ),
+                    true
+                );
+            }else if($fetch === 'first'){
+                return json_decode(
+                    json_encode(
+                        $table_emails->first()
+                    ),
+                    true
+                );
+            }else{
+                return $table_emails->get();
+            }
+        }
+
+        public static function  project_status_column(){
+            $prefix = DB::getTablePrefix();
+            $result = DB::select("
+                SELECT REPLACE(REPLACE(REPLACE(COLUMN_TYPE,'enum(',''),')',''),'\'','') as column_type
+                FROM `information_schema`.`COLUMNS` 
+                WHERE TABLE_NAME = '{$prefix}projects' AND TABLE_SCHEMA = '".env("DB_DATABASE")."'
+                AND COLUMN_NAME = 'project_status' 
+            ");
+
+            if(!empty($result[0])){
+                return explode(",",json_decode(json_encode($result[0]->column_type),true));
+            }else{
+                return [];
+            }
+        }
+
+        public static function  users($fetch = 'array', $keys = array('*'),$where = "", $order_by = 'id_user'){
+            $table_users = DB::table('users');
+
+            if(!empty($keys)){
+                $table_users->select($keys);
+            }
+
+            if(!empty($where)){
+                $table_users->whereRaw($where);
+            }
+
+            $table_users->orderBy($order_by);
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_users->get()
+                    ),
+                    true
+                );
+            }else if($fetch === 'first'){
+                return json_decode(
+                    json_encode(
+                        $table_users->first()
+                    ),
+                    true
+                );
+            }else{
+                return $table_users->get();
+            }
+        }
+
+        public static function  update_user($id_user, $data){
+            $table_users = DB::table('users');
+
+            if(!empty($data)){
+                $table_users->where('id_user','=',$id_user);
+                $isUpdated = $table_users->update($data);
+            }
+
+            return (bool)$isUpdated;
+        }
+
+        public static function getCountry(){
+            $language     = \App::getLocale();
+            return DB::table('countries')
+                ->select(
+                    'id_country',
+                    DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as country_name"),
+                    'phone_country_code'
+                )
+                ->orderBy('country_name','ASC')
+                ->get()
+                ->toArray();
+        }
+
+        public static function getStateByCountryID($id_country){
+            return DB::table('state')
+                ->select(
+                    'id_state',
+                    DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as state_name")
+                )
+                ->where('country_id',$id_country)
+                ->orderBy('state_order','ASC')
+                ->get()
+                ->toArray();
+        }
+
+        public static function getCityByStateID($id_state){
+            return DB::table('city')
+                ->select(
+                    'id_city',
+                    DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as city_name")
+                )
+                ->where('state_id',$id_state)
+                ->orderBy('city_order','ASC')
+                ->get()
+                ->toArray();
+        }
+
+        public static function getIndustry(){
+            return DB::table('industries')
+                ->select(
+                    'id_industry',
+                    DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as name")
+                )
+                ->where('status','active')
+                ->orderBy('name','ASC')
+                ->get()
+                ->toArray();
+        }
+
+        public static function getSubIndustry($id_industry){
+            return DB::table('industries')
+                ->select('id_industry',
+                    DB::Raw("IF(({$language} != ''),`{$language}`, `en`) as name")
+                )
+                ->where('parent', $id_industry)
+                ->where('status','active')
+                ->orderBy('name','ASC')
+                ->get()
+                ->toArray();
+        }
+
+        public static function getTalentSkill($id_user){
+            return DB::table('talent_skills')
+                ->select('skill')
+                ->where('user_id', $id_user)
+                ->orderBy('skill','ASC')
+                ->get()
+                ->toArray();
+        }
+
+        public static function getTalentCertificates($id_user){
+            return DB::table('talent_certificates')
+                ->select('certificate')
+                ->where('user_id', $id_user)
+                ->orderBy('certificate','ASC')
+                ->get()
+                ->toArray();
+        }
+
+        public static function getDegree(){
+            return DB::table('degree')
+                ->select('id_degree','degree_name')
+                ->where('degree_status', 'active')
+                ->orderBy('degree_name','ASC')
+                ->get()
+                ->toArray();
+        }
+
+        public static function getSkillByIndustry($id_industry){
+            $skills = DB::table('skill')
+            ->select('id_skill','skill_name')
+            ->where('skill_status', 'active')
+            ->where('industry_id', $id_industry)
+            ->orderBy('skill_name','ASC')
+            ->get();
+
+            return json_decode(json_encode($skills),true);
+        }
+
+        public static function getCertificate(){
+            $certificate = DB::table('certificate')
+            ->select('id_cetificate','certificate_name')
+            ->where('certificate_status', 'active')
+            ->orderBy('certificate_name','ASC')
+            ->get();
+
+            return json_decode(json_encode($certificate),true);
+        }
+
+        public static function getUserCertificate($id_user){
+            $certificate = DB::table('talent_certificates')
+            ->where('user_id', $id_user)
+            ->orderBy('certificate','ASC')
+            ->get();
+
+            return json_decode(json_encode($certificate),true);
+        }
+
+        public static function getWorkFieldByID($id_workfield){
+            $workfield = DB::table('workfield')
+            ->where('id_workfield', $id_workfield)
+            ->get()
+            ->first();
+
+            return json_decode(json_encode($workfield),true);
+        }
+
+        public static function  pages($fetch = 'array', $keys = array('*'),$where = "", $order_by = 'id'){
+            $table_pages = DB::table('pages');
+
+            if(!empty($keys)){
+                $table_pages->select($keys);
+            }
+
+            if(!empty($where)){
+                $table_pages->whereRaw($where);
+            }
+
+            $table_pages->orderBy($order_by);
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_pages->get()
+                    ),
+                    true
+                );
+            }else if($fetch === 'first'){
+                return json_decode(
+                    json_encode(
+                        $table_pages->first()
+                    ),
+                    true
+                );
+            }else{
+                return $table_pages->get();
+            }
+        }
+
+        public static function  messages($fetch = 'array', $keys = array('*'),$where = "", $order_by = 'id_message'){
+            $table_messages = DB::table('messages');
+
+            if(!empty($keys)){
+                $table_messages->select($keys);
+            }
+
+            if(!empty($where)){
+                $table_messages->whereRaw($where);
+            }
+
+            $table_messages->orderBy($order_by);
+
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_messages->get()
+                    ),
+                    true
+                );
+            }else if($fetch === 'first'){
+                return json_decode(
+                    json_encode(
+                        $table_messages->first()
+                    ),
+                    true
+                );
+            }else{
+                return $table_messages->get();
+            }
+        }
+
+        public static function getSkillwithIndustry($fetch = 'array', $keys = ['*'], $where = "", $order_by = 'skill_name'){
+            $table_skills = DB::table('skill');
+            DB::statement(DB::raw('set @row_number=0'));
+            if(!empty($keys)){
+                $table_skills->select($keys); 
+            }
+
+            if(!empty($where)){
+                $table_skills->whereRaw($where); 
+            }
+            
+            $table_skills->orderBy($order_by); 
+            $table_skills->leftJoin('industries','industries.id_industry','=','skill.industry_id');
+            if($fetch === 'array'){
+                return json_decode(
+                    json_encode(
+                        $table_skills->get()
+                    ),
+                    true
+                );
+            }else if($fetch === 'single'){
+                return $table_skills->get()->first();
+            }else{
+                return $table_skills->get();
+            }
+        }
+
+        public static function  add_skill($data){
+            $table_skill = DB::table('skill');
+
+            if(!empty($data)){
+                $isInserted = $table_skill->insert($data); 
+            }
+
+            return (bool)$isInserted;
+        }
+
+        public static function  update_skill($skill_id, $data){
+            $table_skill = DB::table('skill');
+
+            if(!empty($data)){
+                $table_skill->where('id_skill','=',$skill_id);
+                $isUpdated = $table_skill->update($data); 
+            }
+            
+            return (bool)$isUpdated;
+        }        
+
+    }
+
+

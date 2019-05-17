@@ -1,0 +1,1 @@
+•v,resources/views/talent/myjob/index.blade.php 2phpX2hr,resources/views/talent/myjob/index.blade.php

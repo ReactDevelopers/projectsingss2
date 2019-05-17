@@ -1,0 +1,57 @@
+@extends('layouts.backend.dashboard')
+
+@section('content')
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel">
+                    <div class="nav-tabs-custom no-margin">
+                        <ul class="nav nav-tabs">
+                            <li class="<?php echo ($page == '')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,''); ?>">Detail</a></li>
+                            <li class="<?php echo ($page == 'description')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=description'); ?>">Description</a></li>
+                            <li class="<?php echo ($page == 'proposal')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=proposal'); ?>">Proposal</a></li>
+                            <li class="<?php echo ($page == 'transactions')?'active':''; ?>"><a href="<?php echo sprintf("%s%s",$url,'?page=transactions'); ?>">Transactions</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane <?php echo ($page == '')?'active':''; ?>">
+                                @if($page == '')
+                                    @include('backend.project.project-info')
+                                @endif
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'description')?'active':''; ?>">
+                                @if($page == 'description')
+                                    @include('backend.project.project-description')
+                                @endif
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'proposal')?'active':''; ?>">
+                                @if($page == 'proposal')
+                                    {!! $html->table(); !!}
+                                @endif
+                            </div>
+                            <div class="tab-pane <?php echo ($page == 'transactions')?'active':''; ?>">
+                                @if($page == 'transactions')
+                                    {!! $html->table(); !!}
+                                @endif
+                            </div>                            
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <a href="{{url('administrator/project/listing')}}" class="btn btn-default">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
+
+@section('requirecss')
+@endsection
+
+@section('requirejs')    
+    <script src="{{ asset('js/jquery.dataTables.js') }}"></script>
+    <script src="{{ asset('js/dataTables.bootstrap.js') }}"></script>
+    @if($page == 'proposal' || $page == 'transactions')
+        {!! $html->scripts() !!}
+    @endif
+@endsection
+

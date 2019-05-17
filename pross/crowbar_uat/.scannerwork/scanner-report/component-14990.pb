@@ -1,0 +1,1 @@
+Žu5resources/views/front/pages/user_type_index.blade.php 2phpX@hr5resources/views/front/pages/user_type_index.blade.php

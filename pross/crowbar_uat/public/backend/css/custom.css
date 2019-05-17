@@ -1,0 +1,14 @@
+body {background: url('../front/img/app-banner.jpg');
+.btn-black {
+	background: #000;
+	border-radius: 0;
+	color: #ffffff;
+	height: 40px;
+}
+.btn-black:hover {
+	color: #ffffff;
+}
+.form-control{
+	border-radius: 0;
+	height: 40px;
+}

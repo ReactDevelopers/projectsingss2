@@ -1,0 +1,82 @@
+<div class="allproposal-detail allproposal-detail-list">
+    <div class="container">
+        <div class="content-box">
+            <div class="content-box-header clearfix no-padding">
+                <a href="{{url(sprintf('%s/proposals',EMPLOYER_ROLE_TYPE))}}" class="back-to-results">&#8592; {{trans('website.W0347')}}</a>
+                @if($project['proposal_current_status'] !== DEFAULT_YES_VALUE)
+                    <a href="javascript:void(0);" class="proposal-status proposal-pending">{{trans('job.J0046')}}</a>
+                @else
+                    <a href="javascript:void(0);" class="proposal-status proposal-accepted">{{trans('job.J0045')}}</a>
+                @endif
+                <div class="contentbox-header-title">
+                    <h3><a href="{{ url(sprintf('%s/my-jobs/job_details?job_id=%s',EMPLOYER_ROLE_TYPE, ___encrypt($project['id_project']))) }}">{{$project['title']}}</a></h3>
+                </div>                                    
+                <div class="contentbox-price-range">
+                    <span class="company-name">{{trans('job.J0044')}}: <b>{{$project['total_proposals']}}</b></span>
+                    <small class="no-italic-style text-grey">{{trans('job.J0041')}} {{___ago($project['created'])}}</small>
+                </div>
+            </div>                              
+        </div>
+    </div>
+</div>
+<div class="proposed-job-list">
+    <div class="container">
+        <div class="approved-proposals no-padding">
+            <div class="col-md-9 col-sm-12 col-xs-12">
+                <h2 class="form-heading">
+                    @if($project['employment'] == 'fulltime')
+                        {{trans('website.W0379')}}
+                    @else
+                        {{trans('website.W0225')}}
+                    @endif
+                </h2>
+                {{ ___alert(\Session::get('alert')) }}
+                <div class="datatable-listing">
+                    {!! $html->table(); !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@push('inlinescript')
+    <script src="{{ asset('js/jquery.dataTables.js') }}"></script>
+    <script src="{{ asset('js/dataTables.bootstrap.js') }}"></script>
+    {!! $html->scripts() !!}
+
+    <script type="text/javascript">
+        $(function(){
+            $('.filter-option').html('<div class="row">'+
+                '<div class="col-md-6 col-sm-6 col-xs-6">'+
+                    '<select name="sort" class="filter form-control select" style="width:100%;">'+
+                        '<option value="">{{ trans("website.W0335") }}</option>'+
+                        '<option value="name-asc">{{ trans("website.W0336") }}</option>'+
+                        '<option value="name-desc">{{ trans("website.W0337") }}</option>'+
+                        '<option value="created-asc">{{ trans("website.W0338") }}</option>'+
+                        '<option value="created-desc">{{ trans("website.W0339") }}</option>'+
+                        '<option value="quoted_price-asc">{{ trans("website.W0615") }}</option>'+
+                        '<option value="quoted_price-desc">{{ trans("website.W0616") }}</option>'+
+                    '</select>'+
+                '</div>'+
+                '<div class="col-md-6 col-sm-6 col-xs-6">'+
+                    '<select name="filter" class="filter form-control select" style="width:100%;">'+
+                        '<option value="">{{ trans("website.W0340") }}</option>'+
+                        '<option value="tagged_listing">{{ trans("website.W0341") }}</option>'+
+                    '</select>'+
+                '</div>'+
+            '</div>');
+
+            $('select.filter').select2({placeholder: function(){$(this).find('option[value!=""]:first').html();}});
+            $('.datatable-listing .dataTables_filter input[type="search"]').attr("placeholder","{{ trans('website.W0342') }}");
+
+            $(document).on('change','.filter',function(){
+                LaravelDataTables["dataTableBuilder"].on('preXhr.dt', function ( e, settings, data ) {
+                    data.sort    = $('[name="sort"]').val();
+                    data.filter  = $('[name="filter"]').val();
+                }); 
+
+                window.LaravelDataTables.dataTableBuilder.draw();
+            });
+        });
+    </script>
+@endpush
+

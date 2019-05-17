@@ -1,0 +1,246 @@
+<?php
+    namespace App\Http\Controllers\Front;
+
+    use App\Http\Requests;
+    use Illuminate\Http\Request;
+    use Illuminate\Validation\Rule;
+    use Illuminate\Support\Facades\DB;
+
+    use App\Http\Controllers\Controller;
+
+    class ReviewController extends Controller{
+    
+	    /**
+	     * Create a new controller instance.
+	     *
+	     * @return void
+	     */
+	    protected $jwt;
+	    private $post;
+	    private $token;
+	    private $status;
+        private $redirect;
+        private $jsondata;
+        private $status_code;
+        private $prefix;
+
+        public function __construct(Request $request){
+            $this->jsondata     = (object)[];
+            $this->message      = "M0000";
+            $this->redirect         = false;
+	        $this->error_code   = "no_error_found";
+	        $this->status       = false;
+	        $this->status_code  = 200;
+	        $this->prefix       = \DB::getTablePrefix();
+
+            \View::share ( 'footer_settings', \Cache::get('configuration') );
+
+	        $json = json_decode(file_get_contents('php://input'),true);
+	        if(!empty($json)){
+	            $this->post = $json;
+	        }else{
+	            $this->post = $request->all();
+	        }
+
+	        /*RECORDING API REQUEST IN TABLE*/
+	        \Models\Listings::record_api_request([
+	            'url' => $request->url(),
+	            'request' => json_encode($this->post),
+	            'type' => 'webservice',
+	            'created' => date('Y-m-d H:i:s')
+	        ],$request);
+	    }
+
+	    private function populateresponse($data){
+	        $data['message'] = (!empty($data['message']))?"":$this->message;
+	        
+	        if(empty($this->error)){
+	            $data['error'] = trans(sprintf("general.%s",$data['message']));     
+	        }else{
+	            $data['error'] = $this->error;
+	        }
+
+	        $data['error_code'] = "";
+
+	        if(empty($data['status'])){
+	            $data['status'] = $this->status;
+	            $data['error_code'] = $this->message;
+	        }
+	        
+	        $data['status_code'] = $this->status_code;
+	        
+	        $data = json_decode(json_encode($data),true);
+
+	        array_walk_recursive($data, function(&$item){
+	            if (gettype($item) == 'integer' || gettype($item) == 'float' || gettype($item) == 'NULL'){
+	                $item = trim($item);
+	            }
+	        });
+
+	        if(empty($data['data'])){
+	            $data['data'] = (object) $data['data'];
+	        }
+
+	        return $data;
+	    }
+
+	    public function review_detail(Request $request){
+            $request->replace($this->post);
+	        
+	        if(empty($request->review_id)){
+	            $this->message = "M0121";
+	            $this->error = sprintf(trans(sprintf('general.%s',$this->message)),'review_id'); 
+	        }else{
+	        	$reviewData = \Models\Reviews::review_detail($request->review_id,'',$request->review_type);
+                
+	        	if(empty($reviewData)){
+	        		$reviewData     = json_decode(json_encode($reviewData));
+		            $this->jsondata = $reviewData;
+	        	}else{
+	        		$this->status   = true;
+		            $reviewData     = json_decode(json_encode($reviewData));
+
+                    if($request->review_type != 'talent_by_me'){
+                        $receiver                = $reviewData->sender_name;
+                        $reviewData->sender_name = $reviewData->receiver_name;
+                        $reviewData->receiver_name = $receiver;
+                    }
+                    
+		            $this->jsondata = $reviewData;
+	        	}
+	        }
+
+	        return response()->json(
+	            $this->populateresponse([
+	                'status' => $this->status,
+	                'data' => $this->jsondata
+	            ])
+	        );             
+    	}
+
+    	public function submit_ratings(Request $request){
+            $this->jsondata = (object)[];
+            $request->project_id = ___decrypt($request->project_id);
+            
+            if($request->ajax()){
+                $validator = \Validator::make($request->all(), [
+                    "description"           => validation('review_description'),
+                    "category_two"          => validation('review_performance'),
+                    "category_three"        => validation('review_punctuality'),
+                    "category_four"         => validation('review_quality'),
+                    "category_five"         => validation('review_skill'),
+                    "category_six"          => validation('review_support'),
+                ],[
+                    "description.required"          => trans('general.M0343'),
+                    "description.string"            => trans('general.M0336'),
+                    "description.regex"             => trans('general.M0336'),
+                    "description.max"               => trans('general.M0328'),
+                    "description.min"               => trans('general.M0327'),
+                    "category_one.required"         => trans('general.M0330'),
+                    "category_one.min"              => trans('general.M0330'),
+                    "category_one.numeric"          => trans('general.M0337'),
+                    "category_two.required"         => trans('general.M0331'),
+                    "category_two.min"              => trans('general.M0331'),
+                    "category_two.numeric"          => trans('general.M0338'),
+                    "category_three.required"       => trans('general.M0332'),
+                    "category_three.min"            => trans('general.M0332'),
+                    "category_three.numeric"        => trans('general.M0339'),
+                    "category_four.required"        => trans('general.M0333'),
+                    "category_four.min"             => trans('general.M0333'),
+                    "category_four.numeric"         => trans('general.M0340'),
+                    "category_five.required"        => trans('general.M0334'),
+                    "category_five.min"             => trans('general.M0334'),
+                    "category_five.numeric"         => trans('general.M0341'),
+                    "category_six.required"         => trans('general.M0335'),
+                    "category_six.min"              => trans('general.M0335'),
+                    "category_six.numeric"          => trans('general.M0342'),
+                ]);
+
+                if($validator->passes()){
+                    $project_data   = \Models\Projects::findById($request->project_id,['user_id']);
+                    $talent_id      = \App\Models\Proposals::accepted_proposal_talent($request->project_id);
+                    $proposal_data  = \App\Models\Proposals::project_proposal_detail($request->project_id,$talent_id);
+                    
+                    if(empty($project_data)){
+                        $this->message = trans("general.M0121");
+                    }else if(empty($proposal_data)){
+                        $this->message = trans("general.M0121");
+                    }else if(!empty(json_decode(json_encode(\Models\Reviews::where(['project_id' => $request->project_id, 'sender_id' => \Auth::user()->id_user ])->get(),true)))){
+                        $this->message = sprintf(ALERT_DANGER,trans("general.M0329"));
+                    }else{
+                        $total_average  = (($request->category_two+$request->category_three+$request->category_four+$request->category_five+$request->category_six)/25)*5;
+                        
+                        $receiver_id = 0;
+                        
+                        if(\Auth::user()->type == 'employer'){
+                            $receiver_id = $talent_id;
+                        }else if(\Auth::user()->type == 'employer'){
+                            $receiver_id = $project_data['user_id'];
+                        }
+
+                        $reviewArray = [
+                            'project_id'            =>  $request->project_id,
+                            'sender_id'             =>  \Auth::user()->id_user,
+                            'receiver_id'           =>  $receiver_id,
+                            'description'           =>  $request->description,
+                            'review_average'        =>  $total_average,
+                            'category_two'          =>  $request->category_two,    
+                            'category_three'        =>  $request->category_three,
+                            'category_four'         =>  $request->category_four,
+                            'category_five'         =>  $request->category_five,
+                            'category_six'          =>  $request->category_six,
+                            'created'               =>  date('Y-m-d h:i:s'),
+                            'updated'               =>  date('Y-m-d h:i:s'),
+                        ];
+
+                        $isInserted = \Models\Reviews::add_review($reviewArray);
+                        
+                        if($isInserted){
+                            $this->status   = true;
+                            $this->message  = trans("general.M0326");
+                            $this->redirect = url(sprintf('%s/submit/ratings?job_id=%s',\Auth::user()->type,___encrypt($request->project_id)));
+                        }
+                    }               
+                }else{
+                    $errors = json_decode(json_encode($validator->errors()),true);
+                    if(!empty($errors['category_two']) || !empty($errors['category_three']) || !empty($errors['category_four']) || !empty($errors['category_five']) || !empty($errors['category_six'])){
+                        unset($errors['category_two']);
+                        unset($errors['category_three']);
+                        unset($errors['category_four']);
+                        unset($errors['category_five']);
+                        unset($errors['category_six']);
+
+                        $errors['rating'] = trans('general.M0345');
+                        $this->jsondata = (object)$errors;
+                    }else{
+                        $this->jsondata = ___error_sanatizer($validator->errors());
+                    }
+                }
+
+                return response()->json([
+                    'data'      => $this->jsondata,
+                    'status'    => $this->status,
+                    'message'   => $this->message,
+                    'redirect'  => $this->redirect,
+                ]);
+            }else{
+                $isReviewSubmitted 		= \Models\Reviews::listing('sender',\Auth::user()->id_user,___decrypt($request->job_id));
+                
+                if(!empty($isReviewSubmitted->count())){
+                    $url = (\Auth::user()->type == 'talent')?'%s/jobs/review/job-details?job_id=%s':'%s/my-jobs/review/job_details?job_id=%s';
+                	return redirect(url(sprintf($url, \Auth::user()->type, $request->job_id )));
+                }
+
+                $data['subheader']      = 'talent.includes.top-menu';
+                $data['header']         = 'innerheader';
+                $data['footer']         = 'innerfooter';
+                $data['view']           = sprintf('%s.review.add',\Auth::user()->type);
+                $data['user']           = \Models\Employers::get_user(\Auth::user());
+                $data['project'] 		= \App\Models\Proposals::accepted_proposal(___decrypt($request->job_id));
+                
+                return view(sprintf('%s.job.index',\Auth::user()->type))->with($data);
+            }
+        }
+
+   	}
+

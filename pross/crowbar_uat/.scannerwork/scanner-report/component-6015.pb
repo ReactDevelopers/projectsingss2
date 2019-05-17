@@ -1,0 +1,1 @@
+ÿ.:node_modules/less/test/less/errors/extend-no-selector.less 2lessXhr:node_modules/less/test/less/errors/extend-no-selector.less

@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class Notifications extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('notifications', function (Blueprint $table) {
+            $table->increments('id_notification');
+            $table->integer('notify');
+            $table->integer('notified_by');
+            $table->string('notification', 100);
+            $table->text('notification_response_json');
+            $table->enum('notification_freshness_status', ['yes', 'no'])->default('yes');
+            $table->enum('notification_status', ['unread', 'read', 'trashed'])->default('unread');
+            $table->enum('desktop_notification_status', ['delivered', 'sent'])->default('delivered');
+            $table->dateTime('created');
+            $table->dateTime('updated');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('notifications');
+    }
+}
+

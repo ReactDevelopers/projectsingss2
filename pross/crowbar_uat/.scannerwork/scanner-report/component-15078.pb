@@ -1,0 +1,1 @@
+æu.resources/views/talent/profile/three.blade.php 2phpXHhr.resources/views/talent/profile/three.blade.php

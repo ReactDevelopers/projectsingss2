@@ -1,0 +1,187 @@
+@extends('layouts.front.main')
+
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+    @section('requirecss')
+        <link href="{{ asset('css/owl.carousel.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/owl.theme.default.min.css') }}" rel="stylesheet">
+    @endsection
+    {{-- ******INCLUDE CSS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinecss')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+    @section('requirejs')
+        <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+    @endsection
+    {{-- ******INCLUDE JS PAGE-WISE****** --}}
+
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+    @section('inlinejs')
+        {{-- CODE WILL GO HERE --}}
+    @endsection
+    {{-- ******INCLUDE INLINE-JS PAGE-WISE****** --}}
+
+    @section('content')
+        <!-- Banner Section -->
+        @if(Request::get('stream') != 'mobile')
+            <div class="static-heading-sec">
+                <div class="container-fluid">
+                    <div class="static Heading">
+                        <h1>{{trans('website.W0447')}}</h1>
+                    </div>
+                </div>
+            </div>
+        @endif
+        <!-- /Banner Section -->
+        <!-- Main Content -->
+        <div class="contentWrapper">
+            <section class="aboutSection questions-listing">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-9 col-sm-8 col-xs-12">
+                            <div class="left-question-section">
+                                <ul class="general-questions-list">
+                                    <li>
+                                        <a href="#">
+                                            <span class="question-wrap">
+                                                <h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet, consectetur adipiscing elit? Dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet.</h5>
+                                                <span class="question-author">
+                                                    <span class="flex-cell">
+                                                        <img src="images/sdf.png" alt="image" class="question-author-image">
+                                                        <span class="question-author-action">
+                                                            <h4>ZENITH CRAIG</h4>
+                                                            <span>Yesterday 8:40 AM</span>
+                                                        </span>
+                                                    </span>
+                                                    <span class="count-wrap">
+                                                        <h6 class="reply-counts">Total replies (4)</h6>
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <span class="question-wrap">
+                                                <h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet, consectetur adipiscing elit? Dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet.</h5>
+                                                <span class="question-author">
+                                                    <span class="flex-cell">
+                                                        <img src="images/sdf.png" alt="image" class="question-author-image">
+                                                        <span class="question-author-action">
+                                                            <h4>ZENITH CRAIG</h4>
+                                                            <span>Yesterday 8:40 AM</span>
+                                                        </span>
+                                                    </span>
+                                                    <span class="count-wrap">
+                                                        <h6 class="reply-counts">Total replies (4)</h6>
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <span class="question-wrap">
+                                                <h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet, consectetur adipiscing elit? Dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet.</h5>
+                                                <span class="question-author">
+                                                    <span class="flex-cell">
+                                                        <img src="images/sdf.png" alt="image" class="question-author-image">
+                                                        <span class="question-author-action">
+                                                            <h4>ZENITH CRAIG</h4>
+                                                            <span>Yesterday 8:40 AM</span>
+                                                        </span>
+                                                    </span>
+                                                    <span class="count-wrap">
+                                                        <h6 class="reply-counts">Total replies (4)</h6>
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <span class="question-wrap">
+                                                <h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet, consectetur adipiscing elit? Dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet.</h5>
+                                                <span class="question-author">
+                                                    <span class="flex-cell">
+                                                        <img src="images/sdf.png" alt="image" class="question-author-image">
+                                                        <span class="question-author-action">
+                                                            <h4>ZENITH CRAIG</h4>
+                                                            <span>Yesterday 8:40 AM</span>
+                                                        </span>
+                                                    </span>
+                                                    <span class="count-wrap">
+                                                        <h6 class="reply-counts">Total replies (4)</h6>
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <form action="#" method="POST" class="question-form">
+                                    <div class="questionform-box">
+                                        <h2 class="form-heading">{{trans('website.W0448')}}</h2>
+                                        <div class="form-element">
+                                            <textarea class="form-control" placeholder="{{trans('website.W0449')}}"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group button-group">
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="row form-btn-set">
+                                                <div class="col-md-7 col-sm-7 col-xs-6">
+                                                    <a href="#" class="greybutton-line" value="{{trans('website.W0196')}}">
+                                                        {{trans('website.W0355')}}
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-5 col-sm-5 col-xs-6">
+                                                    <a href="#" class="button" >
+                                                        {{ trans('website.W0393') }}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12">
+                            <div class="related-questions">
+                                <h3 class="form-heading">{{ trans('website.W0450') }}</h3>
+                                <ul>
+                                    <li>
+                                        <a href="#">
+                                            <h4>Lorem ipsum dolor sit amet, consectetur adipiscing elit? </h4>
+                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit? Dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet.</p>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <h4>Lorem ipsum dolor sit amet, consectetur adipiscing elit? </h4>
+                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit? Dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet.</p>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <h4>Lorem ipsum dolor sit amet, consectetur adipiscing elit? </h4>
+                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit? Dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet.</p>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <h4>Lorem ipsum dolor sit amet, consectetur adipiscing elit? </h4>
+                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit? Dolor sit amet, consectetur adipiscing elit? Lorem ipsum dolor sit amet.</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    @endsection
+

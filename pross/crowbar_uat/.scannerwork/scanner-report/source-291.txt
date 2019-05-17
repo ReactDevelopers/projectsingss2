@@ -1,0 +1,48 @@
+<?php $__env->startSection('content'); ?>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel">
+                    <form role="add-employer" method="post" enctype="multipart/form-data" action="<?php echo e(url(sprintf('%s/users/employer/add',ADMIN_FOLDER))); ?>">
+                        <input type="hidden" name="_method" value="PUT">
+                        <?php echo e(csrf_field()); ?>
+
+
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label for="name">First Name</label>
+                                <input type="text" class="form-control" name="first_name" placeholder="First Name" value="<?php echo e(old('first_name')); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Last Name</label>
+                                <input type="text" class="form-control" name="last_name" placeholder="Last Name" value="<?php echo e(old('last_name')); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Company Name</label>
+                                <input type="text" class="form-control" name="company_name" placeholder="Company Name" value="<?php echo e(old('company_name')); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Email</label>
+                                <input type="text" class="form-control" name="email" placeholder="Email" value="<?php echo e(old('email')); ?>">
+                            </div>
+
+                        </div>
+                        <div class="panel-footer">
+                            <a href="<?php echo e($backurl); ?>" class="btn btn-default">Back</a>
+                            <button type="button" data-request="ajax-submit" data-target='[role="add-employer"]' class="btn btn-default">Save</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('inlinescript'); ?>
+<script type="text/javascript">
+
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.backend.dashboard', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

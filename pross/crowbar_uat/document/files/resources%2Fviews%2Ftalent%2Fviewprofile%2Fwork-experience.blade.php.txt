@@ -1,0 +1,260 @@
+@section('content')
+    <!-- Main Content -->
+    <div class="contentWrapper" data-request="scroll" data-section="{{ \Request::get('section') }}">
+        <div class="afterlogin-section has-nobanner after-login-view">
+            <div class="container">
+                @include('talent.includes.user-detail-header',$user)
+                @include('talent.viewprofile.includes.sidebar',$user)
+                <div class="col-md-9 col-sm-8 col-xs-12 right-sidebar">
+                    @include('talent.viewprofile.includes.tab-menu',$user)
+                    <div class="inner-profile-section work-experience-edit">
+                        <div class="login-inner-wrapper sub-inner-form no-m-b">                        
+                        <div class="work-experience-box">
+                                @php 
+                                    if(!empty($work_experience_list)){
+                                        foreach($work_experience_list as $key => $value){
+                                            $inserted_experience_id = $value['id_experience'];
+
+                                            $url_edit = sprintf(
+                                                        url('ajax/%s?id_experience=%s'),
+                                                        EDIT_TALENT_EXPERIENCE,
+                                                        $inserted_experience_id
+                                                    );
+                                            $url_delete = sprintf(
+                                                        url('ajax/%s?id_experience=%s'),
+                                                        DELETE_TALENT_EXPERIENCE,
+                                                        $inserted_experience_id
+                                                    );
+                                            echo sprintf(
+                                                EXPERIENCE_TEMPLATE,
+                                                $inserted_experience_id,
+                                                $url_edit,
+                                                $inserted_experience_id,
+                                                asset('/'),
+                                                $url_delete,
+                                                $inserted_experience_id,
+                                                asset('/'),
+                                                trans('website.W0094'),
+                                                $value['jobtitle'],
+                                                trans('website.W0096'),
+                                                $value['company_name'],
+                                                trans('website.W0098'),
+                                                sprintf('%s %s',___d($value['joining_month'],'F'),$value['joining_year']),
+                                                trans('website.W0099'),
+                                                ucfirst($value['is_currently_working']),
+                                                trans('website.W0104'),
+                                                employment_types('talent_curriculum_vitae',$value['job_type']),
+                                                trans('website.W0107'),
+                                                ($value['is_currently_working'] != DEFAULT_YES_VALUE)  ? sprintf('%s %s',___d($value['relieving_month'],'F'),$value['relieving_year']) : trans('website.W0259'),
+                                                sprintf(trans('website.W0092'),''),
+                                                \Cache::get('countries')[$value['country']],
+                                                sprintf(trans('website.W0056'),''),
+                                                (!empty($value['state']))?\Cache::get('states')[$value['state']]:N_A
+                                            );
+                                        }
+                                    }
+                                @endphp
+                        </div>
+                        <form class="form-horizontal" role="work-experience" action="{{url(sprintf('%s/work-experience',TALENT_ROLE_TYPE))}}" method="POST" accept-charset="utf-8">
+                            <input type="hidden" name="id_experience">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0094')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <input type="text" name="jobtitle" placeholder="{{trans('website.W0095')}}" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0096')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <input type="text" name="company_name" placeholder="{{trans('website.W0097')}}" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0098')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="row">
+                                                <div class="col-md-6 col-sm-6 col-xs-6 month-start">
+                                                    <div class="custom-dropdown">
+                                                        <select name="joining_month" class="form-control">
+                                                        {!!___dropdown_options(trans('website.W0048'),trans('website.W0100')) !!}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 col-sm-6 col-xs-6 year-start">
+                                                    <div class="custom-dropdown">
+                                                        <select name="joining_year" class="form-control">
+                                                            {!!___dropdown_options(___range(passing_year(),'multi_dimension'),trans('website.W0103'))!!}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                    
+                                    <div class="form-group">
+                                        <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0099')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="radio radio-inline">                
+                                                <input data-request="show-hide" data-condition="yes" data-target="[name='is_currently_working']" data-true-condition=".joining-month-section" data-false-condition=".relieving-month-section" name="is_currently_working" type="radio" value="{{DEFAULT_YES_VALUE}}" id="c_work01">
+                                                <label for="c_work01">{{trans('website.W0101')}}</label>
+                                            </div>
+                                            <div class="radio radio-inline">                
+                                                <input data-request="show-hide" data-condition="yes" data-target="[name='is_currently_working']" data-true-condition=".joining-month-section" data-false-condition=".relieving-month-section" name="is_currently_working" type="radio" value="{{DEFAULT_NO_VALUE}}" id="c_work02">
+                                                <label for="c_work02">{{trans('website.W0102')}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group relieving-month-section">
+                                        <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0107')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="row">
+                                                <div class="col-md-6 col-sm-6 col-xs-6 month-start">
+                                                    <div class="custom-dropdown">
+                                                        <select name="relieving_month" class="form-control">{!!___dropdown_options(trans('website.W0048'),trans('website.W0100')) !!}</select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 col-sm-6 col-xs-6 year-start">
+                                                    <div class="custom-dropdown">
+                                                        <select name="relieving_year" class="form-control">{!!___dropdown_options(___range(passing_year(),'multi_dimension'),trans('website.W0103'))!!}</select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0104')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                        @foreach(employment_types('talent_curriculum_vitae') as $key => $value)
+                                            <div class="radio radio-inline">                
+                                                <input name="job_type" type="radio" value="{{$value['type']}}" id="t_job0-{{$value['type']}}">
+                                                <label for="t_job0-{{$value['type']}}">{{$value['type_name']}}</label>
+                                            </div>
+                                        @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-12 col-sm-12 col-xs-12">{{sprintf(trans('website.W0055'),'')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="custom-dropdown">
+                                                <select class="form-control" name="country" data-request="option" data-url="{{ url('ajax/country-state-list') }}">
+                                                {!!___dropdown_options($countries,sprintf(trans('website.W0055'),trans('website.W0067')))!!}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-12 col-sm-12 col-xs-12">{{sprintf(trans('website.W0056'),'')}}</label>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="custom-dropdown">
+                                                <select class="form-control" name="state">
+                                                {!!___dropdown_options($states,sprintf(trans('website.W0056'),trans('website.W0067')))!!}
+                                                </select>
+                                            </div>
+                                            <div class="add-more"><a href="javascript:void(0);" data-box=".work-experience-box" data- data-request="multi-ajax" data-target='[role="work-experience"]' data-toremove="experience"  data-box-id='[name="id_experience"]'>{{trans('website.W0243')}}</a></div>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </form>
+                        <div class="form-separator"></div>
+                        <form class="form-horizontal" role="cover-letter" action="{{url(sprintf('%s/cover-letter',TALENT_ROLE_TYPE))}}" method="POST" accept-charset="utf-8">
+                            <div class="form-group coverletter-group">
+                                <label class="control-label col-md-12 col-sm-12 col-xs-12">{{trans('website.W0110')}}</label>
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="uploaded-docx"></div>
+                                    <textarea name="cover_letter_description" class="form-control" placeholder="{{trans('website.W0111')}}">{{ old('cover_letter_description',$user['cover_letter_description']) }}</textarea>
+                                </div>
+                                <input type="hidden" name="step_type" value="edit">
+                            </div>
+                        </form>
+                        <div class="form-separator"></div>
+                    </div>
+                    <form class="form-horizontal" role="doc-submit" action="{{url(sprintf('%s/doc-submit',TALENT_ROLE_TYPE))}}" method="POST" accept-charset="utf-8">
+                        <div class="login-inner-wrapper last-form-wrapper">
+                            <h2 class="form-heading">{{trans('website.W0112')}}</h2>
+                            <div class="form-group attachment-group">                               
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="upload-box">
+                                        @php
+                                            if(!empty($get_files)){
+                                                foreach ($get_files as $key => $value) {
+                                                    $url_delete = sprintf(
+                                                        url('ajax/%s?id_file=%s'),
+                                                        DELETE_DOCUMENT,
+                                                        $value['id_file']
+                                                    );
+                                                    echo sprintf(RESUME_TEMPLATE,
+                                                        $value['id_file'],
+                                                        url(sprintf('/download/file?file_id=%s',___encrypt($value['id_file']))),
+                                                        asset('/'),
+                                                        substr($value['filename'],0,3),
+                                                        $value['size'],
+                                                        $url_delete,
+                                                        $value['id_file'],
+                                                        asset('/')
+                                                    );  
+                                                }
+                                            }
+                                        @endphp
+                                    </div>
+                                    <div class="fileUpload upload-docx"><span>{{trans('website.W0113')}}</span><input type="file" name="file" data-after-upload=".single-remove" class="upload" data-request="doc-submit" data-toadd =".upload-box" data-target='[role="doc-submit"]'/></div>
+                                    <span class="upload-hint">{{trans('website.W0114')}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group button-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="row form-btn-set">
+                                    <div class="col-md-7 col-sm-7 col-xs-6">
+                                        <a href="{{ $skip_url }}" class="greybutton-line" value="{{trans('website.W0196')}}">
+                                                {{trans('website.W0186')}}
+                                            </a>
+                                    </div>
+                                    <div class="col-md-5 col-sm-5 col-xs-6">
+                                        <button type="button" data-request="ajax-submit" data-target='[role="cover-letter"]' class="button" value="{{trans('website.W0058')}}">
+                                            {{trans('website.W0058')}}
+                                        </button>
+                                    </div>
+                                </div>                                    
+                            </div>
+                    </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+@push('inlinescript')
+    <style type="text/css">.modal-backdrop{display: none;} #SGCreator-modal{background: rgba(216, 216, 216, 0.7);}</style>
+    <script type="text/javascript">
+        $(".cropper").SGCropper({
+            viewMode: 1,
+            aspectRatio: "2/3",
+            cropBoxResizable: false,
+            formContainer:{
+                actionURL:"{{ url(sprintf('ajax/crop?imagename=image&user_id=%s',Auth::user()->id_user)) }}",
+                modelTitle:"{{ trans('website.W0261') }}",
+                modelSuggestion:"{{ trans('website.W0263') }}",
+                modelDescription:"{{ trans('website.W0264') }}",
+                modelSeperator:"{{ trans('website.W0265') }}",
+                uploadLabel:"{{ trans('website.W0266') }}",
+                fieldLabel:"",
+                fieldName: "image",
+                btnText:"{{ trans('website.W0262') }}",
+                defaultImage: "../images/product_sample.jpg",
+                loaderImage: "../images/loader.gif",
+            }
+        });
+
+        @if(!empty($get_files))
+            $(function() {
+                $('.single-remove').hide();
+            })
+        @endif
+    </script>
+@endpush
+

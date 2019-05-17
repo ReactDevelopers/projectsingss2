@@ -1,0 +1,1 @@
+¯w-resources/views/backend/pages/skill.blade.php 2phpXhr-resources/views/backend/pages/skill.blade.php

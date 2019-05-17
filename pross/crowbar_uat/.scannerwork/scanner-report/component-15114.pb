@@ -1,0 +1,1 @@
+Šv0resources/views/talent/proposals/index.blade.php 2phpX>hr0resources/views/talent/proposals/index.blade.php

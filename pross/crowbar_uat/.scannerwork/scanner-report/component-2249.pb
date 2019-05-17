@@ -1,0 +1,1 @@
+ÉEnode_modules/bootstrap-sass/assets/stylesheets/bootstrap/_badges.scss 2scssXEhrEnode_modules/bootstrap-sass/assets/stylesheets/bootstrap/_badges.scss

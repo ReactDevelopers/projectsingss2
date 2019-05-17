@@ -1,0 +1,1 @@
+ˆv;resources/views/talent/proposals/includes/sidebar.blade.php 2phpX3hr;resources/views/talent/proposals/includes/sidebar.blade.php

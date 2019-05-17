@@ -1,0 +1,1 @@
+»s!resources/views/welcome.blade.php 2phpX\hr!resources/views/welcome.blade.php

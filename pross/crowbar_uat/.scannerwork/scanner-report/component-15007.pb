@@ -1,0 +1,1 @@
+Ÿu,resources/views/front/article/list.blade.php 2phpXIhr,resources/views/front/article/list.blade.php

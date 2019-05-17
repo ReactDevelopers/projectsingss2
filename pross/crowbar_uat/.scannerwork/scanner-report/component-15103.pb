@@ -1,0 +1,1 @@
+ÿu1resources/views/talent/portfolio/single.blade.php 2phpX)hr1resources/views/talent/portfolio/single.blade.php

@@ -1,0 +1,1 @@
+æu%resources/views/talent/settings/pages :Ωuøu¿ur%resources/views/talent/settings/pages

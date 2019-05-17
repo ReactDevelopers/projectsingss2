@@ -1,0 +1,59 @@
+<div class="headerWrapper">
+    <div class="splashHeader before-login-header">        
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <ul class="post-project-link">
+                    @includeIf('front.includes.currency-language')
+                    <li><a href="{{ url('/signup/employer') }}" class="navyblueBtn">{{trans('website.W0486')}}</a></li>
+                </ul>
+                <div class="row">
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <a href="{{ url('/') }}" class="navbar-brand logo">
+                                <img src="{{ asset('/images/splashLogo.png') }}">
+                            </a>
+                        </div>                        
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                        <div class="searchbar-wrap searchForJob">                            
+                            <div class="header-searchBar">
+                                <form class="navbar-form">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" placeholder="Search for jobs">
+                                        <button type="submit" class="btn searchBtn"></button>
+                                    </div>
+                                </form>
+                            </div>  
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                        <div class="header-innerWrapper">
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                <ul class="nav navbar-nav">
+                                    <li><a href="{{ url('/page/about') }}" class="link"><span>{{trans('website.W0483')}}</span></a></li>
+                                    @if(!empty(\Auth::guard('web')->user()) && \Auth::guard('web')->user()->type == 'talent')
+                                        <li><a href="{{ url(sprintf('/%s/find-jobs',TALENT_ROLE_TYPE)) }}" class="link"><span>{{trans('website.W0484')}}</span></a></li>
+                                    @elseif(!empty(\Auth::guard('web')->user()) && \Auth::guard('web')->user()->type == 'employer')
+                                        <li><a href="{{ url(sprintf('/%s/find-talents',EMPLOYER_ROLE_TYPE)) }}" class="link"><span>{{trans('website.W0484')}}</span></a></li>
+                                    @else
+                                        <li><a href="{{ url('/login') }}" class="link"><span>{{trans('website.W0484')}}</span></a></li>
+                                    @endif
+                                    <li><a href="{{ url('/signup') }}" class="link"><span>{{trans('website.W0485')}}</span></a></li>
+                                </ul>                            
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+    </div>
+</div>
+

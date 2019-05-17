@@ -1,0 +1,62 @@
+<ul class="answer-chat">
+    @foreach($answer as $a)
+    <li>
+        <div class="answer-wrapper">
+            <div class="answer-level">
+                <p> {{$a['answer_description']}}</p>
+                <span class="question-author">
+                    <span class="flex-cell">
+                        @if(!empty($a['filename']))
+                        <img src="{{asset($a['filename'])}}" alt="image" class="question-author-image">
+                        @else
+                        <img src="{{asset('images/sdf.png')}}" alt="image" class="question-author-image">
+                        @endif
+
+                        <span class="question-author-action">
+                            <h4>{{$a['person_name']}}</h4>
+                            <span>{{___ago($a['approve_date'])}}</span>
+                        </span>
+                    </span>
+                </span>
+            </div>
+            @if(0)
+                @if(!empty(\Auth::user()))
+                <a href="javascript:;" onclick="addReply({{$a['id_answer']}});" class="reply-answer">{{trans('website.W0452')}}</a>
+                @endif
+                @if(!empty(\Auth::user()) && $a['has_child'] == 1)
+                 |
+                @endif
+                @if($a['has_child'] == 1)
+                <a href="javascript:;" onclick="loadReply({{$a['id_answer']}})" class="reply-answer">View reply</a>
+                @endif
+            @endif
+        </div>
+        <div id="add-reply-response-{{$a['id_answer']}}"></div>
+        <div id="reply-area-{{$a['id_answer']}}"></div>
+    </li>
+    @if(!empty(\Auth::user()))
+    <div id="text-reply-area-{{$a['id_answer']}}" style="display: none;">
+        <div class="questionform-box">
+            <h2 class="form-heading">{{trans('website.W0451')}}</h2>
+            <div class="form-element">
+                <textarea id="answer_description_{{$a['id_answer']}}" name="answer_description_{{$a['id_answer']}}" class="form-control" placeholder="{{trans('website.W0449')}}"></textarea>
+            </div>
+        </div>
+        <div class="row form-group button-group">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="row form-btn-set">
+                    <div class="col-md-7 col-sm-7 col-xs-6">
+                        <a href="javascript:;" onclick="closeReplyArea({{$a['id_answer']}})" class="greybutton-line" value="{{trans('website.W0196')}}">
+                            {{trans('website.W0355')}}
+                        </a>
+                    </div>
+                    <div class="col-md-5 col-sm-5 col-xs-6">
+                        <input onclick="insertReply({{$a['id_answer']}});" type="button" class="button" value="{{ trans('website.W0393') }}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+    @endforeach
+</ul>

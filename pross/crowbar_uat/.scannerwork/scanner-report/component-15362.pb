@@ -1,0 +1,1 @@
+‚x-resources/views/backend/emails/edit.blade.php 2phpX1hr-resources/views/backend/emails/edit.blade.php

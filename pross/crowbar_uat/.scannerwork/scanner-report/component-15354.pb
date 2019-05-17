@@ -1,0 +1,1 @@
+úw2resources/views/backend/talent/education.blade.php 2phpX#hr2resources/views/backend/talent/education.blade.php

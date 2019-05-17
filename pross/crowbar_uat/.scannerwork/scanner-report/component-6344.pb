@@ -1,0 +1,1 @@
+È1Pnode_modules/less/test/less-bom/import-reference-issues/global-scope-nested.less 2lessXhrPnode_modules/less/test/less-bom/import-reference-issues/global-scope-nested.less

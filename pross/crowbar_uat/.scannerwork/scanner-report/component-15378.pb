@@ -1,0 +1,1 @@
+’x2resources/views/backend/talent/org/index.blade.php 2phpXxhr2resources/views/backend/talent/org/index.blade.php

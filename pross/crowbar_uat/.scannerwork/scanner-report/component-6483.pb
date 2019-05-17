@@ -1,0 +1,1 @@
+Ó2<node_modules/less/test/less-bom/errors/property-in-root.less 2lessXhr<node_modules/less/test/less-bom/errors/property-in-root.less

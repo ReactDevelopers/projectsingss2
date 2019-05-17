@@ -1,0 +1,1 @@
+¼v;resources/views/talent/jobdetail/includes/sidebar.blade.php 2phpX”hr;resources/views/talent/jobdetail/includes/sidebar.blade.php
