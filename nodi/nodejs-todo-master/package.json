@@ -1,0 +1,19 @@
+{
+  "name": "nodejs-todo",
+  "version": "1.0.0",
+  "description": "A simple to do list app ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "Vanessa Ating",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.0",
+    "ejs": "^2.5.7",
+    "express": "^4.15.4",
+    "nodemon": "^1.18.6",
+    "validator": "^3.32.0"
+  }
+}
